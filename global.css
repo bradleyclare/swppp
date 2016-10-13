@@ -1,0 +1,200 @@
+@import url("normalize.css");
+@import url("skeleton.css");
+
+body 
+{	
+    font-family: Arial, Verdana, Helvetica, sans-serif;
+	font-size: 12px;
+    color: darkslategray;
+	background-color: "#ffffff";
+	margin: 0px 25px;
+}
+
+body.home
+{ 
+    background-color: "#e5e6e8";
+	margin: 0px 25px;
+}
+
+.alpha {margin-left: 0px;}
+.omega {margin-right: 0px;}
+
+/* GENERAL LINKS */	
+a:link, a:active, a:visited 
+{ line-height: normal; 
+	font-weight: normal; 
+	color: #003399; 
+	text-decoration: none; 
+	font-size: 12px;
+	font-style: normal}
+  
+a:hover 
+{ line-height: normal; 
+	font-weight: normal; 
+	color: #CC0000; 
+	text-decoration: underline; 
+	font-size: 12px;
+	font-style: normal}
+	
+/* ADMIN LINKS */		
+a:link.admin, a:active.admin, a:visited.admin 
+	{ line-height: normal; 
+	font-weight: bold;
+	color: #003399; 
+	text-decoration: none; 
+	font-size: 12px; 
+	font-style: normal}
+		
+a:hover.admin
+	{ line-height: normal; 
+	font-weight: bold; 
+	color: #333333; 
+	text-decoration: underline; 
+	font-size: 12px;
+	font-style: normal}
+	
+/* HEADER LINKS */	
+		
+a:hover.head
+	{ line-height: normal; 
+	font-weight: bold; 
+	color: #ffffff; 
+	text-decoration: underline; 
+	font-size: 12px;
+	font-style: normal;
+	background: #666666;
+	padding: 5px}
+
+a:link.head2, a:active.head2, a:visited.head2 
+	{ line-height: normal; 
+	font-weight: bold;
+	color: #000000; 
+	text-decoration: none; 
+	font-size: 11px; 
+	font-style: normal;
+	padding: 5px}
+		
+a:hover.head2
+	{ line-height: normal; 
+	font-weight: bold; 
+	color: #000000; 
+	text-decoration: underline; 
+	font-size: 11px;
+	font-style: normal;
+	padding: 5px}
+
+.logo
+{ 	font-family: Rockwell Extra Bold, Times New Roman;
+	font-size: 18px;
+	color: #ffffff}
+
+tr { padding: 10px;}
+th { padding: 10px; text-algin: center;}
+td { font-style: normal; font-weight: normal; font-size: 12px; padding: 10px; }
+
+.white
+{  	color: #ffffff;
+   	font-size: 12px}
+
+td.header 
+{	font-style: normal;
+	font-weight: normal;
+	padding-right: 0px;
+	padding-left: 0px;
+}
+
+td.filetree 
+{	font-style: normal;
+	font-weight: normal;
+	padding-right: 0px;
+	padding-left: 0px;
+}
+	
+.home
+{	color: #EEEEEE;
+	text-align: center}
+
+hr {margin: 10px 0px;}
+	
+h1 { font-size: 28px; font-weight: bold; color: black; text-align: center; padding: 20px 0px;}
+h2 { font-size: 22px; font-weight: bold; color: black; text-align: center; padding: 10px 0px;}
+h3 { font-size: 20px; font-weight: bold; color: black; text-align: center; padding: 5px 0px;}
+h4 { font-size: 16px; font-weight: bold; color: black; }
+h5 { font-size: 14px; font-weight: bold; color: black; display: block; background-color: lightgray; padding: 10px;}
+input {background-color: lightgray; color: black; text-align: center;}
+.header-img-big { width: 40%; margin: 0px auto; }
+.header-nav-bar { height: 40px; background-color: blue; }
+.header-nav { color: white; font-weight: bold; text-transform: capitalize; background-color: blue; margin: 5px 0px; text-align: center; padding: 10px 5px; }
+.header-nav a { color: white; font-weight: bold;}
+.header-top {background-color: lightgray; color: black; height: 100px; padding: 10px; }
+.nav-side {background-color: lightgray; color: white; padding: 10px; text-align: center;}
+.nav-side a {display: block; padding: 5px 0px;}
+.side-link { background-color: lightgray; border: 2px solid black; margin: 10px 0px; padding: 10px; text-align: center; font-weight: bold; text-transform: uppercase;}
+.side-link-small { margin: 5px 0px; padding: 5px; text-align: center; font-weight: bold; text-transform: uppercase;}
+.visYes { visibility:visible; display: inline }
+.visNo { visibility:hidden; display: none}
+.content { margin-top: 10px; margin-bottom: 10px; }
+
+.main 
+{  font-size: 18px; 
+	font-style: normal; 
+	line-height: normal; 
+	font-weight: bold; 
+	color: #000000;
+	font-variant: normal}
+
+.indent30
+{	padding-left: 30px}	
+
+th 
+{
+	line-height: normal;
+	font-weight: bold;
+	font-size: 11px;
+	color: #000000;
+	background-color: #9AB5D1;
+	padding: 5px;
+}
+
+.login-div { color: white; background-color: darkblue; width: 75%; margin: 20px auto; max-width: 400px;}
+.login-div input {background-color: lightgray; text-align: center; margin: 10px; width: 90%;}
+.login-div button {background-color: lightgray; text-align: center; display: block; margin: 10px auto; width: 90%;}
+.login-div h1 {background-color: darkgray; color: white;}
+.login-div h3 {color: white;}
+.login-div h4 {color: white; text-align: center; padding: 10px;}
+.up-down-button {margin: 5px 2px; padding: 2px 5px; line-height: 15px; font-size: 15px;}
+.left-right-button {margin: 2px 5px; padding: 5px 2px; line-height: 15px; font-size: 15px;}
+
+.error
+	{ line-height: normal; 
+	font-weight: normal; 
+	color: #CC0000; 
+	text-decoration: none; 
+	font-size: 13px;
+	font-style: normal}
+
+.fl { float: left; } 
+.fr { float: right; }
+
+.contact
+{
+    padding: 10px;
+    background-color: gray;
+    width: 300px;
+    margin: 0px auto;
+    font-size: 15px;
+    font-weight: bold;
+    color: white;
+    text-align: center;
+}
+
+.center
+{
+    margin: 0px auto;
+    width: 100%;
+}
+
+.cleaner
+{
+    clear: both;
+}

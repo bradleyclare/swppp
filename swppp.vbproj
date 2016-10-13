@@ -1,0 +1,394 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.1.0.0\build\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.props" Condition="Exists('..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.1.0.0\build\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.props')" />
+  <Import Project="..\packages\Microsoft.Net.Compilers.1.0.0\build\Microsoft.Net.Compilers.props" Condition="Exists('..\packages\Microsoft.Net.Compilers.1.0.0\build\Microsoft.Net.Compilers.props')" />
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>
+    </ProductVersion>
+    <SchemaVersion>
+    </SchemaVersion>
+    <ProjectGuid>{7BB5C449-D339-4EA0-81BC-C707A76AEF8D}</ProjectGuid>
+    <ProjectTypeGuids>{349c5851-65df-11da-9384-00065b846f21};{F184B08F-C81C-45F6-A57F-5ABD9991F28F}</ProjectTypeGuids>
+    <OutputType>Library</OutputType>
+    <RootNamespace>swppp</RootNamespace>
+    <AssemblyName>swppp</AssemblyName>
+    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
+    <MyType>Custom</MyType>
+    <UseIISExpress>true</UseIISExpress>
+    <IISExpressSSLPort />
+    <IISExpressAnonymousAuthentication />
+    <IISExpressWindowsAuthentication />
+    <IISExpressUseClassicPipelineMode />
+    <UseGlobalApplicationHostFile />
+    <NuGetPackageImportStamp>
+    </NuGetPackageImportStamp>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <DefineDebug>true</DefineDebug>
+    <DefineTrace>true</DefineTrace>
+    <OutputPath>bin\</OutputPath>
+    <DocumentationFile>swppp.xml</DocumentationFile>
+    <NoWarn>42016,41999,42017,42018,42019,42032,42036,42020,42021,42022</NoWarn>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <DefineDebug>false</DefineDebug>
+    <DefineTrace>true</DefineTrace>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\</OutputPath>
+    <DocumentationFile>swppp.xml</DocumentationFile>
+    <NoWarn>42016,41999,42017,42018,42019,42032,42036,42020,42021,42022</NoWarn>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Microsoft.AI.Agent.Intercept, Version=1.2.0.1011, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.ApplicationInsights.Agent.Intercept.1.2.0\lib\net45\Microsoft.AI.Agent.Intercept.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.AI.DependencyCollector, Version=1.2.3.246, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.ApplicationInsights.DependencyCollector.1.2.3\lib\net45\Microsoft.AI.DependencyCollector.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.AI.PerfCounterCollector, Version=1.2.3.246, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.ApplicationInsights.PerfCounterCollector.1.2.3\lib\net45\Microsoft.AI.PerfCounterCollector.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.AI.ServerTelemetryChannel, Version=1.2.3.246, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.ApplicationInsights.WindowsServer.TelemetryChannel.1.2.3\lib\net45\Microsoft.AI.ServerTelemetryChannel.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.AI.Web, Version=1.2.3.246, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.ApplicationInsights.Web.1.2.3\lib\net45\Microsoft.AI.Web.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.AI.WindowsServer, Version=1.2.3.246, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.ApplicationInsights.WindowsServer.1.2.3\lib\net45\Microsoft.AI.WindowsServer.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.ApplicationInsights, Version=1.2.3.490, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.ApplicationInsights.1.2.3\lib\net45\Microsoft.ApplicationInsights.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.CodeDom.Providers.DotNetCompilerPlatform, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.1.0.0\lib\net45\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="System.Web.Extensions" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Web.DynamicData" />
+    <Reference Include="System.Web.Entity" />
+    <Reference Include="System.Web.ApplicationServices" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
+    <Reference Include="System.Web" />
+    <Reference Include="System.Xml" />
+    <Reference Include="System.Configuration" />
+    <Reference Include="System.Web.Services" />
+    <Reference Include="System.EnterpriseServices" />
+  </ItemGroup>
+  <ItemGroup>
+  </ItemGroup>
+  <ItemGroup>
+    <Import Include="Microsoft.VisualBasic" />
+    <Import Include="System" />
+    <Import Include="System.Collections" />
+    <Import Include="System.Collections.Generic" />
+    <Import Include="System.Data" />
+    <Import Include="System.Linq" />
+    <Import Include="System.Xml.Linq" />
+    <Import Include="System.Diagnostics" />
+    <Import Include="System.Collections.Specialized" />
+    <Import Include="System.Configuration" />
+    <Import Include="System.Text" />
+    <Import Include="System.Text.RegularExpressions" />
+    <Import Include="System.Web" />
+    <Import Include="System.Web.Caching" />
+    <Import Include="System.Web.SessionState" />
+    <Import Include="System.Web.Security" />
+    <Import Include="System.Web.Profile" />
+    <Import Include="System.Web.UI" />
+    <Import Include="System.Web.UI.WebControls" />
+    <Import Include="System.Web.UI.WebControls.WebParts" />
+    <Import Include="System.Web.UI.HtmlControls" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="about.asp" />
+    <Content Include="admin\connSWPPP.asp" />
+    <Content Include="admin\default.asp" />
+    <Content Include="admin\js\validAddImage.js" />
+    <Content Include="admin\js\validCordinates.js" />
+    <Content Include="admin\js\validCordinates1.2.js" />
+    <Content Include="admin\js\validLoginAdmin.js" />
+    <Content Include="admin\js\validLoginAdmin1.2.js" />
+    <Content Include="admin\js\validReports.js" />
+    <Content Include="admin\js\validReports1.2.js" />
+    <Content Include="admin\js\validUpload.js" />
+    <Content Include="admin\js\validUpload1.2.js" />
+    <Content Include="admin\js\validUsers.js" />
+    <Content Include="admin\js\validUsers1.2.js" />
+    <Content Include="admin\maintain\addCoordinate.asp" />
+    <Content Include="admin\maintain\addImage.asp" />
+    <Content Include="admin\maintain\addReport.asp" />
+    <Content Include="admin\maintain\addReport_dev.asp" />
+    <Content Include="admin\maintain\addUser.asp" />
+    <Content Include="admin\maintain\addUser_old.asp" />
+    <Content Include="admin\maintain\adminAbout.asp" />
+    <Content Include="admin\maintain\adminContact.asp" />
+    <Content Include="admin\maintain\archive.asp" />
+    <Content Include="admin\maintain\archiveCompleted.asp" />
+    <Content Include="admin\maintain\archiveCreateFileStructure.asp" />
+    <Content Include="admin\maintain\archiveCreateFileStructure_dev.asp" />
+    <Content Include="admin\maintain\archivePreview.asp" />
+    <Content Include="admin\maintain\archiveProcess.asp" />
+    <Content Include="admin\maintain\archiveProgress.asp" />
+    <Content Include="admin\maintain\archiveProjectReview.asp" />
+    <Content Include="admin\maintain\clean_up_addresses.asp" />
+    <Content Include="admin\maintain\commissions.asp" />
+    <Content Include="admin\maintain\commissionsReport.asp" />
+    <Content Include="admin\maintain\commissionsReportDetail.asp" />
+    <Content Include="admin\maintain\Copy of upImageRpt.asp" />
+    <Content Include="admin\maintain\deleteCoordinate.asp" />
+    <Content Include="admin\maintain\deleteImageAsc.asp" />
+    <Content Include="admin\maintain\deleteProject.asp" />
+    <Content Include="admin\maintain\deleteReport.asp" />
+    <Content Include="admin\maintain\deleteUser.asp" />
+    <Content Include="admin\maintain\editCoordinate.asp" />
+    <Content Include="admin\maintain\editImage.asp" />
+    <Content Include="admin\maintain\editNarrative.asp" />
+    <Content Include="admin\maintain\editProjectInfo.asp" />
+    <Content Include="admin\maintain\editReport.asp" />
+    <Content Include="admin\maintain\editReport2.asp" />
+    <Content Include="admin\maintain\editReportOptionalLinks.asp" />
+    <Content Include="admin\maintain\editReportTG.asp" />
+    <Content Include="admin\maintain\editReport_backup.asp" />
+    <Content Include="admin\maintain\editUser.asp" />
+    <Content Include="admin\maintain\editUser_org.asp" />
+    <Content Include="admin\maintain\freeASPUpload.asp" />
+    <Content Include="admin\maintain\loginUser.asp" />
+    <Content Include="admin\maintain\lostPassword.asp" />
+    <Content Include="admin\maintain\lostPasswordUpdate1.asp" />
+    <Content Include="admin\maintain\lostPasswordUpdate2.asp" />
+    <Content Include="admin\maintain\manage_addresses.asp" />
+    <Content Include="admin\maintain\newReport.asp" />
+    <Content Include="admin\maintain\newReport_dev.asp" />
+    <Content Include="admin\maintain\newReport_old.asp" />
+    <Content Include="admin\maintain\projects.asp" />
+    <Content Include="admin\maintain\releasereports.asp" />
+    <Content Include="admin\maintain\releaseReportsTGUpdated.asp" />
+    <Content Include="admin\maintain\releaseReports_old.asp" />
+    <Content Include="admin\maintain\releasereports_test.asp" />
+    <Content Include="admin\maintain\remImgFiles.asp" />
+    <Content Include="admin\maintain\remMapFiles.asp" />
+    <Content Include="admin\maintain\remSigFiles.asp" />
+    <Content Include="admin\maintain\reportSelect.asp" />
+    <Content Include="admin\maintain\reportUsersByProject.asp" />
+    <Content Include="admin\maintain\Test.asp" />
+    <Content Include="admin\maintain\upConstructionSignEditRprt.asp" />
+    <Content Include="admin\maintain\upConstructionSiteNoticeEditRprt.asp" />
+    <Content Include="admin\maintain\upImageRpt.asp" />
+    <Content Include="admin\maintain\upLgImgRpt.asp" />
+    <Content Include="admin\maintain\upNOIEditRprt.asp" />
+    <Content Include="admin\maintain\upNOTzzzEditRprt.asp" />
+    <Content Include="admin\maintain\upOperatorFormEditRprt.asp" />
+    <Content Include="admin\maintain\upSigAddUser.asp" />
+    <Content Include="admin\maintain\upSigEditUser.asp" />
+    <Content Include="admin\maintain\upSiteMapAddRprt.asp" />
+    <Content Include="admin\maintain\upSiteMapEditRprt.asp" />
+    <Content Include="admin\maintain\upSmImgRprt.asp" />
+    <Content Include="admin\maintain\upSWPPPEditRprt.asp" />
+    <Content Include="admin\maintain\viewProjects.asp" />
+    <Content Include="admin\maintain\viewReports.asp" />
+    <Content Include="admin\maintain\viewUsersAdmin.asp" />
+    <Content Include="admin\maintain\viewUsersDir.asp" />
+    <Content Include="admin\maintain\viewUsers_old.asp" />
+    <Content Include="admin\maintain\z1.asp" />
+    <Content Include="admin\maintain\z2.asp" />
+    <Content Include="admin\test.asp" />
+    <Content Include="b&amp;wlogoforreport2.jpg" />
+    <Content Include="b&amp;wlogoforreport_new.jpg" />
+    <Content Include="bwlogoforreport.jpg" />
+    <Content Include="css\jquery-ui.min.css" />
+    <Content Include="css\jquery-ui.structure.min.css" />
+    <Content Include="css\jquery-ui.theme.min.css" />
+    <Content Include="dbtest.asp" />
+    <Content Include="default.asp" />
+    <Content Include="favicon.ico" />
+    <Content Include="global.css" />
+    <Content Include="googleb7764181805641c8.html" />
+    <Content Include="js\jquery-ui.min.js" />
+    <Content Include="js\jquery.js" />
+    <Content Include="js\popWindow.js" />
+    <Content Include="js\ui.datepicker.js" />
+    <Content Include="js\validAddImage.js" />
+    <Content Include="js\validCordinates.js" />
+    <Content Include="js\validCordinates1.2.js" />
+    <Content Include="js\validLoginAdmin.js" />
+    <Content Include="js\validLoginAdmin1.2.js" />
+    <Content Include="js\validReports.js" />
+    <Content Include="js\validReports1.2.js" />
+    <Content Include="js\validUpload.js" />
+    <Content Include="js\validUpload1.2.js" />
+    <Content Include="js\validUsers.js" />
+    <Content Include="js\validUsers1.2.js" />
+    <Content Include="mailtest.asp" />
+    <Content Include="reportPrint.asp" />
+    <Content Include="scripts\ai.0.15.0-build58334.js" />
+    <Content Include="scripts\ai.0.15.0-build58334.min.js" />
+    <Content Include="views\about.txt" />
+    <Content Include="views\actionReport.asp" />
+    <Content Include="views\addActionReport.asp" />
+    <Content Include="views\addOperatorForm.asp" />
+    <Content Include="views\companies.asp" />
+    <Content Include="views\completedActionItems.asp" />
+    <Content Include="views\contact.txt" />
+    <Content Include="views\counties.asp" />
+    <Content Include="views\deleteActionReport.asp" />
+    <Content Include="views\editActionReport.asp" />
+    <Content Include="views\inspections.asp" />
+    <Content Include="views\inspections_dev.asp" />
+    <Content Include="views\kfc.asp" />
+    <Content Include="views\monthlyReportsSum.asp" />
+    <Content Include="views\openActionItems.asp" />
+    <Content Include="views\operatorForm.asp" />
+    <Content Include="views\printAllProjectActions.asp" />
+    <Content Include="views\projects.asp" />
+    <Content Include="views\qbFormat.asp" />
+    <Content Include="views\qbFormat1_new.asp" />
+    <Content Include="views\qbXLS.asp" />
+    <Content Include="views\report.asp" />
+    <Content Include="views\reportPrint.asp" />
+    <Content Include="views\reportPrintAll.asp" />
+    <Content Include="views\reportPrintAllRecent.asp" />
+    <Content Include="views\sitePhoto.asp" />
+    <Content Include="views\viewAllProjectActions.asp" />
+    <Content Include="views\viewAllReports.asp" />
+    <Content Include="Web.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="My Project\AssemblyInfo.vb" />
+    <Compile Include="My Project\Application.Designer.vb">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Application.myapp</DependentUpon>
+    </Compile>
+    <Compile Include="My Project\MyExtensions\MyWebExtension.vb">
+      <VBMyExtensionTemplateID>Microsoft.VisualBasic.Web.MyExtension</VBMyExtensionTemplateID>
+      <VBMyExtensionTemplateVersion>1.0.0.0</VBMyExtensionTemplateVersion>
+    </Compile>
+    <Compile Include="My Project\Resources.Designer.vb">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+    <Compile Include="My Project\Settings.Designer.vb">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Settings.settings</DependentUpon>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+    </Compile>
+    <Compile Include="views\cleaner.vb" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="My Project\Resources.resx">
+      <Generator>VbMyResourcesResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.vb</LastGenOutput>
+      <CustomToolNamespace>My.Resources</CustomToolNamespace>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="ApplicationInsights.config">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="header.inc" />
+    <Content Include="header2.inc" />
+    <Content Include="header3.inc" />
+    <Content Include="admin\adminHeader.inc" />
+    <Content Include="admin\adminHeader2.inc" />
+    <Content Include="admin\maintain\archiveCreateAboutUs.inc" />
+    <Content Include="admin\maintain\archiveCreateContactUs.inc" />
+    <Content Include="admin\maintain\archiveCreateDefault.inc" />
+    <Content Include="admin\maintain\archiveCreateFullReport.inc" />
+    <Content Include="admin\maintain\archiveCreateReportsHTML.inc" />
+    <Content Include="admin\maintain\releaseReportsBackup.zip" />
+    <None Include="My Project\Application.myapp">
+      <Generator>MyApplicationCodeGenerator</Generator>
+      <LastGenOutput>Application.Designer.vb</LastGenOutput>
+    </None>
+    <None Include="My Project\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <CustomToolNamespace>My</CustomToolNamespace>
+      <LastGenOutput>Settings.Designer.vb</LastGenOutput>
+    </None>
+    <Content Include="packages.config" />
+    <Content Include="views\monthlyReportsSum.asp083106" />
+    <Content Include="views\qbXLS.asp.debug" />
+    <Content Include="views\qbXLS.asp.old" />
+    <Content Include="views\reportPrint.asp.bak" />
+    <Content Include="views\reportPrintAllRecent.asp.bak" />
+    <Content Include="views\reportPrintAllRecent.asp_061114" />
+    <None Include="Web.Debug.config">
+      <DependentUpon>Web.config</DependentUpon>
+    </None>
+    <None Include="Web.Release.config">
+      <DependentUpon>Web.config</DependentUpon>
+    </None>
+  </ItemGroup>
+  <PropertyGroup>
+    <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
+    <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
+  </PropertyGroup>
+  <PropertyGroup>
+    <OptionExplicit>On</OptionExplicit>
+  </PropertyGroup>
+  <PropertyGroup>
+    <OptionCompare>Binary</OptionCompare>
+  </PropertyGroup>
+  <PropertyGroup>
+    <OptionStrict>Off</OptionStrict>
+  </PropertyGroup>
+  <PropertyGroup>
+    <OptionInfer>On</OptionInfer>
+  </PropertyGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.VisualBasic.targets" />
+  <Import Project="$(VSToolsPath)\WebApplications\Microsoft.WebApplication.targets" Condition="'$(VSToolsPath)' != ''" />
+  <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v10.0\WebApplications\Microsoft.WebApplication.targets" Condition="false" />
+  <ProjectExtensions>
+    <VisualStudio>
+      <FlavorProperties GUID="{349c5851-65df-11da-9384-00065b846f21}">
+        <WebProjectProperties>
+          <UseIIS>True</UseIIS>
+          <AutoAssignPort>True</AutoAssignPort>
+          <DevelopmentServerPort>7821</DevelopmentServerPort>
+          <DevelopmentServerVPath>/</DevelopmentServerVPath>
+          <IISUrl>http://localhost:7821/</IISUrl>
+          <NTLMAuthentication>False</NTLMAuthentication>
+          <UseCustomServer>False</UseCustomServer>
+          <CustomServerUrl>
+          </CustomServerUrl>
+          <SaveServerSettingsInUserFile>False</SaveServerSettingsInUserFile>
+        </WebProjectProperties>
+      </FlavorProperties>
+    </VisualStudio>
+  </ProjectExtensions>
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('..\packages\Microsoft.Net.Compilers.1.0.0\build\Microsoft.Net.Compilers.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Microsoft.Net.Compilers.1.0.0\build\Microsoft.Net.Compilers.props'))" />
+    <Error Condition="!Exists('..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.1.0.0\build\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.1.0.0\build\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.props'))" />
+  </Target>
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

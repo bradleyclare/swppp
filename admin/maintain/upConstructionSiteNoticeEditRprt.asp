@@ -16,7 +16,7 @@ inspecID = Request("inspecID")
 <script language="JavaScript" src="../js/validUpload.js"></script>
 <script language="JavaScript" src="../js/validUpload1.2.js"></script>
 </head>
-<!-- #include virtual="admin/adminHeader2.inc" -->
+<!-- #include file="../adminHeader2.inc" -->
 <table width="100%" border="0">
 	<tr> 
 		<td><h1>SWPPP Inspections : Upload Construction Site Notice File</h1></td>
@@ -51,7 +51,7 @@ inspecID = Request("inspecID")
 <table width="100%" border="0">
 <%
 '	tempDev = "dev\"
-	baseDir = Request.ServerVariables("APPL_PHYSICAL_PATH")
+	baseDir = "d:\vol\swpppinspections.com\www\htdocs\images\"
 	
 	Set upLoad = Server.CreateObject("SoftArtisans.FileUp")
 	upLoad.Path = baseDir & "ConstructionSiteNotice\"

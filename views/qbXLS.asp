@@ -17,7 +17,7 @@ lastDay=CDate(yDate)
 iNum=Request("iNum")
 IF (IsNumeric(iNum) AND iNum<>"") THEN iNum=FormatNumber(iNum,0) ELSE err=err+2 END IF
 IF (Request("bCycle")<5 AND Request("bCycle")>0) THEN bCycle=Request("bCycle") ELSE bCycle=1 END IF
-%><!-- #include virtual="admin/connSWPPP.asp" --><%
+%><!-- #include file="../admin/connSWPPP.asp" --><%
 SQL0 = "sp_qb1 '"& firstDay &"', '"& lastDay &"'," & bCycle
 Set RS0 = connSWPPP.execute(SQL0) %>
 <table border=0 cellpadding=0 cellspacing=0 width=2645 style='border-collapse: collapse;table-layout:fixed;width:1984pt;'>

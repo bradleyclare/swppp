@@ -18,7 +18,7 @@ iNum=100
 IF (IsNumeric(iNum) AND iNum<>"") THEN iNum=FormatNumber(iNum,0) ELSE err=err+2 END IF
 'projectID=Request("pID")
 'IF (IsNumeric(projectID) AND projectID<>"") THEN projectID=FormatNumber(projectID,0) ELSE err=err+4 END IF
-%><!-- #include virtual="admin/connSWPPP.asp" --><%
+%><!-- #include file="../admin/connSWPPP.asp" --><%
 SQL0 = "SELECT inspecID, inspecDate, projectCounty, i.projectID, p.projectName" & _
 	" FROM Inspections as i, Projects as p WHERE i.projectID = p.projectID" &_
 	" AND i.inspecDate BETWEEN '"& firstDay &"' AND '"& lastDay &"'" &_

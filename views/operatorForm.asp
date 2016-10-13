@@ -1,5 +1,5 @@
 <%@ Language="VBScript" %>
-<!-- #include virtual="admin/connSWPPP.asp" --><% 
+<!-- #include file="../admin/connSWPPP.asp" --><% 
 If 	Not Session("validAdmin") And _
 	Not Session("validDirector") And _
 	Not Session("validInspector") And _
@@ -14,15 +14,14 @@ userName = Session("FirstName") +" "+ Session("LastName")
 %><!-- #include file="cleaner.vb" --><%
 SQL1="SELECT o.[OPFormID],o.[projectID],o.[orig_UserID],o.[edit_userID],[edit_userName]= LTrim(RTrim(u.FirstName)) +' '+ LTrim(RTrim(u.LastName)),Convert(char(10),[editDate], 101) as [editDate],[OPFormSection],[OPFormText],[SectionSortby],[SectionSequence], [editable] = Case When (orig_UserID = "& userID &" or edit_UserID = "& userID &") then 'True' Else 'False' End"&_
     " FROM [dbo].[OPForms] o inner join [dbo].[Users] u on o.edit_userID = u.userID WHERE projectID="& projectID &" ORDER BY SectionSortby, SectionSequence" %>
-<!-- #include virtual="admin/connSWPPP.asp" --><%
+<!-- #include file="../admin/connSWPPP.asp" --><%
 SET RS1=connSWPPP.execute(SQL1)
 %>
 <html><head>
 <title>SWPPP INSPECTIONS - Operator Form</title>
 <link rel="stylesheet" type="text/css" href="../global.css"></head>
 <body bgcolor="#ffffff" marginwidth="30" leftmargin="30" marginheight="15" topmargin="15">
-<center>
-<br/><img src="../images/b&wlogoforreport.jpg" width="300"><br><br>
+<center><img src="../images/b&wlogoforreport.jpg" width="300"><br><br>
 <table cellpadding="2" cellspacing="0" border="0" width="90%">
     <tr align="center"><th><b>OPERATOR FORM</b></th></tr>
 </table><br />

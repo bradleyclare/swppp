@@ -10,7 +10,7 @@ If recordOrd = "" Then
 	recordOrd = "lastName"
 End If
 
-%> <!-- #include virtual="admin/connSWPPP.asp" --> <%
+%> <!-- #include file="../connSWPPP.asp" --> <%
 If Session("validDirector") then
 	'select the companies for which this user is a valid Director
 	SQLSELECT = "SELECT companyID" & _
@@ -55,7 +55,7 @@ recCount = 0
 	<title>SWPPP INSPECTIONS : Admin : View Users</title>
 	<link rel="stylesheet" href="../../global.css" type="text/css">
 </head>
-<!-- #include virtual="admin/adminHeader2.inc" -->
+<!-- #include file="../adminHeader2.inc" -->
 <table width="100%" border="0">
 	<tr><td><br><h1>View Users</h1></td></tr></table>
 <table width="100%" border="0">

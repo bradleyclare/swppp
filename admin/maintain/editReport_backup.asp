@@ -9,7 +9,7 @@ IF Request("inspecID")<>"" THEN
 	inspecID = Request("inspecID") 
 	Session("inspecID")=inspecID
 END IF
-%><!-- #include virtual="admin/connSWPPP.asp" --><%
+%><!-- #include file="../connSWPPP.asp" --><%
 If Request.Form.Count > 0 Then	
 	Function strQuoteReplace(strValue)
 		strQuoteReplace = Replace(strValue, "'", "''")
@@ -178,7 +178,7 @@ var params = "height=420,width=520,status=yes,toolbar=no,menubar=no, directories
 </script>
 </head>
 <body>
-<!-- #include virtual="admin/adminHeader2.inc" -->
+<!-- #include file="../adminHeader2.inc" -->
 <h1>Edit Inspection Report</h1>	
 <table width="90%" border="0" align="center" cellpadding="2" cellspacing="0">
 	<form id="theForm" method="post" action="<% = Request.ServerVariables("script_name") %>" onsubmit="return isReady(this)";>

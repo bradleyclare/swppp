@@ -15,7 +15,7 @@ End If
 
 projectCounty = Request("cnty")
 %>
-<!-- #include virtual="admin/connSWPPP.asp" -->
+<!-- #include file="../admin/connSWPPP.asp" -->
 <%
 If Session("validAdmin") Then
 	coInfoSQLSELECT = "SELECT DISTINCT Companies.companyID, companyName" & _
@@ -44,7 +44,7 @@ Set rsCoInfo = connSWPPP.Execute(coInfoSQLSELECT)
 <link href="../global.css" rel="stylesheet" type="text/css">
 </head>
 <body bgcolor="#FFFFFF" text="#000000">
-<!-- #include virtual="header.inc" -->
+<!-- #include file="../header2.inc" -->
 <h1>What company is working on the project?</h1>
 <h2><font color="#003399"><% = projectCounty %></font></h2>
 <div class="indent30">

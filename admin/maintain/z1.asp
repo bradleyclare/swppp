@@ -1,4 +1,4 @@
-<!-- #include virtual="admin/connSWPPP.asp" --><%
+<!-- #include file="../connSWPPP.asp" --><%
 	inspecID=4003
 	inspecSQLSELECT = "SELECT inspecDate, i.projectName, i.projectPhase, projectAddr, projectCity, projectState" & _
 		", projectZip, projectCounty, onsiteContact, officePhone, emergencyPhone" & _
@@ -18,7 +18,7 @@
 	<script language="JavaScript" src="../js/validReports1.2.js"></script>
 </head>
 <body>
-<!-- #include virtual="admin/adminHeader2.inc" -->
+<!-- #include file="../adminHeader2.inc" -->
 <h1>Edit Inspection Report</h1>	
 <table width="90%" border="0" align="center" cellpadding="2" cellspacing="0">
 	<form method="post" action="<% = Request.ServerVariables("script_name") %>" 
@@ -27,7 +27,7 @@
 		<input type="hidden" name="projectID" value="<% = rsReport("projectID") %>">
 <%	IF Session("validAdmin") OR Session("validInspector") THEN
 	tempDev = "dev\"
-	baseDir = Request.ServerVariables("APPL_PHYSICAL_PATH") &tempDev
+	baseDir = "d:\vol\swpppinspections.com\www\htdocs\" &tempDev
 	Set folderSvrObj = Server.CreateObject("Scripting.FileSystemObject")
 	Set objSteMapDir = folderSvrObj.GetFolder(baseDir & "images\sitemaps\")
 	Set siteMapImage = objSteMapDir.Files 
@@ -77,7 +77,7 @@ tempArray(7)="Operator Form"
 FOR n= 0 to 7 step 1	
 	tempTrimmed= REPLACE(tempArray(n)," ","")
 	tempDev = "dev\"
-	baseDir = Request.ServerVariables("APPL_PHYSICAL_PATH") & tempDev
+	baseDir = "d:\vol\swpppinspections.com\www\htdocs\" & tempDev
 	Set FSO = Server.CreateObject("Scripting.FileSystemObject")
 'Response.Write(baseDir & "images\"& tempTrimmed &"\")
 	Set objTemp = FSO.GetFolder(baseDir & "images\"& tempTrimmed &"\")

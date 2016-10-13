@@ -23,7 +23,7 @@ end function
 IF NOT(validated(Request("projectID"),"integer")) THEN Response.Redirect("archive.asp?err=002") END IF
 
 SQL0="sp_GetAllInspectionsforProject("& Request("projectID") &")"
-%><!-- #include virtual="admin/connSWPPP.asp" --><%
+%><!-- #include file="../connSWPPP.asp" --><%
 SET RS0=connSWPPP.Execute(SQL0)
 cnt0=0
 DO WHILE NOT RS0.EOF
@@ -39,7 +39,7 @@ RS0.MoveFirst %>
 <script language="JavaScript" src="../js/validUpload.js"></script>
 <script language="JavaScript" src="../js/validUpload1.2.js"></script>
 </head>
-<!-- #include virtual="admin/adminHeader2.inc" -->
+<!-- #include file="../adminHeader2.inc" -->
 <table width="100%" border="0">
 	<tr> 
 		<td><h1>SWPPP Inspections : Maintain : Archive Preview</h1></td>

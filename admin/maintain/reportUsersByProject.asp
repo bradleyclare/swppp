@@ -4,7 +4,7 @@ If Not Session("validAdmin") AND not Session("validDirector") Then
 	Session("adminReturnTo") = Request.ServerVariables("path_info")
 	Response.Redirect("loginUser.asp")
 End If
-%> <!-- #include virtual="admin/connSWPPP.asp" --> <%
+%> <!-- #include file="../connSWPPP.asp" --> <%
 
 SQL0="SELECT * FROM Projects WHERE projectID IN (SELECT DISTINCT projectID FROM Inspections)"
 	IF Session("validDirector") AND NOT(session("validAdmin")) THEN		
@@ -19,7 +19,7 @@ SET RS0=connSWPPP.execute(SQL0) %>
 	<title>SWPPP INSPECTIONS : Admin : Report Users by Project</title>
 	<link rel="stylesheet" href="../../global.css" type="text/css">
 </head>
-<!-- #include virtual="admin/adminHeader2.inc" -->
+<!-- #include file="../adminHeader2.inc" -->
 <table width="100%" border="0">
 	<tr><td><br><h1>Report Users by Project</h1></td></tr></table>
 <table border=1>
@@ -90,6 +90,5 @@ SET RS0=connSWPPP.execute(SQL0) %>
 	Set connSWPPP = Nothing %>
 	</form>
 </table>
-</div>
 </body>
 </html>

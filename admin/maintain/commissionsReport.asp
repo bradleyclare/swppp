@@ -12,7 +12,7 @@ If IsDate(endDate) AND IsDate(startDate) Then
 End If
 If IsNull(startDate) OR (NOT(IsDate(startDate))) Then startDate=DateAdd("d",-6,endDate) End If
 
-%> <!-- #include virtual="admin/connSWPPP.asp" --> <%
+%> <!-- #include file="../connSWPPP.asp" --> <%
 SQL1 = "SELECT u.userID, u.lastName, u.firstName, SUM(sum1) commission" &_
 	" FROM vCommissionReport vc JOIN Users u ON vc.userID=u.userID" &_
 	" WHERE inspecDate Between '"& startDate &"' AND '"& endDate &"'" &_
@@ -23,7 +23,7 @@ Set RS1 = connSWPPP.Execute(SQL1) %>
 <head><title>SWPPP INSPECTIONS : Admin : Commissions</title>
 	<link rel="stylesheet" href="../../global.css" type="text/css">
 </head>
-<!-- #include virtual="admin/adminHeader2.inc" -->
+<!-- #include file="../adminHeader2.inc" -->
 <form method="post" action="<% = Request.ServerVariables("script_name") %>">
 <table width="100%" border="0">
 	<tr><td><br><h1>Commissions</h1></td>

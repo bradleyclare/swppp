@@ -1,24 +1,15 @@
-<%@  language="VBScript" %>
+<%@ Language="VBScript" %>
 <%
-If Not Session("validAdmin") And Not Session("validInspector") And Not Session("validDirector") And Not Session("validUser") Then
+If 	Not Session("validAdmin") And _
+	Not Session("validDirector") And _
+	Not Session("validInspector") And _
+	Not Session("validUser") _
+Then
 	Session("adminReturnTo") = Request.ServerVariables("path_info") & _
 		"?" & Request.ServerVariables("query_string")
 	Response.Redirect("../admin/maintain/loginUser.asp")
 End If
-%><!-- #include virtual="admin/connSWPPP.asp" --><%
-IF Request.Form.Count>0 THEN
-	SQL0=""
-	For Each Item in Request.Form
-		IF Request.Form(Item)(1)="on" AND Request.Form(Item).Count=1 THEN
-			SQL0=SQL0&" DELETE FROM ProjectsUsers WHERE userID="& Session("userID") &" AND projectID="& Item &" AND rights='email'"
-		END IF
-		IF Request.Form(Item)(1)="off" AND Request.Form(Item).Count=2 THEN
-			SQL0=SQL0&" EXEC sp_InsertPU "& Session("userID") &", "& Item &", 'email'"
-		END IF
-	Next
-'--	Response.Write(SQL0)
-	IF LEN(SQL0)>0 THEN connSWPPP.Execute(SQL0) END IF
-End If
+%><!-- #include file="../admin/connSWPPP.asp" --><%
 If Session("validAdmin") Then
 	projInfoSQLSELECT = "SELECT DISTINCT p.projectID, p.projectName, p.projectPhase, Case when pu.rights is null then 0 else 1 end as rights " & _
 		" FROM Inspections as i inner join Projects p on i.projectid = p.projectid" & _
@@ -39,80 +30,60 @@ projectName = Trim(rsProjInfo("projectName"))
 projectPhase = Trim(rsProjInfo("projectPhase")) %>
 <html>
 <head>
-    <title>SWPPP INSPECTIONS : Select Project</title>
-    <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
-    <link href="../global.css" rel="stylesheet" type="text/css">
+<title>SWPPP INSPECTIONS : Select Project</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link href="../global.css" rel="stylesheet" type="text/css">
 </head>
-<body>
-    <!-- #include virtual="header.inc" -->
-    <h1>Inspection Projects</h1>
-    <div class="nine columns alpha">
+<body bgcolor="#FFFFFF" text="#000000">
+<!-- #include file="../header2.inc" -->
+<div class="indent30">
+<table>
+	<tr><td>
 		<table>
-			<% IF Session("validUser") OR Session("validAdmin") OR Session("validDirector") THEN %>
-			<form action="<%= Request.ServerVariables("SCRIPT_NAME") %>" method="POST">
-			<% END IF %>
-            <tr>
-				<% IF Session("validUser") OR Session("validAdmin") OR Session("validDirector") THEN %>
-                <th width="20%">Receive Inspections via Email? Check Here and SUBMIT</th>
-				<th width="80%">Project Name</th>
-				<% Else %>
-				<th width="100%">Project Name</th>
-				<% END IF %>
-            </tr>
-			<% If rsProjInfo.EOF Then
-				Response.Write("<b><i>Sorry no current data entered at this time.</i></b>")
-			Else
-				rsProjInfo.MoveFirst
-				Do While Not rsProjInfo.EOF
-					projectName = Trim(rsProjInfo("projectName"))
-					projectPhase= Trim(rsProjInfo("projectPhase")) %>
-			<tr>
-				<% IF Session("validUser") OR Session("validAdmin") OR Session("validDirector") THEN %>
-				<% IF rsProjInfo("rights") = 1 THEN %>
-				<td align="right">
-					<input type="hidden" name="<%=rsProjInfo("projectID") %>" value="on">
-					<input type="checkbox" name="<%=rsProjInfo("projectID") %>" checked>
-				</td>
-					<% Else %>
-				<td align="right">
-					<input type="hidden" name="<%=rsProjInfo("projectID") %>" value="off">
-					<input type="checkbox" name="<%=rsProjInfo("projectID") %>">
-				</td>
-					<% END IF %>
-				<td align="left">
-					<a href="inspections.asp?projID=<% = rsProjInfo("projectID") %>&projName=<% = projectName %>&projPhase=<%= projectPhase %>"><% = projectName %>&nbsp;<%= projectPhase%></a>
-				</td>
-				<% END IF %>
-			</tr>
-			<% rsProjInfo.MoveNext
-			Loop
-			End If%>
-			<% IF Session("validUser") OR Session("validAdmin") OR Session("validDirector") THEN %>
-			<tr>
-				<td align="right">
-				<button type="submit">Submit Changes</button>
-			</tr>
-			</form>
-			<% END IF %>
-        </table>
-    </div>
-	<div class="three columns omega">
-		<div class="side-link">
-			<a href="monthlyReportsSum.asp" target="_blank">Monthly Summary of Inspection Reports</a>
-		</div>
-		<div class="side-link">
-			<a href="reportPrintAllRecent.asp" target="_blank">Print the Latest Inspection Report for Each Project</a>
-		</div>
-		<div class="side-link">
-			<a href="viewAllProjectActions.asp" target="_blank">View Actions Taken for All Projects</a>
-		</div>
-	</div>
-</body>
-</html>
-
-<% 
+			<tr><th align="left">Project Name</th></tr><%
+If rsProjInfo.EOF Then
+	Response.Write("<b><i>Sorry no current data entered at this time.</i></b>")
+Else
+	rsProjInfo.MoveFirst
+	Do While Not rsProjInfo.EOF
+		projectName = Trim(rsProjInfo("projectName"))
+		projectPhase= Trim(rsProjInfo("projectPhase")) %>
+			<tr><td align=left><a href="inspections.asp?projID=<% = rsProjInfo("projectID") %>&projName=<% = projectName %>&projPhase=<%= projectPhase %>"><% = projectName %>&nbsp;<%= projectPhase%></a></td></tr>
+<%		rsProjInfo.MoveNext
+	Loop
+End If ' END No Results Found
 rsProjInfo.Close
 Set rsProjInfo = Nothing
 connSWPPP.Close
-Set connSWPPP = Nothing
-%>
+Set connSWPPP = Nothing %>
+    </table></td>
+		<td valign="top">
+            <table align="left">
+			<tr><td>&nbsp;</td></tr>
+			<tr>
+				<TD align=center style="border: thin solid #9AB5D1;"
+				onMouseOver="this.style.backgroundColor='#9AB5D1'; this.style.cursor='hand'"
+				onMouseOut="this.style.backgroundColor='transparent'; this.style.cursor='normal'">
+				<font color="black" style="font:normal normal bolder 12px;">
+				<a href="monthlyReportsSum.asp" target="_blank">
+				Monthly Summary<br>of<br>Inspection Reports</a></font></TD></tr>
+			<tr>
+				<td align=center style="border: thin solid #9AB5D1;"
+				onMouseOver="this.style.backgroundColor='#9AB5D1'; this.style.cursor='hand'"
+				onMouseOut="this.style.backgroundColor='transparent'; this.style.cursor='normal'">
+				<font color="black" style="font:normal normal bolder 12px;">
+				<a href="reportPrintAllRecent.asp" target="_blank">
+				Print<br>the Latest<br>Inspection Report<br>for Each Project</a></font></td></tr>
+			<tr>
+				<TD align=center style="border: thin solid #9AB5D1;"
+				onMouseOver="this.style.backgroundColor='#9AB5D1'; this.style.cursor='hand'"
+				onMouseOut="this.style.backgroundColor='transparent'; this.style.cursor='normal'">
+				<font color="black" style="font:normal normal bolder 12px;">
+				<a href="viewAllProjectActions.asp" target="_blank">
+				View<br>Actions Taken<br>for<br>All Projects</a></font></TD></tr>
+            </table>
+	    </td></tr>
+    </Table>
+</div>
+</body>
+</html>

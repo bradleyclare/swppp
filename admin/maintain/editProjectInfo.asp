@@ -6,7 +6,7 @@ If not(Session("validAdmin") AND InStr(testStr,Session("email"))>0) Then
 		"?" & Request.ServerVariables("query_string")
 	Response.Redirect("../default.asp")
 End If
-%><!-- #include virtual="admin/connSWPPP.asp" --><%
+%><!-- #include file="../connSWPPP.asp" --><%
 projectID=Request("id")
 
 IF (IsNull(projectID) OR NOT(IsNumeric(projectID))) THEN Response.redirect("viewProjects.asp") END IF
@@ -24,7 +24,6 @@ If Request.Form.Count>0 THEN
 		SQL1="UPDATE Projects SET phaseNum="& phaseNum &", initInspecCost="& initInspecCost &", inspecCost="& inspecCost &", invoiceMemo = '"& invoiceMemo &"', billCycle="& Request("bCycle") &_
 			" WHERE projectID="& projectID
 		connSWPPP.Execute(SQL1)	
-        Response.Redirect("viewProjects.asp")
 	else
 		err=DecToBin(err)
 	end if
@@ -92,58 +91,47 @@ End Function
 	<title>SWPPP INSPECTIONS : Admin : Edit Project Info</title>
 	<link rel="stylesheet" href="../../global.css" type="text/css">
 </head>
-<!-- #include virtual="admin/adminHeader2.inc" -->
-<h1>Edit Project Information</h1>
-<% 	IF LEN(err)>0 THEN 
-	IF MID(err,Len(err),1)="1" THEN %><h5 class="error">*The Project Name that you entered contains illegal characters*</h5><% END IF %>
-<%	END IF %>
-<% 	IF LEN(err)>1 THEN
-	IF MID(err,Len(err)-1,1)="1" THEN %><h5 class="error">*The Project Phase that you entered contains illegal characters*</h5><% END IF %>
-<%	END IF %>
-<% 	IF LEN(err)>2 THEN
-	IF MID(err,Len(err)-2,1)="1" THEN %><h5 class="error">*The Initial Inspection Cost must be a number*</h5><% END IF %>
-<%	END IF %>
-<% 	IF LEN(err)>3 THEN
-	IF MID(err,Len(err)-3,1)="1" THEN %><h5 class="error">*The Recurring Inspection Cost must be a number*</h5><% END IF %>
-<%	END IF %>
-
-<form action="<%= Request.ServerVariables("script_name") %>" method="post">
+<!-- #include file="../adminHeader2.inc" -->
+<table width="100%" border="0">
+	<tr><td><br><h1>Edit Project Information</h1></td></tr></table><table width="400" border="0">
+	<form action="<%= Request.ServerVariables("script_name") %>" method="post">
 	<input type="hidden" name="id" value="<%= projectID %>">
-	
-	<div class="two columns alpha">Project Name: </div>
-	<div class="four columns"><h4><%= Trim(RS0("projectName"))%></h4></div>
-	<div class="two columns">Project Phase: </div>
-	<div class="four columns omega"><h4><%= Trim(RS0("projectPhase"))%></h4></div>
-	<div class="cleaner"></div>
-	
-	<div class="two columns alpha">Comm #</div>
-	<div class="four columns"><input type="text" name="phaseNum" value="<%= Trim(RS0("phaseNum"))%>"></div>
-	<div class="two columns">Billing Cycle</div>
-	<div class="four columns omega">
-		<SELECT name="bCycle">
+	<tr><td colspan=2><button style="height: 20px; width:100px;" onClick="window.location.href='deleteProject.asp?id=<%= projectID %>'">
+			<font size="-2">Delete Project</font></button></td></tr>
+<% 	IF LEN(err)>0 THEN 
+		IF MID(err,Len(err),1)="1" THEN %><tr><td colspan="2"><font color="red">*The Project Name that you entered contains illegal characters*</font></td></tr><% END IF %>
+<%	END IF %>
+	<tr><th width=150 align=right>Project Name</th>
+		<td align=left><%= Trim(RS0("projectName"))%></td></tr>
+<% 	IF LEN(err)>1 THEN
+		IF MID(err,Len(err)-1,1)="1" THEN %><tr><td colspan="2"><font color="red">*The Project Phase that you entered contains illegal characters*</font></td></tr><% END IF %>
+<%	END IF %>
+	<tr><th width=150 align=right>Project Phase</th>
+		<td align=left><%= Trim(RS0("projectPhase"))%></td></tr>
+	<tr><th width=150 align=right>Comm #</th>
+		<td align=left><INPUT width="10" maxlength="1" name="phaseNum"  value="<%= Trim(RS0("phaseNum"))%>"></td></tr>
+<% 	IF LEN(err)>2 THEN
+		IF MID(err,Len(err)-2,1)="1" THEN %><tr><td colspan="2"><font color="red">*The Initial Inspection Cost must be a number*</font></td></tr><% END IF %>
+<%	END IF %>
+	<tr><th width=150 align=right>Initial Inspection Cost</th>
+		<td align=left><INPUT name="initInspecCost" value="<%= FormatNumber(RS0("initInspecCost"),2)%>"></td></tr>
+<% 	IF LEN(err)>3 THEN
+		IF MID(err,Len(err)-3,1)="1" THEN %><tr><td colspan="2"><font color="red">*The Recurring Inspection Cost must be a number*</font></td></tr><% END IF %>
+<%	END IF %>
+	<tr><th width=150 align=right>Recurring Inspection Cost</th>
+		<td align=left><INPUT name="inspecCost" value="<%= FormatNumber(RS0("inspecCost"),2)%>"></td></tr>
+	<tr><th width=150 align=right>Invoice Memo</th>
+	    <td align=left><input name="invoiceMemo" value="<%= Trim(RS0("invoiceMemo")) %>" /></td></tr>
+	<tr><th width=150 align=right>Billing Cycle</th>
+		<td align=left><SELECT name="bCycle">
 			<OPTION value="1"<% IF RS0("billCycle")=1 THEN %> selected<% END IF %>>1</option>
 			<OPTION value="2"<% IF RS0("billCycle")=2 THEN %> selected<% END IF %>>2</option>
 			<OPTION value="3"<% IF RS0("billCycle")=3 THEN %> selected<% END IF %>>3</option>
 			<OPTION value="4"<% IF RS0("billCycle")=4 THEN %> selected<% END IF %>>4</option>
-		</SELECT>
-	</div>
-	
-	<div class="three columns alpha">Initial Inspection Cost</div>
-	<div class="three columns"><input type="text" name="initInspecCost" value="<%= FormatNumber(RS0("initInspecCost"),2)%>"></div>
-	<div class="three columns">Recurring Inspection Cost</div>
-	<div class="three columns omega"><input type="text" name="inspecCost" value="<%= FormatNumber(RS0("inspecCost"),2)%>"></div>
-	
-	<div class="two columns alpha">Invoice Memo</div>
-	<div class="ten columns omega"><input type="text" name="invoiceMemo" value="<%= Trim(RS0("invoiceMemo")) %>" /></div>
-	
-	<div class="six columns alpha">
-		<button onClick="window.location.href='deleteProject.asp?id=<%= projectID %>'">Delete Project</button>
-	</div>
-	<div class="six columns omega">
-		<input type="submit" value="Update Project">
-	</div>
-</form>
-</div>
+			</SELECT></td></tr>
+	<tr><td colspan=2><br><input type="submit" value="Update Project Information"></td></tr>
+	</form>
+</table>
 </body>
 </html><%
 RS0.Close

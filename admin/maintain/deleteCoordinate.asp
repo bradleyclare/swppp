@@ -7,7 +7,7 @@ If Not Session("validAdmin") and not Session("validInspector") Then
 End If
 inspecID=Session("inspecID")
 
-%> <!-- #include virtual="admin/connSWPPP.asp" --> <%
+%> <!-- #include file="../connSWPPP.asp" --> <%
 If Request.Form.Count > 0 Then
 	SQLDELETE = "DELETE FROM Coordinates WHERE coID=" & Request("coID")
 	' Response.Write(coordSQLINSERT & "<br><br>")
@@ -26,7 +26,7 @@ End If
 	<script language="JavaScript" src="../js/validCoordinates1.2.js"></script>
 </head>
 <body>
-<!-- #include virtual="admin/adminHeader2.inc" -->
+<!-- #include file="../adminHeader2.inc" -->
 <h1>Delete Coordinate</h1>
 <table width="90%" border="0" align="center" cellpadding="2" cellspacing="0">
 <form action="<%= Request.ServerVariables("script_name") %>" method="post">

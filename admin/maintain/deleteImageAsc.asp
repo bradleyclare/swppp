@@ -6,7 +6,7 @@ If Not Session("validAdmin") And Not Session("validInspector") Then
 	Response.Redirect("loginUser.asp")
 End If
 inspecID = Session("inspecID")
-%> <!-- #include virtual="admin/connSWPPP.asp" --> <%
+%> <!-- #include file="../connSWPPP.asp" --> <%
 If Request.Form.Count > 0 Then
 	SQLDELETE = "DELETE FROM Images WHERE imageID=" & Request("imageID")
 	Response.Write(SQLDELETE & "<br>")
@@ -27,7 +27,7 @@ end if
 </head>
 
 <body>
-<!-- #include virtual="admin/adminHeader2.inc" -->
+<!-- #include file="../adminHeader2.inc" -->
 <h1>Delete Image Association</h1>
 <table><tr><td align="center">
 	<font color="red">

@@ -4,7 +4,7 @@ testStr="dwims@swppp.com:jwright@swppp.com"
 If not(Session("validAdmin") AND InStr(testStr,Session("email"))>0) Then
 	Response.Redirect("../default.asp")
 End If
-%> <!-- #include virtual="admin/connSWPPP.asp" --> <%
+%> <!-- #include file="../connSWPPP.asp" --> <%
 
 IF Request.Form.Count>0 THEN
 	SQL0=""
@@ -28,7 +28,7 @@ recCount = 0 %>
 <head><title>SWPPP INSPECTIONS : Admin : Commissions</title>
 	<link rel="stylesheet" href="../../global.css" type="text/css">
 </head>
-<!-- #include virtual="admin/adminHeader2.inc" -->
+<!-- #include file="../adminHeader2.inc" -->
 <table width="100%" border="0">
 	<tr><td><br><h1>Commissions</h1></td>
 	<td align=right valign=middle><a href="commissionsReport.asp">...goto Commissions Report</a></tr></table>

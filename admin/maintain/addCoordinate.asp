@@ -13,7 +13,7 @@ If Request.Form.Count > 0 Then
 		strQuoteReplace = Replace(strValue, "'", "''")
 	End Function
 %>
-<!-- #include virtual="admin/connSWPPP.asp" -->
+<!-- #include file="../connSWPPP.asp" -->
 <%	coordSQLINSERT = "INSERT INTO Coordinates (" & _
 		"inspecID, coordinates, existingBMP, correctiveMods, orderby" & _
 		") VALUES (" & _
@@ -37,7 +37,7 @@ End If %>
 <script language="JavaScript" src="../js/validCoordinates1.2.js"></script>
 </head>
 <body>
-<!-- #include virtual="admin/adminHeader2.inc" -->
+<!-- #include file="../adminHeader2.inc" -->
 <h1>Add Location</h1>
 <table width="90%" border="0" align="center" cellpadding="2" cellspacing="0">
 	<form method="post" action="addCoordinate.asp" onSubmit="return isReady(this);">

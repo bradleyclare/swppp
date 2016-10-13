@@ -7,7 +7,7 @@ Then
 	Session("adminReturnTo") = Request.ServerVariables("path_info")
 	Response.Redirect("../admin/maintain/loginUser.asp")	
 End If
-%><!-- #include virtual="admin/connSWPPP.asp" --><%
+%><!-- #include file="../admin/connSWPPP.asp" --><%
 If Session("validAdmin") Then
 	cntySQLSELECT = "SELECT DISTINCT projectCounty" & _
 		" FROM Inspections ORDER BY projectCounty"
@@ -32,7 +32,7 @@ Set rsCounty = connSWPPP.Execute(cntySQLSELECT) %>
 <link href="../global.css" rel="stylesheet" type="text/css">
 </head>
 <body bgcolor="#FFFFFF" text="#000000">
-<!-- #include virtual="header.inc" -->
+<!-- #include file="../header2.inc" -->
 <TABLE width="100%">
 <TR><TD><h1>What county is the project in?</h1></TD>
 	<TD><a href="monthlyReportsSum.asp"><h2 align="right">Monthly Summary of Reports<h2></a></TD>

@@ -35,7 +35,7 @@ End If
 <title>SWPPP INSPECTIONS<% = displaySize %> : Removal</title>
 <link rel="stylesheet" href="../../global.css" type="text/css">
 </head>
-<!-- #include virtual="admin/adminHeader2.inc" -->
+<!-- #include file="../adminHeader2.inc" -->
 <table width="100%" border="0">
 	<tr> 
 		<td><h1>Remove<% = displaySize %></h1></td>
@@ -68,7 +68,7 @@ Set remMapFiles = objImageDir.Files
 	<tr> 
 		<td colspan="4"><img src="../../images/dot.gif" width="5" height="5"></td>
 	</tr>
-<!-- #include virtual="admin/connSWPPP.asp" -->
+<!-- #include file="../connSWPPP.asp" -->
 <%
 mRemCount = 0
 

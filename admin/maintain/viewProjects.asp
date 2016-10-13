@@ -19,7 +19,7 @@ SELECT CASE recordOrd
 	CASE else	orderBy=" Order by projectName asc, projectPhase asc"
 END SELECT
 
-%> <!-- #include virtual="admin/connSWPPP.asp" --> <%
+%> <!-- #include file="../connSWPPP.asp" --> <%
 SQL1 = "SELECT * FROM Projects "& orderBy
 '-- Response.Write(SQLSELECT & "<br>")
 Set RS1 = connSWPPP.Execute(SQL1)
@@ -29,8 +29,9 @@ recCount = 0 %>
 <head><title>SWPPP INSPECTIONS : Admin : View Projects</title>
 	<link rel="stylesheet" href="../../global.css" type="text/css">
 </head>
-<!-- #include virtual="admin/adminHeader2.inc" -->
-<h1>View Projects</h1>
+<!-- #include file="../adminHeader2.inc" -->
+<table width="100%" border="0">
+	<tr><td><br><h1>View Projects</h1></td></tr></table>
 <table width="100%" border="0">
 	<tr width=50><th align=right><b>Count&nbsp;&nbsp;&nbsp;</b></th>
 		<th align=left><b>&nbsp;&nbsp;&nbsp;<a class='head2' href="viewProjects.asp?orderBy=0">Project Name and Phase</a></b></th>
@@ -62,6 +63,5 @@ Set connUsers = Nothing
 connSWPPP.Close
 Set connSWPPP = Nothing %>
 </table>
-</div>
 </body>
 </html>

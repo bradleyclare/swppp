@@ -13,15 +13,15 @@ End If
 projectID = Request("projID")
 projectName = Request("projName")
 projectPhase = Request("projPhase")
-%><!-- #include virtual="admin/connSWPPP.asp" --><%
+%><!-- #include file="../admin/connSWPPP.asp" --><%
 If Session("validAdmin") Then
-	inspectInfoSQLSELECT = "SELECT DISTINCT inspecID, inspecDate, p.projectName, p.projectPhase, ImageCount = (Select Count(ImageID) From Images Where inspecID = i.inspecID)" & _
+	inspectInfoSQLSELECT = "SELECT DISTINCT inspecID, inspecDate, totalItems, completedItems, includeItems, compliance, released, p.projectName, p.projectPhase, ImageCount = (Select Count(ImageID) From Images Where inspecID = i.inspecID)" & _
 		" FROM Projects as p, Inspections as i" & _
 		" WHERE i.projectID=p.projectID" &_
 		" AND i.projectID="& projectID &_
 		" ORDER BY inspecDate DESC"
 Else
-	inspectInfoSQLSELECT = "SELECT DISTINCT inspecID, inspecDate, p.projectName, p.projectPhase, ImageCount = (Select Count(ImageID) From Images Where inspecID = i.inspecID)" & _
+	inspectInfoSQLSELECT = "SELECT DISTINCT inspecID, inspecDate, totalItems, completedItems, includeItems, compliance, released, p.projectName, p.projectPhase, ImageCount = (Select Count(ImageID) From Images Where inspecID = i.inspecID)" & _
 		" FROM Projects as p, ProjectsUsers as pu, Inspections as i" & _
 		" WHERE pu.userID = " & Session("userID") &_
 		" AND i.projectID=p.projectID" &_
@@ -37,71 +37,70 @@ IF NOT(RS0.EOF) THEN validAct=True END IF
 Set rsInspectInfo = connSWPPP.Execute(inspectInfoSQLSELECT)
 projectName= Trim(rsInspectInfo("projectName"))
 projectPhase= Trim(rsInspectInfo("projectPhase")) %>
-<html>
-<head>
-	<title>SWPPP INSPECTIONS : Report Dates</title>
-	<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
-	<link href="../global.css" rel="stylesheet" type="text/css">
-</head>
-<body>
-<!-- #include virtual="header.inc" -->
-
-<h1>Inspection Reports for <br/>
-<% = projectName %> <%= projectPhase %></h1>
-
-<div class="nine columns alpha">
-	
-	<% rsInspectInfo.MoveFirst()
-	If rsInspectInfo.EOF Then
-		Response.Write("<b><i>Sorry no current data entered at this time.</i></b>")
-	Else
-		dim cnt
-		cnt = 0 %>
-	<div class="fl">
-    <% Do While Not rsInspectInfo.EOF 
-        cnt = cnt + 1
-        if cnt Mod 50 = 0 then %>
-            </div>
-            <div class="fl">
-        <% else %>
-	        <div style="text-align: right; width: 100px"><a href="report.asp?inspecID=<% = rsInspectInfo("inspecID") %>"><% = Trim(rsInspectInfo("inspecDate")) %></a></div>
-            <% IF NOT Session("noImages") THEN
-'			imgSQLSELECT = "SELECT COUNT(imageID) FROM Images WHERE inspecID = " & rsInspectInfo("inspecID")
-'			Set rsImages = connSWPPP.execute(imgSQLSELECT)
-'			If rsImages(0)>0 Then
-            If rsInspectInfo("ImageCount") > 0 Then%><img src="..\images\smallcamera.gif"><% End IF
-		    END IF
-		    rsInspectInfo.MoveNext
-        End If
-    Loop %>
-    </div>
-    <div class="cleaner"></div>
-<% End If ' END No Results Found %>
-</div>
-<div class="three columns omega">
-<%
+<html><head><title>SWPPP INSPECTIONS : Report Dates</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link href="../global.css" rel="stylesheet" type="text/css"></head>
+<body bgcolor="#FFFFFF" text="#000000">
+<!-- #include file="../header2.inc" -->
+<table width="100%"><tr><td>
+<h1>Please select an inspection date to view the report or&nbsp;&nbsp;
+	<button onClick="window.open('reportPrintAll.asp?projID=<%= projectID%>&projName=<%= projectName%>&projPhase=<%= projectPhase %>','','width=800, height=600, location=no, menubar=no, status=no, toolbar=no, scrollbars=yes, resizable=yes')">Print All Reports</button>
+	    <br /></div></h1>
+<h2><font color="#003399"><% = projectName %>&nbsp;<%= projectPhase %></font></h2>
+<% rsInspectInfo.MoveFirst()
+If rsInspectInfo.EOF Then
+	Response.Write("<b><i>Sorry no current " & _
+		"data entered at this time.</i></b>")
+Else
+	inspecID = 0
+	Do While Not rsInspectInfo.EOF 
+		If rsInspectInfo("released") Then
+			If inspecID = 0 Then
+				inspecID     = rsInspectInfo("inspecID")
+				includeItems = rsInspectInfo("includeItems")
+			End If	
+			totalItems     = rsInspectInfo("totalItems")
+			completedItems = rsInspectInfo("completedItems")
+			if includeItems and totalItems <> "" and totalItems <> 0 Then
+				score = " - Report Score: " & FormatNumber((completedItems/totalItems)*100,0) & "% (" & completedItems & "/" & totalItems & ")" 
+			Else
+				score = ""
+			End If
+			%>
+			<br><a href="report.asp?inspecID=<% = rsInspectInfo("inspecID") %>"><% = Trim(rsInspectInfo("inspecDate")) %></a><%=score%>
+			<% If Not Session("noImages") Then
+	'			imgSQLSELECT = "SELECT COUNT(imageID) FROM Images WHERE inspecID = " & rsInspectInfo("inspecID")
+	'			Set rsImages = connSWPPP.execute(imgSQLSELECT)
+	'			If rsImages(0)>0 Then
+				If rsInspectInfo("ImageCount") > 0 Then%>
+					<img src="..\images\smallcamera.gif"><% 
+				End If
+			End If
+		End If
+		rsInspectInfo.MoveNext
+	Loop
+End If ' END No Results Found
 'rsImages.Close
 'Set rsImages = Nothing
-rsInspectInfo.Close
-Set rsInspectInfo = Nothing
 RS0.Close
 Set RS0=nothing
+rsInspectInfo.Close
+Set rsInspectInfo = Nothing
 connSWPPP.Close
 Set connSWPPP = Nothing %>
-<button onClick="window.open('reportPrintAll.asp?projID=<%= projectID%>&projName=<%= projectName%>&projPhase=<%= projectPhase %>','','width=800, height=600, location=no, menubar=no, status=no, toolbar=no, scrollbars=yes, resizable=yes')">Print All Reports</button>
+</td><td width="175" valign="top">
+<ul>
 <% IF validAct OR Session("validAdmin") OR Session("validDirector") THEN %>
-<div class="side-link">
-	<a href="addActionReport.asp?pID=<%= projectID%>" target="_blank">add Actions Taken</a>
-</div>
+<li><a href="addActionReport.asp?pID=<%= projectID%>" target="_blank">Add Actions Taken</a></li>
 <% END IF %>
-<div class="side-link">
-	<a href="actionReport.asp?pID=<%= projectID%>" target="_blank">view Actions Taken</a>
-</div>
-<div class="side-link">
-	<a href="addOperatorForm.asp?pID=<%= projectID%>" target="_blank">add Operator Form</a>
-</div>
-<div class="side-link">
-	<a href="operatorForm.asp?pID=<%= projectID%>" target="_blank">view Operator Form</a>
-</div>
-</body>
-</html>
+<li><a href="actionReport.asp?pID=<%= projectID%>" target="_blank">View Actions Taken</a></li>
+<li><a href="addOperatorForm.asp?pID=<%= projectID%>" target="_blank">Add Operator Form</a></li>
+<li><a href="operatorForm.asp?pID=<%= projectID%>" target="_blank">View Operator Form</a></li>
+<% If includeItems Then %>
+<li><a href="openActionItems.asp?pID=<%= projectID%>&inspecID=<% = inspecID %>" target="_blank">Open Items</a></li>
+<li><a href="completedActionItems.asp?pID=<%= projectID%>&inspecID=<% = inspecID %>" target="_blank">Completed Items</a></li>
+<% End If %>
+</ul>
+</td></tr></table>
+</td></tr></table>
+</body></html>

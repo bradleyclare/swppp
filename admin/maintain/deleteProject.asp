@@ -7,7 +7,7 @@ If Not Session("validAdmin") and not Session("validInspector") Then
 End If
 projID = Request("id")
 IF (IsNull(projID) OR NOT(IsNumeric(projID))) THEN Response.Redirect("viewProjects.asp") END IF
-%> <!-- #include virtual="admin/connSWPPP.asp" --> <%
+%> <!-- #include file="../connSWPPP.asp" --> <%
 If Request.Form.Count > 0 Then
 	SQLDELETE = "DELETE FROM Projects WHERE projectID=" & projID
 	' Response.Write(coordSQLINSERT & "<br><br>")
@@ -26,7 +26,7 @@ SET RS0=connSWPPP.Execute(SQL0) %>
 	<script language="JavaScript" src="../js/validCoordinates1.2.js"></script>
 </head>
 <body>
-<!-- #include virtual="admin/adminHeader2.inc" -->
+<!-- #include file="../adminHeader2.inc" -->
 <h1>Delete Project</h1>
 <table width="90%" border="0" align="center" cellpadding="2" cellspacing="0"><%
 IF RS0.BOF AND RS0.EOF THEN %>

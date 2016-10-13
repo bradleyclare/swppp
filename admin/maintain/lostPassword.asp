@@ -9,7 +9,7 @@ If Request.Form.Count > 0 Then
 	SQLSELECT = "SELECT userID, pswrd, firstName, lastName" &_
 		" FROM Users" & _
 		" WHERE email = '" & Request("email") & "'"
-	%> <!-- #include virtual="admin/connSWPPP.asp" --> <%
+	%> <!-- #INCLUDE FILE="../connSWPPP.asp" --> <%
 '	Response.Write(SQLSELECT & "<br>")
 	Set connUsers = connSWPPP.execute(SQLSELECT)
 
@@ -70,23 +70,26 @@ End If ' Request.Form.Count>0
 </head>
 
 <form action="<%= Request.ServerVariables("SCRIPT_NAME") %>" method="post">
-		<div class="login-div">
-            <% 	If noMatch Then %>
-            <h3>Your email cannot be found in our admin list. Please resubmit.</h3>
-            <% 	End If
-			If badPassword Then %>
-            <h3>Your email/password does not match our admin list. Please resubmit.</h3>
-            <% 	End If %>
-            <h1>Forgot Password</h1>
-			<h3>Please enter your email address and your password will be emailed to you.</h3>
-			<div class="row">
-				<div class="four columns alpha"><h4>Email:</h4></div>
-				<div class="eight columns omega"><input type="text" name="email"></div>
-            </div>
-			<div class="row">
-				<button type="submit">Get Password</button>
-			</div>
-        </div>
+<div align="center"><br><br>
+<% 	If noMatch Then %>
+		<font color="#FF0000">Your email cannot be found in our users list. Please
+		resubmit.</font><br><br>
+<% 	End If
+	If badPassword Then %>
+		<font color="#FF0000">Your email/password does not match our users list.<br>
+		Please resubmit.</font><br><br>
+<% 	End If %>
+
+<table bgcolor="#006699">
+<tr><td colspan="2" align="center"><br><h1><font color="#FFffff">Lost Password</font></h1>
+		<font color="#FFffff">Please enter your email address and<br>your password will be emailed to you.
+		</font><br><br></td></tr>
+	<tr><td colspan="2" bgcolor="#ff3333"><img src="../../images/dot.gif" width="1" height="1"
+			border="0" alt=""></td></tr>
+	<tr><td align="right"><font color="#FFffff"><br>Email: </td>
+		<td><br><input type="text" name="email" size="30" maxlength="50">&nbsp;&nbsp;</td></tr>
+	<tr><td colspan="2" align="center"><br><input type="submit" value="Get Password"><br><br></td></tr>
+	</table></div>
 	<script language="javascript"><!--
 		document.forms[0].elements[0].focus();
 	//--></script>

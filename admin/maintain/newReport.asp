@@ -5,7 +5,7 @@ If Not Session("validAdmin") And Not Session("validInspector") Then
 		"?" & Request.ServerVariables("query_string")
 	Response.Redirect("loginUser.asp")
 End If
-%><!-- #include virtual="admin/connSWPPP.asp" --><%
+%><!-- #include file="../connSWPPP.asp" --><%
 If Request.Form.Count > 0 Then
 	Function strQuoteReplace(strValue)
 		strQuoteReplace = Trim(Replace(strValue, "'", "''"))
@@ -129,180 +129,248 @@ Response.Write(SQLb)
 	
 	Response.Redirect("addCoordinate.asp?inspecID=" & maxInspectID)
 End If
-baseDir = Request.ServerVariables("APPL_PHYSICAL_PATH") %>
+'baseDir = "c:\Inetpub\wwwroot\SWPPP\"
+baseDir = "d:\inetpub\wwwroot\swppp\" %>
 <html>
-	<head>
-	<title>SWPPP INSPECTIONS : Add New Inspection Report</title>
-	<link rel="stylesheet" type="text/css" href="../../global.css">
-	<script language="JavaScript" src="../js/validReports.js"></script>
-	<script language="JavaScript" src="../js/validReports1.2.js"></script>
-	<script language="JavaScript1.2"><!--
-	// we Can't just use the same transfer functio for both directions because
-	// the hidden input keys off of the t2 value solely...
-	function addOption(t1, t2, t3) {
-		var index = t3.selectedIndex;
-		if (index > -1) {
-			var newoption = new Option(t3.options[index].text, t3.options[index].value, true, true);
-			t2.options[t2.length] = newoption;
-			if (!document.getElementById) history.go(0);
-			t3.options[index] = null;
-			t3.selectedIndex = 0;
+<head>
+<title>SWPPP INSPECTIONS : Add New Inspection Report</title>
+<link rel="stylesheet" type="text/css" href="../../global.css">
+<script language="JavaScript" src="../js/validReports.js"></script>
+<script language="JavaScript" src="../js/validReports1.2.js"></script>
+<script language="JavaScript1.2"><!--
+// we Can't just use the same transfer functio for both directions because
+// the hidden input keys off of the t2 value solely...
+function addOption(t1, t2, t3) {
+    var index = t3.selectedIndex;
+    if (index > -1) {
+        var newoption = new Option(t3.options[index].text, t3.options[index].value, true, true);
+        t2.options[t2.length] = newoption;
+        if (!document.getElementById) history.go(0);
+        t3.options[index] = null;
+        t3.selectedIndex = 0;
+		var tempStr="";
+		for(var i=0; i<(t2.length) ;i++){
+			tempStr=tempStr + (t2.options[i].value) + ":" ;
+		}		
+		t1.value=tempStr;
+    }
+}function delOption(t1, t3, t2) {
+    var index = t3.selectedIndex;
+    if (index > -1) {
+        var newoption = new Option(t3.options[index].text, t3.options[index].value, true, true);
+        t2.options[t2.length] = newoption;
+        if (!document.getElementById) history.go(0);
+        t3.options[index] = null;
+        t3.selectedIndex = 0;
+		var tempStr="";
+		for(var i=0; i<(t3.length) ;i++){
+			tempStr=tempStr + (t3.options[i].value) + ":" ;
+		}
+		t1.value=tempStr;
+    }
+}
+function swapOption(t1, t2, slideDir) {
+	var curIndex = t2.selectedIndex;
+	var swapIndex= curIndex;
+	var maxIndex= t2.length;
+	if (curIndex > -1) {
+		(slideDir=="up") ? (swapIndex=curIndex-1):(swapIndex=curIndex+1);
+		if ((swapIndex>-1) && (swapIndex<t2.length)) {
+			var newOption = new Option(t2.options[swapIndex].text, t2.options[swapIndex].value, true, true);
+			t2.options[maxIndex] = newOption;
+			t2.options[swapIndex].text=t2.options[curIndex].text;
+			t2.options[swapIndex].value=t2.options[curIndex].value;
+			t2.options[curIndex].text=t2.options[maxIndex].text;
+			t2.options[curIndex].value=t2.options[maxIndex].value;
+			t2.options[maxIndex] = null;
+			t2.selectedIndex=swapIndex;
 			var tempStr="";
 			for(var i=0; i<(t2.length) ;i++){
 				tempStr=tempStr + (t2.options[i].value) + ":" ;
-			}		
-			t1.value=tempStr;
-		}
-	}function delOption(t1, t3, t2) {
-		var index = t3.selectedIndex;
-		if (index > -1) {
-			var newoption = new Option(t3.options[index].text, t3.options[index].value, true, true);
-			t2.options[t2.length] = newoption;
-			if (!document.getElementById) history.go(0);
-			t3.options[index] = null;
-			t3.selectedIndex = 0;
-			var tempStr="";
-			for(var i=0; i<(t3.length) ;i++){
-				tempStr=tempStr + (t3.options[i].value) + ":" ;
 			}
 			t1.value=tempStr;
 		}
-	}
-	function swapOption(t1, t2, slideDir) {
-		var curIndex = t2.selectedIndex;
-		var swapIndex= curIndex;
-		var maxIndex= t2.length;
-		if (curIndex > -1) {
-			(slideDir=="up") ? (swapIndex=curIndex-1):(swapIndex=curIndex+1);
-			if ((swapIndex>-1) && (swapIndex<t2.length)) {
-				var newOption = new Option(t2.options[swapIndex].text, t2.options[swapIndex].value, true, true);
-				t2.options[maxIndex] = newOption;
-				t2.options[swapIndex].text=t2.options[curIndex].text;
-				t2.options[swapIndex].value=t2.options[curIndex].value;
-				t2.options[curIndex].text=t2.options[maxIndex].text;
-				t2.options[curIndex].value=t2.options[maxIndex].value;
-				t2.options[maxIndex] = null;
-				t2.selectedIndex=swapIndex;
-				var tempStr="";
-				for(var i=0; i<(t2.length) ;i++){
-					tempStr=tempStr + (t2.options[i].value) + ":" ;
-				}
-				t1.value=tempStr;
-			}
-		}	
-	}
+	}	
+}
 //--></script>
 </head>
 <body>
-	<!-- #include virtual="admin/adminHeader2.inc" -->
-
-	<form method="post" action="<% = Request.ServerVariables("script_name") %>" onSubmit="return isReady(this)">
-	<div class="six columns alpha">
-		<h1>Add New Inspection Report</h1>
-	</div>    
-	<div class="six columns omega">
-		<input name="submit" type="submit" value="Add New Report">
-	</div>
-	<div class="cleaner"></div>
-	
-	<div class="two columns alpha"><b>Date<small>(mm / dd / yyyy)</small>:</b></div>
-	<div class="two columns"><input type="text" name="inspecDate" value="<%= Date()%>"></div>
-	<div class="two columns"><b>Project Name:</b></div>
-	<div class="six columns omega"><input type="text" name="projectName"></div>
-	
-	<div class="two columns alpha"><b>Project Phase:</b></div>
-	<div class="four columns"><input type="text" name="projectPhase"></div>
-	<div class="two columns"><b>Project Location:</b></div>
-	<div class="four columns omega"><input type="text" name="projectAddr"></div>
-		
-	<div class="one columns alpha"><b>City:</b></div>
-	<div class="two columns"><input type="text" name="projectCity"></div>
-	<div class="one columns"><b>State:</b></div>
-	<div class="two columns">
-		<select name="projectState">
+<!-- #include file="../adminHeader2.inc" -->
+<h1>Add New Inspection Report</h1>
+    
+<table width="90%" border="0" align="center" cellpadding="2" cellspacing="0">
+	<form method="post" action="<% = Request.ServerVariables("script_name") %>" onSubmit="return isReady(this)";>	 
+		<tr><td colspan="3" align="center">
+			<input name="submit" type="submit" value="Add New Report"><br><br></td></tr>
+		<!-- date -->
+		<tr> 
+			<td width="35%" bgcolor="#eeeeee"><img src="../../images/dot.gif" width="5" height="5"></td>
+			<td width="55%" bgcolor="#999999"><img src="../../images/dot.gif" width="5" height="5"></td>
+		</tr>
+		<tr> 
+			<td align="right" bgcolor="#eeeeee"><b>Date:</b></td>
+			<td bgcolor="#999999"> <input type="text" name="inspecDate" size="10" maxlength="10" value="<%= Date()%>"> 
+				<small>&nbsp;(mm / dd / yyyy)</small></td>
+		</tr>
+		<!-- project name -->
+		<tr><td align="right" bgcolor="#eeeeee"><b>Project Name | Phase:</b></td>
+			<td bgcolor="#999999"><input type="text" name="projectName" size="50" maxlength="50">
+								<input type="text" name="projectPhase" size="20" maxlength="20"></td>
+		</tr>
+		<!-- project location -->
+		<tr> 
+			<td align="right" bgcolor="#eeeeee"><b>Project Location:</b></td>
+			<td bgcolor="#999999"><input type="text" name="projectAddr" size="50" maxlength="50"> 
+			</td>
+		</tr>
+		<tr>
+			<td align="right" bgcolor="#eeeeee"><b>City, State, Zip:</b></td>
+			<td bgcolor="#999999"><input type="text" name="projectCity" size="20" maxlength="20">
+			&nbsp; <select name="projectState">
 <% 	SQL0="SELECT * FROM States ORDER BY priority DESC, stateName ASC"
 	SET RS0=connSWPPP.execute(SQL0)
 	DO WHILE NOT RS0.EOF %>
-			<option value="<%= RS0("stateAbbr")%>"><%= RS0("stateAbbr")%></option>
+		<option value="<%= RS0("stateAbbr")%>"><%= RS0("stateAbbr")%></option>
 <%	RS0.MoveNext
 	LOOP %>	
-		</select>
-	</div>
-	<div class="one columns"><b>Zip:</b></div>
-	<div class="two columns"><input type="text" name="projectZip"></div>
-	<div class="one columns"><b>County:</b></div>
-	<div class="two columns omega">
-		<select name="projectCounty">
+			</select> &nbsp; <input type="text" name="projectZip" size="5" maxlength="5"> 
+			</td>
+		</tr>
+		<!-- onsite contact -->
+		<tr> 
+			<td align="right" bgcolor="#eeeeee"><b>County:</b></td>
+			<td bgcolor="#999999"><select name="projectCounty">
 <% 	SQL1="SELECT * FROM Counties WHERE stateAbbr='TX' OR stateAbbr='OK' ORDER BY priority DESC, countyName ASC"
 	SET RS1=connSWPPP.execute(SQL1)
 	DO WHILE NOT RS1.EOF %>
-			<option value="<%= RS1("countyName")%>"><%= RS1("countyName")%></option>
+		<option value="<%= RS1("countyName")%>"><%= RS1("countyName")%></option>
 <%	RS1.MoveNext
 	LOOP %>	
-		</select>
-	</div>
-	<div class="three columns alpha"><b>On-Site Contact:</b></div>
-	<div class="nine columns omega"><input type="text" name="onsiteContact"></div>
-	
-	<div class="three columns alpha"><b>Contact Phone:</b></div>
-	<div class="nine columns omega"><input name="officePhone" type="text"></div>
-	
-	<div class="three columns alpha"><b>Emergency Phone:</b></div>
-	<div class="nine columns omega"><input name="emergencyPhone" type="text"></div>
-
-	<h3>Company Information</h3>
-	<div class="two columns alpha"><b>Company Name:</b></div>
-	<div class="ten columns omega"><input type="text" name="compName"></div>
-
-	<div class="two columns alpha"><b>Address 1:</b></div>
-	<div class="ten columns omega"><input name="compAddr" type="text"></div>
-	
-	<div class="two columns alpha"><b>Address 2:</b></div>
-	<div class="ten columns omega"><input name="compAddr2" type="text"></div>
-	
-	<div class="one columns alpha"><b>City:</b></div>
-	<div class="three columns"><input name="compCity" type="text"></div>
-	<div class="one columns"><b>State:</b></div>
-	<div class="three columns">
-		<select name="compState">
+			</select></td>
+		</tr>
+		<tr> 
+			<td align="right" bgcolor="#eeeeee"><b>On-Site Contact:</b></td>
+			<td bgcolor="#999999"><input type="text" name="onsiteContact" size="50" maxlength="50"></td>
+		</tr>
+		<!-- office # -->
+		<tr> 
+			<td align="right" bgcolor="#eeeeee"><b>On-Site Contact:</b></td>
+			<td bgcolor="#999999"><input name="officePhone" type="text" size="20" maxlength="20"></td>
+		</tr>
+		<!-- emergency # -->
+		<tr> 
+			<td align="right" bgcolor="#eeeeee"> <b>On-Site Contact:</b></td>
+			<td bgcolor="#999999"><input name="emergencyPhone" type="text" size="20" maxlength="20"></td>
+		</tr>
+		<!-- company -->
+		<tr> 
+			<td bgcolor="#eeeeee"><img src="../../images/dot.gif" width="5" height="5"></td>
+			<td bgcolor="#999999"><img src="../../images/dot.gif" width="5" height="5"></td>
+		</tr>
+		<tr> 
+			<td colspan="2"><img src="../../images/dot.gif" width="5" height="5"></td>
+		</tr>
+		<tr> 
+			<td colspan="2"><hr align="center" width="95%" size="1"></td>
+		</tr>
+		<tr> 
+			<td colspan="2" align="center"><font size="+1">Company Information</font></td>
+		</tr>
+		<tr> 
+			<td colspan="2"><img src="../../images/dot.gif" width="5" height="5"></td>
+		</tr>
+		<tr> 
+			<td bgcolor="#eeeeee"><img src="../../images/dot.gif" width="5" height="5"></td>
+			<td bgcolor="#999999"><img src="../../images/dot.gif" width="5" height="5"></td>
+		</tr>
+		<tr> 
+			<td align="right" bgcolor="#eeeeee"><b>Company Name:</b></td>
+			<td bgcolor="#999999"><input type="text" name="compName" size="50" maxlength="50"></td>
+		</tr>
+		<!-- Address -->
+		<tr> 
+			<td align="right" bgcolor="#eeeeee"><b>Address 1:</b></td>
+			<td bgcolor="#999999"><input name="compAddr" type="text" size="50" maxlength="50"></td>
+		</tr>
+		<tr> 
+			<td align="right" bgcolor="#eeeeee"><b>Address 2:</b></td>
+			<td bgcolor="#999999"><input name="compAddr2" type="text" size="50" maxlength="50"></td>
+		</tr>
+		<tr> 
+			<td align="right" bgcolor="#eeeeee"><b>City:</b></td>
+			<td bgcolor="#999999"><input name="compCity" type="text" size="20" maxlength="20"></td>
+		</tr>
+		<tr> 
+			<td align="right" bgcolor="#eeeeee"><b>State:</b></td>
+			<td bgcolor="#999999"><select name="compState">
 <% 	SQL0="SELECT * FROM States ORDER BY priority DESC, stateName ASC"
 	SET RS0=connSWPPP.execute(SQL0)
 	DO WHILE NOT RS0.EOF %>
-			<option value="<%= RS0("stateAbbr")%>"><%= RS0("stateAbbr")%></option>
+		<option value="<%= RS0("stateAbbr")%>"><%= RS0("stateAbbr")%></option>
 <%	RS0.MoveNext
-	LOOP %>					
-		</select>
-	</div>
-	<div class="one columns"><b>Zip:</b></div>
-	<div class="three columns omega"><input name="compZip" type="text"></div>
-	<div class="cleaner"></div>
-	
-	<div class="two columns alpha"><b>Company Phone:</b></div>
-	<div class="four columns"><input name="compPhone" type="text"></div>
-	<div class="two columns"><b>Contact:</b></div>
-	<div class="four columns omega"><input type="text" name="compContact"></div>
-	
-	<div class="two columns alpha"><b>Contact Phone:</b></div>
-	<div class="four columns"><input name="contactPhone" type="text"></div>
-	<div class="two columns"><b>Contact Fax:</b></div>
-	<div class="four columns omega"><input name="contactFax" type="text"></div>
-	
-	<div class="two columns alpha"><b>Contact E-Mail:</b></div>
-	<div class="ten columns omega"><input type="text" name="contactEmail"></div>
-
-	<h3>Report Details</h3>
-	<div class="two columns alpha"><b>Type of Report:</b></div>
-	<div class="ten columns omega">
-		<select name="reportType">
+	LOOP %>					</select></td>
+		</tr>
+		<tr> 
+			<td align="right" bgcolor="#eeeeee"><b>Zip:</b></td>
+			<td bgcolor="#999999"><input name="compZip" type="text" size="5" maxlength="5"></td>
+		</tr>
+		<!-- main telephone number -->
+		<tr> 
+			<td align="right" bgcolor="#eeeeee"><b>Company Phone:</b></td>
+			<td bgcolor="#999999"><input name="compPhone" type="text" size="20" maxlength="20"></td>
+		</tr>
+		<!-- contact -->
+		<tr> 
+			<td align="right" bgcolor="#eeeeee"><b>Contact:</b></td>
+			<td bgcolor="#999999"><input type="text" name="compContact" size="50" maxlength="50"></td>
+		</tr>
+		<!-- phone -->
+		<tr> 
+			<td align="right" bgcolor="#eeeeee"><b>Contact Phone:</b></td>
+			<td bgcolor="#999999"><input name="contactPhone" type="text" size="20" maxlength="20"></td>
+		</tr>
+		<!-- fax -->
+		<tr> 
+			<td align="right" bgcolor="#eeeeee"><b>Contact Fax:</b></td>
+			<td bgcolor="#999999"><input name="contactFax" type="text" size="20" maxlength="20"></td>
+		</tr>
+		<!-- e-mail -->
+		<tr> 
+			<td align="right" bgcolor="#eeeeee"><b>Contact E-Mail:</b></td>
+			<td bgcolor="#999999"><input type="text" name="contactEmail" size="50" maxlength="50"></td>
+		</tr>
+		<tr> 
+			<td bgcolor="#eeeeee"><img src="../../images/dot.gif" width="5" height="5"></td>
+			<td bgcolor="#999999"><img src="../../images/dot.gif" width="5" height="5"></td>
+		</tr>
+		<tr> 
+			<td colspan="2"><img src="../../images/dot.gif" width="5" height="5"></td>
+		</tr>
+		<tr> 
+			<td colspan="2"><hr align="center" width="95%" size="1"></td>
+		</tr>
+		<tr> 
+			<td colspan="2"><img src="../../images/dot.gif" width="5" height="5"></td>
+		</tr>
+</Table>
+<!-- Type of Report? Weekly, Storm, Complaint, ? -->
+<table width="90%" border="0" align="center" cellpadding="1" cellspacing="0">		
+		<tr> 
+			<td bgcolor="#eeeeee"><img src="../../images/dot.gif" width="5" height="5"></td>
+			<td bgcolor="#999999" colspan=2><img src="../../images/dot.gif" width="5" height="5"></td>
+		</tr>
+		<tr> 
+			<td align="right" bgcolor="#eeeeee"><b>Type of Report:</b></td>
+			<td width='0' bgcolor="#999999" style="padding: 0cm; margin: 0cm;" align="right"></td>
+			<td bgcolor="#999999"><select name="reportType">
 <% 	SQL2="SELECT * FROM ReportTypes ORDER BY priority DESC, reportTypeID ASC"
 	SET RS2=connSWPPP.execute(SQL2)
 	DO WHILE NOT RS2.EOF %>
 			<option value="<%= RS2("reportType")%>"><%=RS2("reportType")%></option>
 <% 	RS2.MoveNext
 	LOOP %>
-		</select>
-	</div>
-	
+			</select></td>
+		</tr>
 		<!-- Rain -->
 <!--		<tr> 
 			<td align="right" bgcolor="#eeeeee"><b>Inches of Rain:</b></td>
@@ -324,8 +392,11 @@ baseDir = Request.ServerVariables("APPL_PHYSICAL_PATH") %>
 					<option value="0">No</option>
 				</select></td>
 		</tr>-->
-	<div class="two columns alpha"><b>Narrative</b></div>
-	<div class="ten columns omega"><textarea rows="15" name="narrative"></textarea></div>
+		<TR><TD align="right" bgcolor="#eeeeee"><b>Narrative</b></td>
+			<td width='0' bgcolor="#999999" style="padding: 0cm; margin: 0cm;" align="right"></td>
+			<td bgcolor="#999999">
+				<textarea cols="60" rows="5" name="narrative"></textarea><br><br>
+		</TD></TR>
 <%
 ' Admin can change inspector name.
 If Session("validAdmin") Then
@@ -337,35 +408,65 @@ If Session("validAdmin") Then
 		" AND pu.rights = 'inspector'"	
 	Set connUser = connSWPPP.execute(insSQLSELECT)
 %>
-	<div class="two columns alpha"><b>Inspector:</b></div>
-	<div class="ten columns omega">
-		<select name="inspector">
-		<% Do While Not connUser.EOF %>
-			<option value="<% = connUser("userID") %>"> 
-			<% = Trim(connUser("firstName")) & "&nbsp;" & Trim(connUser("lastName")) %>
-			</option>
-<%			connUser.moveNext
-		Loop				
+		<tr> 
+			<td align="right" bgcolor="#eeeeee"><strong>Inspector:</strong></td>
+			<td width='0' bgcolor="#999999" style="padding: 0cm; margin: 0cm;" align="right"></td>
+			<td bgcolor="#999999"><select name="inspector">
+					<% Do While Not connUser.EOF %>
+					<option value="<% = connUser("userID") %>"> 
+						<% = Trim(connUser("firstName")) & "&nbsp;" & Trim(connUser("lastName")) %>
+					</option>
+<%				 	connUser.moveNext
+				Loop				
 	connUser.Close
 	Set connUser = Nothing %>
-		</select>
-	</div>
+				</select></td></tr>
 <%	End If
-IF Session("validAdmin") OR Session("validInspector") THEN
-	'Set folderSvrObj = Server.CreateObject("Scripting.FileSystemObject")
-	'Set objSiteMapDir = folderSvrObj.GetFolder(baseDir & "images\sitemap\")
-	'Set siteMapImage = objSiteMapDir.Files 
-	't1="sitemap"
-	't2="sitemapDN"
-	't3="sitemapUP" %>
-
+	IF Session("validAdmin") OR Session("validInspector") THEN
+	Set folderSvrObj = Server.CreateObject("Scripting.FileSystemObject")
+	Set objSiteMapDir = folderSvrObj.GetFolder(baseDir & "images\sitemap\")
+	Set siteMapImage = objSiteMapDir.Files 
+	t1="sitemap"
+	t2="sitemapDN"
+	t3="sitemapUP" %>
+<!--		<tr valign="top"><td align="right" bgcolor="#eeeeee"><strong>Site Map File:</strong></td>
+			<td width='0' bgcolor="#999999" style="padding: 0cm; margin: 0cm;" align="right" valign="top">
+				<BUTTON onClick="swapOption(<%= t1%>, <%= t2%>, 'up');">&uarr;</BUTTON><br>
+				<BUTTON onClick="swapOption(<%= t1%>, <%= t2%>, 'dn');">&darr;</BUTTON></td>
+			<td bgcolor="#999999" nowrap valign="top">
+				<select name="sitemapDN" size="2"></SELECT>
+				<input type="hidden" name="sitemap" value="">
+					<BUTTON onClick="delOption(<%= t1%>, <%= t2%>, <%= t3%>);">--&gt;</BUTTON>
+					<BUTTON onClick="addOption(<%= t1%>, <%= t2%>, <%= t3%>);">&lt;--</BUTTON>
+				<select name="sitemapUP">
+<%	For Each Item In siteMapImage
+		shortName = Item.Name 
+		IF InStr(tempStrOfFileNames, shortName)=0 THEN %>
+				<option value="<% = shortName %>"><% = shortName %></option>
+<%		END IF
+	Next
+	Set objSteMapDir = Nothing
+	Set siteMapImage = Nothing %>
+				</select>&nbsp;&nbsp;<input type="button" value="Upload Site Map File" 
+					onClick="location='upSiteMapEditRprt.asp?inspecID=<% = inspecID %>'; return false";>
+				</td></tr>-->
+		<tr><td bgcolor="#eeeeee"><img src="../../images/dot.gif" width="5" height="5"></td>
+			<td bgcolor="#999999" colspan=2><img src="../../images/dot.gif" width="5" height="5"></td></tr>
+		<tr><td colspan="2"><img src="../../images/dot.gif" width="5" height="5"></td></tr>
+		<tr><td colspan="3"><hr align="center" width="95%" size="1"></td></tr>
+		<tr><td colspan="3"><img src="../../images/dot.gif" width="5" height="5"></td></tr>
+		<!-- Type of Report? Weekly, Storm, Complaint, ? -->
+</Table>
+<table width="90%" border="0" align="center" cellpadding="1" cellspacing="0">
+		<tr><td colspan="6" align="center"><font size="+1">Optional Project Links</font></td>
+		</tr><td bgcolor="#eeeeee"><img src="../../images/dot.gif" width="5" height="5"></td>
+			<td bgcolor="#999999" colspan=5><img src="../../images/dot.gif" width="5" height="5"></td>
+		</tr>
 <!-- ------------- Optional Links ----------------------------------------------------- -->
-<% SQL1="SELECT * FROM OptionalImagesTypes WHERE oitSortByVal>=0 ORDER BY oitSortByVal asc"
-SET RS1=connSWPPP.execute(SQL1)%>
 
-<h3>Optional Project Links</h3>
-<table width="100%" border="0" align="center">
-<%
+<%	
+SQL1="SELECT * FROM OptionalImagesTypes WHERE oitSortByVal>=0 ORDER BY oitSortByVal asc"
+SET RS1=connSWPPP.execute(SQL1)
 DO WHILE NOT RS1.EOF
 	oitID=RS1("oitID")
 	dirName=Trim(RS1("oitName"))
@@ -375,43 +476,42 @@ DO WHILE NOT RS1.EOF
 	t3=dirName &"UP"
 
 	Set FSO = Server.CreateObject("Scripting.FileSystemObject")
-	Set objTemp = FSO.GetFolder(baseDir & "\images\" & dirName & "\")
+	Set objTemp = FSO.GetFolder(baseDir & "images\"& dirName &"\")
 	Set TempImage = objTemp.Files %>
-	
-    <tr valign="top">
-		<td align="right" bgcolor="#eeeeee"><font size="-1"><strong><%= dirName%>:</strong></font></td>
-		<td width='0' bgcolor="#999999" style="padding: 0cm; margin: 0cm;" align="right">
-			<BUTTON class="up-down-button" onClick="swapOption(<%= t1%>, <%= t2%>, 'up');">&uarr;</BUTTON><br>
-			<BUTTON class="up-down-button" onClick="swapOption(<%= t1%>, <%= t2%>, 'dn');">&darr;</BUTTON>
-		</td>	
-		<td bgcolor="#999999" nowrap align="justify"><select name="<%=dirName%>DN"  size="3"></SELECT>
-			<input type="hidden" name="<%= t1%>" value="">
-		</td>
-		<td bgcolor="#999999">
-			<BUTTON class="left-right-button" onClick="delOption(<%= t1%>, <%= t2%>, <%= t3%>);">&rarr;</BUTTON>
-			<BUTTON class="left-right-button" onClick="addOption(<%= t1%>, <%= t2%>, <%= t3%>);">&larr;</BUTTON>
-		</td>
-		<td bgcolor="#999999">
-            <select name="<%=dirName%>UP">
-
+		<tr valign="top">
+			<td align="right" bgcolor="#eeeeee"><font size="-1"><strong><%= dirName%>:</strong></font></td>
+			<td width='0' bgcolor="#999999" style="padding: 0cm; margin: 0cm;" align="right">
+				<BUTTON onClick="swapOption(<%= t1%>, <%= t2%>, 'up');">&uarr;</BUTTON><br>
+				<BUTTON onClick="swapOption(<%= t1%>, <%= t2%>, 'dn');">&darr;</BUTTON></td>	
+			<td bgcolor="#999999" nowrap align="justify">
+				<select name="<%=dirName%>DN"  size="3"></SELECT>
+					<input type="hidden" name="<%= t1%>" value=""></td>
+					<td bgcolor="#999999">
+						<BUTTON onClick="delOption(<%= t1%>, <%= t2%>, <%= t3%>);">--&gt;</BUTTON>
+						<BUTTON onClick="addOption(<%= t1%>, <%= t2%>, <%= t3%>);">&lt;--</BUTTON></td>
+					<td bgcolor="#999999"><select name="<%=dirName%>UP">
 <%	For Each Item In TempImage
 		shortName = Item.Name %><option value="<% = shortName %>"><%= shortName %></option>
 <%	Next 
 	Set objTemp = Nothing
 	Set TempImage = Nothing %>
-		    </select>
-		</td>
-		<td bgcolor="#999999" nowrap align="right"><input type="button" style="width:120;"
-				value="Upload" onClick="location = 'upImageRpt.asp?inspecID=<%= inspecID %>&oitID=<%= oitID %>'; return false";>
-		</td>
-	</tr>
-    <% RS1.MoveNext
-LOOP %>
-	<tr> 
-		<td colspan="5" align="center"><input name="submit" type="submit" value="Add New Report & Project Info"></td>
-	</tr>
-<% End If 'Session("validAdmin") %>
+				</select></td>
+			<td bgcolor="#999999" nowrap align="right"><input type="button" style="width:120;"
+				value="Upload File/Image" onClick="location='upImageRpt.asp?inspecID=<%= inspecID %>&oitID=<%= oitID %>'; return false";>
+				</td></tr><% 
+	RS1.MoveNext
+LOOP
+	End If 'Session("validAdmin") %>
+		<tr><td bgcolor="#eeeeee"><img src="../../images/dot.gif" width="5" height="5"></td>
+			<td bgcolor="#999999" colspan=5><img src="../../images/dot.gif" width="5" height="5"></td>
+		</tr><tr> 
+			<td colspan="5">&nbsp;</td>
+		</tr>
+		<tr> 
+			<td colspan="5" align="center">
+			<input name="submit" type="submit" value="Add New Report & Project Info"></td>
+		</tr>
+	</form>
 </table>
-</form>
 </body>
 </html>

@@ -16,7 +16,7 @@ End If
 projectID = Request("projID")
 projectName = Request("projName")
 projectCounty = Request("cnty")
-%><!-- #include virtual="admin/connSWPPP.asp" --><%
+%><!-- #include file="../admin/connSWPPP.asp" --><%
 If Session("validAdmin") Then
 	SQL1 = "SELECT DISTINCT inspecID, inspecDate, p.projectName" & _
 		" FROM Projects as p, Inspections as i" & _
@@ -50,7 +50,7 @@ companyName = Trim(RS1("projectName")) %>
 <link href="../global.css" rel="stylesheet" type="text/css">
 </head>
 <body bgcolor="#FFFFFF" text="#000000">
-<!-- #include virtual="header.inc" -->
+<!-- #include file="../header2.inc" -->
 <h1>Please select an inspection date to view the report or&nbsp;&nbsp;<Button onClick="PrintAll();">Print All Reports</Button></div></h1>
 <h2><font color="#003399"><% = (projectCounty & " : " & projectName) %></font></h2>
 <div style="margin-left:10%;">

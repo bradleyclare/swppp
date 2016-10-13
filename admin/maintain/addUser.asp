@@ -5,7 +5,7 @@ If Not Session("validAdmin") and not Session("validDirector") Then
 	Response.Redirect("loginUser.asp")
 End If
 
-%> <!-- #include virtual="admin/connSWPPP.asp" --> <%
+%> <!-- #include file="../connSWPPP.asp" --> <%
 If Request.Form.Count > 0 Then
 	highestRights="user"
 	Function strQuoteReplace(strValue)
@@ -145,61 +145,52 @@ End If %>
 	<script language="JavaScript" src="../js/validUsers1.2.js"></script>
 </head>
 
-<!-- #include virtual="admin/adminHeader2.inc" -->
-
-<form action="<% = Request.ServerVariables("script_name") %>" method="post" onSubmit="return isReady(this)";>
-<h1>Add User</h1>
+<!-- #include file="../adminHeader2.inc" -->
+<table width="100%" border="0">
+	<tr><td><h1>Add User</h1></td></tr></table>
 <% If userExists Then %>
-	<h3>User email address already exists in database. Go to <a href="viewUsersAdmin.asp">View Users</a> to edit.</h3>
+	<table width="100%" border="0">
+		<tr><td align="center"><font color="red">User email address already exists in database. 
+				Go to <a href="viewUsersAdmin.asp">View Users</a> to edit.</font></td></tr></table>
 <% Else ' Not userExists %>
-	<div class="two columns alpha">Date Entered</div>
-	<div class="two columns"><%= dateEntered %></div>
-	<div class="two columns">View Images</div>
-	<div class="two columns">
-		<input type="radio" name="noImages" value="0"<% IF noImages=0 THEN %> checked<% END IF%>>Yes
-		<input type="radio" name="noImages" value="1"<% IF noImages=1 THEN %> checked<% END IF%>>No
-	</div>
-	<div class="one columns"></div>
-	<div class="three columns omega"><input type="submit" value="Add User"></div>
-	<div class="cleaner"></div>
-	
-	<div class="two columns alpha">First Name</div>
-	<div class="four columns"><input type="text" name="firstName" value="<%= firstName %>"></div>
-	<div class="two columns">Last Name</div>
-	<div class="four columns omega"><input type="text" name="lastName"	value="<%= lastName %>"></div>
+<table width="100%" border="0">
+	<form action="<% = Request.ServerVariables("script_name") %>" method="post" 
+		onSubmit="return isReady(this)";>
+		<tr><td width="35%" align="right">First Name:</td>
+			<td width="65%"><input type="text" name="firstName" size="20" maxlength="20"></td></tr>
+		<tr><td align="right">Last Name:</td>
+			<td><input type="text" name="lastName" size="20" maxlength="20"></td></tr>
+		<tr><td align="right">Email:</td>
+			<td><input type="text" name="email" size="30" maxlength="50"></td></tr>
+		<tr><td align="right">Password:</td>
+			<td><input type="password" name="pswrd" size="8" maxlength="8"></td></tr>
+		<tr><td align="right">View Images:</td>
+			<td><input type="radio" name="noImages" value="0"<% IF noImages=0 THEN %> checked<% END IF%>>Yes
+				<input type="radio" name="noImages" value="1"<% IF noImages=1 THEN %> checked<% END IF%>>No</td></tr>
+<% If Session("validAdmin") then '-- only admin may set inspectors signature files and qualifications %>
+		<tr><td align="right">Signature File:</td>
+			<td><select name="signature">
+<% ' get gif directory
+Set folderServerObj = Server.CreateObject("Scripting.FileSystemObject")
+Set objFolder = folderServerObj.GetFolder(Request.ServerVariables("APPL_PHYSICAL_PATH") &"\images\signatures\")
+Set gifDirectory = objFolder.Files
 
-	<div class="two columns alpha">Email</div>
-	<div class="ten columns omega"><input type="text" name="email" value="<%= email %>"></div>
-	
-<% If Session("validAdmin") then 'only admin may set rights for other admin, directors and inspectors %>
-	<div class="two columns alpha">Password</div>
-	<div class="eight columns"><input type="password" name="pswrd" value="<%= pswrd %>"></div>
-	<div class="two columns omega"><input type="button" value="View" onClick="alert('Password: ' + form.pswrd.value)";></div>
-	
-	<div class="two columns alpha">Signature File</div>
-	<div class="six columns">
-		<select name="signature">
-			<%' get gif directory
-			Set folderServerObj = Server.CreateObject("Scripting.FileSystemObject")
-			Set objFolder = folderServerObj.GetFolder(Request.ServerVariables("APPL_PHYSICAL_PATH") &"images\signatures\")
-			Set gifDirectory = objFolder.Files
-
-			For Each gifFile In gifDirectory
-				fileName = gifFile.Name %>
-								<option value="<% = fileName %>"<% If signature = fileName Then %> selected<% End If %>><% = fileName %></option>
-			<% Next
-			Set objFolder = Nothing
-			Set gifDirectory = Nothing %>
-		</select>
-	</div>
-	<div class="four columns omega"><input type="button" value="Upload Signature File" onClick="location='upSigEditUser.asp?userID=<%= userID %>'; return false";></div>
-
-	<div class="two columns alpha">Qualifications</div>
-	<div class="ten columns omega"><textarea cols="50" rows="3" name="qualifications"><%= REPLACE(qualifications,"#@#","'") %></textarea></div>
+For Each gifFile In gifDirectory
+	shortenedName = gifFile.Name %>
+					<option value="<% = shortenedName %>"
+						<% if shortenedName = "dot.gif" Then %> selected<% End If %>><% = shortenedName %>
+					</option>
+<% Next
+Set objFolder = Nothing
+Set gifDirectory = Nothing %>
+				</select>&nbsp;&nbsp;<input type="button" value="Upload Signature File" 
+				onClick="location='upSigAddUser.asp'; return false";></td></tr>
+		<tr><td align="right" valign=top>Qualifications:</td>
+			<td><TEXTAREA cols="50" rows="3" name="qualifications"></TEXTAREA></td></tr>
 <% END IF '-- Valid ADMIN. %>
 <!--- ----------------------------------------- Rights --------------------------------------- --->
-<h3>Rights</h3>
 <table width="100%" border="0">
+		<tr><td align="left"><br><font size="+1">Rights</font><br><br></td></tr>
 <%  If Session("validAdmin") then 'only admin may set rights for other admin %>		
 		<tr><td align="right">Admin:</td>
 			<td align=center><input type="checkbox" name="admin"><br></td></tr>

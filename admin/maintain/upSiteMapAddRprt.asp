@@ -13,7 +13,7 @@ End If
 <script language="JavaScript" src="../js/validUpload.js"></script>
 <script language="JavaScript" src="../js/validUpload1.2.js"></script>
 </head>
-<!-- #include virtual="admin/adminHeader2.inc" -->
+<!-- #include file="../adminHeader2.inc" -->
 <table width="100%" border="0">
 	<tr> 
 		<td><h1>SWPPP Inspections : Upload Site Map File</h1></td>

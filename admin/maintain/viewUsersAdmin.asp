@@ -14,7 +14,7 @@ If recordOrd = "" Then
 	recordOrd = "lastName"
 End If
 
-%> <!-- #include virtual="admin/connSWPPP.asp" --> <%
+%> <!-- #include file="../connSWPPP.asp" --> <%
 SQLSELECT = "SELECT userID, firstName, lastName, rights" &_
 	" FROM Users" &_
 	" ORDER BY " & recordOrd
@@ -30,9 +30,9 @@ recCount = 0
 	<title>SWPPP INSPECTIONS : Admin : View Users for Admins</title>
 	<link rel="stylesheet" href="../../global.css" type="text/css">
 </head>
-<!-- #include virtual="admin/adminHeader2.inc" -->
-<h1>View Users</h1>
-
+<!-- #include file="../adminHeader2.inc" -->
+<table width="100%" border="0">
+	<tr><td><br><h1>View Users</h1></td></tr></table>
 <table width="100%" border="0">
 	<tr><th><b>Count</b></th>
 		<th><a href="<% = Request.ServerVariables("script_name") %>?orderBy=firstName"> 
@@ -68,6 +68,5 @@ connSWPPP.Close
 Set connSWPPP = Nothing
 %>
 </table>
-</div>
 </body>
 </html>

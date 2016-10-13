@@ -24,7 +24,7 @@ IF NOT(validated(Request("projectID"),"integer")) THEN Response.Redirect("archiv
 DIM fso, folder1, file1
 SET fso = CreateObject("Scripting.FileSystemObject")
 SQL0="sp_GetAllInspectionsforProject("& Request("projectID") &")" %>
-<!-- #include virtual="admin/connSWPPP.asp" -->
+<!-- #include file="../connSWPPP.asp" -->
 <!-- #include file="archiveCreateFullReport.inc" -->
 <!-- #include file="archiveCreateReportsHTML.inc" -->
 <!-- #include file="archiveCreateAboutUs.inc" -->
@@ -185,7 +185,7 @@ SET RS2=nothing
 <title>SWPPP INSPECTIONS : Maintain : Archive : Create File Structure</title>
 <link rel="stylesheet" href="../../global.css" type="text/css">
 </head>
-<!-- #include virtual="admin/adminHeader2.inc" -->
+<!-- #include file="../adminHeader2.inc" -->
 <table width="100%" border="0">
 	<tr> 
 		<td colspan=5><h1>SWPPP Inspections : Maintain : Archive : Create File Structure</h1></td>

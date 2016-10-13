@@ -2,7 +2,7 @@
 	Set connSWPPP = Server.CreateObject("adodb.connection")
 
 	On Error Resume Next
-	connSWPPP.Open "database=swp3org; dsn=SWPPP; uid=swaccess; password=4sr%^Tg7h" 
+	connSWPPP.Open "database=swppp; dsn=SWPPP; uid=SWAccess; password=iuser" 
 
 	If Err.Number <> 0 Then
 		Response.Write Err.Number & "<br>" & Err.Description

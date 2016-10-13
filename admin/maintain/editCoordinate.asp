@@ -5,7 +5,7 @@ If Not Session("validAdmin") and not Session("validInspector") Then
 		"?" & Request("query_string")
 	Response.Redirect("loginUser.asp")
 End If
-%><!-- #include virtual="admin/connSWPPP.asp" --><%
+%><!-- #include file="../connSWPPP.asp" --><%
 If Request.Form.Count > 0 Then
 	Function strQuoteReplace(strValue)
 		strQuoteReplace = Replace(strValue, "'", "''")
@@ -40,7 +40,7 @@ inspecID=Session("inspecID") %>
 <script language="JavaScript" src="../js/validCoordinates1.2.js"></script>
 </head>
 <body>
-<!-- #include virtual="admin/adminHeader2.inc" -->
+<!-- #include file="../adminHeader2.inc" -->
 <h1>Edit Location</h1>
 <table width="90%" border="0" align="center" cellpadding="2" cellspacing="0">
 	<form method="post" action="<% = Request.ServerVariables("script_name") %>">

@@ -13,7 +13,7 @@ startMonth=Month(startDate)
 startYear=Year(startDate)
 recordOrd = Request("orderBy")
 If recordOrd = "" Then recordOrd = " p.projectName ASC, inspecDate DESC" End If
-%><!-- #include virtual="admin/connSWPPP.asp" --><%
+%><!-- #include file="../admin/connSWPPP.asp" --><%
 reportSQLSELECT = "SELECT inspecID, inspecDate, projectCounty" & _
 	", i.projectID, p.projectName" & _
 	" FROM Inspections as i, Projects as p" & _
@@ -31,7 +31,7 @@ Set rsReports = connSWPPP.execute(reportSQLSELECT) %>
 <link rel="stylesheet" type="text/css" href="../../global.css">
 </head>
 <body>
-<!-- #include virtual="header.inc" -->
+<!-- #include file="../header2.inc" -->
 <table width="90%" border="0">
 	<tr valign="middle"> 
 		<TD align=left colspan=5><h1>View Inspection Reports</h1></TD></tr>

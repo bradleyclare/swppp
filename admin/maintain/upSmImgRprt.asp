@@ -16,7 +16,7 @@ inspecID = Request("inspecID")
 <script language="JavaScript" src="../js/validUpload.js"></script>
 <script language="JavaScript" src="../js/validUpload1.2.js"></script>
 </head>
-<!-- #include virtual="admin/adminHeader2.inc" -->
+<!-- #include file="../adminHeader2.inc" -->
 <table width="100%" border="0">
 	<tr> 
 		<td><h1>SWPPP Inspections : Report : Upload Small Image</h1></td>
@@ -86,7 +86,7 @@ inspecID = Request("inspecID")
 	</tr>
 </table>
 		<% Else %>
-		<!-- #include virtual="admin/connSWPPP.asp" -->
+		<!-- #include file="../connSWPPP.asp" -->
 <%
 			upLoad.Save
 			

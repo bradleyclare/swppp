@@ -1,6 +1,0 @@
-<h1>SWPPP INSPECTIONS, INC.</h1>
-<h3>PO Box 496987</h3>
-<h3>Garland, TX 75049</h3>
-<h3>972.530.5307 Office</h3>
-<h3>972.530.5309 Fax</h3>
-<a href="mailto:info@swppp.com"><h3>info@swppp.com</h3></a>

@@ -9,7 +9,7 @@ End If
 userID = Request("userID")
 companyID = Request("companyID")
 %>
-<!-- #include virtual="admin/connSWPPP.asp" -->
+<!-- #include file="../connSWPPP.asp" -->
 <%
 If Request.Form.Count > 0 Then
 	userSQLUPDATE =	"UPDATE Users SET" & _
@@ -58,7 +58,7 @@ End If
 	<title>SWPPP INSPECTIONS : Admin : Edit User</title>
 	<link rel="stylesheet" href="../../global.css" type="text/css">
 </head>
-<!-- #include virtual="admin/adminHeader2.inc" -->
+<!-- #include file="../adminHeader2.inc" -->
     
 <table width="100%" border="0">
 	<form action="<%= Request.ServerVariables("script_name") %>" method="post">

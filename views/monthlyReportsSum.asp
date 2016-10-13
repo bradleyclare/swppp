@@ -24,7 +24,7 @@ startMonth=Month(startDate)
 startYear=Year(startDate)
 recordOrd = Request("orderBy")
 If recordOrd = "" Then recordOrd = " p.projectName ASC, p.projectPhase, inspecDate DESC" End If
-%><!-- #include virtual="admin/connSWPPP.asp" --><%
+%><!-- #include file="../admin/connSWPPP.asp" --><%
 SQL0 = "SELECT inspecID, inspecDate, projectCounty" & _
 	", i.projectID, p.projectName, p.projectPhase" & _
 	" FROM Inspections as i, Projects as p" & _
@@ -38,75 +38,56 @@ END IF
 Set RS0 = connSWPPP.execute(SQL0) %>
 <html>
 <head>
-	<title>SWPPP INSPECTIONS : View Inspection Reports</title>
-	<link rel="stylesheet" type="text/css" href="../../global.css">
+<title>SWPPP INSPECTIONS : View Inspection Reports</title>
+<link rel="stylesheet" type="text/css" href="../../global.css">
+<STYLE>
+    .visYes { visibility:visible; display: inline }
+    .visNo { visibility:hidden; display: none}
+</STYLE>
+
 </head>
 <body>
-	<!-- #include virtual="header.inc" -->
-	<h1>View Inspection Reports</h1>
-	
+<!-- #include file="../header2.inc" -->
+<table width="90%" border="0">
+	<tr valign="middle"> 
+		<TD align=left colspan=5><h1>View Inspection Reports</h1></TD></tr>
 <% If Session("validAdmin") then %>
-	<FORM action="qbXLS.asp" method="post">
-		<input type="hidden" name="xDate" value="<%= startDate%>">
-		<input type="hidden" name="yDate" value="<%= endDate%>">
-		
-		<div class="six columns alpha">
-			Create Spreadsheet for <%= MonthName(startMonth)%> with Starting Invoice Number 
-			<input type="text" name="iNum" value="" maxlength="6" size="4">
-		</div>
-		<div class="two columns">
-			Billing Cycle <SELECT name="bCycle">
-				<OPTION value="1" selected>1</option>
-				<OPTION value="2">2</option>
-				<OPTION value="3">3</option>
-				<OPTION value="4">4</option></SELECT>
-		</div>
-		
-		<div class="two columns">
-		<button style="border-width:thin; font-size:small; background-color:#e5e6e8;" 
-			onClick="alert('IMPORT HELP\n\n1. Enter the next invoice number from Quickbooks.When you click the \'go\' button\nthe system will create a spreadsheet that you can import into Quickbooks.\n\n2. \'Save As\' the generated spreadsheet as a tab delimited file. Use any file-name\nyou need, but enclose the file-name in quotation marks and end the file-name\nwith \'.iff\' before saving. This will allow the file to be imported into Quickbooks.\n   (for example: \'\'testfile.iff\'\')\n\n3. In Quickbooks, import the file by accessing \'File>>Utilities>>Import IIF file\'.\nThis will import the invoices into the system.');">Help</button>
-		</div>
-		<div class="two columns omega">
-			<input type="submit" value="GO">&nbsp;
-		</div>
-		<div class="cleaner"></div>
-	</FORM>
-<% END IF %>
-	<h3>View Reports for</h3>
-	<div class="four columns alpha">
-		Option:<SELECT name="repType" onChange="spans(this.value)">
-			<option value="monthX" <% if monthRange then %>selected<% end if %>>the month of</option>
-			<option value="dateX"<% if not(monthRange) then%> selected<% end if%>>date range</option>
-		</SELECT>
-	</div>
-	<div class="three columns">
-		<span id="span1" class="<% if monthRange then %>visYes<% else %>visNo<% end if %>">
-		Month:<SELECT name="startMonth" id="startMonth" onChange="navigateMe();"><%	
-		m=DateDiff("m",startDate,Date)+6
-	'	IF Month(startDate)=Month(Date) THEN m=-13 ELSE m=-8 END IF
-		FOR n= -m to (m-6) step 1 
-			optDate=DateAdd("m",n,startDate)
-			optMonth=MonthName(Month(optDate))
-			optYear=Year(optDate) %>
-			<OPTION value="<%= optDate%>"<% IF Month(optDate)=startMonth THEN%> selected<% END IF%>><%= optMonth%>, <%= optYear%>
-	<%	Next %>	
-		</SELECT>
-		</span>
-	</div>
-	<span class="<% if monthRange then %>visNo<% else %>visYes<% end if %>" id="span2">
-	<div class="three columns">
-		From: <input type="text" id="startDate" name="startDate" value="<%= startDate %>" onBlur="validDate(this)">
-	</div>
-	<div class="three columns">
-		To: <input type=text id="endDate" name="endDate" value="<%= endDate %>" onBlur="validDate(this)">
-	</div>
-	<div class="two columns omega">
-		<button style="border-width:thin; font-size:small; background-color:#e5e6e8;" onClick="navigate();">GO</button>
-	</div>
-	</span>
-	<!--		<th><a href="<%= Request.ServerVariables("script_name") %>?orderBy=projectCounty&startDate=<%=startDate%>"><b>County</b></a></th>-->
-	
-	<table width="90%" border="0">
+	<tr valign=top><TD align=right colspan=3 valign="middle">
+			<FORM action="qbXLS.asp" method="post">
+				Create Spreadsheet for <%= MonthName(startMonth)%> with starting invoice number 
+				<input type="text" name="iNum" value="" maxlength="6" size="4">
+				<input type="hidden" name="xDate" value="<%= startDate%>">
+				<input type="hidden" name="yDate" value="<%= endDate%>"><br>
+				and billing cycle <SELECT name="bCycle">
+						<OPTION value="1" selected>1</option>
+						<OPTION value="2">2</option>
+						<OPTION value="3">3</option>
+						<OPTION value="4">4</option></SELECT>
+				<input type="submit" value="GO">&nbsp;
+				<button style="border-width:thin; font-size:xx-small; height:17px; width:17px; background-color:#e5e6e8;" 
+					onClick="alert('IMPORT HELP\n\n1. Enter the next invoice number from Quickbooks.When you click the \'go\' button\nthe system will create a spreadsheet that you can import into Quickbooks.\n\n2. \'Save As\' the generated spreadsheet as a tab delimited file. Use any file-name\nyou need, but enclose the file-name in quotation marks and end the file-name\nwith \'.iff\' before saving. This will allow the file to be imported into Quickbooks.\n   (for example: \'\'testfile.iff\'\')\n\n3. In Quickbooks, import the file by accessing \'File>>Utilities>>Import IIF file\'.\nThis will import the invoices into the system.');">?</button></FORM></TD>
+		<TD align=right colspan=2>
+<% ELSE %><TD align=right colspan=5><% END IF %>View Reports for 
+			<SELECT name="repType" onChange="spans(this.value)">
+				<OPTION value="monthX" <% if monthRange then %>selected<% end if %>>the month of</option>
+				<option value="dateX"<% if not(monthRange) then%> selected<% end if%>>date range</option>
+			</SELECT><br>
+			<span id="span1" class="<% if monthRange then %>visYes<% else %>visNo<% end if %>">
+			<SELECT name="startMonth" id="startMonth" onChange="navigateMe();"><%	
+	m=DateDiff("m",startDate,Date)+6
+'	IF Month(startDate)=Month(Date) THEN m=-13 ELSE m=-8 END IF
+	FOR n= -m to (m-6) step 1 
+		optDate=DateAdd("m",n,startDate)
+		optMonth=MonthName(Month(optDate))
+		optYear=Year(optDate) %>
+				<OPTION value="<%= optDate%>"<% IF Month(optDate)=startMonth THEN%> selected<% END IF%>><%= optMonth%>, <%= optYear%>
+<%	Next %>	</SELECT></span>
+			<span class="<% if monthRange then %>visNo<% else %>visYes<% end if %>" id="span2">
+			from: <input type="text" id="startDate" name="startDate" value="<%= startDate %>" onBlur="validDate(this)"><br>
+			to: <input type=text id="endDate" name="endDate" value="<%= endDate %>" onBlur="validDate(this)"><br>
+			<button style="border-width:thin; font-size:xx-small; height:20px; width:26px; background-color:#e5e6e8;"
+				onClick="navigate();">GO</button></span></TD></tr>
+	<tr><!--		<th><a href="<%= Request.ServerVariables("script_name") %>?orderBy=projectCounty&startDate=<%=startDate%>"><b>County</b></a></th>-->
 		<th><a href="<%= Request.ServerVariables("script_name") %>?orderBy=p.projectName, p.projectPhase, inspecDate DESC&startDate=<%=startDate%>"><b>Project</b></a></th>
 		<th><a href="<%= Request.ServerVariables("script_name") %>?orderBy=inspecDate DESC&startDate=<%=startDate%>"><b>Date</b></a></th></tr>
 	<tr><td colspan="3"><img src="../../images/dot.gif" width="5" height="5"></td></tr><%	

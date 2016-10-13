@@ -14,7 +14,7 @@ ELSE
 END IF
 iNum=Request("iNum")
 IF (IsNumeric(iNum) AND iNum<>"") THEN iNum=FormatNumber(iNum,0) ELSE err=err+2 END IF
-%><!-- #include virtual="admin/connSWPPP.asp" --><%
+%><!-- #include file="../admin/connSWPPP.asp" --><%
 SQL0 = "SELECT inspecID, inspecDate, projectCounty, i.projectID, p.projectName," &_
 	" i.compName, compAddr, compAddr2, projectCity" &_
 	" FROM Inspections as i, Projects as p WHERE i.projectID = p.projectID" &_

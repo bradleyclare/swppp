@@ -14,7 +14,7 @@ If recordOrd = "" Then
 	recordOrd = "lastName"
 End If
 
-%> <!-- #include virtual="admin/connSWPPP.asp" --> <%
+%> <!-- #include file="../connSWPPP.asp" --> <%
 'select the companies for which this user is a valid Director
 SQLSELECT = "SELECT projectID" & _
 		" FROM ProjectsUsers" &_
@@ -54,7 +54,7 @@ Set connComp = Nothing
 	<title>SWPPP INSPECTIONS : Admin : View Users for Directors</title>
 	<link rel="stylesheet" href="../../global.css" type="text/css">
 </head>
-<!-- #include virtual="admin/adminHeader2.inc" -->
+<!-- #include file="../adminHeader2.inc" -->
 <table width="100%" border="0">
 	<tr><td><br><h1>View Users</h1></td></tr></table>
 <table width="100%" border="0">

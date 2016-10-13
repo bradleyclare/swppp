@@ -5,7 +5,7 @@ If NOT(Session("validAdmin") OR Session("validInspector")) Then
 end if
 	IF NOT(IsNULL(Request("inspecID"))) THEN Session("inspecID")=Request("inspecID") END IF
 	inspecID= Session("inspecID")
-%> <!-- #include virtual="admin/connSWPPP.asp" --> <%
+%> <!-- #include file="../connSWPPP.asp" --> <%
 	If Request.Form.Count > 0 Then
 		SQL1="UPDATE Inspections SET narrative='"& REPLACE(Request("narrative"),"'","#@#") &"'" &_
 			" WHERE inspecID='"& inspecID &"'"

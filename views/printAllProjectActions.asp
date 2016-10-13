@@ -1,5 +1,5 @@
 <%@ Language="VBScript" %>
-<!-- #include virtual="admin/connSWPPP.asp" --><%
+<!-- #include file="../admin/connSWPPP.asp" --><%
 IF NOT(IsNumeric(Session("userID"))) THEN Response.Redirect("../default.asp") END IF
 IF Session("validUser") THEN highestRights="user" END IF
 IF Session("validInspector") THEN highestRights="ins" END IF

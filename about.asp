@@ -1,4 +1,24 @@
 <%
+' Get text from a file and inserts into page
+' file is editable using 
+
+If Session("email")="" then 
+	logUser=Request.ServerVariables("REMOTE_ADDR")
+else
+	logUser=Session("email")
+end if
+
+SQLINSERT =	"INSERT INTO Log (pageName, dateEntered, email" &_
+			") VALUES (" &_
+			"'About Us'" &_
+			", '" & FormatDateTime(now,vbLongDateTime) & "'" &_
+			", '" & logUser & "'" &_
+			")"
+'Response.Write(SQLINSERT & "<br>")
+%>	<!-- #INCLUDE FILE="../admin/connSW.asp" --> <%
+connSS.execute(SQLINSERT)
+connSS.close 
+
 base_path = server.mappath(".")
 
 ' iomode settings
@@ -12,22 +32,20 @@ TristateTrue = -1
 TristateFalse = 0
 
 Set objFSO = CreateObject("Scripting.FileSystemObject")
+'response.write(base_path & "/about.txt")
 Set objFile = objFSO.OpenTextFile(base_path & "/about.txt")
 %>
 
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
-    <head>
-        <title>SWPPP INSPECTIONS :: About Us</title>
-        <link rel="stylesheet" type="text/css" href="global.css">
-    </head>
-    <body>
-        <!-- #include file="header3.inc" -->
-
-        <% = objFile.ReadAll %>
-    </body>
+<head>
+<title>SWPPP INSPECTIONS : About Us</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link href="global.css" rel="stylesheet" type="text/css">
+</head>
+<body bgcolor="#FFFFFF" text="#000000">
+<!--#include file="header.inc" -->
+<tr bgcolor="#FFFFFF"><td colspan="2"><br><br>
+	<%= objFile.ReadAll %>
+<br><br><br></td></tr></table>	  
+</body>
 </html>
-
-<%
-objFile.Close
-%>

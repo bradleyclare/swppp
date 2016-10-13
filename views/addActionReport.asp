@@ -1,5 +1,5 @@
 <%@ Language="VBScript" %>
-<!-- #include virtual="admin/connSWPPP.asp" --><%
+<!-- #include file="../admin/connSWPPP.asp" --><%
 If 	Not Session("validAdmin") And _
 	Not Session("validDirector") And _
 	Not Session("validInspector") And _
@@ -8,9 +8,7 @@ If 	Not Session("validAdmin") And _
 		"?" & Request.ServerVariables("query_string")
 	Response.Redirect("../admin/maintain/loginUser.asp")
 End If
-IF Request("pID")="" THEN 
-	self.close() 
-END IF
+IF Request("pID")="" THEN self.close() END IF
 projectID = Request("pID")
 SQL0="SELECT * FROM ProjectsUsers WHERE "& Session("userID") &" IN (SELECT userID FROM ProjectsUsers WHERE rights in ('action','erosion') AND projectID="& projectID &")"
 SET RS0=connSWPPP.execute(SQL0)
@@ -55,33 +53,20 @@ function CleanText(textStr)
 	CleanText=REPLACE(CleanText,chr(169),"&copy;")
 	CleanText=REPLACE(CleanText,chr(174),"&reg;")
 end function %>
-<html>
-<head>
-	<title>SWPPP INSPECTIONS - Add Actions Taken Report Entry</title>
-	<link rel="stylesheet" type="text/css" href="../global.css">
-</head>
-<body>
-	<center>
-	<br/><img src="../images/b&wlogoforreport.jpg" width="300"><br><br>
-	<% IF someError THEN %>
-		<p class="error">There was an error in either the date field or the TextBox.</p>
-	<% END IF %>
-	<% IF success THEN %>
-		<p class="error">Action recorded successfully.</p>
-	<% END IF %>
-	<h3>Action Report Entry</h3>
-	<form action="<% = Request.ServerVariables("script_name") %>" method="post">
-		<input type="hidden" name="pID" value="<%=projectID%>">
-		<div class="four columns alpha">
-			<h5>Date</h5>
-			<input type="text" name="actionDate" value="<%= Date()%>">
-		</div>
-		<div class="eight columns omega">
-			<h5>Action Taken</h5>
-			<textarea rows="5" name="actionText"></textarea>
-		</div>
-		<button type="submit" >Submit Action Report</button>
-	</form>
-	</center>
-</body>
-</html>
+<html><head>
+<title>SWPPP INSPECTIONS - Add Actions Taken Report Entry</title>
+<link rel="stylesheet" type="text/css" href="../global.css"></head>
+<body bgcolor="#ffffff" marginwidth="30" leftmargin="30" marginheight="15" topmargin="15">
+<center><img src="../images/b&wlogoforreport.jpg" width="300"><br><br>
+<% IF someError THEN %><p><FONT size="+1" color="red">There was an error in either the date field or the TextBox.</FONT></p><% END IF %>
+<% IF success THEN %><p><FONT size="+1" color="red">Action recorded successfully.</FONT></p><% END IF %>
+<font size="+1"><b>Action Report Entry</b></font><hr noshade size="1" width="90%">
+<FORM action="<% = Request.ServerVariables("script_name") %>" method="post">
+<INPUT type="hidden" name="pID" value="<%=projectID%>">
+<table cellpadding="2" cellspacing="0" border="0" width="90%">
+	<tr><th width="100" align=left>Date</th><th align=left>Action Taken</th></tr>
+	<tr><td valign="top" align=left><INPUT type="text" name="actionDate" value="<%= Date()%>"></TD>
+		<td align="left"><TEXTAREA cols="60" rows="5" name="actionText"></TEXTAREA></TD></tr>
+</table><br><br>
+<input type="submit" Value="Submit Action Report"></FORM></center>
+</body></html>

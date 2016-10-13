@@ -1,5 +1,5 @@
 <%@ Language="VBScript" %>
-<!-- #include virtual="admin/connSWPPP.asp" --><% 
+<!-- #include file="../admin/connSWPPP.asp" --><% 
 If 	Not Session("validAdmin") And _
 	Not Session("validDirector") And _
 	Not Session("validInspector") And _
@@ -59,7 +59,7 @@ END IF
 SQL1="SELECT actionID, orig_actionDate, last_actionDate, dbo.fnGetFullName(orig_userID) as fullName1," &_
 	" dbo.fnGetFullName(last_userID) as fullName2, LTRIM(RTRIM(actionText)) as actionText " &_
 	" FROM Actions a WHERE a.actionID="& Request("ID") %>
-<!-- #include virtual="admin/connSWPPP.asp" --><%
+<!-- #include file="../admin/connSWPPP.asp" --><%
 SET RS1=connSWPPP.execute(SQL1) %>
 <html><head>
 <title>SWPPP INSPECTIONS - Add Actions Taken Report Entry</title>

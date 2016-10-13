@@ -1,14 +1,13 @@
-<div class="header-top">
-<div class="fl">
-	<a href="../default.asp"><img src="../images/swpppweb2.jpg" height="100" border="0" vspace="0" hspace="0" alt="SWPPP Inspections"></a>
-</div>
-<h2>SWPPP Inspections</h2>
-</div>
-<div class="cleaner"></div>
-<div class="header-nav-bar">
-  <div class="header-nav three columns alpha"><a href="../about.asp">About Us</a></div>
-  <div class="header-nav three columns"><a href="../contact.asp">Contact Us</a></div>
-  <div class="header-nav three columns"><a href="../views/projects.asp">Inspections</a></div>
-  <div class="header-nav three columns omega"><a href="../admin/default.asp">Admin</a></div>
-</div>
-<div class="cleaner"></div>
+<table width="90%" border="0" cellpadding="0" cellspacing="0" align="center" bgcolor="#FFFFFF>
+	<tr><td class="header" valign="bottom" align="center" rowspan="2"width="120">
+	<img src="images/swpppweb2.jpg" height="101" border="0" vspace="0" hspace="0" 
+		alt="SWPPP Inspections"></td>
+	<td nowrap valign="bottom" bgcolor="#006699"><br><br><br><br></td>
+	</tr><tr bgcolor="#999999">
+	<td><div class="white"><a href="default.asp" class="head">Home</a> &nbsp; | &nbsp; 
+	<a href="static/about.asp" class="head">About Us</a> &nbsp; | &nbsp; 
+	<a href="static/contact.asp" class="head">Contact Us</a> &nbsp; | &nbsp; 
+	<a href="views/projects.asp" class="head">Inspections</a> &nbsp; | &nbsp; 
+	<a href="admin/default.asp" class="head">Admin</a></div></td></tr></TABLE>
+<table width="90%" border="0" cellpadding="0" cellspacing="0" align="center" bgcolor="#FFFFFF>
+	<tr><td style="margin-left:10%;" colspan=2>

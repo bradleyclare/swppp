@@ -16,7 +16,7 @@ imageID = Request("imageID") %>
 <script language="JavaScript" src="../js/validUpload.js"></script>
 <script language="JavaScript" src="../js/validUpload1.2.js"></script>
 </head>
-<!-- #include virtual="admin/adminHeader2.inc" -->
+<!-- #include file="../adminHeader2.inc" -->
 <table width="100%" border="0">
 	<tr><td><h1>SWPPP Inspections : Report : Upload Large Image</h1></td></tr>
 </table>
@@ -69,7 +69,7 @@ imageID = Request("imageID") %>
 			for more troubleshooting information, or send e-mail to <a href="mailto:dwims@swppp.com">susan@plonka.com</A> 
 			for additional help on this matter.</td></tr></table>
 <% 		Else %>
-		<!-- #include virtual="admin/connSWPPP.asp" --><%
+		<!-- #include file="../connSWPPP.asp" --><%
 			upLoad.Save			
 			' Parse NEW File Name from Upload with Replace()
 			lgImgFile = Replace(upLoad.ServerName, upLoad.Path, "")			

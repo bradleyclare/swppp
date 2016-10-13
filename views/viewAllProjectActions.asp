@@ -1,6 +1,6 @@
 <%@ Language="VBScript" %>
-<!-- #include virtual="admin/connSWPPP.asp" -->
-<% IF NOT(IsNumeric(Session("userID"))) THEN Response.Redirect("../../default.asp") END IF
+<!-- #include file="../admin/connSWPPP.asp" --><%
+IF NOT(IsNumeric(Session("userID"))) THEN Response.Redirect("../default.asp") END IF
 IF Session("validUser") THEN highestRights="user" END IF
 IF Session("validInspector") THEN highestRights="ins" END IF
 IF Session("validDirector") THEN highestRights="dir" END IF
@@ -18,47 +18,38 @@ function UnCleanText(textStr)
 	UnCleanText=REPLACE(UnCleanText,"&ldquo;",chr(147))
 	UnCleanText=REPLACE(UnCleanText,"&copy;",chr(169))
 	UnCleanText=REPLACE(UnCleanText,"&reg;",chr(174))
-end function %>
-<html>
+end function
+%><html>
 <head>
-	<title>SWPPP INSPECTIONS : Actions Taken Summary</title>
-	<link rel="stylesheet" type="text/css" href="../../global.css">
+<title>SWPPP INSPECTIONS : Actions Taken Summary</title>
+<link rel="stylesheet" type="text/css" href="../../global.css">
 </head>
 <body>
-	<!-- #include virtual="header.inc" -->
-	
-	<form name="form1" method="post">
-		<h3>Actions Taken Summary</h3>
-		<div class="nine columns alpha">
-			Project View:
-			<SELECT name="cPID" style="font-size: small;" onChange="redirectMe(this.value);">
-				<OPTION value="-1"
-				<% IF curPID=-1 THEN%> 
-					selected
-				<%END IF%>
-				>All Projects</OPTION>
-				<% DO WHILE NOT RS0.EOF %>
-					<OPTION value="<%= RS0("projectID")%>"<%IF curPID=RS0("projectID") THEN%> selected<%END IF%>><%=RS0("projectName")%>&nbsp;<%= RS0("projectPhase")%></OPTION><% RS0.MoveNext
-				LOOP %>
-			</SELECT>
-		</div>
-		<div class="three columns omega">
-			<div class="side-link">
-				<a href="printAllProjectActions.asp?cPID=<%= curPID%>">Print</a>
-			</div>
-		</div>
-	</form>
-<table width="95%" border=0 cellpadding=1 cellspacing=1>
-<% cPID=-1
+<!-- #include file="../header2.inc" -->
+<table width="95%" border=0 cellspacing=0 cellpadding=0>
+<form name="form1" method="post">
+	<tr valign=top><TD align=left colspan=3><FONT size="+1"><B>Actions Taken Summary</B></FONT></TD></tr>
+	<tr valign=top><td align=right colspan=3>view:<SELECT name="cPID" style="font-size: xx-small;" onChange="redirectMe(this.value);">
+			<OPTION value="-1"<% IF curPID=-1 THEN%> selected<%END IF%>>All Projects</OPTION><% DO WHILE NOT RS0.EOF %>
+			<OPTION value="<%= RS0("projectID")%>"<%IF curPID=RS0("projectID") THEN%> selected<%END IF%>><%=RS0("projectName")%>&nbsp;<%= RS0("projectPhase")%></OPTION><% RS0.MoveNext
+		LOOP %></SELECT></td></tr>
+	<tr valign="top"><td colspan=3 align=right>
+		<span onMouseOver="this.style.cursor='hand';this.style.textDecoration='underline';" 
+		onMouseOut="this.style.cursor='default';this.style.textDecoration='none';" 
+		onclick="location='printAllProjectActions.asp?cPID=<%= curPID%>'">
+		<font size="-2" color="gray">print</font></span></td></tr>
+</form>
+</table><table width="95%" border=0 cellpadding=1 cellspacing=1><%
+cPID=-1
 SQL1="sp_getAllProjectsActions "& Session("userID") &", "& curPID &", '"& highestRights &"'"
 set RS1 = server.createobject("adodb.recordset")
 RS1.CursorLocation=3 'client side
 RS1.CursorType = 3 'static recordset
 RS1.PageSize = 5  
 RS1.open SQL1, connSWPPP
-IF RS1.EOF THEN%>	
-	<tr><td colspan=3 width=600>There are no Action Reports for the Project/Phase that you selected.</td></tr>
-<% ELSE
+IF RS1.EOF THEN
+%>	<tr><td colspan=3 width=600>There are no Action Reports for the Project/Phase that you selected.</td></tr><%
+ELSE
 	page = request("pg")
 	if page <= 0 or page = "" then
 		RS1.AbsolutePage = 1	  
@@ -76,8 +67,8 @@ IF RS1.EOF THEN%>
 	<tr><td colspan=3 height="2px"><hr></td></tr>				
 	<tr><th colspan=2 width="300"><%= TRIM(RS1("projectName")) %>&nbsp;<%= TRIM(RS1("projectPhase")) %></th>
 		<td width="300"></td></tr>
-	<tr><th width="90" align=right>Date</th>
-		<th colspan=2 align=left width="510" style="padding-left:10px;">Action Taken</th></tr><%
+	<tr><th width="90" align=right>date</th>
+		<th colspan=2 align=left width="510" style="padding-left:10px;">action taken</th></tr><%
 				bColor="transparent"
 			END IF
 				actDate=TRIM(RS1("orig_actionDate"))

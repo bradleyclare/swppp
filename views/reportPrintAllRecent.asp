@@ -1,4 +1,5 @@
 <%@ Language="VBScript" %>
+<%Response.Buffer = False%>
 <%
 If _
 	Not Session("validAdmin") And _
@@ -12,7 +13,7 @@ Then
 	
 End If
 
-%><!-- #include virtual="admin/connSWPPP.asp" --><%
+%><!-- #include file="../admin/connSWPPP.asp" --><%
 projectCounty = Request("cnty")
 If Session("validAdmin") Then
 '--	SQL1="SELECT MAX(inspecDate) as inspecDate, projectName, projectPhase FROM Inspections " &_
@@ -25,10 +26,15 @@ Else
 		" WHERE pu.userID = " & Session("userID") &" AND pu.projectID=i.projectID GROUP BY i.projectid, i.projectname ORDER BY i.projectname, i.projectid"
 End If
 SET RS1 = connSWPPP.Execute(SQL1) 
-'--Response.Write(SQL1 &"<br><br>")%>
+'--Response.Write(SQL1 &"<br><br>")
+%>
 <html><head>
 <title>Print All Recent Reports <%= Date %></title>
 <link rel="stylesheet" type="text/css" href="../global.css">
+<style>
+	.red{color: #F52006;}
+	.black{color: black;}
+</style>
 </head>
 <body bgcolor="#ffffff" marginwidth="30" leftmargin="30" marginheight="15" topmargin="15" onLoad="window.print();"><% '--window.close();
 DO WHILE NOT RS1.EOF
@@ -38,10 +44,11 @@ DO WHILE NOT RS1.EOF
 '--projectPhase= RS1("projectPhase")
     projectID = RS1("projectid")
 
-SQL2 = "SELECT inspecID, inspecDate, Inspections.projectName, Inspections.projectPhase, projectAddr, projectCity, " &_
-	"projectState, projectZip, projectCounty, onsiteContact, officePhone, emergencyPhone, compName, compAddr, " &_
-	"compAddr2, compCity, compState, compZip, compPhone, compContact, contactPhone, contactFax, contactEmail, " &_
-	"reportType, inches, bmpsInPlace, sediment, narrative, firstName, lastName, signature, qualifications" & _
+SQL2 = "SELECT inspecID, inspecDate, Inspections.projectName, Inspections.projectPhase, projectAddr, projectCity, projectState, " & _
+	"projectZip, projectCounty, onsiteContact, officePhone, emergencyPhone, compName, " & _
+	"compAddr, compAddr2, compCity, compState, compZip, compPhone, compContact, contactPhone, " & _
+	"contactFax, contactEmail, reportType, inches, bmpsInPlace, " & _
+	"sediment, narrative, firstName, lastName, signature, qualifications, includeItems, compliance, totalItems, completedItems" & _
 	" FROM Inspections, Projects, Users" & _
 	" WHERE inspecDate = '" & inspecDate &"' AND Inspections.projectid = "& projectID
 '--	" WHERE inspecDate = '" & inspecDate &"' AND Inspections.projectName='"&  Replace(projectName, "'", "''") &"'" 
@@ -68,7 +75,7 @@ qualifications= TRIM(RS2("qualifications"))
 IF IsNull(qualifications) THEN qualifications="" END IF %>
 <DIV style="page-break-after:always;">
 <% 	IF NOT(Session("validAdmin") OR Session("validInspector")) THEN %>
-<center><img src="../images/b&wlogoforreport.jpg" width="300"><br><br>
+<center><img src="../images/color_logo_report.jpg" width="300"><br><br>
 <%	End IF %>
 <font size="+1"><b>Inspection Report</b></font><hr noshade size="1" width="90%"></center>
 <table cellpadding="2" cellspacing="0" border="0" width="90%">
@@ -104,9 +111,10 @@ IF IsNull(qualifications) THEN qualifications="" END IF %>
 </table><%
 inspecID= RS2("inspecID")
 signature = Trim(RS2("signature"))
-coordSQLSELECT = "SELECT correctiveMods, coordinates, existingBMP" & _
-	" FROM Coordinates WHERE inspecID = " & inspecID &" ORDER BY orderby"
-Set rsCoord = connSWPPP.Execute(coordSQLSELECT)%>
+coordSQLSELECT = "SELECT coID, coordinates, existingBMP, correctiveMods, orderby, assignDate, completeDate, status, repeat, useAddress, address, locationName" &_
+	" FROM Coordinates WHERE inspecID=" & inspecID & " ORDER BY orderby"	
+'Response.Write(coordSQLSELECT)
+Set rsCoord = connSWPPP.execute(coordSQLSELECT)%>
 <p><center><div style="font-size: 10px"><%
 If RS2("projectState") = "OK" Then %><i>Inspectors familiar with the OPDES Permit OKR10 and the SWPPP should inspect disturbed areas of the site that have not been finally stabilized, areas used for storage of materials that are exposed to precipitation, structural controls (all erosion and sediment controls), discharge locations, locations where vehicles enter and exit the site, off-site material storage areas, overburden and stockpiles of dirt, borrow areas, equipment staging areas, vehicle repair areas, and fueling areas.</i><%
 Else %><i>Inspectors familiar with the TPDES Permit TXR150000 and the SWPPP should inspect disturbed areas of the site that have not been finally stabilized, areas used for storage of materials that are exposed to precipitation, structural controls (all erosion and sediment controls), discharge locations, locations where vehicles enter and exit the site, off-site material storage areas, overburden and stockpiles of dirt, borrow areas, equipment staging areas, vehicle repair areas, and fueling areas.</i><%
@@ -116,17 +124,48 @@ If rsCoord.EOF Then
 	Response.Write("<tr><td colspan='2' align='center'><i>There is no " & _
 		"coordinate data entered at this time.</i></td></tr>")
 Else
+	applyScoring = RS2("includeItems")
+	currentDate = date()
 	Do While Not rsCoord.EOF
+		coID = rsCoord("coID")
 		correctiveMods = Trim(rsCoord("correctiveMods"))
+		orderby = rsCoord("orderby")
 		coordinates = Trim(rsCoord("coordinates"))
-		existingBMP = Trim(rsCoord("existingBMP"))%>
-	<tr valign="top"><td width="30%" align="right"><b>Locations (see Site Map):</b></td><td width="70%" align="left"><% = coordinates %><br></td></tr>
-<% IF TRIM(rsCoord("existingBMP"))<>"-1" THEN %>
-	<tr valign="top"> <td width="30%" align="right"><b>Existing BMP:</b></td><td width="70%" align="left"><% = existingBMP %><br></td></tr>
-<% END IF %>
-	<tr valign="top"><td width="30%" align="right"><b>Corrective Modifications:</b></td><td width="70%" align="left"><% = correctiveMods %></td></tr>
-	<tr><td colspan="2"><hr noshade size="1" align="center" width="90%"></td></tr><%
-		rsCoord.MoveNext
+		existingBMP = Trim(rsCoord("existingBMP")) 
+		assignDate = rsCoord("assignDate") 
+		completeDate = rsCoord("completeDate")
+		status = rsCoord("status")
+		repeat = rsCoord("repeat")
+		useAddress = rsCoord("useAddress")
+		address = TRIM(rsCoord("address"))
+		locationName = TRIM(rsCoord("locationName"))
+		scoring_class = "black"
+		'Response.Write("ID: " & coID & ", Coord: " & coordinates & ", LocName: " & locationName & ", address: " & address & ", Mods: " & correctiveMods & "<br/>") 
+		IF applyScoring THEN
+			IF assignDate = "" THEN
+				age = 0
+			ELSE
+				age = datediff("d",assignDate,currentDate) 
+			END IF
+			IF age > 7 THEN
+				scoring_class = "red"
+			END IF
+		END IF
+		IF useAddress THEN %>
+			<tr valign='top'><td width='20%' align='right'><b>location:</b></td>	<td width='80%' align='left' class = '<%=scoring_class%>'><%=locationName%><br></td></tr>
+			<tr valign='top'><td width='20%' align='right'><b>address:</b></td>	<td width='80%' align='left' class = '<%=scoring_class%>'><%=address%><br></td></tr>
+		<% ELSE %>
+			<tr valign='top'><td width='20%' align='right'><b>location:</b></td>	<td width='80%' align='left' class = '<%=scoring_class%>'><%=coordinates%><br></td></tr>
+		<% END IF
+		IF TRIM(rsCoord("existingBMP"))<>"-1" THEN %>
+			<tr valign='top'><td width='20%' align='right'><b>existing BMP:</b></td><td width='80%' align='left' class = '<%=scoring_class%>'><%=existingBMP%><br></td></tr>
+		<% END IF %>
+		<tr valign='top'><td width='20%' align='right'><b>action needed:</b></td><td width='80%' align='left' class = '<%=scoring_class%>'><%=correctiveMods%></td></tr>
+		<% IF applyScoring and repeat THEN %>
+			<tr valign='top'><td width='20%' align='right'><b>item age:</b></td><td width='80%' align='left' class = '<%=scoring_class%>'><%=age%><br></td></tr>
+		<% END IF %>
+		<tr><td colspan='2'><hr noshade size='1' align='center' width='90%'></td></tr>
+		<% rsCoord.MoveNext
 	Loop
 End If ' END No Results Found
 rsCoord.Close

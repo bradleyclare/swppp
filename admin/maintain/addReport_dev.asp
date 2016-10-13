@@ -10,7 +10,7 @@ default = Request("default")
 
 If default = "" Then Response.Redirect("reportSelect.asp") End If
 %>
-<!-- #include virtual="admin/connSWPPP.asp" -->
+<!-- #include file="../connSWPPP.asp" -->
 <%
 companyID = Request("companyID")
 
@@ -128,7 +128,7 @@ Set connReport = connSWPPP.execute(reportSQLSELECT)
 <script language="JavaScript" src="../js/validReports1.2.js"></script>
 </head>
 <body>
-<!-- #include virtual="admin/adminHeader2.inc" -->
+<!-- #include file="../adminHeader2.inc" -->
 <h1>Add Inspection Report</h1>
 <form method="post" action="<% = Request.ServerVariables("script_name") %>" onSubmit="return isReady(this)";>
     <table width="90%" border="0" align="center" cellpadding="2" cellspacing="0">

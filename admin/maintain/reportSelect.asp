@@ -8,29 +8,27 @@ End If
 recordOrd = Request("orderBy")
 If recordOrd = "" Then recordOrd = "inspecDate" End If
 %>
-<!-- #include virtual="admin/connSWPPP.asp" -->
+<!-- #include file="../connSWPPP.asp" -->
 <html>
-	<head>
-	<title>SWPPP INSPECTIONS : Select New or Default Inspection Report</title>
-	<link rel="stylesheet" type="text/css" href="../../global.css"/>
+<head>
+<title>SWPPP INSPECTIONS : Select New or Default Inspection Report</title>
+<link rel="stylesheet" type="text/css" href="../../global.css"/>
 </head>
 <body>
-	<!-- #include virtual="admin/adminHeader2.inc" -->
-	
-	<div class="six columns alpha">
-		<h3>Select New or Default Inspection Report</h3>
-	</div>
-	<div class="six columns omega">
-		<form method="post" name="form_new_report" action="newReport.asp">
-			<input type="submit" value="New Inspection Report"/>
-		</form>
-	</div>
-	<p>Or, choose an inspection report using default company and inspection data.</p>
+<!-- #include file="../adminHeader2.inc" -->
+<h1>Select New or Default Inspection Report</h1>
+<table width="90%" border="0">
+	<form method="post" name="form_new_report" action="newReport.asp">
+		<tr><td colspan="3" align="center"><input type="submit" value="Enter an Inspection Report with New Project Information"/></td>
+	</form>
+		</tr><tr><td colspan="3"><img alt="" src="../../images/dot.gif" width="5" height="5" /></td>
+		</tr><tr align="center"><td colspan="3">Or, choose an inspection report using default company and inspection data.</td>
 	<form method="post" name="form1" action="addReport.asp">
-	<table width="100%" border="0">
-		<tr><th width="15%"><a href="<%= Request.ServerVariables("script_name") %>?orderBy=inspecDate"><b>Date</b></a></th>
-		<th><a href="<%= Request.ServerVariables("script_name") %>?orderBy=projectName"><b>Company</b></a></th>
-		<th width="15%"><input type=submit value="Create Inspections" /></th>
+		</tr><tr><td colspan="3">&nbsp;</td>
+		</tr><tr><th width="15%"><a href="<%= Request.ServerVariables("script_name") %>?orderBy=inspecDate"><b>Date</b></a></th>
+			<th width="1080"><a href="<%= Request.ServerVariables("script_name") %>?orderBy=projectName"><b>Company</b></a></th>
+			<th width="16%"><input type=submit value="Create Inspections" /></th>
+		</tr><tr><td colspan="3"><img alt="" src="../../images/dot.gif" width="5" height="5"/></td>
 		</tr>
 <%	SQL0=" SELECT i.inspecID, i.inspecDate, i.projectName, i.projectPhase, p.projectID "&_
         " FROM Inspections i inner join Projects p on i.projectid = p.projectid inner join (" &_
@@ -64,8 +62,7 @@ rsReports2.Close
 Set rsReports2 = Nothing
 connSWPPP.Close
 Set connSWPPP = Nothing %>
-		</table>
-		</div>
 	</form>
+</table>
 </body>
 </html>

@@ -6,7 +6,7 @@ Session("adminReturnTo") = Request.ServerVariables("path_info") & "?imageID=" & 
 If Not Session("validAdmin") And Not Session("validInspector") Then
 	Response.Redirect("loginUser.asp")
 End If
-%> <!-- #include virtual="admin/connSWPPP.asp" --> <%
+%> <!-- #include file="../connSWPPP.asp" --> <%
 If Request.Form.Count > 0 Then
 	Function strQuoteReplace(strValue)
 		strQuoteReplace = Replace(strValue, "'", "''")
@@ -38,7 +38,7 @@ inspecID=Session("inspecID") %>
 	<script language="JavaScript" src="../js/validReports1.2.js"></script>
 </head>
 <body>
-<!-- #include virtual="admin/adminHeader2.inc" -->
+<!-- #include file="../adminHeader2.inc" -->
 <h1>Edit Image Association</h1>	
 <table width="90%" border="0" align="center" cellpadding="2" cellspacing="0">
 <form method="post" action="<% = Request.ServerVariables("script_name") %>">

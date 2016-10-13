@@ -1,5 +1,5 @@
 <%@ Language="VBScript" %>
-<!-- #include virtual="admin/connSWPPP.asp" --><%
+<!-- #include file="../admin/connSWPPP.asp" --><%
 inspecID = Request("inspecID")
 inspecSQLSELECT = "SELECT inspecDate, Inspections.projectName, Inspections.projectPhase, projectAddr, projectCity, projectState, " & _
 	"projectZip, projectCounty, onsiteContact, officePhone, emergencyPhone, compName, " & _

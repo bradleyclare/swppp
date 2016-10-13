@@ -1,5 +1,5 @@
 <%@ Language="VBScript" %>
-<!-- #include virtual="admin/connSWPPP.asp" --> <%
+<!-- #include file="../connSWPPP.asp" --> <%
 If Not Session("validAdmin") Then
 	Session("adminReturnTo") = Request.ServerVariables("path_info") & _
 		"?" & Request.ServerVariables("query_string")
@@ -27,7 +27,7 @@ SET RS1=connSWPPP.execute(SQL1)
 <script language="JavaScript" src="../js/validUpload.js"></script>
 <script language="JavaScript" src="../js/validUpload1.2.js"></script>
 </head>
-<!-- #include virtual="admin/adminHeader2.inc" -->
+<!-- #include file="../adminHeader2.inc" -->
 <table width="100%" border="0">
 	<tr><td><h1>SWPPP Inspections : Upload <%= imgType %> File</h1></td></tr>
 </table>

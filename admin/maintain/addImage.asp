@@ -8,7 +8,7 @@ End If
 
 inspecID = Session("inspecID")
 If Request.Form.Count > 0 Then
-%> <!-- #include virtual="admin/connSWPPP.asp" --> <%
+%> <!-- #include file="../connSWPPP.asp" --> <%
 	Function strQuoteReplace(strValue)
 		strQuoteReplace = Replace(strValue, "'", "''")
 	End Function
@@ -32,7 +32,7 @@ If Request.Form.Count > 0 Then
 	end if
 end if
 
-%> <!-- #include virtual="admin/connSWPPP.asp" --> <%
+%> <!-- #include file="../connSWPPP.asp" --> <%
 SQLSELECT = "SELECT projectName" &_
 	" FROM Inspections" &_
 	" WHERE inspecID=" & inspecID
@@ -42,7 +42,7 @@ Set connReport = connSWPPP.execute(SQLSELECT) %>
 	<link rel="stylesheet" type="text/css" href="../../global.css">
 	<script language="JavaScript" src="../js/validAddImage.js"></script></head>
 <body>
-<!-- #include virtual="admin/adminHeader2.inc" -->
+<!-- #include file="../adminHeader2.inc" -->
 <h1>Add Image Association</h1><% 
 If smallImageBlank then %>
 	<font color="#FF0000">Small image is blank. Please select a small image.</font><br><br>

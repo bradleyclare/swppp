@@ -11,7 +11,7 @@ Then
 End If
 
 projectCounty = Request("cnty")
-%><!-- #include virtual="admin/connSWPPP.asp" --><%
+%><!-- #include file="../admin/connSWPPP.asp" --><%
 If Session("validAdmin") Then
 	projInfoSQLSELECT = "SELECT DISTINCT i.projectID, p.projectName, i.projectPhase" & _
 		" FROM Inspections as i inner join Projects as p on i.projectid = p.projectid WHERE i.projectCounty = " & "'" & projectCounty & "'" &_
@@ -33,7 +33,7 @@ projectName = Trim(rsProjInfo("projectName")) %>
 <link href="../global.css" rel="stylesheet" type="text/css">
 </head>
 <body bgcolor="#FFFFFF" text="#000000">
-<!-- #include virtual="header2.inc" -->
+<!-- #include file="../header2.inc" -->
 <h1>What is the project name?</h1>
 <% '----- (projectCounty & " : " & companyName) --- original h2 code %>
 <table width="100%" cellpadding="0" cellspacing="0" background="0">

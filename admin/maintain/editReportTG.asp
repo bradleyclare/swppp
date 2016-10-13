@@ -9,7 +9,7 @@ IF Request("inspecID")<>"" THEN
 	inspecID = Request("inspecID")
 	Session("inspecID")=inspecID
 END IF
-%><!-- #include virtual="admin/connSWPPP.asp" --><%
+%><!-- #include file="../connSWPPP.asp" --><%
 If Request.Form.Count > 0 Then
 	Function strQuoteReplace(strValue)
 		strQuoteReplace = Replace(strValue, "'", "''")
@@ -103,7 +103,8 @@ End If
 		" WHERE i.projectID = p.projectID AND inspecID = " & inspecID
 '--Response.Write(inspecSQLSELECT & "<br>")
 	Set rsReport = connSWPPP.execute(inspecSQLSELECT)
-baseDir = Request.ServerVariables("APPL_PHYSICAL_PATH")%>
+'baseDir = "d:\vol\swpppinspections.com\www\htdocs\"
+baseDir = "C:\Inetpub\wwwroot\swppp"%>
 <html>
 <head>
 	<title>SWPPP INSPECTIONS : Edit Inspection Report</title>
@@ -171,7 +172,7 @@ function swapOption(t1, t2, slideDir) {
 //--></script>
 </head>
 <body>
-<!-- #include virtual="admin/adminHeader2.inc" -->
+<!-- #include file="../adminHeader2.inc" -->
 <h1>Edit Inspection Report</h1>
 <table width="90%" border="0" align="center" cellpadding="2" cellspacing="0">
 	<form id="theForm" method="post" action="<% = Request.ServerVariables("script_name") %>" onsubmit="return isReady(this)";>

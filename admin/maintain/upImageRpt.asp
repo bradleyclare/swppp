@@ -1,5 +1,5 @@
 <%@ Language="VBScript" %>
-<!-- #include virtual="admin/connSWPPP.asp" --> 
+<!-- #include file="../connSWPPP.asp" --> 
 <!-- #include file="freeASPUpload.asp" --><%
   
 If Not Session("validAdmin") Then
@@ -20,7 +20,7 @@ SET RS1=connSWPPP.execute(SQL1)
 	Session("oitID")=oitID
 	imgDir=Trim(RS1("oitName"))
 	imgType=Trim(RS1("oitDesc"))
-	baseDir = Request.ServerVariables("APPL_PHYSICAL_PATH") %>
+	baseDir = "d:\Inetpub\wwwroot\swppp\images\" %>
 <!doctype html public "-//w3c//dtd html 4.0 transitional//en">
 <html>
 <head>
@@ -29,7 +29,7 @@ SET RS1=connSWPPP.execute(SQL1)
 <script language="JavaScript" src="../js/validUpload.js"></script>
 <script language="JavaScript" src="../js/validUpload1.2.js"></script>
 </head>
-<!-- #include virtual="admin/adminHeader2.inc" -->
+<!-- #include file="../adminHeader2.inc" -->
 <table width="100%" border="0">
 	<tr><td><h1>SWPPP Inspections : Upload <%= imgType %> File</h1></td></tr>
 </table>

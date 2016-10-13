@@ -9,7 +9,7 @@ End If
 userID = TRIM(Request("IDuser")) '--- name userID would conflict with user rights names
 listUserID = TRIM(Session("userID")) '--- the user ID used to determine what projects are visible.
 companyID = Request("companyID")
-%> <!-- #include virtual="admin/connSWPPP.asp" --> <%
+%> <!-- #include file="../connSWPPP.asp" --> <%
 processed=false
 If Request.Form.Count > 0 Then
 	highestRights="user"
@@ -166,58 +166,50 @@ End If
 	<script language="JavaScript" src="../js/validUsers.js"></script>
 	<script language="JavaScript" src="../js/validUsers1.2.js"></script>
 </head>
-<!-- #include virtual="admin/adminHeader2.inc" -->
-
-<form action="<%= Request.ServerVariables("script_name") %>" method="post" onSubmit="return isReady(this)";>
+<!-- #include file="../adminHeader2.inc" -->
+<table width="100%" border="0">
+	<form action="<%= Request.ServerVariables("script_name") %>" method="post" onSubmit="return isReady(this)";>
 	<input type="hidden" name="IDuser" value="<%= userID %>">
-	
-	<h1>Edit User</h1>
-	
-	<div class="two columns alpha">Date Entered</div>
-	<div class="one columns"><%= dateEntered %></div>
-	<div class="two columns">View Images</div>
-	<div class="one columns">
-		<input type="radio" name="noImages" value="0"<% IF noImages=0 THEN %> checked<% END IF%>>Yes
-		<input type="radio" name="noImages" value="1"<% IF noImages=1 THEN %> checked<% END IF%>>No
-	</div>
-	<div class="three columns"><input type="submit" value="Update User"></div>
-	<div class="three columns omega"><input type="button" value="Delete User" onClick="location='deleteUser.asp?IDuser=<%= Request("IDuser") %>'; return false";></div>
-	<div class="cleaner"></div>
-	
-	<div class="two columns alpha">First Name</div>
-	<div class="four columns"><input type="text" name="firstName" value="<%= firstName %>"></div>
-	<div class="two columns">Last Name</div>
-	<div class="four columns omega"><input type="text" name="lastName"	value="<%= lastName %>"></div>
+		<tr><td colspan="2" align="center"><input type="button" value="Delete User" 
+			onClick="location='deleteUser.asp?IDuser=<%= Request("IDuser") %>'; return false";></td></tr>
+		<tr><td colspan="2"><h1>Edit User</h1></td></tr>
+		<tr><td width="35%" align="right">date entered:</td>
+			<td width="65%"><%= dateEntered %></td></tr>
+		<tr><td width="35%" align="right">first name:</td>
+			<td width="65%"><input type="text" name="firstName" size="20" maxlength="20" 
+				value="<%= firstName %>"></td></tr>
+		<tr><td align="right">last name:</td>
+			<td><input type="text" name="lastName" size="20" maxlength="20" 
+				value="<%= lastName %>"></td></tr>
+<% If Session("validAdmin") then 'only admin may set rights for other admin, directors and inspectors %>		
+		<tr><td align="right"eEmail:</td>
+			<td><input type="text" name="email" size="30" maxlength="50" value="<%= email %>"></td></tr>
+		<tr><td align="right">password:</td>
+			<td><input type="password" name="pswrd" size="8" maxlength="8"
+				value="<%= pswrd %>">&nbsp;&nbsp;<input type="button" value="View" 
+					onClick="alert('Password: ' + form.pswrd.value)";></td></tr>
+		<tr><td align="right">signature file:</td>
+			<td><select name="signature">
 
-	<div class="two columns alpha">Email</div>
-	<div class="ten columns omega"><input type="text" name="email" value="<%= email %>"></div>
-	
-<% If Session("validAdmin") then 'only admin may set rights for other admin, directors and inspectors %>
-	<div class="two columns alpha">Password</div>
-	<div class="eight columns"><input type="password" name="pswrd" value="<%= pswrd %>"></div>
-	<div class="two columns omega"><input type="button" value="View" onClick="alert('Password: ' + form.pswrd.value)";></div>
-	
-	<div class="two columns alpha">Signature File</div>
-	<div class="six columns">
-		<select name="signature">
-			<%' get gif directory
-			Set folderServerObj = Server.CreateObject("Scripting.FileSystemObject")
-			Set objFolder = folderServerObj.GetFolder(Request.ServerVariables("APPL_PHYSICAL_PATH") &"images\signatures\")
-			Set gifDirectory = objFolder.Files
+<%' get gif directory
+Set folderServerObj = Server.CreateObject("Scripting.FileSystemObject")
+Set objFolder = folderServerObj.GetFolder(Request.ServerVariables("APPL_PHYSICAL_PATH") &"images\signatures\")
+Set gifDirectory = objFolder.Files
 
-			For Each gifFile In gifDirectory
-				fileName = gifFile.Name %>
-								<option value="<% = fileName %>"<% If signature = fileName Then %> selected<% End If %>><% = fileName %></option>
-			<% Next
-			Set objFolder = Nothing
-			Set gifDirectory = Nothing %>
-		</select>
-	</div>
-	<div class="four columns omega"><input type="button" value="Upload Signature File" onClick="location='upSigEditUser.asp?userID=<%= userID %>'; return false";></div>
+For Each gifFile In gifDirectory
+	fileName = gifFile.Name %>
+					<option value="<% = fileName %>"<% If signature = fileName Then %> selected<% End If %>><% = fileName %></option>
+<% Next
+Set objFolder = Nothing
+Set gifDirectory = Nothing %>
+				</select>&nbsp;&nbsp;<input type="button" value="Upload Signature File" 
+					onClick="location='upSigEditUser.asp?userID=<%= userID %>'; return false";></td></tr>
 
-	<div class="two columns alpha">Qualifications</div>
-	<div class="ten columns omega"><textarea cols="50" rows="3" name="qualifications"><%= REPLACE(qualifications,"#@#","'") %></textarea></div>
-
+		<tr><td align="right">View Images:</td>
+			<td><input type="radio" name="noImages" value="0"<% IF noImages=0 THEN %> checked<% END IF%>>Yes
+				<input type="radio" name="noImages" value="1"<% IF noImages=1 THEN %> checked<% END IF%>>No</td></tr>
+		<tr><td align="right" valign=top>Qualifications:</td>
+			<td><TEXTAREA cols="50" rows="3" name="qualifications"><%= REPLACE(qualifications,"#@#","'") %></TEXTAREA></td></tr>
 <% ELSE %>
 	<INPUT type="hidden" name="email" value="<%= email %>">
 	<INPUT type="hidden" name="pswrd" value="<%= pswrd %>">
@@ -225,10 +217,10 @@ End If
 	<INPUT type="hidden" name="noImages" value="<%= noImages %>">
 	<INPUT type="hidden" name="qualifications" value="<%= REPLACE(qualifications,"#@#","'") %>">
 <% END IF %>
-
+</TABLE>
 <!--- ----------------------------------------- Rights --------------------------------------- --->
-<h3>Rights</h3>
-<table width="100%" border="0">		
+<table width="100%" border="0">
+		<tr><td align="left"><br><font size="+1">Rights</font><br><br></td></tr>		
 <% 	If Session("validAdmin") then 'only admin may set rights for other admin, directors and inspectors %>
 <% 	SQLSELECT = "SELECT rights FROM Users" & _
 		" WHERE userID = "& userID &" AND rights='admin'"
@@ -359,10 +351,9 @@ DO WHILE NOT RS1.EOF
 		END IF
 	END IF
 LOOP %>
-		<TR><TD align="center" colspan=5><br><br><input type="submit" value="Update User"></TD></TR>
+		<TR><TD align="center" colspan=5><br><br><input type="submit" value="Edit User"></TD></TR>
 	</form>
 </table>
-</div>
 </body>
 </html>
 <%'--	Release Resources ---------------------------------------------------------------------------

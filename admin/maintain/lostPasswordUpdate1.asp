@@ -9,7 +9,7 @@ If Request.Form.Count > 0 Then
 	SQLSELECT = "SELECT userID, pswrd, firstName, lastName" &_
 		" FROM Users" & _
 		" WHERE email = '" & Request("email") & "'"
-	%> <!-- #include virtual="admin/connSWPPP.asp" --> <%
+	%> <!-- #INCLUDE FILE="../connSWPPP.asp" --> <%
 '	Response.Write(SQLSELECT & "<br>")
 	Set connUsers = connSWPPP.execute(SQLSELECT)
 

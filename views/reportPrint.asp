@@ -1,11 +1,11 @@
 <%@ Language="VBScript" %>
-<!-- #include virtual="admin/connSWPPP.asp" --><%
+<!-- #include file="../admin/connSWPPP.asp" --><%
 inspecID = Request("inspecID")
 inspecSQLSELECT = "SELECT inspecDate, Inspections.projectName, Inspections.projectPhase, projectAddr, projectCity, projectState, " & _
 	"projectZip, projectCounty, onsiteContact, officePhone, emergencyPhone, compName, " & _
 	"compAddr, compAddr2, compCity, compState, compZip, compPhone, compContact, contactPhone, " & _
 	"contactFax, contactEmail, reportType, inches, bmpsInPlace, " & _
-	"sediment, narrative, firstName, lastName, signature, qualifications" & _
+	"sediment, narrative, firstName, lastName, signature, qualifications, includeItems, compliance, totalItems, completedItems" & _
 	" FROM Inspections, Projects, Users" & _
 	" WHERE inspecID = " & inspecID & _
 	" AND Inspections.projectID = Projects.projectID" & _
@@ -33,10 +33,15 @@ IF IsNull(qualifications) THEN qualifications="" END IF %>
 <head>
 <title>SWPPP INSPECTIONS - Print Report</title>
 <link rel="stylesheet" type="text/css" href="../global.css">
+<style>
+	.red{color: #F52006;}
+	.orange{color: #F58C06;}
+	.yellow{color: #FFC300;}
+	.black{color: black;}
+</style>
 </head>
 <body bgcolor="#ffffff" marginwidth="30" leftmargin="30" marginheight="15" topmargin="15">
-<center>
-<br/><img src="../images/b&wlogoforreport.jpg" width="300"><br><br>
+<center><img src="../images/color_logo_report.jpg" width="300"><br><br>
 <font size="+1"><b>Inspection Report</b></font><hr noshade size="1" width="90%"></center>
 <table cellpadding="2" cellspacing="0" border="0" width="90%">
 	<!-- date -->
@@ -132,11 +137,10 @@ IF IsNull(qualifications) THEN qualifications="" END IF %>
 </table><%
 signature = Trim(rsInspec("signature"))
 
-coordSQLSELECT = "SELECT correctiveMods, coordinates, existingBMP" & _
-	" FROM Coordinates" & _
-	" WHERE inspecID = " & inspecID & _
-	" ORDER BY orderby"
-Set rsCoord = connSWPPP.Execute(coordSQLSELECT)%>
+coordSQLSELECT = "SELECT coID, coordinates, existingBMP, correctiveMods, orderby, assignDate, completeDate, status, repeat, useAddress, address, locationName" &_
+	" FROM Coordinates WHERE inspecID=" & inspecID & " ORDER BY orderby"	
+'Response.Write(coordSQLSELECT)
+Set rsCoord = connSWPPP.execute(coordSQLSELECT)%>
 <p>
 	<center><div style="font-size: 10px"><%
 If rsInspec("projectState") = "OK" Then %>
@@ -161,28 +165,48 @@ If rsCoord.EOF Then
 	Response.Write("<tr><td colspan='2' align='center'><i>There is no " & _
 		"coordinate data entered at this time.</i></td></tr>")
 Else
+	applyScoring = rsInspec("includeItems")
+	currentDate = date()
 	Do While Not rsCoord.EOF
+		coID = rsCoord("coID")
 		correctiveMods = Trim(rsCoord("correctiveMods"))
+		orderby = rsCoord("orderby")
 		coordinates = Trim(rsCoord("coordinates"))
-		existingBMP = Trim(rsCoord("existingBMP"))%>
-	<tr valign="top"> 
-		<td width="30%" align="right"><b>Location (see Site Map):</b></td>
-		<td width="70%" align="left"><% = coordinates %><br></td>
-	</tr>
-<% IF TRIM(rsCoord("existingBMP"))<>"-1" THEN %>
-	<tr valign="top"> 
-		<td width="30%" align="right"><b>Existing BMP:</b></td>
-		<td width="70%" align="left"><% = existingBMP %><br></td>
-	</tr>
-<% END IF %>
-	<tr valign="top"> 
-		<td width="30%" align="right"><b>Corrective Modifications:</b></td>
-		<td width="70%" align="left"><% = correctiveMods %></td>
-	</tr>
-	<tr>
-		<td colspan="2"><hr noshade size="1" align="center" width="90%"></td>
-	</tr><%
-		rsCoord.MoveNext
+		existingBMP = Trim(rsCoord("existingBMP")) 
+		assignDate = rsCoord("assignDate") 
+		completeDate = rsCoord("completeDate")
+		status = rsCoord("status")
+		repeat = rsCoord("repeat")
+		useAddress = rsCoord("useAddress")
+		address = TRIM(rsCoord("address"))
+		locationName = TRIM(rsCoord("locationName"))
+		scoring_class = "black"
+		'Response.Write("ID: " & coID & ", Coord: " & coordinates & ", LocName: " & locationName & ", address: " & address & ", Mods: " & correctiveMods & "<br/>") 
+		IF applyScoring THEN
+			IF assignDate = "" THEN
+				age = 0
+			ELSE
+				age = datediff("d",assignDate,currentDate) 
+			END IF
+			IF age > 7 THEN
+				scoring_class = "red"
+			END IF
+		END IF
+		IF useAddress THEN %>
+			<tr valign='top'><td width='20%' align='right'><b>location:</b></td>	<td width='80%' align='left' class = '<%=scoring_class%>'><%=locationName%><br></td></tr>
+			<tr valign='top'><td width='20%' align='right'><b>address:</b></td>	<td width='80%' align='left' class = '<%=scoring_class%>'><%=address%><br></td></tr>
+		<% ELSE %>
+			<tr valign='top'><td width='20%' align='right'><b>location:</b></td>	<td width='80%' align='left' class = '<%=scoring_class%>'><%=coordinates%><br></td></tr>
+		<% END IF
+		IF TRIM(rsCoord("existingBMP"))<>"-1" THEN %>
+			<tr valign='top'><td width='20%' align='right'><b>existing BMP:</b></td><td width='80%' align='left' class = '<%=scoring_class%>'><%=existingBMP%><br></td></tr>
+		<% END IF %>
+		<tr valign='top'><td width='20%' align='right'><b>action needed:</b></td><td width='80%' align='left' class = '<%=scoring_class%>'><%=correctiveMods%></td></tr>
+		<% IF applyScoring and repeat THEN %>
+			<tr valign='top'><td width='20%' align='right'><b>item age:</b></td><td width='80%' align='left' class = '<%=scoring_class%>'><%=age%><br></td></tr>
+		<%END IF
+		<tr><td colspan='2'><hr noshade size='1' align='center' width='90%'></td></tr>
+		<% rsCoord.MoveNext
 	Loop
 End If ' END No Results Found
 %>

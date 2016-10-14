@@ -294,9 +294,9 @@ var params = "height=420,width=520,status=yes,toolbar=no,menubar=no, directories
 
 function useAddressLookup(obj){
 	var parts = obj.name.split(":");
-	var selectname = "coord:locationName:" + parts[2];
+	var selectname = "coord:addOptions:" + parts[2];
 	var s = document.getElementsByName(selectname);
-	var selectname2 = "coord:addressName:" + parts[2];
+	var selectname2 = "coord:address:" + parts[2];
 	var s2 = document.getElementsByName(selectname2);
 	var selectname3 = "coord:coord:" + parts[2];
 	var s3 = document.getElementsByName(selectname3);
@@ -335,61 +335,12 @@ function setSelectValue(obj){
 	s3[0].value     = obj.value.trim();
 }
 
-function displayAddressSelect(obj) {
-    var parts = obj.name.split(":");
-    var num = parts[2];
-
-    //display the select div
-    var s1 = document.getElementsByName("addressOptionsPopup");
-    s1[0].className = "addressOptionsPopup show";
-
-    //set the hidden div in the select div to remember what number we are modifying
-    var s2 = document.getElementsByName("currentAddressNum");
-    s2[0].value = num;
-}
-
-function setAddress(obj) {
-
-    //get number from hidden div
-    var s1 = document.getElementsByName("currentAddressNum");
-    var num = s1[0].value;
-
-    //get the dropdown options
-    var sl = document.getElementsByName("locationOptions");
-    var selectedName = sl[0].value;
-
-    //get address dropdown options
-    var sa = document.getElementsByName("addressOptions");
-    sa[0].selectedIndex = sl[0].selectedIndex;
-    var selectedAddress = sa[0].value;
-
-    //set the hidden object to keep address name
-    var hiddenname2 = "coord:addressName:" + num;
-    var s3 = document.getElementsByName(hiddenname2);
-    s3[0].value = selectedAddress;
-
-    //set the hidden object for locationName
-    var hiddenname3 = "coord:locationName:" + num;
-    var s4 = document.getElementsByName(hiddenname3);
-    s4[0].value = selectedName;
-
-    //hide the select div
-    var s0 = document.getElementsByName("addressOptionsPopup");
-    s0[0].className = "addressOptionsPopup hide";
-}
-
-function close_popup(){
-    //hide the select div
-    var s0 = document.getElementsByName("addressOptionsPopup");
-    s0[0].className = "addressOptionsPopup hide";
-}
-
 </script>
 </head>
 <body>
 <!-- #include file="../adminHeader2.inc" -->
 <h1>Edit Inspection Report</h1>
-<form id="theForm" method="post" action="<%=Request.ServerVariables("script_name") %>" onsubmit="return isReady(this)";>
+<form id="theForm" method="post" action="<%=Request.ServerVariables("script_name")%>?inspecID=<%=inspecID%>" onsubmit="return isReady(this)";>
 	<input type="hidden" name="inspecID" value="<%=inspecID %>"/>
 	<input type="hidden" name="projectID" value="<%=rsReport("projectID") %>"/>
 	
@@ -469,6 +420,8 @@ End If%>
 	<input id='includeItems-checkbox' type="checkbox" name="includeItems" />
 <% End If %>
 </td></tr></table><br/>
+<center>Click "Repeat" on all items that you want the assign date to stay the same. All other items will be updated to the current date on SUBMIT.</center><br/>
+<table width="90%" border="0" align="center" cellpadding="2" cellspacing="0">
 <% coordSQLSELECT = "SELECT coID, coordinates, existingBMP, correctiveMods, orderby, assignDate, completeDate, status, repeat, useAddress, address, locationName" &_
 	" FROM Coordinates WHERE inspecID=" & inspecID & " ORDER BY orderby"	
 'Response.Write(coordSQLSELECT)
@@ -476,48 +429,6 @@ Set rsCoord = connSWPPP.execute(coordSQLSELECT)
 addressSQLSELECT = "SELECT addressID, locationName, address FROM Addresses WHERE projectID=" & rsReport("projectID") & " ORDER BY locationName"
 'Response.Write(addressSQLSELECT)
 Set rsAddress = connSWPPP.execute(addressSQLSELECT)
-'create single popup list to display when user wants to modify the address
-%>
-<div class="addressOptionsPopup hide" name="addressOptionsPopup">
-<h3>Select Coordinates Here:</h3>
-<input type="hidden" name="currentAddressNum" value="1" />
-<select name="locationOptions" onchange="setAddress(this)">
-<% if not rsAddress.EOF Then
-    cnt = 0
-	Do While Not rsAddress.EOF 
-        cnt = cnt + 1
-        if (cnt = 1) Then
-            name1 = TRIM(rsAddress("locationName")) 
-        End If
-		name = TRIM(rsAddress("locationName")) %>
-		<option value="<%=name%>"><%=name%></option>
-	<% rsAddress.MoveNext
-	Loop 
-	rsAddress.MoveFirst
-End If %>
-</select>
-<br /><br />
-<select name="addressOptions" disabled >
-<% if not rsAddress.EOF Then
-    cnt = 0
-	Do While Not rsAddress.EOF 
-        cnt = cnt + 1
-        if (cnt = 1) Then
-			addname1 = TRIM(rsAddress("address"))
-        End If
-		name = TRIM(rsAddress("address")) %>
-		<option value="<%=name%>"><%=name%></option>
-	<% rsAddress.MoveNext
-	Loop 
-	rsAddress.MoveFirst
-End If %>
-</select>
-<br /><br />
-<input type="button" onclick="close_popup()" value="Close Window" />
-</div>
-<center>Click "Repeat" on all items that you want the assign date to stay the same. All other items will be updated to the current date on SUBMIT.</center><br/>
-<table width="90%" border="0" align="center" cellpadding="2" cellspacing="0">
-<% 
 'If rsCoord.EOF Then
 '	Response.Write("<tr><td colspan='2' align='center'><i>There is no data at this time.</i></td></tr>")		
 'Else
@@ -537,6 +448,11 @@ End If %>
 		address = TRIM(rsCoord("address"))
 		locationName = TRIM(rsCoord("locationName"))
 		'Response.Write("ID: " & coID & ", Coord: " & coordinates & ", LocName: " & locationName & ", address: " & address & ", Mods: " & correctiveMods & "<br/>") 
+		Do While Not rsAddress.EOF
+			name1 = TRIM(rsAddress("locationName")) 
+			addname1 = TRIM(rsAddress("address"))
+			Exit Do
+		Loop
 		%>
 	<input type="hidden" name="coord:coID:<%= n %>" value="<%= coID %>" />
 	<input type="hidden" name="coord:status:<%= n %>" value="<%= status %>" />
@@ -549,18 +465,49 @@ End If %>
 	<% End If %>
 	/></td>
 	<td>
-    <input type="text" name="coord:locationName:<%= n %>" onclick="displayAddressSelect(this)" value="<%=locationName %>"
+	<select name="coord:addOptions:<%= n %>" onchange="setSelectValue(this)" 
 	<% if (useAddress) = False Then %>
 		class="hide"
 	<% End If %>
-	/></td>
-	<td>
-    <input type="text" name="coord:addressName:<%= n %>" value="<%=address%>"
+	>
+	<% selname = name1
+	if not rsAddress.EOF Then
+	Do While Not rsAddress.EOF 
+		name = TRIM(rsAddress("locationName")) 
+		addname = TRIM(rsAddress("address"))
+		if StrComp(address,addname) = 0 Then 
+			selname = name %>
+			<option value="<%=name%>" selected><%=name%></option>
+		<% Else %>
+			<option value="<%=name%>"><%=name%></option>
+		<% End If 
+		rsAddress.MoveNext
+	Loop 
+	rsAddress.MoveFirst 
+	End If %>
+	</select></td>
+	<input type="hidden" name="coord:locationName:<%= n %>" value="<%=selname%>" />
+	<td><select name="coord:address:<%= n %>" disabled  
 	<% if (useAddress) = False Then %>
 		class="hide"
 	<% End If %>
-	disabled /></td>    
-    </tr>
+	>
+	<% selname = addname1 
+	if not rsAddress.EOF Then
+	Do While Not rsAddress.EOF 
+		addname = TRIM(rsAddress("address"))
+		if StrComp(address,addname) = 0 Then 
+			selname = addname %>
+			<option value="<%=addname%>" selected><%=addname%></option>
+		<% Else %>
+			<option value="<%=addname%>"><%=addname%></option>
+		<% End If
+		rsAddress.MoveNext
+	Loop 
+	rsAddress.MoveFirst
+	End If %>
+	</select></td></tr>
+	<input type="hidden" name="coord:addressName:<%= n %>" value="<%=selname%>" />
 	<tr><td>Order</td>
 	<td><input type="text" name="coord:orderby:<%= n %>" size="10" value="<% = orderby %>" /></td>
 	<td>Location Info:</td>
@@ -604,10 +551,36 @@ Set rsCoord = Nothing %>
 	<tr><td>ID#</td>
 	<td>0</td>
 	<td>Address<input type="checkbox" name="coord:useAddress:<%= m %>" onclick="useAddressLookup(this)"/></td>
-	<td>
-    <input type="text" name="coord:locationName:<%= m %>" onclick="displayAddressSelect(this)" value="<%=name1 %>" class="hide" /></td>
-	<td>
-    <input type="text" name="coord:addressName:<%= m %>" value="<%=addname1 %>" class="hide" /></td></tr>
+	<td><select name="coord:addOptions:<%= m %>" onchange="setSelectValue(this)" class="hide">
+	<% selname = name1
+	if not rsAddress.EOF Then
+	Do While Not rsAddress.EOF 
+		name = TRIM(rsAddress("locationName")) 
+		If m = n Then
+			selname = name
+		End If %>
+		<option value="<%=name%>"><%=name%></option>
+	<% rsAddress.MoveNext
+	Loop 
+	rsAddress.MoveFirst
+	End If %>
+	</select></td>
+	<input type="hidden" name="coord:locationName:<%= m %>" value="<%=selname%>" />
+	<td><select name="coord:address:<%= m %>" disabled class="hide">
+	<%	selname = addname1 
+	if not rsAddress.EOF Then
+	Do While Not rsAddress.EOF 
+		name = TRIM(rsAddress("address")) 
+		If m = n Then
+			selname = name
+		End If %>
+		<option value="<%=name%>"><%=name%></option>
+	<% rsAddress.MoveNext
+	Loop 
+	rsAddress.MoveFirst
+	End If %>
+	</select></td></tr>
+	<input type="hidden" name="coord:addressName:<%= m %>" value="<%=selname%>" />
 	<tr><td>Order</td>
 	<td><input type="text" name="coord:orderby:<%= m %>" size="10" value="" /></td>
 	<td>Location:</td>
@@ -758,6 +731,41 @@ Set rsAddress = Nothing %>
 					<option value="0"<% If rsReport("sediment")="0" Then %> selected<% End If %>>No</option>
 				</select></td></tr>
 <% END IF %>
+
+	<% IF Session("validAdmin") OR Session("validInspector") THEN
+	Set folderSvrObj = Server.CreateObject("Scripting.FileSystemObject")
+	Set objSteMapDir = folderSvrObj.GetFolder(baseDir & "images\sitemap\")
+	Set siteMapImage = objSteMapDir.Files 
+
+	SQLa="sp_oImagesByType "& inspecID &",12"
+'response.write(SQLa)
+	SET RSa=connSWPPP.execute(SQLa) 
+	tempStrOfFileNames="" 
+	t1="sitemap"
+	t2="sitemapDN"
+	t3="sitemapUP" %>
+<!--		<tr><td align="right" bgcolor="#eeeeee"><strong>Site Map File:</strong></td>
+			<td bgcolor="#999999" nowrap>
+				<SPAN id="sitemapSPAN">
+				<select name="sitemapDN" size="1" class="long">
+<% 	DO WHILE NOT(RSa.EOF) %><OPTION value="<%= Trim(RSa("oImageFileName"))%>"><%= Trim(RSa("oImageFileName"))%></OPTION>
+<%		tempStrOfFileNames=tempStrOfFileNames & TRIM(RSa("oImageFileName"))&":"
+		RSa.MoveNext
+	LOOP %>		</SELECT>
+				<input type="hidden" name="sitemap" value="<%= tempStrOfFileNames%>">
+					<BUTTON onClick="delOption(<%= t1%>, <%= t2%>, <%= t3%>);">--&gt;</BUTTON>
+					<BUTTON onClick="addOption(<%= t1%>, <%= t2%>, <%= t3%>);">&lt;--</BUTTON>
+				<select name="sitemapUP" class="long">
+<%	For Each Item In siteMapImage
+		shortName = Item.Name 
+		IF InStr(tempStrOfFileNames, shortName)=0 THEN %><option value="<% = Trim(shortName) %>"><% = Trim(shortName) %></option>
+<%		END IF
+	Next
+	Set objSteMapDir = Nothing
+	Set siteMapImage = Nothing %>
+				</select></SPAN> &nbsp;&nbsp; <input type="button" value="Upload Site Map File" 
+					onClick="location='upSiteMapEditRprt.asp?inspecID=<% = inspecID %>'; return false";>
+				</td></tr>-->
 </Table>
 
 <!-- ------------- Optional Links ----------------------------------------------------- -->
@@ -767,13 +775,16 @@ Set rsAddress = Nothing %>
 <hr/>
 <center><input name="submit_view_reports_btn" type="submit" style="font-size: 20px;" value="View Reports"/></center>
 
+<% End If 'Session("validAdmin") %>
+
 <!------------------------------------- Images ---------------------------------------->
 
 <% IF NOT(Session("noImages")) THEN %>
 	<hr/>
 	<h2>Images</h2>
 <table width="90%" border="0" align="center" cellpadding="2" cellspacing="0"><%
-smImgSQLSELECT = "SELECT imageID, smallImage, description FROM Images WHERE inspecID=" & inspecID	
+smImgSQLSELECT = "SELECT imageID, smallImage, description" & _
+	" FROM Images WHERE inspecID=" & inspecID	
 Set rsSmImages = connSWPPP.execute(smImgSQLSELECT)
 
 If rsSmImages.EOF Then

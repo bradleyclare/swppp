@@ -24,6 +24,7 @@ If Request.Form.Count > 0 Then
 		titleCase=Replace(strValue,"'","''")
 	end function
 	trimmedQualifications=REPLACE(Request("qualifications"),"'","#@#")
+    if Request("seeScoring") = "on" then seeScoring = 1 Else seeScoring = 0 End If
 	SQLUPDATE =	"UPDATE Users SET" & _
 		" firstName = '" & titleCase(Request("firstName")) & "'" & _
 		", lastName = '" & titleCase(Request("lastName")) & "'" & _
@@ -31,6 +32,7 @@ If Request.Form.Count > 0 Then
 		", pswrd = '" & Request("pswrd") & "'" & _
 		", signature = '" & Request("signature") & "'" & _
 		", noImages = '" & Request("noImages") & "'" & _
+        ", seeScoring = '" & seeScoring & "'" & _
 		", qualifications = '" & trimmedQualifications & "'" 
 ' --------------------------- Admin User --------------------------
 		If Request("admin")="on" then 
@@ -41,7 +43,8 @@ If Request.Form.Count > 0 Then
 		End If
 ' -----------------------------------------------------------------
 		SQLUPDATE = SQLUPDATE & " WHERE userID = " & userID
-	connSWPPP.Execute(SQLUPDATE)
+	'Response.Write(SQLUPDATE)
+    connSWPPP.Execute(SQLUPDATE)
 	
 	SQLDELETE = "DELETE FROM ProjectsUsers WHERE userID=" & userID
 	IF Session("validDirector") THEN 
@@ -140,7 +143,7 @@ If Request.Form.Count > 0 Then
 		processed="true"
 End If
 	SQLSELECT = "SELECT firstName, lastName, email" & _
-		", pswrd, dateEntered, signature, noImages, qualifications" & _
+		", pswrd, dateEntered, signature, noImages, qualifications, seeScoring" & _
 		" FROM Users WHERE userID = " & userID
 	Set rsUser = connSWPPP.Execute(SQLSELECT)
 	
@@ -152,8 +155,8 @@ End If
 	signature = Trim(rsUser("signature"))
 	noImages = TRIM(rsUser("noImages"))
 	qualifications= TRIM(rsUser("qualifications"))
+    seeScoring = rsUser("seeScoring")
 	IF IsNull(qualifications) THEN qualifications="" END IF
-	
 	rsUser.Close
 	Set rsUser = Nothing
 
@@ -170,9 +173,9 @@ End If
 <table width="100%" border="0">
 	<form action="<%= Request.ServerVariables("script_name") %>" method="post" onSubmit="return isReady(this)";>
 	<input type="hidden" name="IDuser" value="<%= userID %>">
-		<tr><td colspan="2" align="center"><input type="button" value="Delete User" 
-			onClick="location='deleteUser.asp?IDuser=<%= Request("IDuser") %>'; return false";></td></tr>
 		<tr><td colspan="2"><h1>Edit User</h1></td></tr>
+        <tr><td colspan="2" align="center"><input type="button" value="Delete User" 
+			onClick="location='deleteUser.asp?IDuser=<%= Request("IDuser") %>'; return false";></td></tr>
 		<tr><td width="35%" align="right">date entered:</td>
 			<td width="65%"><%= dateEntered %></td></tr>
 		<tr><td width="35%" align="right">first name:</td>
@@ -208,8 +211,15 @@ Set gifDirectory = Nothing %>
 		<tr><td align="right">View Images:</td>
 			<td><input type="radio" name="noImages" value="0"<% IF noImages=0 THEN %> checked<% END IF%>>Yes
 				<input type="radio" name="noImages" value="1"<% IF noImages=1 THEN %> checked<% END IF%>>No</td></tr>
-		<tr><td align="right" valign=top>Qualifications:</td>
+		<tr><td align="right">See Scoring:</td>
+            <td><input type="checkbox" name="seeScoring" 
+            <% If (seeScoring) = True Then %>
+                checked
+            <% End if %>
+            /></td></tr>
+        <tr><td align="right" valign=top>Qualifications:</td>
 			<td><TEXTAREA cols="50" rows="3" name="qualifications"><%= REPLACE(qualifications,"#@#","'") %></TEXTAREA></td></tr>
+            <tr><td><input type="submit" value="Update User"></td></tr>
 <% ELSE %>
 	<INPUT type="hidden" name="email" value="<%= email %>">
 	<INPUT type="hidden" name="pswrd" value="<%= pswrd %>">
@@ -351,7 +361,7 @@ DO WHILE NOT RS1.EOF
 		END IF
 	END IF
 LOOP %>
-		<TR><TD align="center" colspan=5><br><br><input type="submit" value="Edit User"></TD></TR>
+		<TR><TD align="center" colspan=5><br><br><input type="submit" value="Update User"></TD></TR>
 	</form>
 </table>
 </body>

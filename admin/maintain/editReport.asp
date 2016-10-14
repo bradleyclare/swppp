@@ -114,7 +114,7 @@ If Request.Form.Count > 0 Then
 			address &"', '" & _
 			locationName &"';"
 		next	
-'Response.Write(SQLc)
+    'Response.Write(SQLc)
         if Len(SQLc) > 0 then connSWPPP.execute(SQLc) end if
 'Response.End	
 
@@ -152,7 +152,9 @@ baseDir = "D:\Inetpub\wwwroot\SWPPP\"%>
 	<title>SWPPP INSPECTIONS : Edit Inspection Report</title>
 	<link rel="stylesheet" type="text/css" href="../../global.css">
 	<STYLE>
-	select.long	{ font-size:xx-small;	}
+	    select.long {
+	        font-size: xx-small;
+	    }
 	</STYLE>
 	<script type="text/javascript" language="JavaScript" src="../js/validReports.js"></script>
 	<script type="text/javascript" language="JavaScript" src="../js/validReports1.2.js"></script>
@@ -162,185 +164,234 @@ baseDir = "D:\Inetpub\wwwroot\SWPPP\"%>
 	<script src="../../js/jquery.js" type="text/javascript"></script>
 	<script src="../../js/jquery-ui.min.js" type="text/javascript"></script>
 <script type="text/javascript" >
-  $( function() {
-    $( ".datepicker" ).datepicker();
-  } );
+    $(function () {
+        $(".datepicker").datepicker();
+    });
 </script>
 <script type="text/javascript" >
-$(document).ready( function () {
-	$('#dialog-confirm').dialog({
-      autoOpen: false,
-	  resizable: false,
-      height: "auto",
-      width: 500,
-      modal: true,
-      buttons: {
-        "Complete All Items": function() {
-		  //check all complete hidden elements (coord:statusX)
-		  var i;
-		  for (i = 1; i < 99; ++i) {
-				var e = document.getElementsByName("coord:status:" + i);
-				if (e.length){
-					$("[name='coord:status:" + i + "']")[0].checked = true;
-				} else {
-					break;
-				}
-		  }
-		  $('#compliance-checkbox')[0].checked = true;
-		  $(this).dialog("close");
-		  document.getElementById("theForm").submit();
-        },
-		"Delete All Items": function() {
-		  //check all delete checkboxes (coord:deleteX)
-		  var i;
-		  for (i = 1; i < 99; ++i) {
-				var e = document.getElementsByName("coord:del:" + i);
-				if (e.length){
-					$("[name='coord:del:" + i + "']")[0].checked = true;
-				} else {
-					break;
-				}
-		  }
-		  $('#compliance-checkbox')[0].checked = true;
-		  $(this).dialog("close");
-		  document.getElementById("theForm").submit();
-        },
-        Cancel: function() {
-		  $(this).dialog("close");
-        }
-      }
+    $(document).ready(function () {
+        $('#dialog-confirm').dialog({
+            autoOpen: false,
+            resizable: false,
+            height: "auto",
+            width: 500,
+            modal: true,
+            buttons: {
+                "Complete All Items": function () {
+                    //check all complete hidden elements (coord:statusX)
+                    var i;
+                    for (i = 1; i < 99; ++i) {
+                        var e = document.getElementsByName("coord:status:" + i);
+                        if (e.length) {
+                            $("[name='coord:status:" + i + "']")[0].checked = true;
+                        } else {
+                            break;
+                        }
+                    }
+                    $('#compliance-checkbox')[0].checked = true;
+                    $(this).dialog("close");
+                    document.getElementById("theForm").submit();
+                },
+                "Delete All Items": function () {
+                    //check all delete checkboxes (coord:deleteX)
+                    var i;
+                    for (i = 1; i < 99; ++i) {
+                        var e = document.getElementsByName("coord:del:" + i);
+                        if (e.length) {
+                            $("[name='coord:del:" + i + "']")[0].checked = true;
+                        } else {
+                            break;
+                        }
+                    }
+                    $('#compliance-checkbox')[0].checked = true;
+                    $(this).dialog("close");
+                    document.getElementById("theForm").submit();
+                },
+                Cancel: function () {
+                    $(this).dialog("close");
+                }
+            }
+        });
+
+        $('#compliance-checkbox').click(
+            function () {
+                if ($('#compliance-checkbox').is(":checked")) {
+                    $("#dialog-confirm").dialog('open');
+                    return false;
+                } else {
+                    $('#compliance-checkbox')[0].checked = false;
+                }
+            }
+        );
+
+        $('#includeItems-checkbox').click(
+            function () {
+                document.getElementById("theForm").submit();
+            }
+        );
     });
-	
-	$('#compliance-checkbox').click(
-		function () {
-			if ($('#compliance-checkbox').is(":checked")){
-				$("#dialog-confirm").dialog('open');
-                return false;
-			} else {
-				$('#compliance-checkbox')[0].checked = false;
-			}
-		}
-	);
-	
-	$('#includeItems-checkbox').click(
-		function () {
-			document.getElementById("theForm").submit();
-		}
-	);
-});
 </script>
 	<script type="text/javascript" language="JavaScript1.2"><!--
-// we Can't just use the same transfer function for both directions because
-// the hidden input keys off of the t2 value solely...-->
+    // we Can't just use the same transfer function for both directions because
+    // the hidden input keys off of the t2 value solely...-->
 
-function addOption(t1, t2, t3) {
-    var index = t3.selectedIndex;
-    if (index > -1) {
-        var newoption = new Option(t3.options[index].text, t3.options[index].value, true, true);
-        t2.options[t2.length] = newoption;
-        if (!document.getElementById) history.go(0);
-        t3.options[index] = null;
-        t3.selectedIndex = 0;
-		var tempStr="";
-		for(var i=0; i<(t2.length) ;i++){
-			tempStr=tempStr + (t2.options[i].value) + ":" ;
-		}
-		t1.value=tempStr;
+    function addOption(t1, t2, t3) {
+        var index = t3.selectedIndex;
+        if (index > -1) {
+            var newoption = new Option(t3.options[index].text, t3.options[index].value, true, true);
+            t2.options[t2.length] = newoption;
+            if (!document.getElementById) history.go(0);
+            t3.options[index] = null;
+            t3.selectedIndex = 0;
+            var tempStr = "";
+            for (var i = 0; i < (t2.length) ; i++) {
+                tempStr = tempStr + (t2.options[i].value) + ":";
+            }
+            t1.value = tempStr;
+        }
+    } function delOption(t1, t3, t2) {
+        var index = t3.selectedIndex;
+        if (index > -1) {
+            var newoption = new Option(t3.options[index].text, t3.options[index].value, true, true);
+            t2.options[t2.length] = newoption;
+            if (!document.getElementById) history.go(0);
+            t3.options[index] = null;
+            t3.selectedIndex = 0;
+            var tempStr = "";
+            for (var i = 0; i < (t3.length) ; i++) {
+                tempStr = tempStr + (t3.options[i].value) + ":";
+            }
+            t1.value = tempStr;
+        }
     }
-}function delOption(t1, t3, t2) {
-    var index = t3.selectedIndex;
-    if (index > -1) {
-        var newoption = new Option(t3.options[index].text, t3.options[index].value, true, true);
-        t2.options[t2.length] = newoption;
-        if (!document.getElementById) history.go(0);
-        t3.options[index] = null;
-        t3.selectedIndex = 0;
-		var tempStr="";
-		for(var i=0; i<(t3.length) ;i++){
-			tempStr=tempStr + (t3.options[i].value) + ":" ;
-		}
-		t1.value=tempStr;
+    function swapOption(t1, t2, slideDir) {
+        var curIndex = t2.selectedIndex;
+        var swapIndex = curIndex;
+        var maxIndex = t2.length;
+        if (curIndex > -1) {
+            (slideDir == "up") ? (swapIndex = curIndex - 1) : (swapIndex = curIndex + 1);
+            if ((swapIndex > -1) && (swapIndex < t2.length)) {
+                var newOption = new Option(t2.options[swapIndex].text, t2.options[swapIndex].value, true, true);
+                t2.options[maxIndex] = newOption;
+                t2.options[swapIndex].text = t2.options[curIndex].text;
+                t2.options[swapIndex].value = t2.options[curIndex].value;
+                t2.options[curIndex].text = t2.options[maxIndex].text;
+                t2.options[curIndex].value = t2.options[maxIndex].value;
+                t2.options[maxIndex] = null;
+                t2.selectedIndex = swapIndex;
+                var tempStr = "";
+                for (var i = 0; i < (t2.length) ; i++) {
+                    tempStr = tempStr + (t2.options[i].value) + ":";
+                }
+                t1.value = tempStr;
+            }
+        }
     }
-}
-function swapOption(t1, t2, slideDir) {
-	var curIndex = t2.selectedIndex;
-	var swapIndex= curIndex;
-	var maxIndex= t2.length;
-	if (curIndex > -1) {
-		(slideDir=="up") ? (swapIndex=curIndex-1):(swapIndex=curIndex+1);
-		if ((swapIndex>-1) && (swapIndex<t2.length)) {
-			var newOption = new Option(t2.options[swapIndex].text, t2.options[swapIndex].value, true, true);
-			t2.options[maxIndex] = newOption;
-			t2.options[swapIndex].text=t2.options[curIndex].text;
-			t2.options[swapIndex].value=t2.options[curIndex].value;
-			t2.options[curIndex].text=t2.options[maxIndex].text;
-			t2.options[curIndex].value=t2.options[maxIndex].value;
-			t2.options[maxIndex] = null;
-			t2.selectedIndex=swapIndex;
-			var tempStr="";
-			for(var i=0; i<(t2.length) ;i++){
-				tempStr=tempStr + (t2.options[i].value) + ":" ;
-			}
-			t1.value=tempStr;
-		}
-	}	
-}
-function editNarrative(inspID){
-var basePath = "http://www.swppp.com";
-var URL = "/admin/maintain/editNarrative.asp?inspecID=" + inspID;
-var params = "height=420,width=520,status=yes,toolbar=no,menubar=no, directories=no, location=no, scrollbars=no, resizable=no";
-	window.open(URL, "", params);
-}
+    function editNarrative(inspID) {
+        var basePath = "http://www.swppp.com";
+        var URL = "/admin/maintain/editNarrative.asp?inspecID=" + inspID;
+        var params = "height=420,width=520,status=yes,toolbar=no,menubar=no, directories=no, location=no, scrollbars=no, resizable=no";
+        window.open(URL, "", params);
+    }
 
-function useAddressLookup(obj){
-	var parts = obj.name.split(":");
-	var selectname = "coord:addOptions:" + parts[2];
-	var s = document.getElementsByName(selectname);
-	var selectname2 = "coord:address:" + parts[2];
-	var s2 = document.getElementsByName(selectname2);
-	var selectname3 = "coord:coord:" + parts[2];
-	var s3 = document.getElementsByName(selectname3);
-	if (obj.checked) //enable select object
-	{
-		s[0].className = "";
-		s2[0].className = "";
-		s3[0].className = "hide";
-	}
-	else //disable select object
-	{
-		s[0].className = "hide";
-		s2[0].className = "hide";
-		s3[0].className = "";
-	}
-}
+    function useAddressLookup(obj) {
+        var parts = obj.name.split(":");
+        var selectname = "coord:locationName:" + parts[2];
+        var s = document.getElementsByName(selectname);
+        var selectname2 = "coord:addressName:" + parts[2];
+        var s2 = document.getElementsByName(selectname2);
+        var selectname3 = "coord:coord:" + parts[2];
+        var s3 = document.getElementsByName(selectname3);
+        if (obj.checked) //enable select object
+        {
+            s[0].className = "";
+            s2[0].className = "";
+            s3[0].className = "hide";
+        }
+        else //disable select object
+        {
+            s[0].className = "hide";
+            s2[0].className = "hide";
+            s3[0].className = "";
+        }
+    }
 
-function setSelectValue(obj){
-	//selected value of addOptions dropdown
-	var val         = obj.selectedIndex;
-	var parts       = obj.name.split(":");
-	
-	//find address dropdown list to set the same value
-	var selectname     = "coord:address:" + parts[2];
-	var s              = document.getElementsByName(selectname);
-	s[0].selectedIndex = val;
-	
-	//set the hidden object to keep address name
-	var hiddenname2 = "coord:addressName:" + parts[2];
-	var s2          = document.getElementsByName(hiddenname2);
-	s2[0].value     = s[0].value.trim();
-	
-	//set the hidden object for locationName
-	var hiddenname3 = "coord:locationName:" + parts[2];
-	var s3          = document.getElementsByName(hiddenname3);
-	s3[0].value     = obj.value.trim();
-}
+    function setSelectValue(obj) {
+        //selected value of addOptions dropdown
+        var val = obj.selectedIndex;
+        var parts = obj.name.split(":");
+
+        //find address dropdown list to set the same value
+        var selectname = "coord:address:" + parts[2];
+        var s = document.getElementsByName(selectname);
+        s[0].selectedIndex = val;
+
+        //set the hidden object to keep address name
+        var hiddenname2 = "coord:addressName:" + parts[2];
+        var s2 = document.getElementsByName(hiddenname2);
+        s2[0].value = s[0].value.trim();
+
+        //set the hidden object for locationName
+        var hiddenname3 = "coord:locationName:" + parts[2];
+        var s3 = document.getElementsByName(hiddenname3);
+        s3[0].value = obj.value.trim();
+    }
+
+    function displayAddressSelect(obj) {
+        var parts = obj.name.split(":");
+        var num = parts[2];
+
+        //display the select div
+        var s1 = document.getElementsByName("addressOptionsPopup");
+        s1[0].className = "addressOptionsPopup show";
+
+        //set the hidden div in the select div to remember what number we are modifying
+        var s2 = document.getElementsByName("currentAddressNum");
+        s2[0].value = num;
+    }
+
+    function setAddress(obj) {
+
+        //get number from hidden div
+        var s1 = document.getElementsByName("currentAddressNum");
+        var num = s1[0].value;
+
+        //get the dropdown options
+        var sl = document.getElementsByName("locationOptions");
+        var selectedName = sl[0].value;
+
+        //get address dropdown options
+        var sa = document.getElementsByName("addressOptions");
+        sa[0].selectedIndex = sl[0].selectedIndex;
+        var selectedAddress = sa[0].value;
+
+        //set the hidden object to keep address name
+        var hiddenname2 = "coord:addressName:" + num;
+        var s3 = document.getElementsByName(hiddenname2);
+        s3[0].value = selectedAddress;
+
+        //set the hidden object for locationName
+        var hiddenname3 = "coord:locationName:" + num;
+        var s4 = document.getElementsByName(hiddenname3);
+        s4[0].value = selectedName;
+
+        //hide the select div
+        var s0 = document.getElementsByName("addressOptionsPopup");
+        s0[0].className = "addressOptionsPopup hide";
+    }
+
+    function close_popup() {
+        //hide the select div
+        var s0 = document.getElementsByName("addressOptionsPopup");
+        s0[0].className = "addressOptionsPopup hide";
+    }
 
 </script>
 </head>
 <body>
 <!-- #include file="../adminHeader2.inc" -->
 <h1>Edit Inspection Report</h1>
-<form id="theForm" method="post" action="<%=Request.ServerVariables("script_name") %>" onsubmit="return isReady(this)";>
+<form id="theForm" method="post" action="<%=Request.ServerVariables("script_name")%>?inspecID=<%=inspecID%>" onsubmit="return isReady(this)";>
 	<input type="hidden" name="inspecID" value="<%=inspecID %>"/>
 	<input type="hidden" name="projectID" value="<%=rsReport("projectID") %>"/>
 	
@@ -420,8 +471,6 @@ End If%>
 	<input id='includeItems-checkbox' type="checkbox" name="includeItems" />
 <% End If %>
 </td></tr></table><br/>
-<center>Click "Repeat" on all items that you want the assign date to stay the same. All other items will be updated to the current date on SUBMIT.</center><br/>
-<table width="90%" border="0" align="center" cellpadding="2" cellspacing="0">
 <% coordSQLSELECT = "SELECT coID, coordinates, existingBMP, correctiveMods, orderby, assignDate, completeDate, status, repeat, useAddress, address, locationName" &_
 	" FROM Coordinates WHERE inspecID=" & inspecID & " ORDER BY orderby"	
 'Response.Write(coordSQLSELECT)
@@ -429,6 +478,49 @@ Set rsCoord = connSWPPP.execute(coordSQLSELECT)
 addressSQLSELECT = "SELECT addressID, locationName, address FROM Addresses WHERE projectID=" & rsReport("projectID") & " ORDER BY locationName"
 'Response.Write(addressSQLSELECT)
 Set rsAddress = connSWPPP.execute(addressSQLSELECT)
+'create single popup list to display when user wants to modify the address
+locationName1 = ""
+addressName1 = ""
+%>
+<div class="addressOptionsPopup hide" name="addressOptionsPopup">
+<h3>Select Coordinates Here:</h3>
+<input type="hidden" name="currentAddressNum" value="1" />
+<select name="locationOptions" onchange="setAddress(this)">
+<% if not rsAddress.EOF Then
+    cnt = 0
+	Do While Not rsAddress.EOF 
+        cnt = cnt + 1
+        if (cnt = 1) Then
+            locationName1 = TRIM(rsAddress("locationName")) 
+        End If
+		name = TRIM(rsAddress("locationName")) %>
+		<option value="<%=name%>"><%=name%></option>
+	<% rsAddress.MoveNext
+	Loop 
+	rsAddress.MoveFirst
+End If %>
+</select>
+<select name="addressOptions" class="hide" readonly >
+<% if not rsAddress.EOF Then
+    cnt = 0
+	Do While Not rsAddress.EOF 
+        cnt = cnt + 1
+        if (cnt = 1) Then
+			addressName1 = TRIM(rsAddress("address"))
+        End If
+		name = TRIM(rsAddress("address")) %>
+		<option value="<%=name%>"><%=name%></option>
+	<% rsAddress.MoveNext
+	Loop 
+	rsAddress.MoveFirst
+End If %>
+</select>
+<br /><br />
+<input type="button" onclick="close_popup()" value="Close Window" />
+</div>
+<center>Click "Repeat" on all items that you want the assign date to stay the same. All other items will be updated to the current date on SUBMIT.</center><br/>
+<table width="90%" border="0" align="center" cellpadding="2" cellspacing="0">
+<% 
 'If rsCoord.EOF Then
 '	Response.Write("<tr><td colspan='2' align='center'><i>There is no data at this time.</i></td></tr>")		
 'Else
@@ -448,11 +540,6 @@ Set rsAddress = connSWPPP.execute(addressSQLSELECT)
 		address = TRIM(rsCoord("address"))
 		locationName = TRIM(rsCoord("locationName"))
 		'Response.Write("ID: " & coID & ", Coord: " & coordinates & ", LocName: " & locationName & ", address: " & address & ", Mods: " & correctiveMods & "<br/>") 
-		Do While Not rsAddress.EOF
-			name1 = TRIM(rsAddress("locationName")) 
-			addname1 = TRIM(rsAddress("address"))
-			Exit Do
-		Loop
 		%>
 	<input type="hidden" name="coord:coID:<%= n %>" value="<%= coID %>" />
 	<input type="hidden" name="coord:status:<%= n %>" value="<%= status %>" />
@@ -465,49 +552,18 @@ Set rsAddress = connSWPPP.execute(addressSQLSELECT)
 	<% End If %>
 	/></td>
 	<td>
-	<select name="coord:addOptions:<%= n %>" onchange="setSelectValue(this)" 
+    <input type="text" name="coord:locationName:<%= n %>" onclick="displayAddressSelect(this)" value="<%=locationName %>"
 	<% if (useAddress) = False Then %>
 		class="hide"
 	<% End If %>
-	>
-	<% selname = name1
-	if not rsAddress.EOF Then
-	Do While Not rsAddress.EOF 
-		name = TRIM(rsAddress("locationName")) 
-		addname = TRIM(rsAddress("address"))
-		if StrComp(address,addname) = 0 Then 
-			selname = name %>
-			<option value="<%=name%>" selected><%=name%></option>
-		<% Else %>
-			<option value="<%=name%>"><%=name%></option>
-		<% End If 
-		rsAddress.MoveNext
-	Loop 
-	rsAddress.MoveFirst 
-	End If %>
-	</select></td>
-	<input type="hidden" name="coord:locationName:<%= n %>" value="<%=selname%>" />
-	<td><select name="coord:address:<%= n %>" disabled  
+	/></td>
+	<td>
+    <input type="text" name="coord:addressName:<%= n %>" value="<%=address%>"
 	<% if (useAddress) = False Then %>
 		class="hide"
 	<% End If %>
-	>
-	<% selname = addname1 
-	if not rsAddress.EOF Then
-	Do While Not rsAddress.EOF 
-		addname = TRIM(rsAddress("address"))
-		if StrComp(address,addname) = 0 Then 
-			selname = addname %>
-			<option value="<%=addname%>" selected><%=addname%></option>
-		<% Else %>
-			<option value="<%=addname%>"><%=addname%></option>
-		<% End If
-		rsAddress.MoveNext
-	Loop 
-	rsAddress.MoveFirst
-	End If %>
-	</select></td></tr>
-	<input type="hidden" name="coord:addressName:<%= n %>" value="<%=selname%>" />
+	readonly /></td>    
+    </tr>
 	<tr><td>Order</td>
 	<td><input type="text" name="coord:orderby:<%= n %>" size="10" value="<% = orderby %>" /></td>
 	<td>Location Info:</td>
@@ -541,7 +597,6 @@ Set rsAddress = connSWPPP.execute(addressSQLSELECT)
 'End If ' END No Results Found
 rsCoord.Close
 Set rsCoord = Nothing %>
-
 <% for m = n to n+4 step 1 %>
 	<input type="hidden" name="coord:coID:<%= m %>" value="0" />
 	<input type="hidden" name="coord:del:<%= m %>" value="0" />
@@ -551,36 +606,11 @@ Set rsCoord = Nothing %>
 	<tr><td>ID#</td>
 	<td>0</td>
 	<td>Address<input type="checkbox" name="coord:useAddress:<%= m %>" onclick="useAddressLookup(this)"/></td>
-	<td><select name="coord:addOptions:<%= m %>" onchange="setSelectValue(this)" class="hide">
-	<% selname = name1
-	if not rsAddress.EOF Then
-	Do While Not rsAddress.EOF 
-		name = TRIM(rsAddress("locationName")) 
-		If m = n Then
-			selname = name
-		End If %>
-		<option value="<%=name%>"><%=name%></option>
-	<% rsAddress.MoveNext
-	Loop 
-	rsAddress.MoveFirst
-	End If %>
-	</select></td>
-	<input type="hidden" name="coord:locationName:<%= m %>" value="<%=selname%>" />
-	<td><select name="coord:address:<%= m %>" disabled class="hide">
-	<%	selname = addname1 
-	if not rsAddress.EOF Then
-	Do While Not rsAddress.EOF 
-		name = TRIM(rsAddress("address")) 
-		If m = n Then
-			selname = name
-		End If %>
-		<option value="<%=name%>"><%=name%></option>
-	<% rsAddress.MoveNext
-	Loop 
-	rsAddress.MoveFirst
-	End If %>
-	</select></td></tr>
-	<input type="hidden" name="coord:addressName:<%= m %>" value="<%=selname%>" />
+	<td>
+    <input type="text" name="coord:locationName:<%= m %>" onclick="displayAddressSelect(this)" value="<%=locationName1 %>" class="hide" /></td>
+	<td>
+	<%temp = addressName1 %>
+    <input type="text" name="coord:addressName:<%= m %>" value="<%=temp%>" class="hide" readonly /></td></tr>
 	<tr><td>Order</td>
 	<td><input type="text" name="coord:orderby:<%= m %>" size="10" value="" /></td>
 	<td>Location:</td>
@@ -731,41 +761,6 @@ Set rsAddress = Nothing %>
 					<option value="0"<% If rsReport("sediment")="0" Then %> selected<% End If %>>No</option>
 				</select></td></tr>
 <% END IF %>
-
-	<% IF Session("validAdmin") OR Session("validInspector") THEN
-	Set folderSvrObj = Server.CreateObject("Scripting.FileSystemObject")
-	Set objSteMapDir = folderSvrObj.GetFolder(baseDir & "images\sitemap\")
-	Set siteMapImage = objSteMapDir.Files 
-
-	SQLa="sp_oImagesByType "& inspecID &",12"
-'response.write(SQLa)
-	SET RSa=connSWPPP.execute(SQLa) 
-	tempStrOfFileNames="" 
-	t1="sitemap"
-	t2="sitemapDN"
-	t3="sitemapUP" %>
-<!--		<tr><td align="right" bgcolor="#eeeeee"><strong>Site Map File:</strong></td>
-			<td bgcolor="#999999" nowrap>
-				<SPAN id="sitemapSPAN">
-				<select name="sitemapDN" size="1" class="long">
-<% 	DO WHILE NOT(RSa.EOF) %><OPTION value="<%= Trim(RSa("oImageFileName"))%>"><%= Trim(RSa("oImageFileName"))%></OPTION>
-<%		tempStrOfFileNames=tempStrOfFileNames & TRIM(RSa("oImageFileName"))&":"
-		RSa.MoveNext
-	LOOP %>		</SELECT>
-				<input type="hidden" name="sitemap" value="<%= tempStrOfFileNames%>">
-					<BUTTON onClick="delOption(<%= t1%>, <%= t2%>, <%= t3%>);">--&gt;</BUTTON>
-					<BUTTON onClick="addOption(<%= t1%>, <%= t2%>, <%= t3%>);">&lt;--</BUTTON>
-				<select name="sitemapUP" class="long">
-<%	For Each Item In siteMapImage
-		shortName = Item.Name 
-		IF InStr(tempStrOfFileNames, shortName)=0 THEN %><option value="<% = Trim(shortName) %>"><% = Trim(shortName) %></option>
-<%		END IF
-	Next
-	Set objSteMapDir = Nothing
-	Set siteMapImage = Nothing %>
-				</select></SPAN> &nbsp;&nbsp; <input type="button" value="Upload Site Map File" 
-					onClick="location='upSiteMapEditRprt.asp?inspecID=<% = inspecID %>'; return false";>
-				</td></tr>-->
 </Table>
 
 <!-- ------------- Optional Links ----------------------------------------------------- -->
@@ -775,16 +770,13 @@ Set rsAddress = Nothing %>
 <hr/>
 <center><input name="submit_view_reports_btn" type="submit" style="font-size: 20px;" value="View Reports"/></center>
 
-<% End If 'Session("validAdmin") %>
-
 <!------------------------------------- Images ---------------------------------------->
 
 <% IF NOT(Session("noImages")) THEN %>
 	<hr/>
 	<h2>Images</h2>
 <table width="90%" border="0" align="center" cellpadding="2" cellspacing="0"><%
-smImgSQLSELECT = "SELECT imageID, smallImage, description" & _
-	" FROM Images WHERE inspecID=" & inspecID	
+smImgSQLSELECT = "SELECT imageID, smallImage, description FROM Images WHERE inspecID=" & inspecID	
 Set rsSmImages = connSWPPP.execute(smImgSQLSELECT)
 
 If rsSmImages.EOF Then
@@ -815,7 +807,7 @@ Else %>
 	rsSmImages.Close 
 	Set rsSmImages = Nothing %>
 	<tr><td colspan="3" align="center"><br><input type="button" style="font-size: 20px;" value="Add New Image" 
-		onClick="location='addImage.asp?inspecID=<% = inspecID %>'; return false";></td></tr></table>
+		onClick="location = 'addImage.asp?inspecID=<% = inspecID %>'; return false";></td></tr></table>
 <% END IF	'--- noImages Check %>
 </form>
 <hr>

@@ -349,9 +349,6 @@ function displayAddressSelect(obj) {
 }
 
 function setAddress(obj) {
-    //hide the select div
-    var s0 = document.getElementsByName("addressOptionsPopup");
-    s0[0].className = "addressOptionsPopup hide";
 
     //get number from hidden div
     var s1 = document.getElementsByName("currentAddressNum");
@@ -375,6 +372,16 @@ function setAddress(obj) {
     var hiddenname3 = "coord:locationName:" + num;
     var s4 = document.getElementsByName(hiddenname3);
     s4[0].value = selectedName;
+
+    //hide the select div
+    var s0 = document.getElementsByName("addressOptionsPopup");
+    s0[0].className = "addressOptionsPopup hide";
+}
+
+function close_popup(){
+    //hide the select div
+    var s0 = document.getElementsByName("addressOptionsPopup");
+    s0[0].className = "addressOptionsPopup hide";
 }
 
 </script>
@@ -489,6 +496,7 @@ Set rsAddress = connSWPPP.execute(addressSQLSELECT)
 	rsAddress.MoveFirst
 End If %>
 </select>
+<br /><br />
 <select name="addressOptions" disabled >
 <% if not rsAddress.EOF Then
     cnt = 0
@@ -504,6 +512,8 @@ End If %>
 	rsAddress.MoveFirst
 End If %>
 </select>
+<br /><br />
+<input type="button" onclick="close_popup()" value="Close Window" />
 </div>
 <center>Click "Repeat" on all items that you want the assign date to stay the same. All other items will be updated to the current date on SUBMIT.</center><br/>
 <table width="90%" border="0" align="center" cellpadding="2" cellspacing="0">
@@ -748,41 +758,6 @@ Set rsAddress = Nothing %>
 					<option value="0"<% If rsReport("sediment")="0" Then %> selected<% End If %>>No</option>
 				</select></td></tr>
 <% END IF %>
-
-	<% IF Session("validAdmin") OR Session("validInspector") THEN
-	Set folderSvrObj = Server.CreateObject("Scripting.FileSystemObject")
-	Set objSteMapDir = folderSvrObj.GetFolder(baseDir & "images\sitemap\")
-	Set siteMapImage = objSteMapDir.Files 
-
-	SQLa="sp_oImagesByType "& inspecID &",12"
-'response.write(SQLa)
-	SET RSa=connSWPPP.execute(SQLa) 
-	tempStrOfFileNames="" 
-	t1="sitemap"
-	t2="sitemapDN"
-	t3="sitemapUP" %>
-<!--		<tr><td align="right" bgcolor="#eeeeee"><strong>Site Map File:</strong></td>
-			<td bgcolor="#999999" nowrap>
-				<SPAN id="sitemapSPAN">
-				<select name="sitemapDN" size="1" class="long">
-<% 	DO WHILE NOT(RSa.EOF) %><OPTION value="<%= Trim(RSa("oImageFileName"))%>"><%= Trim(RSa("oImageFileName"))%></OPTION>
-<%		tempStrOfFileNames=tempStrOfFileNames & TRIM(RSa("oImageFileName"))&":"
-		RSa.MoveNext
-	LOOP %>		</SELECT>
-				<input type="hidden" name="sitemap" value="<%= tempStrOfFileNames%>">
-					<BUTTON onClick="delOption(<%= t1%>, <%= t2%>, <%= t3%>);">--&gt;</BUTTON>
-					<BUTTON onClick="addOption(<%= t1%>, <%= t2%>, <%= t3%>);">&lt;--</BUTTON>
-				<select name="sitemapUP" class="long">
-<%	For Each Item In siteMapImage
-		shortName = Item.Name 
-		IF InStr(tempStrOfFileNames, shortName)=0 THEN %><option value="<% = Trim(shortName) %>"><% = Trim(shortName) %></option>
-<%		END IF
-	Next
-	Set objSteMapDir = Nothing
-	Set siteMapImage = Nothing %>
-				</select></SPAN> &nbsp;&nbsp; <input type="button" value="Upload Site Map File" 
-					onClick="location='upSiteMapEditRprt.asp?inspecID=<% = inspecID %>'; return false";>
-				</td></tr>-->
 </Table>
 
 <!-- ------------- Optional Links ----------------------------------------------------- -->
@@ -792,16 +767,13 @@ Set rsAddress = Nothing %>
 <hr/>
 <center><input name="submit_view_reports_btn" type="submit" style="font-size: 20px;" value="View Reports"/></center>
 
-<% End If 'Session("validAdmin") %>
-
 <!------------------------------------- Images ---------------------------------------->
 
 <% IF NOT(Session("noImages")) THEN %>
 	<hr/>
 	<h2>Images</h2>
 <table width="90%" border="0" align="center" cellpadding="2" cellspacing="0"><%
-smImgSQLSELECT = "SELECT imageID, smallImage, description" & _
-	" FROM Images WHERE inspecID=" & inspecID	
+smImgSQLSELECT = "SELECT imageID, smallImage, description FROM Images WHERE inspecID=" & inspecID	
 Set rsSmImages = connSWPPP.execute(smImgSQLSELECT)
 
 If rsSmImages.EOF Then

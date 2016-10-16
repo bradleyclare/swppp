@@ -165,7 +165,8 @@ If rsCoord.EOF Then
 	Response.Write("<tr><td colspan='2' align='center'><i>There is no " & _
 		"coordinate data entered at this time.</i></td></tr>")
 Else
-	applyScoring = rsInspec("includeItems")
+    applyScoring = False
+	if rsInspec("includeItems")=True & Session("seeScoring")=True Then applyScoring = True End If
 	currentDate = date()
 	Do While Not rsCoord.EOF
 		coID = rsCoord("coID")

@@ -130,7 +130,8 @@ areas, equipment staging areas, vehicle repair areas, and fueling areas.</i>
 	Response.Write("<tr><td colspan='2' align='center'><i>There is no " & _
 		"coordinate data entered at this time.</i></td></tr>")
 Else
-	applyScoring = RS2("includeItems")
+    applyScoring = False
+	if RS2("includeItems")=True & Session("seeScoring")=True Then applyScoring = True End If
 	currentDate = date()
 	Do While Not rsCoord.EOF
 		coID = rsCoord("coID")
@@ -169,7 +170,7 @@ Else
 		<tr valign='top'><td width='20%' align='right'><b>action needed:</b></td><td width='80%' align='left' class = '<%=scoring_class%>'><%=correctiveMods%></td></tr>
 		<% IF applyScoring and repeat THEN %>
 			<tr valign='top'><td width='20%' align='right'><b>item age:</b></td><td width='80%' align='left' class = '<%=scoring_class%>'><%=age%><br></td></tr>
-		<%END IF
+		<%END IF%>
 		<tr><td colspan='2'><hr noshade size='1' align='center' width='90%'></td></tr>
 		<% rsCoord.MoveNext
 	Loop

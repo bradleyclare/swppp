@@ -5,8 +5,9 @@ Session("validDirector")= "False"
 Session("validInspector")= "False"
 Session("validUser")= "False"
 Session("validErosion")= "False"
+Session("seeScoring")= "True"
 If Request.Form.Count > 0 Then
-	userSQLSELECT = "SELECT userID, pswrd, rights, firstName, lastName, noImages" &_
+	userSQLSELECT = "SELECT userID, pswrd, rights, firstName, lastName, noImages, seeScoring" &_
 		" FROM Users" & _
 		" WHERE email = '" & Request("email") & "'"
 	%> <!-- #INCLUDE FILE="../connSWPPP.asp" --> <%
@@ -28,6 +29,7 @@ If Request.Form.Count > 0 Then
 			If Trim(connEmail("rights"))="user" Then Session("validUser")=True End If
 			If Trim(connEmail("rights"))="action" Then Session("validUser")=True End If
 			If Trim(connEmail("rights"))="erosion" Then Session("validErosion")=True End If
+            Session("seeScoring") = connEmail("seeScoring")
 			SQL0="SELECT COUNT(*) FROM ProjectsUsers WHERE rights='user' AND userID="& Session("userID")
 			SET RS0=connSWPPP.execute(SQL0)
 			IF RS0(0)>0 THEN Session("validUser")=True END IF

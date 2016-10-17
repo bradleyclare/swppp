@@ -327,12 +327,6 @@
       <LastGenOutput>Settings.Designer.vb</LastGenOutput>
     </None>
     <Content Include="packages.config" />
-    <Content Include="views\monthlyReportsSum.asp083106" />
-    <Content Include="views\qbXLS.asp.debug" />
-    <Content Include="views\qbXLS.asp.old" />
-    <Content Include="views\reportPrint.asp.bak" />
-    <Content Include="views\reportPrintAllRecent.asp.bak" />
-    <Content Include="views\reportPrintAllRecent.asp_061114" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

@@ -116,7 +116,7 @@ Else
 	If rsCoord.EOF Then
 		strBody=strBody &"<tr><td colspan='2' align='center'><i>There is no coordinate data entered at this time.</i></td></tr>"
 	Else
-		applyScoring = rsInspec("includeItems")
+		applyScoring = False 'rsInspec("includeItems")
 		currentDate = date()
 		Do While Not rsCoord.EOF
 			coID = rsCoord("coID")

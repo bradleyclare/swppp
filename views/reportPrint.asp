@@ -166,7 +166,7 @@ If rsCoord.EOF Then
 		"coordinate data entered at this time.</i></td></tr>")
 Else
     applyScoring = False
-	if rsInspec("includeItems")=True & Session("seeScoring")=True Then applyScoring = True End If
+	'if rsInspec("includeItems")=True & Session("seeScoring")=True Then applyScoring = True End If
 	currentDate = date()
 	Do While Not rsCoord.EOF
 		coID = rsCoord("coID")

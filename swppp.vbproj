@@ -181,6 +181,7 @@
     <Content Include="admin\maintain\newReport_dev.asp" />
     <Content Include="admin\maintain\newReport_old.asp" />
     <Content Include="admin\maintain\projects.asp" />
+    <Content Include="admin\maintain\releaseRepeatItems.asp" />
     <Content Include="admin\maintain\releasereports.asp" />
     <Content Include="admin\maintain\releaseReportsTGUpdated.asp" />
     <Content Include="admin\maintain\releaseReports_old.asp" />
@@ -316,7 +317,6 @@
     <Content Include="admin\maintain\archiveCreateDefault.inc" />
     <Content Include="admin\maintain\archiveCreateFullReport.inc" />
     <Content Include="admin\maintain\archiveCreateReportsHTML.inc" />
-    <Content Include="admin\maintain\releaseReportsBackup.zip" />
     <None Include="My Project\Application.myapp">
       <Generator>MyApplicationCodeGenerator</Generator>
       <LastGenOutput>Application.Designer.vb</LastGenOutput>

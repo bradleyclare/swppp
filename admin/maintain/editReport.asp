@@ -400,7 +400,7 @@ baseDir = "D:\Inetpub\wwwroot\SWPPP\"%>
 </div>
 <table width="90%">
 <tr><th width="30%" align="center">Report Date</th><th width="30%" align="center">Project Name</th><th width="30%" align="center">Customer Name</th></tr>
-<tr><td align="center"><% = Trim(rsReport("inspecDate")) %></td><td align="center"><% = Trim(rsReport("projectName")) %></td><td align="center"><% = Trim(rsReport("compName")) %></td></tr>
+<tr><td align="center"><% = Trim(rsReport("inspecDate")) %></td><td align="center"><% = Trim(rsReport("projectName")) %>&nbsp<% = Trim(rsReport("projectPhase")) %></td><td align="center"><% = Trim(rsReport("compName")) %></td></tr>
 <tr>
 <td align="center"><a href="deleteReport.asp?inspecID=<%=inspecID %>"><button type="button">Delete Report</button></a></td>
 <td align="center"><a href="releasereports_test.asp?inspecID=<%=inspecID%>&projID=<%=rsReport("projectID")%>"><button type="button">View Email Report</button></a></td>
@@ -552,13 +552,13 @@ End If %>
 	<% End If %>
 	/></td>
 	<td>
-    <input type="text" name="coord:locationName:<%= n %>" onclick="displayAddressSelect(this)" value="<%=locationName %>"
+    <input type="text" size="40" name="coord:locationName:<%= n %>" onclick="displayAddressSelect(this)" value="<%=locationName %>"
 	<% if (useAddress) = False Then %>
 		class="hide"
 	<% End If %>
 	/></td>
 	<td>
-    <input type="text" name="coord:addressName:<%= n %>" value="<%=address%>"
+    <input type="text" size="40" name="coord:addressName:<%= n %>" value="<%=address%>"
 	<% if (useAddress) = False Then %>
 		class="hide"
 	<% End If %>

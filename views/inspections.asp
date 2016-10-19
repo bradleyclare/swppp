@@ -90,16 +90,29 @@ connSWPPP.Close
 Set connSWPPP = Nothing %>
 </td><td width="175" valign="top">
 <ul>
-<% IF validAct OR Session("validAdmin") OR Session("validDirector") THEN %>
-<li><a href="addActionReport.asp?pID=<%= projectID%>" target="_blank">Add Actions Taken</a></li>
-<% END IF %>
-<li><a href="actionReport.asp?pID=<%= projectID%>" target="_blank">View Actions Taken</a></li>
+
+
 <li><a href="addOperatorForm.asp?pID=<%= projectID%>" target="_blank">Add Operator Form</a></li>
 <li><a href="operatorForm.asp?pID=<%= projectID%>" target="_blank">View Operator Form</a></li>
-<% If includeItems Then %>
-<li><a href="openActionItems.asp?pID=<%= projectID%>&inspecID=<% = inspecID %>" target="_blank">Open Items</a></li>
-<li><a href="completedActionItems.asp?pID=<%= projectID%>&inspecID=<% = inspecID %>" target="_blank">Completed Items</a></li>
-<% End If %>
+<% If Session("validAdmin") Then %>
+    <li><a href="addActionReport.asp?pID=<%= projectID%>" target="_blank">Add Actions Taken</a></li>
+    <li><a href="actionReport.asp?pID=<%= projectID%>" target="_blank">View Actions Taken</a></li>
+    <li><a href="openActionItems.asp?pID=<%= projectID%>&inspecID=<% = inspecID %>" target="_blank">Open Items</a></li>
+    <li><a href="completedActionItems.asp?pID=<%= projectID%>&inspecID=<% = inspecID %>" target="_blank">Completed Items</a></li>
+<% Else
+    If includeItems Then
+        If Session("seeScoring") Then %>
+            <li><a href="openActionItems.asp?pID=<%= projectID%>&inspecID=<% = inspecID %>" target="_blank">Open Items</a></li>
+        <% End If %>
+        <li><a href="completedActionItems.asp?pID=<%= projectID%>&inspecID=<% = inspecID %>" target="_blank">Completed Items</a></li>
+    <% Else
+        IF validAct OR Session("validDirector") Then %>
+            <li><a href="addActionReport.asp?pID=<%= projectID%>" target="_blank">Add Actions Taken</a></li>
+        <% END IF %>
+        <li><a href="actionReport.asp?pID=<%= projectID%>" target="_blank">View Actions Taken</a></li>
+    <% End If
+End If %>
+
 </ul>
 </td></tr></table>
 </td></tr></table>

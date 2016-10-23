@@ -12,8 +12,6 @@
 		<% If Session("validAdmin") or Session("validInspector") then %>
 			<a href="../maintain/viewReports.asp" class="admin">View Reports</a><br>
 			<a href="../maintain/addReport.asp" class="admin">Add Report</a><br><br>
-		<% end if %>
-		<% If Session("validInspector") Then %>
 			<a href="../maintain/releaseReports.asp" class="admin">Release Reports</a><br><br>
 		<% End If %>
 		<% If Session("validAdmin") then %>
@@ -44,5 +42,6 @@
 		<% End IF %>
 		<a href="../" class="admin">Admin Home</a><br><br>
 		<a href="../../" class="admin">Public Home</a><br><br>
+    <a href="../../logout.asp" class="admin">Logout</a><br/><br/>
 </td>
 <!-- End Navigation --><td colspan="2" valign="top" width="90%"><br>

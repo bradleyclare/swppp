@@ -6,12 +6,14 @@ inspecID = Request("inspecID")
 SQL1 = "SELECT completedItems from Inspections WHERE inspecID = " & inspecID
 'Response.Write(SQL1)
 Set RS1 = connSWPPP.Execute(SQL1)
-completedItems = RS1("completedItems")
-
+if not RS1.EOF Then
+    completedItems = RS1("completedItems")
+Else
+    completedItems = 0
+End If
 If Request.Form.Count > 0 Then
-
 	update = 0
-	for n = 1 to 999 step 1
+	for n = 0 to 999 step 1
 		'Response.Write("coord:coID:" & CStr(n)&":"& Request("coord:coID:" & CStr(n)) &"<br/>")
 		if Trim(Request("coord:coID:" & CStr(n))) = "" then
 			exit for
@@ -59,22 +61,51 @@ tr.highlighted {
   $( function() {
     $( ".datepicker" ).datepicker();
   } );
+
+  function check_all_items(obj) {
+    for (i=0; i<999; i++){
+        var name = "coord:complete:" + i.toString();
+        var s = document.getElementsByName(name);
+        if (s.length > 0){
+            s[0].value = 'on';
+            s[0].checked = true;
+        } else {
+            break;
+        }
+    }
+  }
+
+  function uncheck_all_items(obj){
+    for (i=0; i<999; i++){
+        var name = "coord:complete:" + i.toString();
+        var s = document.getElementsByName(name);
+        if (s.length > 0){
+            s[0].value = 'off';
+            s[0].checked = false;
+        } else {
+            break;
+        }
+    }
+  }
   </script>
 </head>
 <body bgcolor="#ffffff" marginwidth="30" leftmargin="30" marginheight="15" topmargin="15">
 <center>
 <img src="../images/b&wlogoforreport.jpg" width="300"><br><br>
-<font size="+1"><b>Open Items for<br/> <%= RS2("projectName") %>&nbsp;<%= RS2("projectPhase")%></b></font><hr noshade size="1" width="90%">
+<font size="+1"><b>Open Items for<br/> <%= RS2("projectName") %>&nbsp;<%= RS2("projectPhase")%></b></font><hr noshade size="1" width="100%">
 </center>
 
 <form id="theForm" method="post" action="<%=Request.ServerVariables("script_name")& "?pID=" & projectID &"&inspecID=" & inspecID %>" onsubmit="return isReady(this)";>
-<table cellpadding="2" cellspacing="0" border="0" width="90%">
+<table cellpadding="2" cellspacing="0" border="0" width="100%">
 	<tr><th width="5%" align="left">Complete</th><th width="5%" align="left">Repeat</th><th width="5%" align="left">ID</th><th width="10%" align="left">Completion Date</th><th width="5%" align="left">Age</th><th width="25%" align="left">Location</th><th width="45%" align="left">Action Item</th></tr>
 <% coordSQLSELECT = "SELECT coID, coordinates, existingBMP, correctiveMods, orderby, assignDate, completeDate, status, repeat, useAddress, address, locationName" &_
 	" FROM Coordinates WHERE inspecID=" & inspecID & " ORDER BY orderby"	
 Set rsCoord = connSWPPP.execute(coordSQLSELECT)
-n = 1
-currentDate = date()
+If rsCoord.EOF Then
+	Response.Write("<tr><td colspan='4' align='center'><i style='font-size: 15px'>There is no open actions at this time.</i></td></tr>")
+Else
+    n = 0
+    currentDate = date()
 	Do While Not rsCoord.EOF	
 	    coID = rsCoord("coID")
 		correctiveMods = Trim(rsCoord("correctiveMods"))
@@ -112,14 +143,19 @@ currentDate = date()
 		</td>
 		<td><%= correctiveMods %></td>
 		</tr>
-		<%End If
+		<% n = n + 1
+        End If
 		rsCoord.MoveNext
-        n = n + 1
- 	LOOP %>
+ 	LOOP 
+End If%>
 </table>
 <hr/>
-<center><input type="submit" value="Submit"/><br/><br/>
-<a href="completedActionItems.asp?pID= <%=projectID%> &inspecID= <%=inspecID%>">See Completed Actions Items</a></center>
+<center>
+<input type="button" value="Check all Items" onclick="check_all_items(this)" />&nbsp
+<input type="button" value="Un-Check all Items" onclick="uncheck_all_items(this)" /><br/><br/>
+<input type="submit" value="Submit" /><br/><br/>
+<a href="completedActionItems.asp?pID= <%=projectID%> &inspecID= <%=inspecID%>">See Completed Actions Items</a>
+</center>
 </form>
 <br><br>
 </body>

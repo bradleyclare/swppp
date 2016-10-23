@@ -239,6 +239,7 @@
     <Content Include="js\validUpload1.2.js" />
     <Content Include="js\validUsers.js" />
     <Content Include="js\validUsers1.2.js" />
+    <Content Include="logout.asp" />
     <Content Include="mailtest.asp" />
     <Content Include="reportPrint.asp" />
     <Content Include="scripts\ai.0.15.0-build58334.js" />

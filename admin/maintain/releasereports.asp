@@ -2,7 +2,7 @@
 'Response.Write(Response.Buffer)
 ' Send Menu Email
 ' smp 3/5/03 layout
-If Not Session("validInspector") then Response.Redirect("../default.asp") End If
+If Not Session("validInspector") or Not Session("validAdmin") then Response.Redirect("../default.asp") End If
 %><!-- #INCLUDE FILE="../connSWPPP.asp" --><%
 
 Server.ScriptTimeout=1500

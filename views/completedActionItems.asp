@@ -11,7 +11,7 @@ completedItems = RS1("completedItems")
 If Request.Form.Count > 0 Then
 
 	update = 0
-	for n = 1 to 999 step 1
+	for n = 0 to 999 step 1
 		'Response.Write("coord:coID:" & CStr(n)&":"& Request("coord:coID:" & CStr(n)) &"<br/>")
 		if Trim(Request("coord:coID:" & CStr(n))) = "" then
 			exit for
@@ -64,7 +64,7 @@ tr.highlighted {
 <% coordSQLSELECT = "SELECT coID, coordinates, existingBMP, correctiveMods, orderby, assignDate, completeDate, status, repeat, useAddress, address, locationName" &_
 	" FROM Coordinates WHERE inspecID=" & inspecID & " ORDER BY orderby"	
 Set rsCoord = connSWPPP.execute(coordSQLSELECT)
-n = 1
+n = 0
 currentDate = date()
 	Do While Not rsCoord.EOF	
 	    coID = rsCoord("coID")
@@ -101,9 +101,9 @@ currentDate = date()
 		</td>
 		<td><%= correctiveMods %></td>
 		</tr>
-		<%End If
+		<% n = n + 1
+        End If
 		rsCoord.MoveNext
-        n = n + 1
  	LOOP %>
 </table>
 <hr/>

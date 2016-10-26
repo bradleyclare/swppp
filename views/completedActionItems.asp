@@ -60,7 +60,7 @@ tr.highlighted {
 
 <form id="theForm" method="post" action="<%=Request.ServerVariables("script_name")& "?pID=" & projectID &"&inspecID=" & inspecID %>" onsubmit="return isReady(this)";>
 <table cellpadding="2" cellspacing="0" border="0" width="90%">
-	<tr><th width="5%" align="left">Complete</th><th width="10%" align="left">ID</th><th width="10%" align="left">Completion Date</th><th width="5%" align="left">Age at Completion</th><th width="25%" align="left">Location</th><th width="45%" align="left">Action Item</th></tr>
+	<tr><th width="5%" align="left">Complete</th><th width="10%" align="left">ID</th><th width="10%" align="left">Completion Date</th><th width="25%" align="left">Location</th><th width="45%" align="left">Action Item</th></tr>
 <% coordSQLSELECT = "SELECT coID, coordinates, existingBMP, correctiveMods, orderby, assignDate, completeDate, status, repeat, useAddress, address, locationName" &_
 	" FROM Coordinates WHERE inspecID=" & inspecID & " ORDER BY orderby"	
 Set rsCoord = connSWPPP.execute(coordSQLSELECT)
@@ -91,7 +91,6 @@ currentDate = date()
 		</td>
 		<td align="left"><%= coID %></td>
 		<td align="left"><%= completeDate %></td>
-		<td><%= age %> days</td>
 		<td>
 		<% if (useAddress) = False Then %>
 			<%=coordinates%>
@@ -108,7 +107,9 @@ currentDate = date()
 </table>
 <hr/>
 <center><input type="submit" value="Submit"/><br/><br/>
-<a href="openActionItems.asp?pID= <%=projectID%> &inspecID= <%=inspecID%>">See Open Actions Items</a></center>
+<% if Session("seeScoring")=True Then %>
+    <a href="openActionItems.asp?pID= <%=projectID%> &inspecID= <%=inspecID%>">See Open Actions Items</a></center>
+<% End If %>
 </form>
 <br><br>
 </body>

@@ -78,7 +78,7 @@ If Request.Form.Count > 0 Then
             DelCoord = 0
             if Request("coord:del:"& CStr(n)) = "on" then 
 				DelCoord = 1 
-			Else
+			ElseIf IsNumeric(Request("coord:orderby:"& CStr(n))) then
 				totalItems = totalItems + 1
 			End If
 			Complete = 0

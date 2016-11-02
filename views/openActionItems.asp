@@ -76,7 +76,7 @@ tr.highlighted {
   }
 
   function uncheck_all_items(obj){
-    for (i=0; i<999; i++){
+     for (i=0; i<999; i++){
         var name = "coord:complete:" + i.toString();
         var s = document.getElementsByName(name);
         if (s.length > 0){
@@ -85,8 +85,23 @@ tr.highlighted {
         } else {
             break;
         }
-    }
+     }
   }
+
+  function apply_date_to_all(obj){
+     var s = document.getElementsByName("commonDate"); 
+     selDate = s[0].value;
+     for (i=0; i<999; i++){
+        var name = "coord:date:" + i.toString();
+        var s = document.getElementsByName(name);
+        if (s.length > 0){
+            s[0].value = selDate;
+        } else {
+            break;
+        }
+     }
+  }
+
   </script>
 </head>
 <body bgcolor="#ffffff" marginwidth="30" leftmargin="30" marginheight="15" topmargin="15">
@@ -95,7 +110,18 @@ tr.highlighted {
 <font size="+1"><b>Open Items for<br/> <%= RS2("projectName") %>&nbsp;<%= RS2("projectPhase")%></b></font><hr noshade size="1" width="100%">
 </center>
 
+<% currentDate = date() %>
+
 <form id="theForm" method="post" action="<%=Request.ServerVariables("script_name")& "?pID=" & projectID &"&inspecID=" & inspecID %>" onsubmit="return isReady(this)";>
+<center>
+<table><tr>
+<td><input type="button" value="Check all Items" onclick="check_all_items(this)" /></td>
+<td><input type="button" value="Un-Check all Items" onclick="uncheck_all_items(this)" /></td>
+<td><input type="text" name="commonDate" class="datepicker" value="<%= currentDate %>" /></td>
+<td><input type="button" value="Apply Date to All" onclick="apply_date_to_all(this)" /></td>
+</tr></table>
+</center>
+<br/><br/>
 <table cellpadding="2" cellspacing="0" border="0" width="100%">
 	<tr><th width="5%" align="left">Complete</th><th width="5%" align="left">Repeat</th><th width="5%" align="left">ID</th><th width="10%" align="left">Completion Date</th><th width="5%" align="left">Age</th><th width="25%" align="left">Location</th><th width="45%" align="left">Action Item</th></tr>
 <% coordSQLSELECT = "SELECT coID, coordinates, existingBMP, correctiveMods, orderby, assignDate, completeDate, status, repeat, useAddress, address, locationName" &_
@@ -105,7 +131,6 @@ If rsCoord.EOF Then
 	Response.Write("<tr><td colspan='4' align='center'><i style='font-size: 15px'>There is no open actions at this time.</i></td></tr>")
 Else
     n = 0
-    currentDate = date()
 	Do While Not rsCoord.EOF	
 	    coID = rsCoord("coID")
 		correctiveMods = Trim(rsCoord("correctiveMods"))
@@ -132,7 +157,7 @@ Else
 			<td align="left"><input type="checkbox" name="coord:repeat:<%= n %>" disabled /></td>
 		<% End If %>
 		<td align="left"><%= coID %></td>
-		<td align="left"><input class='datepicker' type="edit" name="coord:date:<%= n %>" value="<%= currentDate %>"/></td>
+		<td align="left"><input class="datepicker" type="text" name="coord:date:<%= n %>" value="<%= currentDate %>"/></td>
 		<td><%= age %> days</td>
 		<td>
 		<% if (useAddress) = False Then %>
@@ -151,9 +176,8 @@ End If%>
 </table>
 <hr/>
 <center>
-<input type="button" value="Check all Items" onclick="check_all_items(this)" />&nbsp
-<input type="button" value="Un-Check all Items" onclick="uncheck_all_items(this)" /><br/><br/>
-<input type="submit" value="Submit" /><br/><br/>
+<input type="submit" value="Submit" />
+<br/><br/>
 <a href="completedActionItems.asp?pID= <%=projectID%> &inspecID= <%=inspecID%>">See Completed Actions Items</a>
 </center>
 </form>

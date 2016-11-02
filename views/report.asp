@@ -99,10 +99,6 @@ Loop %>
 rsImages.Close
 Set rsImages = Nothing
 End If 
-If includeItems Then %>
-<a href="openActionItems.asp?pID=<%= projectID%>&inspecID=<% = inspecID %>" target="_blank">(<%=openItems%>) Open Items</a><br/>
-<a href="completedActionItems.asp?pID=<%= projectID%>&inspecID=<% = inspecID %>" target="_blank">(<%=completedItems%>) Completed Items</a>
-<% End If
 connSWPPP.Close
 Set connSWPPP = Nothing %>
 </td></tr></table>

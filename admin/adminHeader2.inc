@@ -13,6 +13,7 @@
 			<a href="../maintain/viewReports.asp" class="admin">View Reports</a><br>
 			<a href="../maintain/addReport.asp" class="admin">Add Report</a><br><br>
 			<a href="../maintain/releaseReports.asp" class="admin">Release Reports</a><br><br>
+      <a href="../maintain/releaseRepeatItems.asp" class="admin">Repeat Item Alert</a><br><br>
 		<% End If %>
 		<% If Session("validAdmin") then %>
 	      	<a href="../maintain/viewUsersAdmin.asp" class="admin">View Users</a><br>

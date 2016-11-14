@@ -19,8 +19,8 @@ IF Request.Form.Count > 0 THEN %>
     <BODY vLink=#d1a430 aLink=#000000 link=#b83a43 bgColor=#ffffff leftMargin=0 topMargin=0
 	    marginwidth="5" marginheight="5">
     <!-- #INCLUDE FILE="../adminHeader2.inc" -->
-    <%
-	FOR EACH Item IN Request.Form
+    <table>
+    <% FOR EACH Item IN Request.Form
 		    '--	Item is ProjectsUsers.projectID &":"& Inspections.inspecID -------------------
 		    '--	Request(Item) is Inspections.inspecID ----------------------------------------
 		    '-- need to create the Email content ---------------------------------------------
@@ -46,20 +46,21 @@ IF Request.Form.Count > 0 THEN %>
 
         strBody=strBody &"<head><style>"
         strBody=strBody &".red{color: #F52006;}"
+        strBody=strBody &".green{color: green;}"
         strBody=strBody &".black{color: black;}"
         strBody=strBody &"</style></head>"
         strBody=strBody &"<body bgcolor='#ffffff' marginwidth='30' leftmargin='30' marginheight='15' topmargin='15'>"
         strBody=strBody &"<center><img src='http://www.swpppinspections.com/images/color_logo_report.jpg' width='300'><br><br>"
         strBody=strBody &"<font size='+1'><b>Repeat Item Report</b></font><br/>"
-        strBody=strBody &"<font size='+1'><b>Project Name: " & projectName & " " & projectPhase & "</b></font><br/>"
-        strBody=strBody &"<font size='+1'><b>Inspection Date: " & inspecDate & "</center><br/>"
+        strBody=strBody &"<font size='+1'><b>" & projectName & " " & projectPhase & "</b></font><br/>"
+        strBody=strBody &"<font size='+1'><b>" & inspecDate & "</center><br/>"
 
         coordSQLSELECT = "SELECT coID, coordinates, existingBMP, correctiveMods, orderby, assignDate, completeDate, status, repeat, useAddress, address, locationName" &_
 	        " FROM Coordinates WHERE inspecID=" & inspecID & " ORDER BY orderby"	
         'Response.Write(coordSQLSELECT)
         Set rsCoord = connSWPPP.execute(coordSQLSELECT)
     
-        strBody=strBody &"<h3>Overdue Items</h3>"
+        strBody=strBody &"<h3>Repeat Items</h3>"
         strBody=strBody &"<p><table border='0' cellpadding='3' width='100%' cellspacing='0'>"
         strBody=strBody &"<tr><td colspan='2'><hr noshade size='1' align='center' width='90%'></td></tr>"
 	    If rsCoord.EOF Then
@@ -67,6 +68,7 @@ IF Request.Form.Count > 0 THEN %>
 	    Else
 		    applyScoring = rsInspec("includeItems")
 		    currentDate = date()
+            send_email = False
 		    Do While Not rsCoord.EOF
 			    coID = rsCoord("coID")
 			    correctiveMods = Trim(rsCoord("correctiveMods"))
@@ -87,16 +89,17 @@ IF Request.Form.Count > 0 THEN %>
 					    age = datediff("d",assignDate,currentDate) 
 				    END IF
 				    IF age > 7 THEN
+                        send_email = True
                         scoring_class = "red"
                         IF useAddress THEN
-				            strBody=strBody &"<tr valign='top'><td width='20%' align='right'><b>location:</b></td>	<td width='80%' align='left' class = '"& scoring_class &"'>"&  locationName &"<br></td></tr>"
-				            strBody=strBody &"<tr valign='top'><td width='20%' align='right'><b>address:</b></td>	<td width='80%' align='left' class = '"& scoring_class &"'>"&  address &"<br></td></tr>"
+				            strBody=strBody &"<tr valign='top'><td width='20%' align='right'><b>location:</b></td>	<td width='80%' align='left' class='red'>"&  locationName &"<br></td></tr>"
+				            strBody=strBody &"<tr valign='top'><td width='20%' align='right'><b>address:</b></td>	<td width='80%' align='left' class='red'>"&  address &"<br></td></tr>"
 			            ELSE
-				            strBody=strBody &"<tr valign='top'><td width='20%' align='right'><b>location:</b></td>	<td width='80%' align='left' class = '"& scoring_class &"'>"&  coordinates &"<br></td></tr>"
+				            strBody=strBody &"<tr valign='top'><td width='20%' align='right'><b>location:</b></td>	<td width='80%' align='left' class='red'>"&  coordinates &"<br></td></tr>"
 			            END IF
-			            strBody=strBody &"<tr valign='top'><td width='20%' align='right'><b>action needed:</b></td><td width='80%' align='left'>"&  correctiveMods &"</td></tr>"
+			            strBody=strBody &"<tr valign='top'><td width='20%' align='right'><b>action needed:</b></td><td width='80%' align='left' class='green'>"&  correctiveMods &"</td></tr>"
 			            IF applyScoring and repeat THEN
-				            strBody=strBody &"<tr valign='top'><td width='20%' align='right'><b>item age:</b></td><td width='80%' align='left' class = '"& scoring_class &"'>"&  age &"<br></td></tr>"
+				            strBody=strBody &"<tr valign='top'><td width='20%' align='right'><b>item age:</b></td><td width='80%' align='left' class='red'>"&  age &"<br></td></tr>"
 			            END IF
 			            strBody=strBody &"<tr><td colspan='2'><hr noshade size='1' align='center' width='90%'></td></tr>"  & vbCrLf
 				    END IF
@@ -104,13 +107,14 @@ IF Request.Form.Count > 0 THEN %>
 			    rsCoord.MoveNext
 		    Loop
 	    End If ' END No Results Found
-    
+        
+        strBody=strBody &"<br><div align='center'><a href='http://www.swppp.com/views/reportPrint.asp?inspecID="& inspecID &"'>Complete Report</a></div>"
         SQL3="SELECT oImageFileName FROM OptionalImages WHERE oitID=12 AND inspecID="& inspecID
         SET RS3=connSWPPP.execute(SQL3)
         IF NOT(RS3.EOF) THEN
-            strBody=strBody &"<div align='center'><a href='http://www.swpppinspections.com/images/sitemap/"& TRIM(RS3("oImageFileName")) &"'>link for Site Map</a></div>"
-            strBody=strBody &"<br><div align='center'><a href='http://www.swppp.com'>link to: www.swppp.com</a></div></Body>"
+            strBody=strBody &"<div align='center'><a href='http://www.swpppinspections.com/images/sitemap/"& TRIM(RS3("oImageFileName")) &"'>Site Map</a></div>"
         END IF
+        strBody=strBody &"<br><div align='center'><a href='http://www.swppp.com'>www.SWPPP.com</a></div></Body>"
 
         rsCoord.Close
         Set rsCoord = Nothing
@@ -129,46 +133,54 @@ IF Request.Form.Count > 0 THEN %>
 		    " JOIN Inspections i ON pu.projectID=i.projectID" &_
 		    " WHERE i.inspecID="& Request(Item) &" AND pu.projectID="& projectID
 	    Set RS1 = Server.CreateObject("ADODB.Recordset")
-	    RS1.Open SQL1, connSWPPP
+	    RS1.Open SQL1, connSWPPP %>
 
-        '--------------------- process mailing -------------------------------------------
-	    contentSubject= "Repeat Item Notification"
-	    Set Mailer = Server.CreateObject("SMTPsvg.Mailer")
-	    Mailer.FromName    = "Don Wims"
-	    Mailer.FromAddress = "dwims@swppp.com"
-	    Mailer.RemoteHost = "127.0.0.1"
-	    Mailer.Subject    = contentSubject
-	    Mailer.BodyText = strBody & strImages & "<Body>"
-	    Mailer.ContentType = "text/html"
-
-
-        '--------this line of code is for testing the smtp server---------------------
-        'Mailer.AddBCC "SWPPP Server testing", "jzuther@gmail.com"
-        '--------this line of code is for testing the smtp server---------------------
+        <tr><td><%=projectName%>&nbsp;<%=projectPhase%></td><td><%=inspecDate%></td>
+        
+	    <% '--------------------- process mailing ------------------------------------------- 
+        if send_email Then
+            contentSubject= "Repeat Item Report for "& projectName & " " & projectPhase & " on "& inspecDate
+	        Set Mailer = Server.CreateObject("SMTPsvg.Mailer")
+	        Mailer.FromName    = "Don Wims"
+	        Mailer.FromAddress = "dwims@swppp.com"
+	        Mailer.RemoteHost = "127.0.0.1"
+	        Mailer.Subject    = contentSubject
+	        Mailer.BodyText = strBody & strImages & "<Body>"
+	        Mailer.ContentType = "text/html"
 
 
-        '-- build the recipients list ------------------------------------------------
-		DO WHILE NOT RS1.EOF
-		    curRights = Trim(RS1("rights"))
-            if curRights = "email" then
-			    Mailer.AddRecipient Trim(RS1("fullName")), Trim(RS1("email"))
-			End if
-            if curRights = "ecc" then
-			    Mailer.AddCC Trim(RS1("fullName")), Trim(RS1("email"))
-			End if
-            if curRights = "bcc" then
-			    Mailer.AddBCC Trim(RS1("fullName")), Trim(RS1("email"))
-			End if
-			RS1.MoveNext
-		LOOP
-		if not Mailer.SendMail then %>
-			<FONT color="red">Mail send failure.- </FONT><%= Mailer.Response %><br>
-<%		else %>
-			Emails Sent<BR>
-<%		end if
-        '--Response.Write(strBody)
-	NEXT 'FOR item
-'	Response.End
+            '--------this line of code is for testing the smtp server---------------------
+            Mailer.AddBCC "SWPPP Server testing", "brad.leishman@gmail.com"
+            '--------this line of code is for testing the smtp server---------------------
+
+
+            '-- build the recipients list ------------------------------------------------
+            DO WHILE NOT RS1.EOF
+		        curRights = Trim(RS1("rights"))
+                if curRights = "email" then
+			        Mailer.AddRecipient Trim(RS1("fullName")), Trim(RS1("email"))
+			    End if
+                if curRights = "ecc" then
+			        Mailer.AddCC Trim(RS1("fullName")), Trim(RS1("email"))
+			    End if
+                if curRights = "bcc" then
+			        Mailer.AddBCC Trim(RS1("fullName")), Trim(RS1("email"))
+			    End if
+			    RS1.MoveNext
+		    LOOP
+		    if not Mailer.SendMail then %>
+			    <td><FONT color="red">Mail send failure.- </FONT><%= Mailer.Response %></td>
+    <%		else %>
+			    <td>Emails Sent</td>
+    <%		end if
+        Else %>
+            <td>No Repeat Items Over 7 Days. No Email Sent</td>
+    <%  End If 'End send_email %>
+        </tr>
+        <%'--Response.Write(strBody)
+	NEXT 'FOR item %>
+    </table>
+<%'	Response.End
 ELSE
     startDate=CDATE(Month(Date) &"/1/"& Year(Date)) 
     endDate=DateAdd("m",1,startDate)
@@ -198,8 +210,8 @@ ELSE
             <h1>Projects with Repeat Items</h1>
             <FORM action="<%= Request.ServerVariables("SCRIPT_NAME") %>" method="post">
             <div align="center">
-            <table border="0" cellpadding=1 cellspacing=1>
-	            <tr><th>Project Name|Phase</th><th>Report Date</th><th>Report Type</th><th>send email</th></tr>
+            <table border="1" cellpadding=3px cellspacing=1px>
+	            <tr><th>Project Name|Phase</th><th>Inspector</th><th>Report Date</th><th>Report Type</th><th>send email</th></tr>
             <% 	DO WHILE NOT RS0.EOF 
                     inspecID = RS0("inspecID")
                     coordSQLSELECT = "SELECT coID, coordinates, existingBMP, correctiveMods, orderby, assignDate, completeDate, status, repeat, useAddress, address, locationName" &_
@@ -221,9 +233,10 @@ ELSE
                     'Response.Write(inspecId & " - " & itemCnt & " | ")
                     IF repeatItem = True THEN %>
 	                    <tr><td align="left"><%= RS0("projectName")%>&nbsp;<%= RS0("projectPhase") %></td>
-		                <td align="left"><%= RS0("inspecDate") %></td>
+		                <td align="left"><%= Trim(RS0("firstName"))%>&nbsp;<%=Trim(RS0("lastName"))%></td>
+                        <td align="left"><%= RS0("inspecDate") %></td>
 		                <td align="left"><%= RS0("ReportType") %></td>
-		                <td align="center"><INPUT type="checkbox" name="<%= RS0("projectID")%>:<%= RS0("inspecID")%>" value="<%= RS0("inspecID")%>"></td></tr>
+		                <td align="center"><INPUT type="checkbox" name="<%= RS0("projectID")%>:<%= RS0("inspecID")%>" value="<%= RS0("inspecID")%>" checked></td></tr>
                     <% END IF 		
                     RS0.MoveNext
 	            LOOP

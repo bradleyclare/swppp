@@ -61,9 +61,13 @@ Else
 			End If	
 			totalItems     = rsInspectInfo("totalItems")
 			completedItems = rsInspectInfo("completedItems")
-			if includeItems and Session("seeScoring") and totalItems <> "" and totalItems <> 0 Then
-				score = " - Report Score: " & FormatNumber((completedItems/totalItems)*100,0) & "% (" & completedItems & "/" & totalItems & ")" 
-			Else
+			If includeItems and Session("seeScoring") and totalItems <> "" Then
+                If totalItems <> 0 Then
+				    score = " - Report Score: " & FormatNumber((completedItems/totalItems)*100,0) & "% (" & completedItems & "/" & totalItems & ")" 
+                Else
+                    score = " - Report Score: 100% (" & completedItems & "/" & totalItems & ")" 
+                End If
+            Else
 				score = ""
 			End If
 			%>

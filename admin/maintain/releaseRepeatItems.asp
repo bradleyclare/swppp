@@ -31,7 +31,7 @@ IF Request.Form.Count > 0 THEN %>
             "projectZip, projectCounty, onsiteContact, officePhone, emergencyPhone, compName, " &_
             "compAddr, compAddr2, compCity, compState, compZip, compPhone, compContact, contactPhone, contactFax, " &_
             "contactEmail, reportType, inches, bmpsInPlace, sediment, " &_
-            "narrative, firstName, lastName, signature, qualifications, includeItems, compliance, totalItems, completedItems" &_
+            "narrative, firstName, lastName, signature, qualifications, includeItems, compliance, totalItems, completedItems, sendRepeatItemReport" &_
 	            " FROM Inspections, Projects, Users" &_
 	            " WHERE inspecID = " & inspecID &_
 	            " AND Inspections.projectID = Projects.projectID" &_
@@ -97,7 +97,7 @@ IF Request.Form.Count > 0 THEN %>
 			            ELSE
 				            strBody=strBody &"<tr valign='top'><td width='20%' align='right'><b>location:</b></td>	<td width='80%' align='left' class='red'>"&  coordinates &"<br></td></tr>"
 			            END IF
-			            strBody=strBody &"<tr valign='top'><td width='20%' align='right'><b>action needed:</b></td><td width='80%' align='left' class='green'>"&  correctiveMods &"</td></tr>"
+			            strBody=strBody &"<tr valign='top'><td width='20%' align='right'><b>action needed:</b></td><td width='80%' align='left' class='red'>"&  correctiveMods &"</td></tr>"
 			            IF applyScoring and repeat THEN
 				            strBody=strBody &"<tr valign='top'><td width='20%' align='right'><b>item age:</b></td><td width='80%' align='left' class='red'>"&  age &"<br></td></tr>"
 			            END IF
@@ -186,7 +186,7 @@ ELSE
     endDate=DateAdd("m",1,startDate)
     endDate=DateAdd("d",-1,endDate)
     SQL0 = "SELECT inspecID, inspecDate, reportType" & _
-	", firstName, lastName, i.projectID, i.projectName, i.projectPhase, released" & _
+	", firstName, lastName, i.projectID, i.projectName, i.projectPhase, released, i.sendRepeatItemReport" & _
 	" FROM Inspections as i, Users as u, Projects as p" & _
 	" WHERE i.userID = u.userID AND i.projectID = p.projectID" &_
 	" AND i.inspecDate BETWEEN '"& startDate &"' AND '"& endDate &"'" 
@@ -211,9 +211,10 @@ ELSE
             <FORM action="<%= Request.ServerVariables("SCRIPT_NAME") %>" method="post">
             <div align="center">
             <table border="1" cellpadding=3px cellspacing=1px>
-	            <tr><th>Project Name|Phase</th><th>Inspector</th><th>Report Date</th><th>Report Type</th><th>send email</th></tr>
+	            <tr><th>Project Name|Phase</th><th>Inspector</th><th>Report Date</th><th>Report Type</th><th>Send Alert</th><th>Send Project Alerts</th></tr>
             <% 	DO WHILE NOT RS0.EOF 
                     inspecID = RS0("inspecID")
+                    sendRepeatItemReport = RS0("sendRepeatItemReport")
                     coordSQLSELECT = "SELECT coID, coordinates, existingBMP, correctiveMods, orderby, assignDate, completeDate, status, repeat, useAddress, address, locationName" &_
 	                    " FROM Coordinates WHERE inspecID=" & inspecID 
                     'Response.Write(coordSQLSELECT)
@@ -236,7 +237,11 @@ ELSE
 		                <td align="left"><%= Trim(RS0("firstName"))%>&nbsp;<%=Trim(RS0("lastName"))%></td>
                         <td align="left"><%= RS0("inspecDate") %></td>
 		                <td align="left"><%= RS0("ReportType") %></td>
-		                <td align="center"><INPUT type="checkbox" name="<%= RS0("projectID")%>:<%= RS0("inspecID")%>" value="<%= RS0("inspecID")%>" checked></td></tr>
+                        <% If sendRepeatItemReport Then %>
+		                    <td align="center"><INPUT type="checkbox" name="<%= RS0("projectID")%>:<%= RS0("inspecID")%>" value="<%= RS0("inspecID")%>" ></td></tr>
+                        <% Else %>        
+                            <td align="center"><INPUT type="checkbox" name="<%= RS0("projectID")%>:<%= RS0("inspecID")%>" value="<%= RS0("inspecID")%>" ></td></tr>
+                        <% End If %>
                     <% END IF 		
                     RS0.MoveNext
 	            LOOP

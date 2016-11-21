@@ -110,8 +110,7 @@ End If
 strBody=strBody &"<p><table border='0' cellpadding='3' width='100%' cellspacing='0'>"
 strBody=strBody &"<tr><td colspan='2'><hr noshade size='1' align='center' width='90%'></td></tr>"
 If rsInspec("compliance") Then
-	strBody=strBody &"<tr><td colspan='2' align='center'><i>SITE IS IN COMPLIANCE</i></td></tr>"
-	strBody=strBody &"<tr><td colspan='2'><hr noshade size='1' align='center' width='90%'></td></tr>"
+	strBody=strBody &"<tr><td colspan='2' align='center'><h2>SITE IS IN COMPLIANCE WITH THE SWPPP</h2></td></tr>"
 Else 
 	If rsCoord.EOF Then
 		strBody=strBody &"<tr><td colspan='2' align='center'><i>There is no coordinate data entered at this time.</i></td></tr>"

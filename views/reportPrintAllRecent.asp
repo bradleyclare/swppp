@@ -120,55 +120,59 @@ If RS2("projectState") = "OK" Then %><i>Inspectors familiar with the OPDES Permi
 Else %><i>Inspectors familiar with the TPDES Permit TXR150000 and the SWPPP should inspect disturbed areas of the site that have not been finally stabilized, areas used for storage of materials that are exposed to precipitation, structural controls (all erosion and sediment controls), discharge locations, locations where vehicles enter and exit the site, off-site material storage areas, overburden and stockpiles of dirt, borrow areas, equipment staging areas, vehicle repair areas, and fueling areas.</i><%
 End If %></div></center></p>
 <table border="0" cellpadding="3" width="100%" cellspacing="0"><%
-If rsCoord.EOF Then
-	Response.Write("<tr><td colspan='2' align='center'><i>There is no " & _
-		"coordinate data entered at this time.</i></td></tr>")
-Else
-	applyScoring = False
-	'if RS2("includeItems")=True & Session("seeScoring")=True Then applyScoring = True End If
-	currentDate = date()
-	Do While Not rsCoord.EOF
-		coID = rsCoord("coID")
-		correctiveMods = Trim(rsCoord("correctiveMods"))
-		orderby = rsCoord("orderby")
-		coordinates = Trim(rsCoord("coordinates"))
-		existingBMP = Trim(rsCoord("existingBMP")) 
-		assignDate = rsCoord("assignDate") 
-		completeDate = rsCoord("completeDate")
-		status = rsCoord("status")
-		repeat = rsCoord("repeat")
-		useAddress = rsCoord("useAddress")
-		address = TRIM(rsCoord("address"))
-		locationName = TRIM(rsCoord("locationName"))
-		scoring_class = "black"
-		'Response.Write("ID: " & coID & ", Coord: " & coordinates & ", LocName: " & locationName & ", address: " & address & ", Mods: " & correctiveMods & "<br/>") 
-		IF applyScoring THEN
-			IF assignDate = "" THEN
-				age = 0
-			ELSE
-				age = datediff("d",assignDate,currentDate) 
-			END IF
-			IF age > 7 THEN
-				scoring_class = "red"
-			END IF
-		END IF
-		IF useAddress THEN %>
-			<tr valign='top'><td width='20%' align='right'><b>location:</b></td>	<td width='80%' align='left' class = '<%=scoring_class%>'><%=locationName%><br></td></tr>
-			<tr valign='top'><td width='20%' align='right'><b>address:</b></td>	<td width='80%' align='left' class = '<%=scoring_class%>'><%=address%><br></td></tr>
-		<% ELSE %>
-			<tr valign='top'><td width='20%' align='right'><b>location:</b></td>	<td width='80%' align='left' class = '<%=scoring_class%>'><%=coordinates%><br></td></tr>
-		<% END IF
-		IF TRIM(rsCoord("existingBMP"))<>"-1" THEN %>
-			<tr valign='top'><td width='20%' align='right'><b>existing BMP:</b></td><td width='80%' align='left' class = '<%=scoring_class%>'><%=existingBMP%><br></td></tr>
-		<% END IF %>
-		<tr valign='top'><td width='20%' align='right'><b>action needed:</b></td><td width='80%' align='left' class = '<%=scoring_class%>'><%=correctiveMods%></td></tr>
-		<% IF applyScoring and repeat THEN %>
-			<tr valign='top'><td width='20%' align='right'><b>item age:</b></td><td width='80%' align='left' class = '<%=scoring_class%>'><%=age%><br></td></tr>
-		<% END IF %>
-		<tr><td colspan='2'><hr noshade size='1' align='center' width='90%'></td></tr>
-		<% rsCoord.MoveNext
-	Loop
-End If ' END No Results Found
+If RS2("compliance") Then
+	Response.Write("<tr><td colspan='2' align='center'><h2>SITE IS IN COMPLIANCE WITH THE SWPPP</h2></td></tr>")
+Else 
+    If rsCoord.EOF Then
+	    Response.Write("<tr><td colspan='2' align='center'><i>There is no " & _
+		    "coordinate data entered at this time.</i></td></tr>")
+    Else
+	    applyScoring = False
+	    'if RS2("includeItems")=True & Session("seeScoring")=True Then applyScoring = True End If
+	    currentDate = date()
+	    Do While Not rsCoord.EOF
+		    coID = rsCoord("coID")
+		    correctiveMods = Trim(rsCoord("correctiveMods"))
+		    orderby = rsCoord("orderby")
+		    coordinates = Trim(rsCoord("coordinates"))
+		    existingBMP = Trim(rsCoord("existingBMP")) 
+		    assignDate = rsCoord("assignDate") 
+		    completeDate = rsCoord("completeDate")
+		    status = rsCoord("status")
+		    repeat = rsCoord("repeat")
+		    useAddress = rsCoord("useAddress")
+		    address = TRIM(rsCoord("address"))
+		    locationName = TRIM(rsCoord("locationName"))
+		    scoring_class = "black"
+		    'Response.Write("ID: " & coID & ", Coord: " & coordinates & ", LocName: " & locationName & ", address: " & address & ", Mods: " & correctiveMods & "<br/>") 
+		    IF applyScoring THEN
+			    IF assignDate = "" THEN
+				    age = 0
+			    ELSE
+				    age = datediff("d",assignDate,currentDate) 
+			    END IF
+			    IF age > 7 THEN
+				    scoring_class = "red"
+			    END IF
+		    END IF
+		    IF useAddress THEN %>
+			    <tr valign='top'><td width='20%' align='right'><b>location:</b></td>	<td width='80%' align='left' class = '<%=scoring_class%>'><%=locationName%><br></td></tr>
+			    <tr valign='top'><td width='20%' align='right'><b>address:</b></td>	<td width='80%' align='left' class = '<%=scoring_class%>'><%=address%><br></td></tr>
+		    <% ELSE %>
+			    <tr valign='top'><td width='20%' align='right'><b>location:</b></td>	<td width='80%' align='left' class = '<%=scoring_class%>'><%=coordinates%><br></td></tr>
+		    <% END IF
+		    IF TRIM(rsCoord("existingBMP"))<>"-1" THEN %>
+			    <tr valign='top'><td width='20%' align='right'><b>existing BMP:</b></td><td width='80%' align='left' class = '<%=scoring_class%>'><%=existingBMP%><br></td></tr>
+		    <% END IF %>
+		    <tr valign='top'><td width='20%' align='right'><b>action needed:</b></td><td width='80%' align='left' class = '<%=scoring_class%>'><%=correctiveMods%></td></tr>
+		    <% IF applyScoring and repeat THEN %>
+			    <tr valign='top'><td width='20%' align='right'><b>item age:</b></td><td width='80%' align='left' class = '<%=scoring_class%>'><%=age%><br></td></tr>
+		    <% END IF %>
+		    <tr><td colspan='2'><hr noshade size='1' align='center' width='90%'></td></tr>
+		    <% rsCoord.MoveNext
+	    Loop
+    End If ' END No Results Found
+End If ' END Compliance
 rsCoord.Close
 Set rsCoord = Nothing %>
 </table>

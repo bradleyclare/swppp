@@ -108,13 +108,13 @@ IF Request.Form.Count > 0 THEN %>
 		    Loop
 	    End If ' END No Results Found
         
-        strBody=strBody &"<br><div align='center'><a href='http://www.swppp.com/views/reportPrint.asp?inspecID="& inspecID &"'>Complete Report</a></div>"
+        strBody=strBody &"</table><br><center>Complete Report: <a href='http://www.swppp.com/views/reportPrint.asp?inspecID="& inspecID &"'>http://www.swppp.com/views/reportPrint.asp?inspecID="& inspecID &"</a>"
         SQL3="SELECT oImageFileName FROM OptionalImages WHERE oitID=12 AND inspecID="& inspecID
         SET RS3=connSWPPP.execute(SQL3)
         IF NOT(RS3.EOF) THEN
-            strBody=strBody &"<div align='center'><a href='http://www.swpppinspections.com/images/sitemap/"& TRIM(RS3("oImageFileName")) &"'>Site Map</a></div>"
+            strBody=strBody &"<br>Sitemap: <a href='http://www.swpppinspections.com/images/sitemap/"& TRIM(RS3("oImageFileName")) &"'>http://www.swpppinspections.com/images/sitemap/"& TRIM(RS3("oImageFileName")) &"</a>"
         END IF
-        strBody=strBody &"<br><div align='center'><a href='http://www.swppp.com'>www.SWPPP.com</a></div></Body>"
+        strBody=strBody &"<br>Website: <a href='http://www.swppp.com'>www.swppp.com</a></center></Body>"
 
         rsCoord.Close
         Set rsCoord = Nothing
@@ -148,24 +148,29 @@ IF Request.Form.Count > 0 THEN %>
 	        Mailer.BodyText = strBody & strImages & "<Body>"
 	        Mailer.ContentType = "text/html"
 
-
             '--------this line of code is for testing the smtp server---------------------
             Mailer.AddBCC "SWPPP Server testing", "brad.leishman@gmail.com"
             '--------this line of code is for testing the smtp server---------------------
 
-
             '-- build the recipients list ------------------------------------------------
             DO WHILE NOT RS1.EOF
-		        curRights = Trim(RS1("rights"))
-                if curRights = "email" then
-			        Mailer.AddRecipient Trim(RS1("fullName")), Trim(RS1("email"))
-			    End if
-                if curRights = "ecc" then
-			        Mailer.AddCC Trim(RS1("fullName")), Trim(RS1("email"))
-			    End if
-                if curRights = "bcc" then
-			        Mailer.AddBCC Trim(RS1("fullName")), Trim(RS1("email"))
-			    End if
+                userSQLSELECT = "SELECT userID, pswrd, rights, firstName, lastName, noImages, seeScoring" &_
+		            " FROM Users" & _
+		            " WHERE email = '" & Trim(RS1("email")) & "'"
+	            ' Response.Write(userSQLSELECT & "<br>")
+	            Set connEmail = connSWPPP.execute(userSQLSELECT)
+                If connEmail("seeScoring") Then
+		            curRights = Trim(RS1("rights"))
+                    If curRights = "email" then
+			            Mailer.AddRecipient Trim(RS1("fullName")), Trim(RS1("email"))
+			        End If
+                    If curRights = "ecc" then
+			            Mailer.AddCC Trim(RS1("fullName")), Trim(RS1("email"))
+			        End If
+                    If curRights = "bcc" then
+			            Mailer.AddBCC Trim(RS1("fullName")), Trim(RS1("email"))
+			        End If
+                End If
 			    RS1.MoveNext
 		    LOOP
 		    if not Mailer.SendMail then %>
@@ -211,7 +216,7 @@ ELSE
             <FORM action="<%= Request.ServerVariables("SCRIPT_NAME") %>" method="post">
             <div align="center">
             <table border="1" cellpadding=3px cellspacing=1px>
-	            <tr><th>Project Name|Phase</th><th>Inspector</th><th>Report Date</th><th>Report Type</th><th>Send Alert</th><th>Send Project Alerts</th></tr>
+	            <tr><th>Project Name|Phase</th><th>Inspector</th><th>Report Date</th><th>Report Type</th><th>Send Alert</th></tr>
             <% 	DO WHILE NOT RS0.EOF 
                     inspecID = RS0("inspecID")
                     sendRepeatItemReport = RS0("sendRepeatItemReport")

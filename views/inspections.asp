@@ -57,8 +57,8 @@ Else
 		If rsInspectInfo("released") Then
 			If inspecID = 0 Then
 				inspecID     = rsInspectInfo("inspecID")
-				includeItems = rsInspectInfo("includeItems")
 			End If	
+            includeItems = rsInspectInfo("includeItems")
 			totalItems     = rsInspectInfo("totalItems")
 			completedItems = rsInspectInfo("completedItems")
 			If includeItems and Session("seeScoring") and totalItems <> "" Then
@@ -101,14 +101,14 @@ Set connSWPPP = Nothing %>
 <% If Session("validAdmin") Then %>
     <li><a href="addActionReport.asp?pID=<%= projectID%>" target="_blank">Add Actions Taken</a></li>
     <li><a href="actionReport.asp?pID=<%= projectID%>" target="_blank">View Actions Taken</a></li>
-    <li><a href="openActionItems.asp?pID=<%= projectID%>&inspecID=<% = inspecID %>" target="_blank">Open Items</a></li>
-    <li><a href="completedActionItems.asp?pID=<%= projectID%>&inspecID=<% = inspecID %>" target="_blank">Completed Items</a></li>
+    <li><a href="openActionItems.asp?pID=<%= projectID%>" target="_blank">Open Items</a></li>
+    <li><a href="completedActionItems.asp?pID=<%= projectID%>" target="_blank">Completed Items</a></li>
 <% Else
     If includeItems Then
         If Session("seeScoring") Then %>
-            <li><a href="openActionItems.asp?pID=<%= projectID%>&inspecID=<% = inspecID %>" target="_blank">Open Items</a></li>
+            <li><a href="openActionItems.asp?pID=<%= projectID%>" target="_blank">Open Items</a></li>
         <% End If %>
-        <li><a href="completedActionItems.asp?pID=<%= projectID%>&inspecID=<% = inspecID %>" target="_blank">Completed Items</a></li>
+        <li><a href="completedActionItems.asp?pID=<%= projectID%>" target="_blank">Completed Items</a></li>
     <% Else
         IF validAct OR Session("validDirector") Then %>
             <li><a href="addActionReport.asp?pID=<%= projectID%>" target="_blank">Add Actions Taken</a></li>

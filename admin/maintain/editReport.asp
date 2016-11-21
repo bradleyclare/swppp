@@ -177,21 +177,6 @@ baseDir = "D:\Inetpub\wwwroot\SWPPP\"%>
             width: 500,
             modal: true,
             buttons: {
-                "Complete All Items": function () {
-                    //check all complete hidden elements (coord:statusX)
-                    var i;
-                    for (i = 1; i < 99; ++i) {
-                        var e = document.getElementsByName("coord:status:" + i);
-                        if (e.length) {
-                            $("[name='coord:status:" + i + "']")[0].checked = true;
-                        } else {
-                            break;
-                        }
-                    }
-                    $('#compliance-checkbox')[0].checked = true;
-                    $(this).dialog("close");
-                    document.getElementById("theForm").submit();
-                },
                 "Delete All Items": function () {
                     //check all delete checkboxes (coord:deleteX)
                     var i;
@@ -518,7 +503,13 @@ End If %>
 <br /><br />
 <input type="button" onclick="close_popup()" value="Close Window" />
 </div>
-<center>Click "Repeat" on all items that you want the assign date to stay the same. All other items will be updated to the current date on SUBMIT.</center><br/>
+<center>
+    Click "Repeat" on all items that you want the assign date to stay the same. All other items will be updated to the current date on SUBMIT.
+    <table><tr>
+    <td><a href="../../views/openActionItems.asp?pID=<%=rsReport("projectID")%>" target="_blank">Open Items Page</a></td>
+    <td><a href="../../views/completedActionItems.asp?pID=<%=rsReport("projectID")%>" target="_blank">Completed Items Page</a></td>
+    </tr></table>
+</center><br/>
 <table width="90%" border="0" align="center" cellpadding="2" cellspacing="0">
 <% 
 'If rsCoord.EOF Then

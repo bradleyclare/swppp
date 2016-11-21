@@ -63,7 +63,7 @@ Set rsInspectInfo = connSWPPP.Execute(inspectInfoSQLSELECT)
 
 <body bgcolor="#ffffff" marginwidth="30" leftmargin="30" marginheight="15" topmargin="15">
 <center>
-<img src="../images/b&wlogoforreport.jpg" width="300"><br><br>
+<img src="../images/color_logo_report.jpg" width="300"><br><br>
 <font size="+1"><b>Completed Items for<br> <%= RS2("projectName") %>&nbsp;<%= RS2("projectPhase")%></b></font><hr noshade size="1" width="90%">
 </center>
 
@@ -77,58 +77,61 @@ Else
 	Do While Not rsInspectInfo.EOF   
         inspecID = rsInspectInfo("inspecID")
         inspecDate = Trim(rsInspectInfo("inspecDate"))
-
-        coordSQLSELECT = "SELECT coID, coordinates, existingBMP, correctiveMods, orderby, assignDate, completeDate, status, repeat, useAddress, address, locationName" &_
-	    " FROM Coordinates WHERE inspecID=" & inspecID & " ORDER BY orderby"	
-        Set rsCoord = connSWPPP.execute(coordSQLSELECT)
-        currentDate = date()
-        start_n = n
-	    Do While Not rsCoord.EOF	
-	        coID = rsCoord("coID")
-		    correctiveMods = Trim(rsCoord("correctiveMods"))
-		    coordinates = Trim(rsCoord("coordinates"))
-		    assignDate = rsCoord("assignDate")
-		    completeDate = rsCoord("completeDate")
-		    if assignDate = "" Then
-			    age = "?"
-		    Else
-			    age = datediff("d",assignDate,completeDate) 
-		    End If
-		    status = rsCoord("status")
-		    repeat = rsCoord("repeat")
-		    useAddress = rsCoord("useAddress")
-		    address = TRIM(rsCoord("address"))
-		    locationName = TRIM(rsCoord("locationName"))
-		    If status = true Then
-		    %>
-		    <tr>
-            <input type="hidden" name="coord:coID:<%= n %>" value="<%= coID %>" />
-            <input type="hidden" name="coord:inspecID:<%= n %>" value="<%= inspecID %>" />
-		    <td align="left"><input type="checkbox" name="coord:complete:<%= n %>" checked /></td>
-            <% If repeat = True Then %>
-			    <td align="left"><input type="checkbox" name="coord:repeat:<%= n %>" disabled checked/></td>
-		    <% Else %>
-			    <td align="left"><input type="checkbox" name="coord:repeat:<%= n %>" disabled /></td>
-		    <% End If %>
-		    <td align="left"><%= coID %></td>
-		    <td align="left"><%= completeDate %></td>
-		    <td><%= inspecDate %></td>
-            <td>
-		    <% if (useAddress) = False Then %>
-			    <%=coordinates%>
-		    <% Else %>
-			    <%=locationName%> (<%=address%>)
-		    <% End If %>
-		    </td>
-		    <td><%= correctiveMods %></td>
-		    </tr>
-		    <% n = n + 1
-            End If
-		    rsCoord.MoveNext
-        LOOP 'loop coordinates 
-        If start_n <> n Then %>
-            <tr><td colspan="8"><hr /></td></tr>
-        <% End If
+        includeItems = rsInspectInfo("includeItems")
+        
+        if includeItems Then
+            coordSQLSELECT = "SELECT coID, coordinates, existingBMP, correctiveMods, orderby, assignDate, completeDate, status, repeat, useAddress, address, locationName" &_
+	        " FROM Coordinates WHERE inspecID=" & inspecID & " ORDER BY orderby"	
+            Set rsCoord = connSWPPP.execute(coordSQLSELECT)
+            currentDate = date()
+            start_n = n
+	        Do While Not rsCoord.EOF	
+	            coID = rsCoord("coID")
+		        correctiveMods = Trim(rsCoord("correctiveMods"))
+		        coordinates = Trim(rsCoord("coordinates"))
+		        assignDate = rsCoord("assignDate")
+		        completeDate = rsCoord("completeDate")
+		        if assignDate = "" Then
+			        age = "?"
+		        Else
+			        age = datediff("d",assignDate,completeDate) 
+		        End If
+		        status = rsCoord("status")
+		        repeat = rsCoord("repeat")
+		        useAddress = rsCoord("useAddress")
+		        address = TRIM(rsCoord("address"))
+		        locationName = TRIM(rsCoord("locationName"))
+		        If status = true Then
+		        %>
+		        <tr>
+                <input type="hidden" name="coord:coID:<%= n %>" value="<%= coID %>" />
+                <input type="hidden" name="coord:inspecID:<%= n %>" value="<%= inspecID %>" />
+		        <td align="left"><input type="checkbox" name="coord:complete:<%= n %>" checked /></td>
+                <% If repeat = True Then %>
+			        <td align="left"><input type="checkbox" name="coord:repeat:<%= n %>" disabled checked/></td>
+		        <% Else %>
+			        <td align="left"><input type="checkbox" name="coord:repeat:<%= n %>" disabled /></td>
+		        <% End If %>
+		        <td align="left"><%= coID %></td>
+		        <td align="left"><%= completeDate %></td>
+		        <td><%= inspecDate %></td>
+                <td>
+		        <% if (useAddress) = False Then %>
+			        <%=coordinates%>
+		        <% Else %>
+			        <%=locationName%> (<%=address%>)
+		        <% End If %>
+		        </td>
+		        <td><%= correctiveMods %></td>
+		        </tr>
+		        <% n = n + 1
+                End If
+		        rsCoord.MoveNext
+            LOOP 'loop coordinates 
+            If start_n <> n Then %>
+                <tr><td colspan="8"><hr /></td></tr>
+            <% End If
+        End If
         rsInspectInfo.MoveNext
      LOOP 'loop inpection reports
 End If%>

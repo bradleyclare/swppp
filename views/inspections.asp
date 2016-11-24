@@ -4,6 +4,7 @@ If _
 	Not Session("validAdmin") And _
 	Not Session("validDirector") And _
 	Not Session("validInspector") And _
+    Not Session("validErosion") And _
 	Not Session("validUser") _
 Then
 	Session("adminReturnTo") = Request.ServerVariables("path_info") & _
@@ -47,7 +48,8 @@ projectPhase= Trim(rsInspectInfo("projectPhase")) %>
 	<button onClick="window.open('reportPrintAll.asp?projID=<%= projectID%>&projName=<%= projectName%>&projPhase=<%= projectPhase %>','','width=800, height=600, location=no, menubar=no, status=no, toolbar=no, scrollbars=yes, resizable=yes')">Print All Reports</button>
 	    <br /></div></h1>
 <h2><font color="#003399"><% = projectName %>&nbsp;<%= projectPhase %></font></h2>
-<% rsInspectInfo.MoveFirst()
+<% includeItemsFlag = False
+rsInspectInfo.MoveFirst()
 If rsInspectInfo.EOF Then
 	Response.Write("<b><i>Sorry no current " & _
 		"data entered at this time.</i></b>")
@@ -61,7 +63,10 @@ Else
             includeItems = rsInspectInfo("includeItems")
 			totalItems     = rsInspectInfo("totalItems")
 			completedItems = rsInspectInfo("completedItems")
-			If includeItems and Session("seeScoring") and totalItems <> "" Then
+			If includeItems Then
+                includeItemsFlag = True
+            End If
+            If includeItems and Session("seeScoring") and totalItems <> "" Then
                 If totalItems <> 0 Then
 				    score = " - Report Score: " & FormatNumber((completedItems/totalItems)*100,0) & "% (" & completedItems & "/" & totalItems & ")" 
                 Else
@@ -104,7 +109,7 @@ Set connSWPPP = Nothing %>
     <li><a href="openActionItems.asp?pID=<%= projectID%>" target="_blank">Open Items</a></li>
     <li><a href="completedActionItems.asp?pID=<%= projectID%>" target="_blank">Completed Items</a></li>
 <% Else
-    If includeItems Then
+    If includeItemsFlag Then
         If Session("seeScoring") Then %>
             <li><a href="openActionItems.asp?pID=<%= projectID%>" target="_blank">Open Items</a></li>
         <% End If %>

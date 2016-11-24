@@ -69,6 +69,7 @@ If Request.Form.Count > 0 Then
     
 		totalItems = 0
 		completedItems = 0
+        inspecDate = strQuoteReplace(Request("inspecDate"))
 		for n = 1 to 999 step 1
 'Response.Write("coord:coID:" & CStr(n)&":"& Request("coord:coID:" & CStr(n)) &"<br/>")
 		    if Trim(Request("coord:coID:" & CStr(n))) = "" then
@@ -80,6 +81,10 @@ If Request.Form.Count > 0 Then
 				DelCoord = 1 
 			ElseIf IsNumeric(Request("coord:orderby:"& CStr(n))) then
 				totalItems = totalItems + 1
+                If compliance Then
+                    message = "Site is in Compliance checked with modifications defined! Either uncheck Site is in Compliance or remove the modifications and resubmit."
+                    Response.Write("<script language=""javascript"">alert(""" + message + """);</script>")
+                End If
 			End If
 			Complete = 0
 			if Request("coord:status:"& CStr(n)) = "on" then 
@@ -92,9 +97,9 @@ If Request.Form.Count > 0 Then
             if Request("coord:useAddress:"& Cstr(n)) = "on" then useAddress = 1 End If
 			address = TRIM(strQuoteReplace(Request("coord:addressName:"& Cstr(n))))
 			locationName = TRIM(strQuoteReplace(Request("coord:locationName:"& Cstr(n))))
-			AssignDate = date()
-			if Repeat = 1 Then
-				AssignDate = Request("coord:assignDate:"& CStr(n))
+			AssignDate = inspecDate
+            if Repeat = 1 Then
+		    	AssignDate = Request("coord:assignDate:"& CStr(n))
 			End If
 			OrderBy = 0
             if IsNumeric(Request("coord:orderby:"& CStr(n))) then OrderBy = Request("coord:orderby:"& CStr(n)) End If
@@ -516,7 +521,6 @@ End If %>
 '	Response.Write("<tr><td colspan='2' align='center'><i>There is no data at this time.</i></td></tr>")		
 'Else
     n = 1
-	currentDate = date()
 	Do While Not rsCoord.EOF
 	    coID = rsCoord("coID")
 		correctiveMods = Trim(rsCoord("correctiveMods"))
@@ -611,7 +615,7 @@ Set rsCoord = Nothing %>
 	<td>Mods:</td>
 	<td rowspan="3" colspan="2"><textarea name="coord:mods:<%= m %>" cols="100%" rows="5"></textarea></td></tr>
 	<tr><td>AssignDate</td>
-	<td><input class=datepicker type="text" name="coord:assignDate:<%= m %>" size="10" value="<%= currentDate %>" /></td></tr>
+	<td><input class=datepicker type="text" name="coord:assignDate:<%= m %>" size="10" value="" disabled /></td></tr>
 	<tr><td></td><td></td></tr>
 	<tr><td colspan="5"><hr align="center" width="100%" size="1"></td></tr>
 <% next %>

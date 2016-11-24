@@ -2,7 +2,7 @@
 'Response.Write(Response.Buffer)
 ' Send Menu Email
 ' smp 3/5/03 layout
-If Not Session("validInspector") then Response.Redirect("../default.asp") End If %>
+If Not Session("validInspector") and Not Session("validAdmin") then Response.Redirect("../default.asp") End If %>
 <!-- #INCLUDE FILE="../connSWPPP.asp" -->
 <% Server.ScriptTimeout=1500
 'Response.Write(Request.Form.Count & "<br>") 
@@ -100,7 +100,7 @@ Else
 	If rsCoord.EOF Then
 		strBody=strBody &"<tr><td colspan='2' align='center'><i>There is no coordinate data entered at this time.</i></td></tr>"
 	Else
-		applyScoring = rsInspec("includeItems")
+		applyScoring = False 'rsInspec("includeItems")
 		currentDate = date()
 		Do While Not rsCoord.EOF
 			coID = rsCoord("coID")

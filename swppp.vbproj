@@ -154,7 +154,6 @@
     <Content Include="admin\maintain\commissions.asp" />
     <Content Include="admin\maintain\commissionsReport.asp" />
     <Content Include="admin\maintain\commissionsReportDetail.asp" />
-    <Content Include="admin\maintain\Copy of upImageRpt.asp" />
     <Content Include="admin\maintain\deleteCoordinate.asp" />
     <Content Include="admin\maintain\deleteImageAsc.asp" />
     <Content Include="admin\maintain\deleteProject.asp" />

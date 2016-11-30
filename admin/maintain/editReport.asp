@@ -97,6 +97,14 @@ If Request.Form.Count > 0 Then
             if Request("coord:useAddress:"& Cstr(n)) = "on" then useAddress = 1 End If
 			address = TRIM(strQuoteReplace(Request("coord:addressName:"& Cstr(n))))
 			locationName = TRIM(strQuoteReplace(Request("coord:locationName:"& Cstr(n))))
+            infoOnly = 0
+			if Request("coord:infoOnly:"& CStr(n)) = "on" then 
+                totalItems = totalItems - 1
+                if Complete Then
+                    completedItems = completedItems - 1
+                End If
+                infoOnly = 1 
+            End If
 			AssignDate = inspecDate
             if Repeat = 1 Then
 		    	AssignDate = Request("coord:assignDate:"& CStr(n))
@@ -117,7 +125,8 @@ If Request.Form.Count > 0 Then
 			Repeat &", " & _ 
 			useAddress &", '" & _ 
 			address &"', '" & _
-			locationName &"';"
+			locationName &"', '" & _
+            infoOnly &"';"
 		next	
     'Response.Write(SQLc)
         if Len(SQLc) > 0 then connSWPPP.execute(SQLc) end if
@@ -461,7 +470,7 @@ End If%>
 	<input id='includeItems-checkbox' type="checkbox" name="includeItems" />
 <% End If %>
 </td></tr></table><br/>
-<% coordSQLSELECT = "SELECT coID, coordinates, existingBMP, correctiveMods, orderby, assignDate, completeDate, status, repeat, useAddress, address, locationName" &_
+<% coordSQLSELECT = "SELECT coID, coordinates, existingBMP, correctiveMods, orderby, assignDate, completeDate, status, repeat, useAddress, address, locationName, infoOnly" &_
 	" FROM Coordinates WHERE inspecID=" & inspecID & " ORDER BY orderby"	
 'Response.Write(coordSQLSELECT)
 Set rsCoord = connSWPPP.execute(coordSQLSELECT)
@@ -534,6 +543,7 @@ End If %>
 		useAddress = rsCoord("useAddress")
 		address = TRIM(rsCoord("address"))
 		locationName = TRIM(rsCoord("locationName"))
+        infoOnly = rsCoord("infoOnly")
 		'Response.Write("ID: " & coID & ", Coord: " & coordinates & ", LocName: " & locationName & ", address: " & address & ", Mods: " & correctiveMods & "<br/>") 
 		%>
 	<input type="hidden" name="coord:coID:<%= n %>" value="<%= coID %>" />
@@ -578,7 +588,13 @@ End If %>
 	<td rowspan="3" colspan="2"><textarea name="coord:mods:<%= n %>" cols="100%" rows="5"><%= correctiveMods %></textarea></td></tr>
 	<tr><td>AssignDate</td>
 	<td><input class=datepicker type="text" name="coord:assignDate:<%= n %>" size="10" value="<%= assignDate %>" /></td></tr>
-	<tr><td></td><td></td></tr>
+	<tr><td>Info Only
+	<% If infoOnly = True Then %>
+		<input type="checkbox" name="coord:infoOnly:<%= n %>" checked/>
+	<% Else %>
+		<input type="checkbox" name="coord:infoOnly:<%= n %>" />
+	<% End If %>
+    </td><td></td></tr>
 <%	IF existingBMP <> "-1" THEN %>
 	<tr>
 		<td align="right"><b>Existing BMP:</b></td>
@@ -616,7 +632,7 @@ Set rsCoord = Nothing %>
 	<td rowspan="3" colspan="2"><textarea name="coord:mods:<%= m %>" cols="100%" rows="5"></textarea></td></tr>
 	<tr><td>AssignDate</td>
 	<td><input class=datepicker type="text" name="coord:assignDate:<%= m %>" size="10" value="" disabled /></td></tr>
-	<tr><td></td><td></td></tr>
+	<tr><td>Info Only <input type="checkbox" name="coord:infoOnly:<%= m %>" /></td><td></td></tr>
 	<tr><td colspan="5"><hr align="center" width="100%" size="1"></td></tr>
 <% next %>
 	<tr><td colspan="5" align="center"><br>

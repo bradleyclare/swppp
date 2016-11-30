@@ -61,7 +61,7 @@ IF Request.Form.Count > 0 THEN %>
             strBody=strBody &"<font size='+1'><b>" & projectName & " " & projectPhase & "</b></font><br/>"
             strBody=strBody &"<font size='+1'><b>" & inspecDate & "</center><br/>"
 
-            coordSQLSELECT = "SELECT coID, coordinates, existingBMP, correctiveMods, orderby, assignDate, completeDate, status, repeat, useAddress, address, locationName" &_
+            coordSQLSELECT = "SELECT coID, coordinates, existingBMP, correctiveMods, orderby, assignDate, completeDate, status, repeat, useAddress, address, locationName, infoOnly" &_
 	            " FROM Coordinates WHERE inspecID=" & inspecID & " ORDER BY orderby"	
             'Response.Write(coordSQLSELECT)
             Set rsCoord = connSWPPP.execute(coordSQLSELECT)
@@ -87,29 +87,30 @@ IF Request.Form.Count > 0 THEN %>
 			        useAddress = rsCoord("useAddress")
 			        address = TRIM(rsCoord("address"))
 			        locationName = TRIM(rsCoord("locationName"))
+                    infoOnly = rsCoord("infoOnly")
 			        scoring_class = "black"
-			        IF applyScoring THEN
-				        IF assignDate = "" THEN
+			        If applyScoring Then
+				        If assignDate = "" Then
 					        age = 0
-				        ELSE
+				        Else
 					        age = datediff("d",assignDate,currentDate) 
-				        END IF
-				        IF repeat and age > 0 THEN
+				        End If
+				        If repeat and infoOnly = False and age > 0 THEN
                             send_email = True
                             scoring_class = "red"
-                            IF useAddress THEN
+                            If useAddress Then
 				                strBody=strBody &"<tr valign='top'><td width='20%' align='right'><b>location:</b></td>	<td width='80%' align='left' class='red'>"&  locationName &"<br></td></tr>"
 				                strBody=strBody &"<tr valign='top'><td width='20%' align='right'><b>address:</b></td>	<td width='80%' align='left' class='red'>"&  address &"<br></td></tr>"
-			                ELSE
+			                Else
 				                strBody=strBody &"<tr valign='top'><td width='20%' align='right'><b>location:</b></td>	<td width='80%' align='left' class='red'>"&  coordinates &"<br></td></tr>"
-			                END IF
+			                End If
 			                strBody=strBody &"<tr valign='top'><td width='20%' align='right'><b>action needed:</b></td><td width='80%' align='left' class='red'>"&  correctiveMods &"</td></tr>"
-			                IF applyScoring THEN
+			                If applyScoring Then
 				                strBody=strBody &"<tr valign='top'><td width='20%' align='right'><b>item age:</b></td><td width='80%' align='left' class='red'>"&  age &"<br></td></tr>"
-			                END IF
+			                End If
 			                strBody=strBody &"<tr><td colspan='2'><hr noshade size='1' align='center' width='90%'></td></tr>"  & vbCrLf
-				        END IF
-			        END IF
+				        End If
+			        End If
 			        rsCoord.MoveNext
 		        Loop
 	        End If ' END No Results Found
@@ -118,7 +119,7 @@ IF Request.Form.Count > 0 THEN %>
             SQL3="SELECT oImageFileName FROM OptionalImages WHERE oitID=12 AND inspecID="& inspecID
             SET RS3=connSWPPP.execute(SQL3)
             IF NOT(RS3.EOF) THEN
-                strBody=strBody &"<br>Sitemap: <a href='http://www.swpppinspections.com/images/sitemap/"& TRIM(RS3("oImageFileName")) &"'>http://www.swpppinspections.com/images/sitemap/"& TRIM(RS3("oImageFileName")) &"</a>"
+                strBody=strBody &"<br>Site Map: <a href='http://www.swpppinspections.com/images/sitemap/"& TRIM(RS3("oImageFileName")) &"'>http://www.swpppinspections.com/images/sitemap/"& TRIM(RS3("oImageFileName")) &"</a>"
             END IF
             strBody=strBody &"<br>Website: <a href='http://www.swppp.com'>www.swppp.com</a></center></Body>"
 

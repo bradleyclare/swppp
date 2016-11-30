@@ -2,7 +2,7 @@
 'Response.Write(Response.Buffer)
 ' Send Menu Email
 ' smp 3/5/03 layout
-If Not Session("validInspector") or Not Session("validAdmin") then Response.Redirect("../default.asp") End If
+If Not Session("validInspector") and Not Session("validAdmin") then Response.Redirect("../default.asp") End If
 %><!-- #INCLUDE FILE="../connSWPPP.asp" --><%
 
 Server.ScriptTimeout=1500
@@ -98,7 +98,7 @@ strBody=strBody &"</tr>"
 
 strBody=strBody &"</table>"
 signature = Trim(rsInspec("signature"))
-coordSQLSELECT = "SELECT coID, coordinates, existingBMP, correctiveMods, orderby, assignDate, completeDate, status, repeat, useAddress, address, locationName" &_
+coordSQLSELECT = "SELECT coID, coordinates, existingBMP, correctiveMods, orderby, assignDate, completeDate, status, repeat, useAddress, address, locationName, infoOnly" &_
 	" FROM Coordinates WHERE inspecID=" & inspecID & " ORDER BY orderby"	
 'Response.Write(coordSQLSELECT)
 Set rsCoord = connSWPPP.execute(coordSQLSELECT)
@@ -301,8 +301,9 @@ RS0.Close
 SET RS0=nothing %>
 </table></div>
 
-<div align="center"><br><br>To Send These Reports via Email to all Users assigned<br>
-	to Receive them and release this report <nobr>click..<input type="submit" value="Send Emails"></nobr></div>
+<div align="center"><br><br>To Send These Reports via Email to all Users assigned<br />
+	to Receive them and release this report <br />
+    <input type="submit" value="Send Emails"></div>
 </FORM>
 </BODY>
 </HTML><%

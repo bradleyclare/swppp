@@ -95,7 +95,9 @@ IF Request.Form.Count > 0 THEN %>
 				        Else
 					        age = datediff("d",assignDate,currentDate) 
 				        End If
-				        If repeat and infoOnly = False and age > 0 THEN
+				        If infoOnly = True Then
+                            do_nothing = 1 
+                        Elseif  repeat and age > 0 THEN
                             send_email = True
                             scoring_class = "red"
                             If useAddress Then
@@ -190,7 +192,7 @@ IF Request.Form.Count > 0 THEN %>
                     <% updateDB = True
                 End If
             Else %>
-                <td>No Repeat Items Over 7 Days. No Email Sent</td>
+                <td>No Repeat Items. No Email Sent</td>
         <%  End If 'End send_email 
             'update database to show alert has been sent
             if updateDB Then

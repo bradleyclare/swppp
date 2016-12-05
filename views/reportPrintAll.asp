@@ -150,6 +150,7 @@ Else
 		    useAddress = rsCoord("useAddress")
 		    address = TRIM(rsCoord("address"))
 		    locationName = TRIM(rsCoord("locationName"))
+            infoOnly = rsCoord("infoOnly")
 		    scoring_class = "black"
 		    'Response.Write("ID: " & coID & ", Coord: " & coordinates & ", LocName: " & locationName & ", address: " & address & ", Mods: " & correctiveMods & "<br/>") 
 		    IF applyScoring THEN
@@ -162,19 +163,23 @@ Else
 				    scoring_class = "red"
 			    END IF
 		    END IF
-		    IF useAddress THEN %>
-			    <tr valign='top'><td width='20%' align='right'><b>location:</b></td>	<td width='80%' align='left' class = '<%=scoring_class%>'><%=locationName%><br></td></tr>
-			    <tr valign='top'><td width='20%' align='right'><b>address:</b></td>	<td width='80%' align='left' class = '<%=scoring_class%>'><%=address%><br></td></tr>
-		    <% ELSE %>
-			    <tr valign='top'><td width='20%' align='right'><b>location:</b></td>	<td width='80%' align='left' class = '<%=scoring_class%>'><%=coordinates%><br></td></tr>
-		    <% END IF
-		    IF TRIM(rsCoord("existingBMP"))<>"-1" THEN %>
-			    <tr valign='top'><td width='20%' align='right'><b>existing BMP:</b></td><td width='80%' align='left' class = '<%=scoring_class%>'><%=existingBMP%><br></td></tr>
-		    <% END IF %>
-		    <tr valign='top'><td width='20%' align='right'><b>action needed:</b></td><td width='80%' align='left' class = '<%=scoring_class%>'><%=correctiveMods%></td></tr>
-		    <% IF applyScoring and repeat THEN %>
-			    <tr valign='top'><td width='20%' align='right'><b>item age:</b></td><td width='80%' align='left' class = '<%=scoring_class%>'><%=age%><br></td></tr>
-		    <%END IF%>
+            If infoOnly = True Then %>
+                <tr valign='top'><td width='20%' align='right'><b>note:</b></td><td width='80%' align='left' class = '<%=scoring_class%>'><%=correctiveMods%></td></tr>
+            <% Else
+		        IF useAddress THEN %>
+			        <tr valign='top'><td width='20%' align='right'><b>location:</b></td>	<td width='80%' align='left' class = '<%=scoring_class%>'><%=locationName%><br></td></tr>
+			        <tr valign='top'><td width='20%' align='right'><b>address:</b></td>	<td width='80%' align='left' class = '<%=scoring_class%>'><%=address%><br></td></tr>
+		        <% ELSE %>
+			        <tr valign='top'><td width='20%' align='right'><b>location:</b></td>	<td width='80%' align='left' class = '<%=scoring_class%>'><%=coordinates%><br></td></tr>
+		        <% END IF
+		        IF TRIM(rsCoord("existingBMP"))<>"-1" THEN %>
+			        <tr valign='top'><td width='20%' align='right'><b>existing BMP:</b></td><td width='80%' align='left' class = '<%=scoring_class%>'><%=existingBMP%><br></td></tr>
+		        <% END IF %>
+		        <tr valign='top'><td width='20%' align='right'><b>action needed:</b></td><td width='80%' align='left' class = '<%=scoring_class%>'><%=correctiveMods%></td></tr>
+		        <% IF applyScoring and repeat THEN %>
+			        <tr valign='top'><td width='20%' align='right'><b>item age:</b></td><td width='80%' align='left' class = '<%=scoring_class%>'><%=age%><br></td></tr>
+		        <%END IF
+            End If %>
 		    <tr><td colspan='2'><hr noshade size='1' align='center' width='90%'></td></tr>
 		    <% rsCoord.MoveNext
 	    Loop

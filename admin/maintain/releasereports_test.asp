@@ -115,6 +115,7 @@ Else
 			useAddress = rsCoord("useAddress")
 			address = TRIM(rsCoord("address"))
 			locationName = TRIM(rsCoord("locationName"))
+            infoOnly = rsCoord("infoOnly")
 			scoring_class = "black"
 			'Response.Write("ID: " & coID & ", Coord: " & coordinates & ", LocName: " & locationName & ", address: " & address & ", Mods: " & correctiveMods & "<br/>") 
 			IF applyScoring THEN
@@ -127,19 +128,23 @@ Else
 					scoring_class = "red"
 				END IF
 			END IF
-			IF useAddress THEN
-				strBody=strBody &"<tr valign='top'><td width='20%' align='right'><b>location:</b></td>	<td width='80%' align='left' class = '"& scoring_class &"'>"&  locationName &"<br></td></tr>"
-				strBody=strBody &"<tr valign='top'><td width='20%' align='right'><b>address:</b></td>	<td width='80%' align='left' class = '"& scoring_class &"'>"&  address &"<br></td></tr>"
-			ELSE
-				strBody=strBody &"<tr valign='top'><td width='20%' align='right'><b>location:</b></td>	<td width='80%' align='left' class = '"& scoring_class &"'>"&  coordinates &"<br></td></tr>"
-			END IF
-			IF TRIM(rsCoord("existingBMP"))<>"-1" THEN
-				strBody=strBody &"<tr valign='top'><td width='20%' align='right'><b>existing BMP:</b></td><td width='80%' align='left' class = '"& scoring_class &"'>"&  existingBMP &"<br></td></tr>"
-			END IF
-			strBody=strBody &"<tr valign='top'><td width='20%' align='right'><b>action needed:</b></td><td width='80%' align='left' class = '"& scoring_class &"'>"&  correctiveMods &"</td></tr>"
-			IF applyScoring and repeat THEN
-				strBody=strBody &"<tr valign='top'><td width='20%' align='right'><b>item age:</b></td><td width='80%' align='left' class = '"& scoring_class &"'>"&  age &"<br></td></tr>"
-			END IF
+            If infoOnly = True Then
+			    strBody=strBody &"<tr valign='top'><td width='20%' align='right'><b>note:</b></td><td width='80%' align='left' class = '"& scoring_class &"'>"&  correctiveMods &"</td></tr>"
+            Else
+                IF useAddress THEN
+				    strBody=strBody &"<tr valign='top'><td width='20%' align='right'><b>location:</b></td>	<td width='80%' align='left' class = '"& scoring_class &"'>"&  locationName &"<br></td></tr>"
+				    strBody=strBody &"<tr valign='top'><td width='20%' align='right'><b>address:</b></td>	<td width='80%' align='left' class = '"& scoring_class &"'>"&  address &"<br></td></tr>"
+			    ELSE
+				    strBody=strBody &"<tr valign='top'><td width='20%' align='right'><b>location:</b></td>	<td width='80%' align='left' class = '"& scoring_class &"'>"&  coordinates &"<br></td></tr>"
+			    END IF
+			    IF TRIM(rsCoord("existingBMP"))<>"-1" THEN
+				    strBody=strBody &"<tr valign='top'><td width='20%' align='right'><b>existing BMP:</b></td><td width='80%' align='left' class = '"& scoring_class &"'>"&  existingBMP &"<br></td></tr>"
+			    END IF
+			    strBody=strBody &"<tr valign='top'><td width='20%' align='right'><b>action needed:</b></td><td width='80%' align='left' class = '"& scoring_class &"'>"&  correctiveMods &"</td></tr>"
+			    IF applyScoring and repeat THEN
+				    strBody=strBody &"<tr valign='top'><td width='20%' align='right'><b>item age:</b></td><td width='80%' align='left' class = '"& scoring_class &"'>"&  age &"<br></td></tr>"
+			    END IF
+            End If
 			strBody=strBody &"<tr><td colspan='2'><hr noshade size='1' align='center' width='90%'></td></tr>" & vbCrLf
 			rsCoord.MoveNext
 		Loop
@@ -224,16 +229,9 @@ Mailer.AddRecipient "Brad Leishman", "bradleyclare@gmail.com" %>
 	<TITLE>SWPPP INSPECTIONS :: Admin :: Test Release Reports</TITLE>
 	<LINK REL=stylesheet HREF="../../global.css" type="text/css">
 </HEAD>
-
 <BODY>
 <h1>Report to be Sent</h1>
 <h3>SUBJECT: <%=Mailer.Subject%></h3>
-<% if not Mailer.SendMail then %>
-%>
-	<h3>MAIL MESSAGE: <FONT color="red">Mail send failure.- <%= Mailer.Response %></FONT></h3>
-<% else %>
-	<h3>MAIL MESSAGE: Emails Sent</h3>
-<% end if %>
 <h3>BODY:</h3>
 <%=BodyText%>
 </BODY>

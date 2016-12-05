@@ -98,6 +98,25 @@ tr.highlighted {
      }
   }
 
+  function displayCommentWindow(obj) {
+        var parts = obj.name.split(":");
+        var num = parts[2];
+
+        //display the select div
+        var s1 = document.getElementsByName("commentPopup");
+        s1[0].className = "commentPopup show";
+
+        //set the hidden div in the select div to remember what number we are modifying
+        var s2 = document.getElementsByName("currentAddressNum");
+        s2[0].value = num;
+    }
+
+    function close_popup() {
+        //hide the select div
+        var s0 = document.getElementsByName("commentPopup");
+        s0[0].className = "commentPopup hide";
+    }
+
   </script>
 </head>
 
@@ -113,6 +132,13 @@ Set rsInspectInfo = connSWPPP.Execute(inspectInfoSQLSELECT)
 %>
 
 <body bgcolor="#ffffff" marginwidth="30" leftmargin="30" marginheight="15" topmargin="15">
+<div class="commentPopup hide" name="commentPopup">
+<h3>Enter Note:</h3>
+<textarea rows="3" cols="40" name="commentBox"></textarea>
+<br /><br />
+<input type="button" onclick="save_note()" value="Save Note" />
+<input type="button" onclick="close_popup()" value="Close Window" />
+</div>
 <center>
 <img src="../images/color_logo_report.jpg" width="300"><br><br>
 <font size="+1"><b>Open Items for<br/> <%= RS2("projectName") %>&nbsp;<%= RS2("projectPhase")%></b></font><hr noshade size="1" width="100%">
@@ -131,7 +157,16 @@ Set rsInspectInfo = connSWPPP.Execute(inspectInfoSQLSELECT)
 </center>
 <br/><br/>
 <table cellpadding="2" cellspacing="0" border="0" width="100%">
-	<tr><th width="5%" align="left">Complete</th><th width="5%" align="left">Repeat</th><th width="5%" align="left">ID</th><th width="10%" align="left">Completion Date</th><th width="5%" align="left">Age</th><th width="5%" align="left">Report Date</th><th width="25%" align="left">Location</th><th width="45%" align="left">Action Item</th></tr>
+	<tr><th width="5%" align="left">Complete</th>
+        <th width="5%" align="left">Repeat</th>
+        <th width="5%" align="left">ID</th>
+        <th width="10%" align="left">Completion Date</th>
+        <th width="5%" align="left">Age</th>
+        <th width="5%" align="left">Report Date</th>
+        <th width="25%" align="left">Location</th>
+        <th width="40%" align="left">Action Item</th>
+        <th width="5%" align="left">Add Note</th>
+	</tr>
 <% If rsInspectInfo.EOF Then
 	Response.Write("<tr><td colspan='4' align='center'><i style='font-size: 15px'>There are no inspection reports found.</i></td></tr>")
 Else
@@ -162,7 +197,9 @@ Else
 		        address = TRIM(rsCoord("address"))
 		        locationName = TRIM(rsCoord("locationName"))
                 infoOnly = rsCoord("infoOnly")
-		        If status = false and infoOnly = false Then %>
+		        If infoOnly = True Then
+                   do_nothing = 1 
+                Elseif status = false Then %>
 		            <input type="hidden" name="coord:coID:<%= n %>" value="<%= coID %>" />
                     <input type="hidden" name="coord:inspecID:<%= n %>" value="<%= inspecID %>" />
 		            <tr>
@@ -184,13 +221,17 @@ Else
 		            <% End If %>
 		            </td>
 		            <td><%= correctiveMods %></td>
-		            </tr>
+                    <!--<td><input type="button" name="coord:note:<%= n %>" value="X" onclick="displayCommentWindow(this)"/></td>
+		            </tr>-->
+                    <tr>
+                        <td colspan="9"></td>
+                    </tr>
 		            <% n = n + 1
                 End If
 		        rsCoord.MoveNext 
  	        LOOP 'loop coordinates 
             If start_n <> n Then %>
-                <tr><td colspan="8"><hr /></td></tr>
+                <tr><td colspan="9"><hr /></td></tr>
             <% End If
         End If
         rsInspectInfo.MoveNext

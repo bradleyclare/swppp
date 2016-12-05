@@ -102,7 +102,9 @@ Else
 		        address = TRIM(rsCoord("address"))
 		        locationName = TRIM(rsCoord("locationName"))
                 infoOnly = rsCoord("infoOnly")
-		        If status = true and infoOnly = false Then %>
+		        If infoOnly = True Then
+                   do_nothing = 1 
+                Elseif status = true Then %>
 		        <tr>
                 <input type="hidden" name="coord:coID:<%= n %>" value="<%= coID %>" />
                 <input type="hidden" name="coord:inspecID:<%= n %>" value="<%= inspecID %>" />

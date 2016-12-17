@@ -164,10 +164,8 @@
     <Content Include="admin\maintain\editNarrative.asp" />
     <Content Include="admin\maintain\editProjectInfo.asp" />
     <Content Include="admin\maintain\editReport.asp" />
-    <Content Include="admin\maintain\editReport2.asp" />
     <Content Include="admin\maintain\editReportOptionalLinks.asp" />
     <Content Include="admin\maintain\editReportTG.asp" />
-    <Content Include="admin\maintain\editReport_backup.asp" />
     <Content Include="admin\maintain\editUser.asp" />
     <Content Include="admin\maintain\editUser_org.asp" />
     <Content Include="admin\maintain\freeASPUpload.asp" />
@@ -180,6 +178,8 @@
     <Content Include="admin\maintain\newReport_dev.asp" />
     <Content Include="admin\maintain\newReport_old.asp" />
     <Content Include="admin\maintain\projects.asp" />
+    <Content Include="admin\maintain\releaseOpenItems.asp" />
+    <Content Include="admin\maintain\releaseOpenItemsOrig.asp" />
     <Content Include="admin\maintain\releaseRepeatItems.asp" />
     <Content Include="admin\maintain\releasereports.asp" />
     <Content Include="admin\maintain\releaseReportsTGUpdated.asp" />
@@ -310,8 +310,12 @@
     <Content Include="header.inc" />
     <Content Include="header2.inc" />
     <Content Include="header3.inc" />
-    <Content Include="admin\adminHeader.inc" />
-    <Content Include="admin\adminHeader2.inc" />
+    <Content Include="admin\adminHeader.inc">
+      <SubType>Designer</SubType>
+    </Content>
+    <Content Include="admin\adminHeader2.inc">
+      <SubType>Designer</SubType>
+    </Content>
     <Content Include="admin\maintain\archiveCreateAboutUs.inc" />
     <Content Include="admin\maintain\archiveCreateContactUs.inc" />
     <Content Include="admin\maintain\archiveCreateDefault.inc" />

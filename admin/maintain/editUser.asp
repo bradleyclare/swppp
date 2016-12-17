@@ -25,6 +25,7 @@ If Request.Form.Count > 0 Then
 	end function
 	trimmedQualifications=REPLACE(Request("qualifications"),"'","#@#")
     if Request("seeScoring") = "on" then seeScoring = 1 Else seeScoring = 0 End If
+    if Request("openItemAlerts") = "on" then openItemAlerts = 1 Else openItemAlerts = 0 End If
 	SQLUPDATE =	"UPDATE Users SET" & _
 		" firstName = '" & titleCase(Request("firstName")) & "'" & _
 		", lastName = '" & titleCase(Request("lastName")) & "'" & _
@@ -33,6 +34,7 @@ If Request.Form.Count > 0 Then
 		", signature = '" & Request("signature") & "'" & _
 		", noImages = '" & Request("noImages") & "'" & _
         ", seeScoring = '" & seeScoring & "'" & _
+        ", openItemAlerts = '" & openItemAlerts & "'" & _
 		", qualifications = '" & trimmedQualifications & "'" 
 ' --------------------------- Admin User --------------------------
 		If Request("admin")="on" then 
@@ -143,7 +145,7 @@ If Request.Form.Count > 0 Then
 		processed="true"
 End If
 	SQLSELECT = "SELECT firstName, lastName, email" & _
-		", pswrd, dateEntered, signature, noImages, qualifications, seeScoring" & _
+		", pswrd, dateEntered, signature, noImages, qualifications, seeScoring, openItemAlerts" & _
 		" FROM Users WHERE userID = " & userID
 	Set rsUser = connSWPPP.Execute(SQLSELECT)
 	
@@ -156,6 +158,7 @@ End If
 	noImages = TRIM(rsUser("noImages"))
 	qualifications= TRIM(rsUser("qualifications"))
     seeScoring = rsUser("seeScoring")
+    openItemAlerts = rsUser("openItemAlerts")
 	IF IsNull(qualifications) THEN qualifications="" END IF
 	rsUser.Close
 	Set rsUser = Nothing
@@ -216,7 +219,15 @@ Set gifDirectory = Nothing %>
             <% If (seeScoring) = True Then %>
                 checked
             <% End if %>
-            /></td></tr>
+            /></td>
+		</tr>
+        <tr><td align="right">Receive Open Item Alerts:</td>
+            <td><input type="checkbox" name="openItemAlerts" 
+            <% If (openItemAlerts) = True Then %>
+                checked
+            <% End if %>
+            /></td>
+		</tr>
         <tr><td align="right" valign=top>Qualifications:</td>
 			<td><TEXTAREA cols="50" rows="3" name="qualifications"><%= REPLACE(qualifications,"#@#","'") %></TEXTAREA></td></tr>
             <tr><td><input type="submit" value="Update User"></td></tr>

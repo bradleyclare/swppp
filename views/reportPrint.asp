@@ -38,6 +38,7 @@ IF IsNull(qualifications) THEN qualifications="" END IF %>
 	.orange{color: #F58C06;}
 	.yellow{color: #FFC300;}
 	.black{color: black;}
+    .ld{font-weight: bold;}
 </style>
 </head>
 <body bgcolor="#ffffff" marginwidth="30" leftmargin="30" marginheight="15" topmargin="15">
@@ -137,7 +138,7 @@ IF IsNull(qualifications) THEN qualifications="" END IF %>
 </table><%
 signature = Trim(rsInspec("signature"))
 
-coordSQLSELECT = "SELECT coID, coordinates, existingBMP, correctiveMods, orderby, assignDate, completeDate, status, repeat, useAddress, address, locationName, infoOnly" &_
+coordSQLSELECT = "SELECT coID, coordinates, existingBMP, correctiveMods, orderby, assignDate, completeDate, status, repeat, useAddress, address, locationName, infoOnly, LD" &_
 	" FROM Coordinates WHERE inspecID=" & inspecID & " ORDER BY orderby"	
 'Response.Write(coordSQLSELECT)
 Set rsCoord = connSWPPP.execute(coordSQLSELECT)%>
@@ -185,6 +186,7 @@ Else
 		    address = TRIM(rsCoord("address"))
 		    locationName = TRIM(rsCoord("locationName"))
             infoOnly = rsCoord("infoOnly")
+            LD = rsCoord("LD")
 		    scoring_class = "black"
 		    'Response.Write("ID: " & coID & ", Coord: " & coordinates & ", LocName: " & locationName & ", address: " & address & ", Mods: " & correctiveMods & "<br/>") 
 		    IF applyScoring THEN
@@ -197,6 +199,10 @@ Else
 				    scoring_class = "red"
 			    END IF
 		    END IF
+            If LD = True Then
+                correctiveMods = "(LD) " & correctiveMods
+                scoring_class = "ld"
+            End If 
             If infoOnly = True Then %>
                 <tr valign='top'><td width='20%' align='right'><b>note:</b></td><td width='80%' align='left' class = '<%=scoring_class%>'><%=correctiveMods%></td></tr>
             <% Else

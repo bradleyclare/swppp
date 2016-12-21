@@ -54,6 +54,7 @@ IF Request.Form.Count > 0 THEN %>
             strBody=strBody &".red{color: #F52006;}"
             strBody=strBody &".green{color: green;}"
             strBody=strBody &".black{color: black;}"
+            strBody=strBody &".ld{font-weight: bold;}"
             strBody=strBody &"</style></head>"
             strBody=strBody &"<body bgcolor='#ffffff' marginwidth='30' leftmargin='30' marginheight='15' topmargin='15'>"
             strBody=strBody &"<center><img src='http://www.swpppinspections.com/images/color_logo_report.jpg' width='300'><br><br>"
@@ -61,7 +62,7 @@ IF Request.Form.Count > 0 THEN %>
             strBody=strBody &"<font size='+1'><b>" & projectName & " " & projectPhase & "</b></font><br/>"
             strBody=strBody &"<font size='+1'><b>" & inspecDate & "</center><br/>"
 
-            coordSQLSELECT = "SELECT coID, coordinates, existingBMP, correctiveMods, orderby, assignDate, completeDate, status, repeat, useAddress, address, locationName, infoOnly" &_
+            coordSQLSELECT = "SELECT coID, coordinates, existingBMP, correctiveMods, orderby, assignDate, completeDate, status, repeat, useAddress, address, locationName, infoOnly, LD" &_
 	            " FROM Coordinates WHERE inspecID=" & inspecID & " ORDER BY orderby"	
             'Response.Write(coordSQLSELECT)
             Set rsCoord = connSWPPP.execute(coordSQLSELECT)
@@ -88,6 +89,7 @@ IF Request.Form.Count > 0 THEN %>
 			        address = TRIM(rsCoord("address"))
 			        locationName = TRIM(rsCoord("locationName"))
                     infoOnly = rsCoord("infoOnly")
+                    LD = rsCoord("LD")
 			        scoring_class = "black"
 			        If applyScoring Then
 				        If assignDate = "" Then
@@ -95,6 +97,10 @@ IF Request.Form.Count > 0 THEN %>
 				        Else
 					        age = datediff("d",assignDate,currentDate) 
 				        End If
+                        If LD = True Then
+                            correctiveMods = "(LD) " & correctiveMods
+                            scoring_class = "ld"
+                        End If
 				        If infoOnly = True Then
                             do_nothing = 1 
                         Elseif  repeat and age > 0 THEN

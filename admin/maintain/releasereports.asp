@@ -51,6 +51,7 @@ IF IsNull(qualifications) THEN qualifications="" END IF
 strBody=strBody &"<head><style>"
 strBody=strBody &".red{color: #F52006;}"
 strBody=strBody &".black{color: black;}"
+strBody=strBody &".ld{font-weight: bold;}"
 strBody=strBody &"</style></head>"
 strBody=strBody &"<body bgcolor='#ffffff' marginwidth='30' leftmargin='30' marginheight='15' topmargin='15'>"
 strBody=strBody &"<center><img src='http://www.swpppinspections.com/images/color_logo_report.jpg' width='300'><br><br>"
@@ -98,7 +99,7 @@ strBody=strBody &"</tr>"
 
 strBody=strBody &"</table>"
 signature = Trim(rsInspec("signature"))
-coordSQLSELECT = "SELECT coID, coordinates, existingBMP, correctiveMods, orderby, assignDate, completeDate, status, repeat, useAddress, address, locationName, infoOnly" &_
+coordSQLSELECT = "SELECT coID, coordinates, existingBMP, correctiveMods, orderby, assignDate, completeDate, status, repeat, useAddress, address, locationName, infoOnly, LD" &_
 	" FROM Coordinates WHERE inspecID=" & inspecID & " ORDER BY orderby"	
 'Response.Write(coordSQLSELECT)
 Set rsCoord = connSWPPP.execute(coordSQLSELECT)
@@ -131,6 +132,7 @@ Else
 			address = TRIM(rsCoord("address"))
 			locationName = TRIM(rsCoord("locationName"))
             infoOnly = rsCoord("infoOnly")
+            LD = rsCoord("LD")
 			scoring_class = "black"
 			IF applyScoring THEN
 				IF assignDate = "" THEN
@@ -142,6 +144,10 @@ Else
 					scoring_class = "red"
 				END IF
 			END IF
+            If LD = True Then
+                correctiveMods = "(LD) " & correctiveMods
+                scoring_class = "ld"
+            End If
             If infoOnly = True Then
                 strBody=strBody &"<tr valign='top'><td width='20%' align='right'><b>note:</b></td><td width='80%' align='left'>"&  correctiveMods &"</td></tr>"
             Else

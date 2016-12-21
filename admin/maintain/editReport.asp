@@ -105,6 +105,8 @@ If Request.Form.Count > 0 Then
                 End If
                 infoOnly = 1 
             End If
+            LD = 0
+            if Request("coord:LD:"& CStr(n)) = "on" then LD = 1 End If
 			AssignDate = inspecDate
             if Repeat = 1 Then
 		    	AssignDate = Request("coord:assignDate:"& CStr(n))
@@ -125,8 +127,9 @@ If Request.Form.Count > 0 Then
 			Repeat &", " & _ 
 			useAddress &", '" & _ 
 			address &"', '" & _
-			locationName &"', '" & _
-            infoOnly &"';"
+			locationName &"', " & _
+            infoOnly &", " & _
+            LD &";"
 		next	
     'Response.Write(SQLc)
         if Len(SQLc) > 0 then connSWPPP.execute(SQLc) end if
@@ -470,7 +473,7 @@ End If%>
 	<input id='includeItems-checkbox' type="checkbox" name="includeItems" />
 <% End If %>
 </td></tr></table><br/>
-<% coordSQLSELECT = "SELECT coID, coordinates, existingBMP, correctiveMods, orderby, assignDate, completeDate, status, repeat, useAddress, address, locationName, infoOnly" &_
+<% coordSQLSELECT = "SELECT coID, coordinates, existingBMP, correctiveMods, orderby, assignDate, completeDate, status, repeat, useAddress, address, locationName, infoOnly, LD" &_
 	" FROM Coordinates WHERE inspecID=" & inspecID & " ORDER BY orderby"	
 'Response.Write(coordSQLSELECT)
 Set rsCoord = connSWPPP.execute(coordSQLSELECT)
@@ -544,6 +547,7 @@ End If %>
 		address = TRIM(rsCoord("address"))
 		locationName = TRIM(rsCoord("locationName"))
         infoOnly = rsCoord("infoOnly")
+        LD = rsCoord("LD")
 		'Response.Write("ID: " & coID & ", Coord: " & coordinates & ", LocName: " & locationName & ", address: " & address & ", Mods: " & correctiveMods & "<br/>") 
 		%>
 	<input type="hidden" name="coord:coID:<%= n %>" value="<%= coID %>" />
@@ -594,7 +598,12 @@ End If %>
 	<% Else %>
 		<input type="checkbox" name="coord:infoOnly:<%= n %>" />
 	<% End If %>
-    </td><td></td></tr>
+    </td><td>LD
+	<% If LD = True Then %>
+		<input type="checkbox" name="coord:LD:<%= n %>" checked/>
+	<% Else %>
+		<input type="checkbox" name="coord:LD:<%= n %>" />
+	<% End If %></td></tr>
 <%	IF existingBMP <> "-1" THEN %>
 	<tr>
 		<td align="right"><b>Existing BMP:</b></td>
@@ -632,7 +641,8 @@ Set rsCoord = Nothing %>
 	<td rowspan="3" colspan="2"><textarea name="coord:mods:<%= m %>" cols="100%" rows="5"></textarea></td></tr>
 	<tr><td>AssignDate</td>
 	<td><input class=datepicker type="text" name="coord:assignDate:<%= m %>" size="10" value="" disabled /></td></tr>
-	<tr><td>Info Only <input type="checkbox" name="coord:infoOnly:<%= m %>" /></td><td></td></tr>
+	<tr><td>Info Only <input type="checkbox" name="coord:infoOnly:<%= m %>" /></td>
+        <td>LD <input type="checkbox" name="coord:LD:<%= m %>" /></td></tr>
 	<tr><td colspan="5"><hr align="center" width="100%" size="1"></td></tr>
 <% next %>
 	<tr><td colspan="5" align="center"><br>

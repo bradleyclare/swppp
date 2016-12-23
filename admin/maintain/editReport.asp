@@ -35,7 +35,9 @@ If Request.Form.Count > 0 Then
 		END IF
 		includeItems = 0
 		if Request("includeItems") = "on" then includeItems = 1 End If
-		compliance = 0
+	    openItemAlert = 0
+		if Request("openItemAlert") = "on" then openItemAlert = 1 End If	
+        compliance = 0
 		if Request("compliance") = "on" then compliance = 1 End If
 		inspectSQLUPDATE=inspectSQLUPDATE &", projectAddr = '" & strQuoteReplace(Request("projectAddr")) & "'" & _
 		", projectCity = '" & strQuoteReplace(Request("projectCity")) & "'" & _
@@ -62,6 +64,7 @@ If Request.Form.Count > 0 Then
 		", contactFax = '" & strQuoteReplace(Request("contactFax")) & "'" & _
 		", contactEmail = '" & strQuoteReplace(Request("contactEmail")) & "'" & _
 		", includeItems = " & includeItems & _
+        ", openItemAlert = " & openItemAlert & _
 		", compliance = " & compliance & _
 		" WHERE inspecID = " & inspecID
 'response.Write(inspectSQLUPDATE)
@@ -157,7 +160,7 @@ End If
 	inspecSQLSELECT = "SELECT inspecDate, i.projectName, i.projectPhase, projectAddr, projectCity, projectState" & _
 		", projectZip, projectCounty, onsiteContact, officePhone, emergencyPhone, i.projectID, compName" & _
 		", compAddr, compAddr2, compCity, compState, compZip, compPhone, compContact, contactPhone, contactFax" & _
-		", contactEmail, reportType, inches, bmpsInPlace, sediment, userID, includeItems, compliance, totalItems, completedItems" & _
+		", contactEmail, reportType, inches, bmpsInPlace, sediment, userID, includeItems, compliance, totalItems, completedItems, openItemAlert" & _
 		" FROM Inspections as i, Projects as p" & _
 		" WHERE i.projectID = p.projectID AND inspecID = " & inspecID
 '--Response.Write(inspecSQLSELECT & "<br>")
@@ -227,6 +230,12 @@ baseDir = "D:\Inetpub\wwwroot\SWPPP\"%>
         );
 
         $('#includeItems-checkbox').click(
+            function () {
+                document.getElementById("theForm").submit();
+            }
+        );
+
+        $('#openItemAlert-checkbox').click(
             function () {
                 document.getElementById("theForm").submit();
             }
@@ -459,18 +468,24 @@ if totalItems <> "" and totalItems <> 0 Then
 Else
 	score = "N/A"
 End If%>
-<table width="90%">
-<tr width="20%"><td>Total Items: <%=totalItems%></td><td width="20%">Completed Items: <%=completedItems%></td><td width="20%">Report Score:<%=score%></td><td width="20%">Site is in Compliance
+<table width="100%">
+<tr width="20%"><td>Total Items: <%=totalItems%></td><td width="15%">Completed Items: <%=completedItems%></td><td width="15%">Report Score:<%=score%></td><td width="15%">Site is in Compliance
 <% If rsReport("compliance") = True Then %>
 	<input id="compliance-checkbox" type="checkbox" name="compliance" checked/>
 <% Else %>
 	<input id="compliance-checkbox" type="checkbox" name="compliance" />
 <% End If %>
-</td><td width="20%" align="left">Apply Scoring to Report
+</td><td width="15%" align="left">Apply Scoring to Report
 <% If rsReport("includeItems") = True Then %>
 	<input id='includeItems-checkbox' type="checkbox" name="includeItems" checked/>
 <% Else %>
 	<input id='includeItems-checkbox' type="checkbox" name="includeItems" />
+<% End If %>
+</td><td width="15%" align="left">Open Item Alert
+<% If rsReport("openItemAlert") = True Then %>
+	<input id='openItemAlert-checkbox' type="checkbox" name="openItemAlert" checked/>
+<% Else %>
+	<input id='openItemAlert-checkbox' type="checkbox" name="openItemAlert" />
 <% End If %>
 </td></tr></table><br/>
 <% coordSQLSELECT = "SELECT coID, coordinates, existingBMP, correctiveMods, orderby, assignDate, completeDate, status, repeat, useAddress, address, locationName, infoOnly, LD" &_

@@ -35,8 +35,6 @@ IF IsNull(qualifications) THEN qualifications="" END IF %>
 <link rel="stylesheet" type="text/css" href="../global.css">
 <style>
 	.red{color: #F52006;}
-	.orange{color: #F58C06;}
-	.yellow{color: #FFC300;}
 	.black{color: black;}
     .ld{font-weight: bold;}
 </style>

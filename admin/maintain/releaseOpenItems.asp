@@ -22,7 +22,8 @@ IF Request.Form.Count > 0 THEN %>
     <table>
         <%
         FOR EACH Item IN Request.Form 'loop through each user
-            send_email = True
+            send_email = False
+            debug_msg  = False
             currentDate = date()
             strBody=""
             dbgBody=""
@@ -35,25 +36,29 @@ IF Request.Form.Count > 0 THEN %>
 
             <% strBody=strBody &"<head><style>"
             strBody=strBody &"table {border-collapse: collapse;}"
-            strBody=strBody &"td{border: 2px solid black; padding: 5px;}"
-            strBody=strBody &"th{border: 2px solid black; padding: 5px; font-weight: bold; background-color: grey; color: white;}"
+            strBody=strBody &"td{border: 2px solid black; padding: 1px; font-size: 10px;}"
+            strBody=strBody &"th{border: 2px solid black; padding: 3px; font-weight: bold; background-color: #a1a5ad; color: black;}"
             strBody=strBody &".red{color: #F52006;}"
-            strBody=strBody &".green{color: green;}"
             strBody=strBody &".black{color: black;}"
             strBody=strBody &"</style></head>"
             strBody=strBody &"<body bgcolor='#ffffff' marginwidth='30' leftmargin='30' marginheight='15' topmargin='15'>"
-            strBody=strBody &"<center><img src='http://www.swpppinspections.com/images/color_logo_report.jpg' width='300'><br><br>"
-            strBody=strBody &"<font size='+1'><b>Open Item Report</b></font><br/></center><br/>"
-                
+            strBody=strBody &"<img src='http://www.swpppinspections.com/images/color_logo_report.jpg' width='300'><br><br>"
+            strBody=strBody &"<font size='+1'><b>Open Item Report</b></font><br/><br/>"
+            strBody=strBody &"<b>For a complete list of open items, select project name and log in.</b><br/>"
+                   
             'get all the projects the user is assigned to
-            SQLSELECT = "SELECT DISTINCT projectID FROM ProjectsUsers" &_
-                " WHERE userID = " & userID &_
-                " AND rights <> 'user'"
+            SQLSELECT = "SELECT DISTINCT pu.projectID, p.projectName, p.projectPhase" &_
+                " FROM ProjectsUsers as pu" &_
+                " inner join Projects as p" &_
+                " on pu.projectID=p.projectID" &_
+                " WHERE pu.userID = " & userID &_
+                " ORDER BY p.projectName, p.projectPhase"
+
             'Response.Write(SQLSELECT & "<br>")
             Set connProjUsers = connSWPPP.Execute(SQLSELECT)
 
             strBody=strBody & "<table>"
-            strBody=strBody & "<tr><th>Project Name</th><th>over 5 days</th><th>over 7 days</th><th>over 10 days</th><th>over 14 days</th></tr>"
+            strBody=strBody & "<tr><th>project name</th><th>over 2 days</th><th>over 6 days</th><th>over 7 days</th><th>over 10 days</th><th>over 14 days</th></tr>"
 
             'tally up the open items for each project
             'Loop through all projects the user has connection with
@@ -73,18 +78,20 @@ IF Request.Form.Count > 0 THEN %>
                     " AND completedItems < totalItems" &_
                     " AND includeItems = 1" &_
                     " AND compliance = 0" &_
-                    " ORDER BY projectName"
+                    " AND openItemAlert = 1" 
                 '" AND inspecDate BETWEEN '"& startDate &"' AND '"& endDate &"'" &_
                 'Response.Write(SQL0)
                 Set RS0 = connSWPPP.Execute(SQL0)
 
                 'Loop through each inspection report and look for open items
                 coordCnt = 0
-                coordCnt5 = 0
+                coordCnt2 = 0
+                coordCnt6 = 0
                 coordCnt7 = 0
                 coordCnt10 = 0
                 coordCnt14 = 0
-                coordCntLD5 = 0
+                coordCntLD2 = 0
+                coordCntLD6 = 0
                 coordCntLD7 = 0
                 coordCntLD10 = 0
                 coordCntLD14 = 0
@@ -160,11 +167,18 @@ IF Request.Form.Count > 0 THEN %>
                                         coordCntLD7 = coordCntLD7 + 1
                                     End If
                                 End If
-                                If age > 5 Then
-                                    coordCnt5 = coordCnt5 + 1
+                                If age > 6 Then
+                                    coordCnt6 = coordCnt6 + 1
                                     displayProj = True
                                     If LD = True Then
-                                        coordCntLD5 = coordCntLD5 + 1
+                                        coordCntLD6 = coordCntLD6 + 1
+                                    End If
+                                End If
+                                If age > 2 Then
+                                    coordCnt2 = coordCnt2 + 1
+                                    displayProj = True
+                                    If LD = True Then
+                                        coordCntLD2 = coordCntLD2 + 1
                                     End If
                                 End If
                                 rsCoord.MoveNext
@@ -180,29 +194,52 @@ IF Request.Form.Count > 0 THEN %>
                 connProjUsers.MoveNext
                 If inspecCnt > 0 and coordCnt > 0 and displayProj = True Then
                     reportLink = "http://swppp.com/views/openActionItems.asp?pID=" & projID
-                    strBody=strBody & "<tr><th><a href='" & reportLink & "' target='_blank'>" & projName &" "& projPhase &"</th><td>"
-                    if coordCnt5 > 0 Then
-                        strBody=strBody & coordCnt5 & " (" & coordCntLD5 & " LD)"
+                    strBody=strBody & "<tr><td align='right'><a href='" & reportLink & "' target='_blank'>" & projName &" "& projPhase &"</td><td align='center'>"
+                    If coordCnt2 > 0 Then
+                        send_email = True
+                        strBody=strBody & coordCnt2
+                        If coordCntLD2 > 0 Then
+                            strBody=strBody & " (" & coordCntLD2 & " LD)"
+                        End If 
                     End If
-                    strBody=strBody &"</td><td>"
+                    strBody=strBody &"</td><td align='center'>"
+                    If coordCnt6 > 0 Then
+                        send_email = True
+                        strBody=strBody & coordCnt6
+                        If coordCntLD6 > 0 Then
+                            strBody=strBody & " (" & coordCntLD6 & " LD)"
+                        End If 
+                    End If
+                    strBody=strBody &"</td><td align='center'>"
                     If coordCnt7 > 0 Then
-                        strBody=strBody & coordCnt7 & " (" & coordCntLD7 & " LD)" 
+                        send_email = True
+                        strBody=strBody & coordCnt7
+                        If coordCntLD7 > 0 Then
+                            strBody=strBody & " (" & coordCntLD7 & " LD)"
+                        End If 
                     End If
-                    strBody=strBody &"</td><td>"
+                    strBody=strBody &"</td><td align='center'>"
                     If coordCnt10 > 0 Then
-                        strBody=strBody & coordCnt10 & " (" & coordCntLD10 & " LD)"
+                        send_email = True
+                        strBody=strBody & coordCnt10
+                        If coordCntLD10 > 0 Then
+                            strBody=strBody & " (" & coordCntLD10 & " LD)"
+                        End If 
                     End If
-                    strBody=strBody & "</td><td>"
+                    strBody=strBody & "</td><td align='center'>"
                     If coordCnt14 > 0 Then
-                        strBody=strBody & coordCnt14 & " (" & coordCntLD14 & " LD)"
+                        send_email = True
+                        strBody=strBody & coordCnt14
+                        If coordCntLD14 > 0 Then
+                            strBody=strBody & " (" & coordCntLD14 & " LD)"
+                        End If 
                     End If
                     strBody=strBody & "</td></tr>"
 		        End If
             Loop 'connProjUsers
             connProjUsers.Close
             SET connProjUsers=nothing
-            strBody=strBody & "</table>"
-            strBody=strBody &"<br><br><hr>Website: <a href='http://www.swppp.com'>www.swppp.com</a></center></body>" %>
+            strBody=strBody & "</table>" %>
 
             <% 'send email
             if send_email Then
@@ -227,7 +264,11 @@ IF Request.Form.Count > 0 THEN %>
                 <% Else %>
 			        Email Sent <br />
                 <% End If
-            Else
+            Else %>
+                No Open Items: No Email Sent <br />
+            <% End If
+
+            If debug_msg=True Then
                 Response.Write(strBody)      
                 Response.Write(dbgBody)     
             End If 'send_email
@@ -252,7 +293,8 @@ ELSE
 	        marginwidth="5" marginheight="5">
 
             <% If not Request("print") then %> <!-- #INCLUDE FILE="../adminHeader2.inc" --> <% end if %>
-            <h1>Users to Receive Open Item Reports</h1>
+            <h1>Send Open Item Alerts</h1>
+            <center><h3>To be on this list users must be set to See Scoring and receive Open Item Alerts</h3></center>
             <FORM action="<%= Request.ServerVariables("SCRIPT_NAME") %>" method="post">
             <div align="center">
             <table width="100%" border="0">
@@ -260,8 +302,7 @@ ELSE
 		        <th><b>First Name</b></th>
 		        <th><b>Last Name</b></th>
 		        <th><b>Send Alert</b></th></tr>
-        <%
-	        If connUsers.EOF Then
+            <% If connUsers.EOF Then
 		        Response.Write("<tr><td colspan='5' align='center'><b><i>There " & _
 			        "are currently no users.</i></b></td></tr>")
 	        Else
@@ -277,11 +318,11 @@ ELSE
                     <% If altColors = "#e5e6e8" Then altColors = "#ffffff" Else altColors = "#e5e6e8" End If
 			            connUsers.MoveNext
 		        Loop
-	        End If ' END No Results Found
+	        End If ' END No Results Found 
             %>
-            <div align="center"><br /><br />
-                To Send Open Item Alerts via Email to all Users assigned to Receive them<br />
-                <input type="submit" value="Send Emails"><br />
+            <div align="center">
+                Select the Users Below To Send Open Item Alerts via Email<br />
+                <input type="submit" value="Send Emails"><br /><br />
             </div>
             </FORM>
         </BODY>

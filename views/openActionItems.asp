@@ -1,4 +1,17 @@
 <%@ Language="VBScript" %><%
+
+If _
+	Not Session("validAdmin") And _
+	Not Session("validDirector") And _
+	Not Session("validInspector") And _
+    Not Session("validErosion") And _
+	Not Session("validUser") _
+Then
+	Session("adminReturnTo") = Request.ServerVariables("path_info") & _
+		"?" & Request.ServerVariables("query_string")
+	Response.Redirect("../admin/maintain/loginUser.asp")
+End If
+
 projectID = Request("pID")
 %><!-- #include file="../admin/connSWPPP.asp" --><%
 
@@ -141,7 +154,7 @@ Set rsInspectInfo = connSWPPP.Execute(inspectInfoSQLSELECT)
 </div>
 <center>
 <img src="../images/color_logo_report.jpg" width="300"><br><br>
-<font size="+1"><b>Open Items for<br/> <%= RS2("projectName") %>&nbsp;<%= RS2("projectPhase")%></b></font><hr noshade size="1" width="100%">
+<font size="+1"><b>Open Items for<br/> (<%=projectID %>) <%= RS2("projectName") %>&nbsp;<%= RS2("projectPhase")%></b></font><hr noshade size="1" width="100%">
 </center>
 
 <% currentDate = date() %>

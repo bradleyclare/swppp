@@ -13,7 +13,10 @@ Then
 End If
 
 projectID = Request("pID")
+
 %><!-- #include file="../admin/connSWPPP.asp" --><%
+
+currentDate = date()
 
 If Request.Form.Count > 0 Then
 	update = 0
@@ -45,6 +48,18 @@ If Request.Form.Count > 0 Then
 		    connSWPPP.Execute(inspectSQLUPDATE2)
 		End If
 	next	
+    'check for comment
+    commentNum = CInt(Request("commentIDNum"))
+    if commentNum > -1 Then
+        coID    = Request("coord:coID:" & commentNum)
+        comment = Request("commentBox")
+        userID  = Session("userID")
+        'Response.Write(coID & " - " & userID & " - " & currentDate & " - " & comment)
+        SQL3="INSERT INTO CoordinatesComments (coID, comment, userID, date)" &_
+        " VALUES ( "& coID & ", '" & comment & "', " & userID & ", '"& currentDate & "')"   
+        'response.Write(SQL3)
+        Set RS3=connSWPPP.execute(SQL3)
+    End If
 End If
 
 SQL2="SELECT projectName, projectPhase FROM Projects WHERE projectID="& projectID
@@ -120,7 +135,7 @@ tr.highlighted {
         s1[0].className = "commentPopup show";
 
         //set the hidden div in the select div to remember what number we are modifying
-        var s2 = document.getElementsByName("currentAddressNum");
+        var s2 = document.getElementsByName("commentIDNum");
         s2[0].value = num;
     }
 
@@ -128,6 +143,19 @@ tr.highlighted {
         //hide the select div
         var s0 = document.getElementsByName("commentPopup");
         s0[0].className = "commentPopup hide";
+
+        //set the num back to -1 so we do not save note
+        var s2 = document.getElementsByName("commentIDNum");
+        s2[0].value = "-1";
+    }
+
+    function save_note(){
+        //hide the select div
+        var s0 = document.getElementsByName("commentPopup");
+        s0[0].className = "commentPopup hide";
+
+        //submit form
+        document.getElementById("theForm").submit();
     }
 
   </script>
@@ -145,123 +173,129 @@ Set rsInspectInfo = connSWPPP.Execute(inspectInfoSQLSELECT)
 %>
 
 <body bgcolor="#ffffff" marginwidth="30" leftmargin="30" marginheight="15" topmargin="15">
-<div class="commentPopup hide" name="commentPopup">
-<h3>Enter Note:</h3>
-<textarea rows="3" cols="40" name="commentBox"></textarea>
-<br /><br />
-<input type="button" onclick="save_note()" value="Save Note" />
-<input type="button" onclick="close_popup()" value="Close Window" />
-</div>
-<center>
-<img src="../images/color_logo_report.jpg" width="300"><br><br>
-<font size="+1"><b>Open Items for<br/> (<%=projectID %>) <%= RS2("projectName") %>&nbsp;<%= RS2("projectPhase")%></b></font><hr noshade size="1" width="100%">
-</center>
-
-<% currentDate = date() %>
-
 <form id="theForm" method="post" action="<%=Request.ServerVariables("script_name")& "?pID=" & projectID %>" onsubmit="return isReady(this)";>
-<center>
-<table><tr>
-<td><input type="button" value="Check all Items" onclick="check_all_items(this)" /></td>
-<td><input type="button" value="Un-Check all Items" onclick="uncheck_all_items(this)" /></td>
-<td><input type="text" name="commonDate" class="datepicker" value="<%= currentDate %>" /></td>
-<td><input type="button" value="Apply Date to All" onclick="apply_date_to_all(this)" /></td>
-</tr></table>
-</center>
-<br/><br/>
-<table cellpadding="2" cellspacing="0" border="0" width="100%">
-	<tr><th width="5%" align="left">Complete</th>
-        <th width="5%" align="left">Repeat</th>
-        <th width="5%" align="left">ID</th>
-        <th width="10%" align="left">Completion Date</th>
-        <th width="5%" align="left">Age</th>
-        <th width="5%" align="left">Report Date</th>
-        <th width="25%" align="left">Location</th>
-        <th width="40%" align="left">Action Item</th>
-        <th width="5%" align="left">Add Note</th>
-	</tr>
-<% If rsInspectInfo.EOF Then
-	Response.Write("<tr><td colspan='4' align='center'><i style='font-size: 15px'>There are no inspection reports found.</i></td></tr>")
-Else
-    n = 0
-	Do While Not rsInspectInfo.EOF   
-        inspecID = rsInspectInfo("inspecID")
-        inspecDate = Trim(rsInspectInfo("inspecDate"))
-        includeItems = rsInspectInfo("includeItems")
+    <input type="hidden" name="commentIDNum" value="-1" />
+    <div class="commentPopup hide" name="commentPopup">
+    <h3>Enter Note:</h3>
+    <textarea rows="3" cols="40" name="commentBox"></textarea>
+    <br /><br />
+    <input type="button" onclick="save_note()" value="Save Note" />
+    <input type="button" onclick="close_popup()" value="Cancel" />
+    </div>
+    <center>
+    <img src="../images/color_logo_report.jpg" width="300"><br><br>
+    <font size="+1"><b>Open Items for<br/> (<%=projectID %>) <%= RS2("projectName") %>&nbsp;<%= RS2("projectPhase")%></b></font>
+    <hr noshade size="1" width="100%">
+    </center>
+    <center>
+    <table><tr>
+    <td><input type="button" value="Check all Items" onclick="check_all_items(this)" /></td>
+    <td><input type="button" value="Un-Check all Items" onclick="uncheck_all_items(this)" /></td>
+    <td><input type="text" name="commonDate" class="datepicker" value="<%= currentDate %>" /></td>
+    <td><input type="button" value="Apply Date to All" onclick="apply_date_to_all(this)" /></td>
+    </tr></table>
+    </center>
+    <br/><br/>
+    <table cellpadding="2" cellspacing="0" border="0" width="100%">
+	    <tr><th width="5%" align="left">Complete</th>
+            <th width="5%" align="left">Repeat</th>
+            <th width="5%" align="left">ID</th>
+            <th width="10%" align="left">Completion Date</th>
+            <th width="5%" align="left">Age</th>
+            <th width="5%" align="left">Report Date</th>
+            <th width="20%" align="left">Location</th>
+            <th width="40%" align="left">Action Item</th>
+            <th width="2.5%" align="left">Add Note</th>
+            <th width="2.5%" align="left">View Note</th>
+	    </tr>
+    <% If rsInspectInfo.EOF Then
+	    Response.Write("<tr><td colspan='10' align='center'><i style='font-size: 15px'>There are no inspection reports found.</i></td></tr>")
+    Else
+        n = 0
+	    Do While Not rsInspectInfo.EOF   
+            inspecID = rsInspectInfo("inspecID")
+            inspecDate = Trim(rsInspectInfo("inspecDate"))
+            includeItems = rsInspectInfo("includeItems")
         
-        if includeItems Then
-            coordSQLSELECT = "SELECT coID, coordinates, existingBMP, correctiveMods, orderby, assignDate, completeDate, status, repeat, useAddress, address, locationName, infoOnly, LD" &_
-	            " FROM Coordinates WHERE inspecID=" & inspecID & " ORDER BY orderby"	
-            Set rsCoord = connSWPPP.execute(coordSQLSELECT)
-            start_n = n
-	        Do While Not rsCoord.EOF	
-	            coID = rsCoord("coID")
-		        correctiveMods = Trim(rsCoord("correctiveMods"))
-		        coordinates = Trim(rsCoord("coordinates"))
-		        assignDate = rsCoord("assignDate")
-		        if assignDate = "" Then
-			        age = "?"
-		        Else
-			        age = datediff("d",assignDate,currentDate) 
-		        End If
-		        status = rsCoord("status")
-		        repeat = rsCoord("repeat")
-		        useAddress = rsCoord("useAddress")
-		        address = TRIM(rsCoord("address"))
-		        locationName = TRIM(rsCoord("locationName"))
-                infoOnly = rsCoord("infoOnly")
-                LD = rsCoord("LD")
-                If LD = True Then
-                    correctiveMods = "(LD) " & correctiveMods
-                End If 
-		        If infoOnly = True Then
-                   do_nothing = 1 
-                Elseif status = false Then %>
-		            <input type="hidden" name="coord:coID:<%= n %>" value="<%= coID %>" />
-                    <input type="hidden" name="coord:inspecID:<%= n %>" value="<%= inspecID %>" />
-		            <tr>
-		            <td align="left"><input type="checkbox" name="coord:complete:<%= n %>" /></td>
-		            <% If repeat = True Then %>
-			            <td align="left"><input type="checkbox" name="coord:repeat:<%= n %>" disabled checked/></td>
-		            <% Else %>
-			            <td align="left"><input type="checkbox" name="coord:repeat:<%= n %>" disabled /></td>
-		            <% End If %>
-		            <td align="left"><%= coID %></td>
-		            <td align="left"><input class="datepicker" type="text" name="coord:date:<%= n %>" value="<%= currentDate %>"/></td>
-		            <td><%= age %> days</td>
-		            <td><%= inspecDate %></td>
-                    <td>
-		            <% if (useAddress) = False Then %>
-			            <%=coordinates%>
-		            <% Else %>
-			            <%=locationName%> (<%=address%>)
-		            <% End If %>
-		            </td>
-		            <td><%= correctiveMods %></td>
-                    <!--<td><input type="button" name="coord:note:<%= n %>" value="X" onclick="displayCommentWindow(this)"/></td>
-		            </tr>-->
-                    <tr>
-                        <td colspan="9"></td>
-                    </tr>
-		            <% n = n + 1
-                End If
-		        rsCoord.MoveNext 
- 	        LOOP 'loop coordinates 
-            If start_n <> n Then %>
-                <tr><td colspan="9"><hr /></td></tr>
-            <% End If
-        End If
-        rsInspectInfo.MoveNext
-     LOOP 'loop inpection reports
-End If%>
-</table>
-<center>
-<input type="submit" value="Submit" />
-<br/><br/>
-<a href="completedActionItems.asp?pID= <%=projectID%> &inspecID= <%=inspecID%>">See Completed Actions Items</a>
-</center>
+            if includeItems Then
+                coordSQLSELECT = "SELECT coID, coordinates, existingBMP, correctiveMods, orderby, assignDate, completeDate, status, repeat, useAddress, address, locationName, infoOnly, LD" &_
+	                " FROM Coordinates WHERE inspecID=" & inspecID & " ORDER BY orderby"	
+                Set rsCoord = connSWPPP.execute(coordSQLSELECT)
+                start_n = n
+	            Do While Not rsCoord.EOF	
+	                coID = rsCoord("coID")
+		            correctiveMods = Trim(rsCoord("correctiveMods"))
+		            coordinates = Trim(rsCoord("coordinates"))
+		            assignDate = rsCoord("assignDate")
+		            if assignDate = "" Then
+			            age = "?"
+		            Else
+			            age = datediff("d",assignDate,currentDate) 
+		            End If
+		            status = rsCoord("status")
+		            repeat = rsCoord("repeat")
+		            useAddress = rsCoord("useAddress")
+		            address = TRIM(rsCoord("address"))
+		            locationName = TRIM(rsCoord("locationName"))
+                    infoOnly = rsCoord("infoOnly")
+                    LD = rsCoord("LD")
+                    If LD = True Then
+                        correctiveMods = "(LD) " & correctiveMods
+                    End If 
+		            If infoOnly = True Then
+                       do_nothing = 1 
+                    Elseif status = false Then 
+                        commSQLSELECT = "SELECT comment, userID, date" &_
+	                    " FROM CoordinatesComments WHERE coID=" & coID	
+                        Set rsComm = connSWPPP.execute(commSQLSELECT) %>
+		                <input type="hidden" name="coord:coID:<%= n %>" value="<%= coID %>" />
+                        <input type="hidden" name="coord:inspecID:<%= n %>" value="<%= inspecID %>" />
+		                <tr>
+		                <td align="left"><input type="checkbox" name="coord:complete:<%= n %>" /></td>
+		                <% If repeat = True Then %>
+			                <td align="left"><input type="checkbox" name="coord:repeat:<%= n %>" disabled checked/></td>
+		                <% Else %>
+			                <td align="left"><input type="checkbox" name="coord:repeat:<%= n %>" disabled /></td>
+		                <% End If %>
+		                <td align="left"><%= coID %></td>
+		                <td align="left"><input class="datepicker" type="text" name="coord:date:<%= n %>" value="<%= currentDate %>"/></td>
+		                <td><%= age %> days</td>
+		                <td><%= inspecDate %></td>
+                        <td>
+		                <% if (useAddress) = False Then %>
+			                <%=coordinates%>
+		                <% Else %>
+			                <%=locationName%> (<%=address%>)
+		                <% End If %>
+		                </td>
+		                <td><%= correctiveMods %></td>
+                        <td><input type="button" name="coord:note:<%= n %>" value="O" onclick="displayCommentWindow(this)"/></td>
+                        <% If rsComm.EOF Then %>
+                            <td></td>
+                        <% Else %>
+                            <td><button><a href="viewOpenItemComments.asp?coID=<%=coID%>" target="_blank">O</a></button></td>
+                        <% End If %>
+		                </tr>
+                        <tr><td colspan="10"></td></tr>
+		                <% n = n + 1
+                    End If
+		            rsCoord.MoveNext 
+ 	            LOOP 'loop coordinates 
+                If start_n <> n Then %>
+                    <tr><td colspan="10"><hr /></td></tr>
+                <% End If
+            End If
+            rsInspectInfo.MoveNext
+         LOOP 'loop inpection reports
+    End If%>
+    </table>
+    <center>
+    <input type="submit" value="Submit" />
+    <br/><br/>
+    <a href="completedActionItems.asp?pID= <%=projectID%> &inspecID= <%=inspecID%>">See Completed Actions Items</a>
+    </center>
 </form>
-<br><br>
+<br /><br />
 </body>
 </html>
 

@@ -42,9 +42,9 @@ IF Request.Form.Count > 0 THEN %>
             strBody=strBody &".black{color: black;}"
             strBody=strBody &"</style></head>"
             strBody=strBody &"<body bgcolor='#ffffff' marginwidth='30' leftmargin='30' marginheight='15' topmargin='15'>"
-            strBody=strBody &"<img src='http://www.swpppinspections.com/images/color_logo_report.jpg' width='300'><br><br>"
+            strBody=strBody &"<img src='http://www.swpppinspections.com/images/color_logo_report.jpg' width='175'><br><br>"
             strBody=strBody &"<font size='+1'><b>Open Item Report</b></font><br/><br/>"
-            strBody=strBody &"<b>For a complete list of open items, select project name and log in.</b><br/>"
+            strBody=strBody &"<b>For a complete list of open items, select the project name and log in.</b><br/>"
                    
             'get all the projects the user is assigned to
             SQLSELECT = "SELECT DISTINCT pu.projectID, p.projectName, p.projectPhase" &_

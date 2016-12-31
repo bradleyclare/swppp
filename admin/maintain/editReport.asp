@@ -65,9 +65,10 @@ If Request.Form.Count > 0 Then
 		", contactEmail = '" & strQuoteReplace(Request("contactEmail")) & "'" & _
 		", includeItems = " & includeItems & _
         ", openItemAlert = " & openItemAlert & _
+        ", groupName = '" & Trim(Request("groupName")) & "'" & _
 		", compliance = " & compliance & _
 		" WHERE inspecID = " & inspecID
-'response.Write(inspectSQLUPDATE)
+    'response.Write(inspectSQLUPDATE)
 	connSWPPP.Execute(inspectSQLUPDATE)
     
 		totalItems = 0
@@ -160,7 +161,7 @@ End If
 	inspecSQLSELECT = "SELECT inspecDate, i.projectName, i.projectPhase, projectAddr, projectCity, projectState" & _
 		", projectZip, projectCounty, onsiteContact, officePhone, emergencyPhone, i.projectID, compName" & _
 		", compAddr, compAddr2, compCity, compState, compZip, compPhone, compContact, contactPhone, contactFax" & _
-		", contactEmail, reportType, inches, bmpsInPlace, sediment, userID, includeItems, compliance, totalItems, completedItems, openItemAlert" & _
+		", contactEmail, reportType, inches, bmpsInPlace, sediment, userID, includeItems, compliance, totalItems, completedItems, openItemAlert, groupName" & _
 		" FROM Inspections as i, Projects as p" & _
 		" WHERE i.projectID = p.projectID AND inspecID = " & inspecID
 '--Response.Write(inspecSQLSELECT & "<br>")
@@ -681,11 +682,27 @@ Set rsAddress = Nothing %>
 			<td bgcolor="#999999"><input type="text" name="projectName" size="50" value="<% = Trim(rsReport("projectName")) %>"/>
 			<input type="text" name="projectPhase" size="20" value="<% = Trim(rsReport("projectPhase")) %>"/></td>
 		</tr>
+        <tr><td align="right" bgcolor="#eeeeee"><b>Project Group:</b></td>
+			<td bgcolor="#999999">
+                <select name="groupName">
+                    <option value=""></option>
+                <% SQL0="SELECT * FROM Groups ORDER BY groupName"
+	            SET RS0=connSWPPP.execute(SQL0)
+	            DO WHILE NOT RS0.EOF %>	
+                    <option value="<%= RS0("groupName")%>"
+                    <% If Trim(rsReport("groupName")) = Trim(RS0("groupName")) Then %> selected
+                    <% End If %>><%= Trim(RS0("groupName"))%></option>
+                <% RS0.MoveNext
+	            LOOP %>	
+                </select>
+			</td>
+		</tr>
 		<!-- project location -->
 		<tr><td align="right" bgcolor="#eeeeee"><b>Project Location:</b></td>
 			<td bgcolor="#999999"><input type="text" name="projectAddr" size="50" value="<% = Trim(rsReport("projectAddr")) %>"> </td>
 		</tr><tr><td align="right" bgcolor="#eeeeee"><b>City, State, Zip:</b></td>
-			<td bgcolor="#999999"><input type="text" name="projectCity" size="20" value="<% = Trim(rsReport("projectCity")) %>"> &nbsp; <select name="projectState">
+			<td bgcolor="#999999"><input type="text" name="projectCity" size="20" value="<% = Trim(rsReport("projectCity")) %>"> &nbsp; 
+            <select name="projectState">
 <% 	SQL0="SELECT * FROM States ORDER BY priority DESC, stateName ASC"
 	SET RS0=connSWPPP.execute(SQL0)
 	IF IsNull(TRIM(rsReport("projectState"))) THEN rsReport("projectState")="TX" END IF

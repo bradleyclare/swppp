@@ -36,7 +36,7 @@ IF Request.Form.Count > 0 THEN %>
 
             <% strBody=strBody &"<head><style>"
             strBody=strBody &"table {border-collapse: collapse;}"
-            strBody=strBody &"td{border: 2px solid black; padding: 1px; font-size: 10px;}"
+            strBody=strBody &"td{border: 2px solid black; padding: 1px; font-size: 10px; text-align: center;}"
             strBody=strBody &"th{border: 2px solid black; padding: 3px; font-weight: bold; background-color: #a1a5ad; color: black;}"
             strBody=strBody &".red{color: #F52006;}"
             strBody=strBody &".black{color: black;}"
@@ -58,13 +58,14 @@ IF Request.Form.Count > 0 THEN %>
             Set connProjUsers = connSWPPP.Execute(SQLSELECT)
 
             strBody=strBody & "<table>"
-            strBody=strBody & "<tr><th>project name</th><th>over 2 days</th><th>over 6 days</th><th>over 7 days</th><th>over 10 days</th><th>over 14 days</th></tr>"
+            strBody=strBody & "<tr><th>project name</th><th>group name</th><th>over 2 days</th><th>over 6 days</th><th>over 7 days</th><th>over 10 days</th><th>over 14 days</th></tr>"
 
             'tally up the open items for each project
             'Loop through all projects the user has connection with
             cnt = 0
             Do While Not connProjUsers.EOF
                 cnt = cnt + 1
+                groupName = ""
                 projID = connProjUsers("projectID")
                 dbgBody=dbgBody & projID & "<br/>"
 
@@ -72,7 +73,7 @@ IF Request.Form.Count > 0 THEN %>
                 endDate=DateAdd("m",1,startDate)
                 endDate=DateAdd("d",-1,endDate)
                 SQL0 = "SELECT inspecID, inspecDate, reportType," & _
-	                " projectID, projectName, projectPhase, released, includeItems, compliance, totalItems, completedItems" & _
+	                " projectID, projectName, projectPhase, released, includeItems, compliance, totalItems, completedItems, groupName" & _
 	                " FROM Inspections" & _
 	                " WHERE projectID = " & projID &_
                     " AND completedItems < totalItems" &_
@@ -105,6 +106,10 @@ IF Request.Form.Count > 0 THEN %>
                         inspecCnt = inspecCnt + 1
                         projName = Trim(RS0("projectName"))
                         projPhase = Trim(RS0("projectPhase"))
+                        groupNameRaw = Trim(RS0("groupName"))
+                        If groupNameRaw <> "" Then
+                            groupName = groupNameRaw
+                        End If
                         inspecID = RS0("inspecID")
                         inspecDate = RS0("inspecDate")
                         totalItems = RS0("totalItems")
@@ -194,7 +199,7 @@ IF Request.Form.Count > 0 THEN %>
                 connProjUsers.MoveNext
                 If inspecCnt > 0 and coordCnt > 0 and displayProj = True Then
                     reportLink = "http://swppp.com/views/openActionItems.asp?pID=" & projID
-                    strBody=strBody & "<tr><td align='right'><a href='" & reportLink & "' target='_blank'>" & projName &" "& projPhase &"</td><td align='center'>"
+                    strBody=strBody & VBCrLf & "<tr><td><a href='" & reportLink & "' target='_blank'>" & projName &" "& projPhase &"</td><td>"& groupName &"</td><td>"
                     If coordCnt2 > 0 Then
                         send_email = True
                         strBody=strBody & coordCnt2
@@ -202,7 +207,7 @@ IF Request.Form.Count > 0 THEN %>
                             strBody=strBody & " (" & coordCntLD2 & " LD)"
                         End If 
                     End If
-                    strBody=strBody &"</td><td align='center'>"
+                    strBody=strBody &"</td><td>"
                     If coordCnt6 > 0 Then
                         send_email = True
                         strBody=strBody & coordCnt6
@@ -210,7 +215,7 @@ IF Request.Form.Count > 0 THEN %>
                             strBody=strBody & " (" & coordCntLD6 & " LD)"
                         End If 
                     End If
-                    strBody=strBody &"</td><td align='center'>"
+                    strBody=strBody &"</td><td>"
                     If coordCnt7 > 0 Then
                         send_email = True
                         strBody=strBody & coordCnt7
@@ -218,7 +223,7 @@ IF Request.Form.Count > 0 THEN %>
                             strBody=strBody & " (" & coordCntLD7 & " LD)"
                         End If 
                     End If
-                    strBody=strBody &"</td><td align='center'>"
+                    strBody=strBody &"</td><td>"
                     If coordCnt10 > 0 Then
                         send_email = True
                         strBody=strBody & coordCnt10
@@ -226,7 +231,7 @@ IF Request.Form.Count > 0 THEN %>
                             strBody=strBody & " (" & coordCntLD10 & " LD)"
                         End If 
                     End If
-                    strBody=strBody & "</td><td align='center'>"
+                    strBody=strBody & "</td><td>"
                     If coordCnt14 > 0 Then
                         send_email = True
                         strBody=strBody & coordCnt14
@@ -255,7 +260,7 @@ IF Request.Form.Count > 0 THEN %>
 
                 '--------this line of code is for testing the smtp server---------------------
                 Mailer.AddBCC contentSubject, "dwims@swppp.com"
-                Mailer.AddBCC contentSubject, "brad.leishman@gmail.com"
+                'Mailer.AddBCC contentSubject, "brad.leishman@gmail.com"
                 '--------this line of code is for testing the smtp server---------------------
                 
                 Mailer.AddRecipient fullName, Trim(connUsers("email"))
@@ -297,6 +302,9 @@ ELSE
             <center><h3>To be on this list users must be set to See Scoring and receive Open Item Alerts</h3></center>
             <FORM action="<%= Request.ServerVariables("SCRIPT_NAME") %>" method="post">
             <div align="center">
+                Select the Users Below To Send Open Item Alerts via Email<br />
+                <input type="submit" value="Send Emails"><br /><br />
+            </div>
             <table width="100%" border="0">
 	        <tr><th><b>Count</b></th>
 		        <th><b>First Name</b></th>
@@ -320,10 +328,7 @@ ELSE
 		        Loop
 	        End If ' END No Results Found 
             %>
-            <div align="center">
-                Select the Users Below To Send Open Item Alerts via Email<br />
-                <input type="submit" value="Send Emails"><br /><br />
-            </div>
+            </table>
             </FORM>
         </BODY>
     </HTML>

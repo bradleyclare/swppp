@@ -14,7 +14,8 @@
 			<a href="../maintain/addReport.asp" class="admin">Add Report</a><br><br>
 			<a href="../maintain/releaseReports.asp" class="admin">Release Reports</a><br>
       <a href="../maintain/releaseRepeatItems.asp" class="admin">Repeat Item Alert</a><br>
-      <a href="../maintain/releaseOpenItems.asp" class="admin">Open Item Alert</a><br><br>
+      <a href="../maintain/releaseOpenItems.asp" class="admin">Open Item Alert</a><br>
+      <a href="../maintain/manageGroups.asp" class="admin">Manage Groups</a><br><br>
 		<% End If %>
 		<% If Session("validAdmin") then %>
 	      	<a href="../maintain/viewUsersAdmin.asp" class="admin">View Users</a><br>
@@ -33,7 +34,7 @@
 			<a href="../maintain/viewProjects.asp" class="admin">View Projects</a><br>
 			<a href="../maintain/commissions.asp" class="admin">Commissions</a><br><br>
 <%	End If %>
-			<a href="../maintain/adminAbout.asp" class="admin">Modify About Us</a><br><br>
+			<a href="../maintain/adminAbout.asp" class="admin">Modify About Us</a><br>
 	    	<a href="../maintain/adminContact.asp" class="admin">Modify Contact Us</a><br><br>
 	    	Remove Files<br>
 	    	<a href="../maintain/remImgFiles.asp" class="admin">Images</a><br>

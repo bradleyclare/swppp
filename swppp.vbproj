@@ -173,6 +173,7 @@
     <Content Include="admin\maintain\lostPassword.asp" />
     <Content Include="admin\maintain\lostPasswordUpdate1.asp" />
     <Content Include="admin\maintain\lostPasswordUpdate2.asp" />
+    <Content Include="admin\maintain\manageGroups.asp" />
     <Content Include="admin\maintain\manage_addresses.asp" />
     <Content Include="admin\maintain\newReport.asp" />
     <Content Include="admin\maintain\newReport_dev.asp" />
@@ -271,6 +272,7 @@
     <Content Include="views\sitePhoto.asp" />
     <Content Include="views\viewAllProjectActions.asp" />
     <Content Include="views\viewAllReports.asp" />
+    <Content Include="views\viewOpenItemComments.asp" />
     <Content Include="Web.config" />
   </ItemGroup>
   <ItemGroup>

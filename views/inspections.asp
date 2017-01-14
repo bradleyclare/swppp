@@ -101,8 +101,8 @@ Set connSWPPP = Nothing %>
 <ul>
 
 
-<li><a href="addOperatorForm.asp?pID=<%= projectID%>" target="_blank">Add Operator Form</a></li>
-<li><a href="operatorForm.asp?pID=<%= projectID%>" target="_blank">View Operator Form</a></li>
+<!--<li><a href="addOperatorForm.asp?pID=<%= projectID%>" target="_blank">Add Operator Form</a></li>
+<li><a href="operatorForm.asp?pID=<%= projectID%>" target="_blank">View Operator Form</a></li>-->
 <% If Session("validAdmin") Then %>
     <li><a href="addActionReport.asp?pID=<%= projectID%>" target="_blank">Add Actions Taken</a></li>
     <li><a href="actionReport.asp?pID=<%= projectID%>" target="_blank">View Actions Taken</a></li>

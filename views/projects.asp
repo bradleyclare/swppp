@@ -66,21 +66,14 @@ Set connSWPPP = Nothing %>
 				onMouseOut="this.style.backgroundColor='transparent'; this.style.cursor='normal'">
 				<font color="black" style="font:normal normal bolder 12px;">
 				<a href="monthlyReportsSum.asp" target="_blank">
-				Monthly Summary<br>of<br>Inspection Reports</a></font></TD></tr>
+				Monthly Summary of<br />Inspection Reports</a></font></TD></tr>
 			<tr>
 				<td align=center style="border: thin solid #9AB5D1;"
 				onMouseOver="this.style.backgroundColor='#9AB5D1'; this.style.cursor='hand'"
 				onMouseOut="this.style.backgroundColor='transparent'; this.style.cursor='normal'">
 				<font color="black" style="font:normal normal bolder 12px;">
 				<a href="reportPrintAllRecent.asp" target="_blank">
-				Print<br>the Latest<br>Inspection Report<br>for Each Project</a></font></td></tr>
-			<tr>
-				<TD align=center style="border: thin solid #9AB5D1;"
-				onMouseOver="this.style.backgroundColor='#9AB5D1'; this.style.cursor='hand'"
-				onMouseOut="this.style.backgroundColor='transparent'; this.style.cursor='normal'">
-				<font color="black" style="font:normal normal bolder 12px;">
-				<a href="viewAllProjectActions.asp" target="_blank">
-				View<br>Actions Taken<br>for<br>All Projects</a></font></TD></tr>
+				Print the Most Recent<br />Inspection Report<br />for Each Project</a></font></td></tr>
             </table>
 	    </td></tr>
     </Table>

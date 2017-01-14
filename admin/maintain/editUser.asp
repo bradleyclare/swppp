@@ -26,6 +26,7 @@ If Request.Form.Count > 0 Then
 	trimmedQualifications=REPLACE(Request("qualifications"),"'","#@#")
     if Request("seeScoring") = "on" then seeScoring = 1 Else seeScoring = 0 End If
     if Request("openItemAlerts") = "on" then openItemAlerts = 1 Else openItemAlerts = 0 End If
+    if Request("repeatItemAlerts") = "on" then repeatItemAlerts = 1 Else repeatItemAlerts = 0 End If
 	SQLUPDATE =	"UPDATE Users SET" & _
 		" firstName = '" & titleCase(Request("firstName")) & "'" & _
 		", lastName = '" & titleCase(Request("lastName")) & "'" & _
@@ -35,6 +36,7 @@ If Request.Form.Count > 0 Then
 		", noImages = '" & Request("noImages") & "'" & _
         ", seeScoring = '" & seeScoring & "'" & _
         ", openItemAlerts = '" & openItemAlerts & "'" & _
+        ", repeatItemAlerts = '" & repeatItemAlerts & "'" & _
 		", qualifications = '" & trimmedQualifications & "'" 
 ' --------------------------- Admin User --------------------------
 		If Request("admin")="on" then 
@@ -145,7 +147,7 @@ If Request.Form.Count > 0 Then
 		processed="true"
 End If
 	SQLSELECT = "SELECT firstName, lastName, email" & _
-		", pswrd, dateEntered, signature, noImages, qualifications, seeScoring, openItemAlerts" & _
+		", pswrd, dateEntered, signature, noImages, qualifications, seeScoring, openItemAlerts, repeatItemAlerts" & _
 		" FROM Users WHERE userID = " & userID
 	Set rsUser = connSWPPP.Execute(SQLSELECT)
 	
@@ -159,6 +161,7 @@ End If
 	qualifications= TRIM(rsUser("qualifications"))
     seeScoring = rsUser("seeScoring")
     openItemAlerts = rsUser("openItemAlerts")
+    repeatItemAlerts = rsUser("repeatItemAlerts")
 	IF IsNull(qualifications) THEN qualifications="" END IF
 	rsUser.Close
 	Set rsUser = Nothing
@@ -224,6 +227,13 @@ Set gifDirectory = Nothing %>
         <tr><td align="right">Receive Open Item Alerts:</td>
             <td><input type="checkbox" name="openItemAlerts" 
             <% If (openItemAlerts) = True Then %>
+                checked
+            <% End if %>
+            /></td>
+		</tr>
+        <tr><td align="right">Receive Repeat Item Alerts:</td>
+            <td><input type="checkbox" name="repeatItemAlerts" 
+            <% If (repeatItemAlerts) = True Then %>
                 checked
             <% End if %>
             /></td>

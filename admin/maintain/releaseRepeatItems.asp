@@ -114,7 +114,7 @@ IF Request.Form.Count > 0 THEN %>
 			                End If
 			                strBody=strBody &"<tr valign='top'><td width='20%' align='right'><b>action needed:</b></td><td width='80%' align='left' class='red'>"&  correctiveMods &"</td></tr>"
 			                If applyScoring Then
-				                strBody=strBody &"<tr valign='top'><td width='20%' align='right'><b>item age:</b></td><td width='80%' align='left' class='red'>"&  age &"<br></td></tr>"
+				                strBody=strBody &"<tr valign='top'><td width='20%' align='right'><b>item age:</b></td><td width='80%' align='left' class='red'>"&  age &" days<br></td></tr>"
 			                End If
 			                strBody=strBody &"<tr><td colspan='2'><hr noshade size='1' align='center' width='90%'></td></tr>"  & vbCrLf
 				        End If
@@ -172,21 +172,21 @@ IF Request.Form.Count > 0 THEN %>
 
                 '-- build the recipients list ------------------------------------------------
                 DO WHILE NOT RS1.EOF
-                    userSQLSELECT = "SELECT userID, pswrd, rights, firstName, lastName, noImages, seeScoring" &_
+                    userSQLSELECT = "SELECT userID, pswrd, rights, firstName, lastName, noImages, seeScoring, repeatItemAlerts" &_
 		                " FROM Users" & _
 		                " WHERE email = '" & Trim(RS1("email")) & "'"
 	                ' Response.Write(userSQLSELECT & "<br>")
 	                Set connEmail = connSWPPP.execute(userSQLSELECT)
-                    If connEmail("seeScoring") Then
+                    If connEmail("seeScoring") and connEmail("repeatItemAlerts") Then
 		                curRights = Trim(RS1("rights"))
-                        If curRights = "email" then
+                        If curRights = "user" then
 			                Mailer.AddRecipient Trim(RS1("fullName")), Trim(RS1("email"))
-			            End If
-                        If curRights = "ecc" then
-			                Mailer.AddCC Trim(RS1("fullName")), Trim(RS1("email"))
-			            End If
-                        If curRights = "bcc" then
-			                Mailer.AddBCC Trim(RS1("fullName")), Trim(RS1("email"))
+                        ElseIf curRights = "email" then
+			                Mailer.AddRecipient Trim(RS1("fullName")), Trim(RS1("email"))
+                        ElseIf curRights = "ecc" then
+			                Mailer.AddRecipient Trim(RS1("fullName")), Trim(RS1("email"))
+                        ElseIf curRights = "bcc" then
+			                Mailer.AddRecipient Trim(RS1("fullName")), Trim(RS1("email"))
 			            End If
                     End If
 			        RS1.MoveNext
@@ -253,22 +253,17 @@ ELSE
                         hello = 1
                     Else
                         coordSQLSELECT = "SELECT coID, coordinates, existingBMP, correctiveMods, orderby, assignDate, completeDate, status, repeat, useAddress, address, locationName" &_
-	                        " FROM Coordinates WHERE inspecID=" & inspecID 
+	                        " FROM Coordinates WHERE repeat = 1 AND inspecID=" & inspecID 
                         'Response.Write(coordSQLSELECT)
                         Set rsCoord = connSWPPP.execute(coordSQLSELECT)
                         repeatItem = False
-                        itemCnt = 0
-                        DO WHILE NOT rsCoord.EOF
-                            itemCnt = itemCnt + 1
-                            if rsCoord("repeat") = True THEN
-                                repeatItem = True
-                                EXIT DO
-                            END IF
-                            rsCoord.MoveNext
-                        LOOP
+                        If rsCoord.EOF Then
+                            repeatItem = False
+                        Else
+                            repeatItem = True
+                        End If
                         rsCoord.Close
                         SET rsCoord=nothing
-                        'Response.Write(inspecId & " - " & itemCnt & " | ")
                         IF repeatItem = True THEN %>
 	                        <tr><td align="left"><%= RS0("projectName")%>&nbsp;<%= RS0("projectPhase") %></td>
 		                    <td align="left"><%= Trim(RS0("firstName"))%>&nbsp;<%=Trim(RS0("lastName"))%></td>

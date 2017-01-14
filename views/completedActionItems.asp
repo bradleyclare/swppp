@@ -1,4 +1,17 @@
 <%@ Language="VBScript" %><%
+
+If _
+	Not Session("validAdmin") And _
+	Not Session("validDirector") And _
+	Not Session("validInspector") And _
+    Not Session("validErosion") And _
+	Not Session("validUser") _
+Then
+	Session("adminReturnTo") = Request.ServerVariables("path_info") & _
+		"?" & Request.ServerVariables("query_string")
+	Response.Redirect("../admin/maintain/loginUser.asp")
+End If
+
 projectID = Request("pID")
 
 %><!-- #include file="../admin/connSWPPP.asp" --><%
@@ -64,7 +77,10 @@ Set rsInspectInfo = connSWPPP.Execute(inspectInfoSQLSELECT)
 <body bgcolor="#ffffff" marginwidth="30" leftmargin="30" marginheight="15" topmargin="15">
 <center>
 <img src="../images/color_logo_report.jpg" width="300"><br><br>
-<font size="+1"><b>Completed Items for<br> <%= RS2("projectName") %>&nbsp;<%= RS2("projectPhase")%></b></font><hr noshade size="1" width="90%">
+<font size="+1"><b>Completed Items for<br> <%= RS2("projectName") %>&nbsp;<%= RS2("projectPhase")%></b></font>
+<br /><br />
+<a href="openActionItems.asp?pID= <%=projectID%> &inspecID= <%=inspecID%>">see Open Items</a>
+<br /><br />
 </center>
 
 <form id="theForm" method="post" action="<%=Request.ServerVariables("script_name")& "?pID=" & projectID %>" onsubmit="return isReady(this)";>
@@ -112,7 +128,11 @@ Else
 		        <tr>
                 <input type="hidden" name="coord:coID:<%= n %>" value="<%= coID %>" />
                 <input type="hidden" name="coord:inspecID:<%= n %>" value="<%= inspecID %>" />
-		        <td align="left"><input type="checkbox" name="coord:complete:<%= n %>" checked /></td>
+                <% If Not Session("validAdmin") Then %>
+		            <td align="left"><input type="checkbox" name="coord:complete:<%= n %>" disabled checked /></td>
+                <% Else %>
+                    <td align="left"><input type="checkbox" name="coord:complete:<%= n %>" checked /></td>
+                <% End If %>
                 <% If repeat = True Then %>
 			        <td align="left"><input type="checkbox" name="coord:repeat:<%= n %>" disabled checked/></td>
 		        <% Else %>
@@ -142,10 +162,15 @@ Else
      LOOP 'loop inpection reports
 End If%>
 </table>
-<center><input type="submit" value="Submit"/><br/><br/>
-<% if Session("seeScoring")=True Then %>
-    <a href="openActionItems.asp?pID= <%=projectID%> &inspecID= <%=inspecID%>">See Open Actions Items</a></center>
-<% End If %>
+<center>
+    <input type="submit" value="Submit"/><br/><br/>
+<% SQL3="SELECT oImageFileName FROM OptionalImages WHERE oitID=12 AND inspecID="& inspecID
+    SET RS3=connSWPPP.execute(SQL3)
+    IF NOT(RS3.EOF) THEN 
+        sitemap_link = "http://www.swpppinspections.com/images/sitemap/"& TRIM(RS3("oImageFileName"))%>
+	    <a href='<%=sitemap_link%>'>link for Site Map</a>
+    <% END IF %>
+</center>
 </form>
 <br><br>
 </body>

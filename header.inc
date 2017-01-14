@@ -7,7 +7,7 @@
 	<td><div class="white"><a href="default.asp" class="head">Home</a> &nbsp; | &nbsp; 
 	<a href="static/about.asp" class="head">About Us</a> &nbsp; | &nbsp; 
 	<a href="static/contact.asp" class="head">Contact Us</a> &nbsp; | &nbsp; 
-	<a href="views/projects.asp" class="head">Inspections</a> &nbsp; | &nbsp; 
+	<a href="views/projects.asp" class="head">Log In</a> &nbsp; | &nbsp; 
 	<a href="admin/default.asp" class="head">Admin</a></div></td></tr></TABLE>
 <table width="90%" border="0" cellpadding="0" cellspacing="0" align="center" bgcolor="#FFFFFF>
 	<tr><td style="margin-left:10%;" colspan=2>

@@ -15,6 +15,7 @@
 			<a href="../maintain/releaseReports.asp" class="admin">Release Reports</a><br>
       <a href="../maintain/releaseRepeatItems.asp" class="admin">Repeat Item Alert</a><br>
       <a href="../maintain/releaseOpenItems.asp" class="admin">Open Item Alert</a><br>
+      <a href="../maintain/recentComments.asp" class="admin">Comments</a><br>
       <a href="../maintain/manageGroups.asp" class="admin">Manage Groups</a><br><br>
 		<% End If %>
 		<% If Session("validAdmin") then %>

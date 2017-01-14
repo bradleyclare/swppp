@@ -121,6 +121,7 @@ IF Request.Form.Count > 0 THEN %>
                         coordSQLSELECT = "SELECT coID, coordinates, correctiveMods, orderby, assignDate, completeDate, status, repeat, useAddress, address, locationName, infoOnly, LD FROM Coordinates" &_
 	                        " WHERE inspecID=" & inspecID &_
                             " AND status=0" &_
+                            " AND repeat=0" &_
                             " AND infoOnly=0" &_
                             " ORDER BY orderby"	
                         'Response.Write(coordSQLSELECT)

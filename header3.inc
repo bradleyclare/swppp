@@ -11,7 +11,7 @@
 			<TD>&nbsp; | &nbsp;</TD>
 			<TD><a href="static/contact.asp" class="head">Contact Us</a></TD>
 			<TD>&nbsp; | &nbsp;</TD>
-			<TD><a href="views/projects.asp" class="head">Inspections</a></TD>
+			<TD><a href="views/projects.asp" class="head">Log In</a></TD>
 			<TD>&nbsp; | &nbsp;</TD>
 			<TD><a href="admin/default.asp" class="head">Admin</a></TD>
 			<TD>&nbsp;</TD>

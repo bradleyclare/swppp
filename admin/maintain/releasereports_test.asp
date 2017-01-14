@@ -170,31 +170,32 @@ SQL3="SELECT oImageFileName FROM OptionalImages WHERE oitID=12 AND inspecID="& i
 SET RS3=connSWPPP.execute(SQL3)
 IF NOT(RS3.EOF) THEN
 	strBody=strBody &"<div align='center'><a href='http://www.swpppinspections.com/images/sitemap/"& TRIM(RS3("oImageFileName")) &"'>link for Site Map</a></div>"
-	'-- images portion -----------------------------------------------------------------------------------
-	imgSQLSELECT = "SELECT imageID, largeImage, smallImage, description FROM Images WHERE inspecID = " & inspecID
-	'--Response.Write("images?: "& imgSQLSELECT &"<br>")
-	Set rsImages = connSWPPP.execute(imgSQLSELECT)
-	strImages=""
-	If Not rsImages.EOF Then
-		strImages="<div class=indent30><table cellspacing=0 cellpadding=4 width='90%' border=0><tr>"
-		Do While Not rsImages.EOF
-			iDataRows = iDataRows + 1
-			If iDataRows > 3 Then
-				strImages=strImages &"</tr>"& VBCrLf &"<tr>"
-				iDataRows = 1
-			End If
-			strImages=strImages &"<td align=center><a href='"& "http://www.swpppinspections.com/images/lg/" & Trim(rsImages("largeImage")) &"' target='_blank'>"& Trim(rsImages("description")) &"<br>"
-			If Right(Trim(rsImages("smallImage")),3)="pdf" then
-				strImages=strImages &"<img src='http://www.swpppinspections.com/images/acrobat.gif' width=87 height=30 border=0 alt='Acrobat PDF Doc'>"
-			else
-				strImages=strImages &"<img src='"& "http://www.swpppinspections.com/images/sm/" & Trim(rsImages("smallImage")) &"' border=0	alt='"& Trim(rsImages("smallImage")) &"'>"
-			end if
-			strImages=strImages &"</a></td>"
-			rsImages.MoveNext
-		Loop
-	End If
-	strBody=strBody &"<br><div align='center'><a href='http://www.swppp.com'>link to: www.swppp.com</a></div></Body>"
 END IF
+
+'-- images portion -----------------------------------------------------------------------------------
+imgSQLSELECT = "SELECT imageID, largeImage, smallImage, description FROM Images WHERE inspecID = " & inspecID
+'--Response.Write("images?: "& imgSQLSELECT &"<br>")
+Set rsImages = connSWPPP.execute(imgSQLSELECT)
+strImages=""
+If Not rsImages.EOF Then
+	strImages="<div class=indent30><table cellspacing=0 cellpadding=4 width='90%' border=0><tr>"
+	Do While Not rsImages.EOF
+		iDataRows = iDataRows + 1
+		If iDataRows > 3 Then
+			strImages=strImages &"</tr>"& VBCrLf &"<tr>"
+			iDataRows = 1
+		End If
+		strImages=strImages &"<td align=center><a href='"& "http://www.swpppinspections.com/images/lg/" & Trim(rsImages("largeImage")) &"' target='_blank'>"& Trim(rsImages("description")) &"<br>"
+		If Right(Trim(rsImages("smallImage")),3)="pdf" then
+			strImages=strImages &"<img src='http://www.swpppinspections.com/images/acrobat.gif' width=87 height=30 border=0 alt='Acrobat PDF Doc'>"
+		else
+			strImages=strImages &"<img src='"& "http://www.swpppinspections.com/images/sm/" & Trim(rsImages("smallImage")) &"' border=0	alt='"& Trim(rsImages("smallImage")) &"'>"
+		end if
+		strImages=strImages &"</a></td>"
+		rsImages.MoveNext
+	Loop
+End If
+strBody=strBody &"<br><div align='center'><a href='http://www.swppp.com'>link to: www.swppp.com</a></div></Body>"
 
 rsCoord.Close
 Set rsCoord = Nothing

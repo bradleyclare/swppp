@@ -19,38 +19,11 @@ projectID = Request("pID")
 currentDate = date()
 
 If Request.Form.Count > 0 Then
-	update = 0
-	for n = 0 to 999 step 1
-		'Response.Write("coord:coID:" & CStr(n)&":"& Request("coord:coID:" & CStr(n)) &"<br/>")
-		if Trim(Request("coord:coID:" & CStr(n))) = "" then
-			exit for
-		end if
-        if Request("coord:complete:"& CStr(n)) = "on" then 
-			SQLc = "UPDATE Coordinates "& _
-			"SET status=1, completeDate='" & Request("coord:date:"& CStr(n))& "' " & _ 
-			"WHERE coID = " & Request("coord:coID:"& CStr(n)) & ";"
-			'Response.Write(SQLc)
-			connSWPPP.execute(SQLc)
-
-            'update completed item count
-            inspecID = Request("coord:inspecID:"& CStr(n))
-			SQL1 = "SELECT completedItems from Inspections WHERE inspecID = " & inspecID
-            Set RS1 = connSWPPP.Execute(SQL1)
-            if not RS1.EOF Then
-                completedItems = RS1("completedItems") + 1
-            Else
-                completedItems = 1
-            End If
-            inspectSQLUPDATE2 = "UPDATE Inspections SET" & _
-			" completedItems = " & completedItems & _
-			" WHERE inspecID = " & inspecID
-		    'response.Write(inspectSQLUPDATE2)
-		    connSWPPP.Execute(inspectSQLUPDATE2)
-		End If
-	next	
+	update = 1
     'check for comment
     commentNum = CInt(Request("commentIDNum"))
     if commentNum > -1 Then
+        update = 0
         coID    = Request("coord:coID:" & commentNum)
         comment = Request("commentBox")
         userID  = Session("userID")
@@ -60,6 +33,37 @@ If Request.Form.Count > 0 Then
         'response.Write(SQL3)
         Set RS3=connSWPPP.execute(SQL3)
     End If
+
+    'If update Then
+	    for n = 0 to 999 step 1
+		    'Response.Write("coord:coID:" & CStr(n)&":"& Request("coord:coID:" & CStr(n)) &"<br/>")
+		    if Trim(Request("coord:coID:" & CStr(n))) = "" then
+			    exit for
+		    end if
+            if Request("coord:complete:"& CStr(n)) = "on" then 
+			    SQLc = "UPDATE Coordinates "& _
+			    "SET status=1, completeDate='" & Request("coord:date:"& CStr(n))& "' " & _ 
+			    "WHERE coID = " & Request("coord:coID:"& CStr(n)) & ";"
+			    'Response.Write(SQLc)
+			    connSWPPP.execute(SQLc)
+
+                'update completed item count
+                inspecID = Request("coord:inspecID:"& CStr(n))
+			    SQL1 = "SELECT completedItems from Inspections WHERE inspecID = " & inspecID
+                Set RS1 = connSWPPP.Execute(SQL1)
+                if not RS1.EOF Then
+                    completedItems = RS1("completedItems") + 1
+                Else
+                    completedItems = 1
+                End If
+                inspectSQLUPDATE2 = "UPDATE Inspections SET" & _
+			    " completedItems = " & completedItems & _
+			    " WHERE inspecID = " & inspecID
+		        'response.Write(inspectSQLUPDATE2)
+		        connSWPPP.Execute(inspectSQLUPDATE2)
+		    End If
+	    next	
+    'End If
 End If
 
 SQL2="SELECT projectName, projectPhase FROM Projects WHERE projectID="& projectID
@@ -185,17 +189,17 @@ Set rsInspectInfo = connSWPPP.Execute(inspectInfoSQLSELECT)
     <center>
     <img src="../images/color_logo_report.jpg" width="300"><br><br>
     <font size="+1"><b>Open Items for<br/> (<%=projectID %>) <%= RS2("projectName") %>&nbsp;<%= RS2("projectPhase")%></b></font>
-    <hr noshade size="1" width="100%">
-    </center>
-    <center>
+    <br /><br />
     <table><tr>
     <td><input type="button" value="Check all Items" onclick="check_all_items(this)" /></td>
     <td><input type="button" value="Un-Check all Items" onclick="uncheck_all_items(this)" /></td>
     <td><input type="text" name="commonDate" class="datepicker" value="<%= currentDate %>" /></td>
     <td><input type="button" value="Apply Date to All" onclick="apply_date_to_all(this)" /></td>
     </tr></table>
-    </center>
+    <br/>
+    <a href="completedActionItems.asp?pID= <%=projectID%> &inspecID= <%=inspecID%>">see Completed Items</a>
     <br/><br/>
+    </center>
     <table cellpadding="2" cellspacing="0" border="0" width="100%">
 	    <tr><th width="5%" align="left">Complete</th>
             <th width="5%" align="left">Repeat</th>
@@ -212,6 +216,7 @@ Set rsInspectInfo = connSWPPP.Execute(inspectInfoSQLSELECT)
 	    Response.Write("<tr><td colspan='10' align='center'><i style='font-size: 15px'>There are no inspection reports found.</i></td></tr>")
     Else
         n = 0
+        cnt = 0
 	    Do While Not rsInspectInfo.EOF   
             inspecID = rsInspectInfo("inspecID")
             inspecDate = Trim(rsInspectInfo("inspecDate"))
@@ -245,6 +250,7 @@ Set rsInspectInfo = connSWPPP.Execute(inspectInfoSQLSELECT)
 		            If infoOnly = True Then
                        do_nothing = 1 
                     Elseif status = false Then 
+                        cnt = cnt + 1
                         commSQLSELECT = "SELECT comment, userID, date" &_
 	                    " FROM CoordinatesComments WHERE coID=" & coID	
                         Set rsComm = connSWPPP.execute(commSQLSELECT) %>
@@ -269,11 +275,11 @@ Set rsInspectInfo = connSWPPP.Execute(inspectInfoSQLSELECT)
 		                <% End If %>
 		                </td>
 		                <td><%= correctiveMods %></td>
-                        <td><input type="button" name="coord:note:<%= n %>" value="O" onclick="displayCommentWindow(this)"/></td>
+                        <td><input type="button" name="coord:note:<%= n %>" value="A" onclick="displayCommentWindow(this)"/></td>
                         <% If rsComm.EOF Then %>
                             <td></td>
                         <% Else %>
-                            <td><button><a href="viewOpenItemComments.asp?coID=<%=coID%>" target="_blank">O</a></button></td>
+                            <td><button><a href="viewOpenItemComments.asp?coID=<%=coID%>" target="_blank">V</a></button></td>
                         <% End If %>
 		                </tr>
                         <tr><td colspan="10"></td></tr>
@@ -290,9 +296,16 @@ Set rsInspectInfo = connSWPPP.Execute(inspectInfoSQLSELECT)
     End If%>
     </table>
     <center>
-    <input type="submit" value="Submit" />
-    <br/><br/>
-    <a href="completedActionItems.asp?pID= <%=projectID%> &inspecID= <%=inspecID%>">See Completed Actions Items</a>
+    <% If cnt = 0 Then %>
+        <h3>There are no open items at this time</h3>
+    <% End If %>
+    <input type="submit" value="Submit" /><br /><br />
+    <% SQL3="SELECT oImageFileName FROM OptionalImages WHERE oitID=12 AND inspecID="& inspecID
+    SET RS3=connSWPPP.execute(SQL3)
+    IF NOT(RS3.EOF) THEN 
+        sitemap_link = "http://www.swpppinspections.com/images/sitemap/"& TRIM(RS3("oImageFileName"))%>
+	    <a href='<%=sitemap_link%>'>link for Site Map</a>
+    <% END IF %>
     </center>
 </form>
 <br /><br />

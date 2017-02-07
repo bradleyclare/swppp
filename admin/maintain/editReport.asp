@@ -94,6 +94,7 @@ If Request.Form.Count > 0 Then
 			if Request("coord:status:"& CStr(n)) = "on" then 
 				Complete = 1 
 				completedItems = completedItems + 1
+                Response.Write("Done")
 			End If
 			Repeat = 0
 			if Request("coord:repeat:"& CStr(n)) = "on" then Repeat = 1 End If
@@ -353,9 +354,13 @@ baseDir = "D:\Inetpub\wwwroot\SWPPP\"%>
         var parts = obj.name.split(":");
         var num = parts[2];
 
+        var pos = getPosition(obj);
+
         //display the select div
         var s1 = document.getElementsByName("addressOptionsPopup");
         s1[0].className = "addressOptionsPopup show";
+        s1[0].style.top = pos.y;
+        s1[0].style.left = pos.x;
 
         //set the hidden div in the select div to remember what number we are modifying
         var s2 = document.getElementsByName("currentAddressNum");
@@ -396,6 +401,77 @@ baseDir = "D:\Inetpub\wwwroot\SWPPP\"%>
         //hide the select div
         var s0 = document.getElementsByName("addressOptionsPopup");
         s0[0].className = "addressOptionsPopup hide";
+    }
+
+    function getPosition(el) {
+        var xPos = 0;
+        var yPos = 0;
+ 
+        while (el) {
+            if (el.tagName == "BODY") {
+                // deal with browser quirks with body/window/document and page scroll
+                var xScroll = el.scrollLeft || document.documentElement.scrollLeft;
+                var yScroll = el.scrollTop || document.documentElement.scrollTop;
+ 
+                xPos += (el.offsetLeft - xScroll + el.clientLeft);
+                yPos += (el.offsetTop - yScroll + el.clientTop);
+            } else {
+                // for all other non-BODY elements
+                xPos += (el.offsetLeft - el.scrollLeft + el.clientLeft);
+                yPos += (el.offsetTop - el.scrollTop + el.clientTop);
+            }
+ 
+            el = el.offsetParent;
+        }
+        return {
+            x: xPos,
+            y: yPos
+        };
+    }
+
+    function displayCommonItemSelect(obj) {
+        var parts = obj.name.split(":");
+        var num = parts[2];
+
+        var pos = getPosition(obj);
+
+        //display the select div
+        var s1 = document.getElementsByName("commonItemsPopup");
+        s1[0].className = "commonItemsPopup show";
+        s1[0].style.top  = pos.y;
+        s1[0].style.left = pos.x;
+
+        //set the hidden div in the select div to remember what number we are modifying
+        var s2 = document.getElementsByName("commonItemsNum");
+        s2[0].value = num;
+    }
+
+    function setCommonItem(obj) {
+
+        //get number from hidden div
+        var s1 = document.getElementsByName("commonItemsNum");
+        var num = s1[0].value;
+
+        //get the dropdown options
+        var sl = document.getElementsByName("commonItemOptions");
+        var selectedItem = sl[0].value;
+
+        //set the hidden object to keep address name
+        var hiddenname2 = "coord:mods:" + num;
+        var s3 = document.getElementsByName(hiddenname2);
+        s3[0].value = selectedItem;
+
+        //hide the select div
+        var s0 = document.getElementsByName("commonItemsPopup");
+        s0[0].className = "commonItemsPopup hide";
+
+        sl[0].selectedIndex = 0;
+    }
+
+    function close_item_popup() {
+        //hide the select div
+        var s0 = document.getElementsByName("commonItemsPopup");
+        s0[0].className = "commonItemsPopup hide";
     }
 
 </script>
@@ -483,6 +559,7 @@ End If%>
 	<input id='includeItems-checkbox' type="checkbox" name="includeItems" />
 <% End If %>
 </td><td width="15%" align="left">Open Item Alert
+
 <% If rsReport("openItemAlert") = True Then %>
 	<input id='openItemAlert-checkbox' type="checkbox" name="openItemAlert" checked/>
 <% Else %>
@@ -503,6 +580,7 @@ addressName1 = ""
 <div class="addressOptionsPopup hide" name="addressOptionsPopup">
 <h3>Select Coordinates Here:</h3>
 <input type="hidden" name="currentAddressNum" value="1" />
+<input type="hidden" name="commonItemsNum" value="1" />
 <select name="locationOptions" onchange="setAddress(this)">
 <% if not rsAddress.EOF Then
     cnt = 0
@@ -536,6 +614,30 @@ End If %>
 <br /><br />
 <input type="button" onclick="close_popup()" value="Close Window" />
 </div>
+<% 
+itemSQLSELECT = "SELECT itemID, itemName FROM CommonItems ORDER BY itemName"
+'Response.Write(addressSQLSELECT)
+Set rsItems = connSWPPP.execute(itemSQLSELECT) 
+%>
+<div class="commonItemsPopup hide" name="commonItemsPopup">
+<h3>Select Common Item:</h3>
+<input type="hidden" name="commonItemNum" value="1" />
+<select name="commonItemOptions" onchange="setCommonItem(this)">
+<option value=""></option>
+<% if not rsItems.EOF Then
+    cnt = 0
+	Do While Not rsItems.EOF 
+        cnt = cnt + 1
+		item = TRIM(rsItems("itemName")) %>
+		<option value="<%=item%>"><%=item%></option>
+	<% rsItems.MoveNext
+	Loop 
+	rsItems.MoveFirst
+End If %>
+</select>
+<br /><br />
+<input type="button" onclick="close_item_popup()" value="Close Window" />
+</div>
 <center>
     Click "Repeat" on all items that you want the assign date to stay the same. All other items will be updated to the current date on SUBMIT.
     <table><tr>
@@ -567,7 +669,7 @@ End If %>
 		'Response.Write("ID: " & coID & ", Coord: " & coordinates & ", LocName: " & locationName & ", address: " & address & ", Mods: " & correctiveMods & "<br/>") 
 		%>
 	<input type="hidden" name="coord:coID:<%= n %>" value="<%= coID %>" />
-	<input type="hidden" name="coord:status:<%= n %>" value="<%= status %>" />
+	<!--<input type="hidden" name="coord:status:<%= n %>" value="<%= status %>" />-->
 	<input type="hidden" name="coord:completeDate:<%= n %>" value="" />
 	<tr><td>ID#</td>
 	<td><%= coID %></td>
@@ -607,8 +709,9 @@ End If %>
 	</td><td>Modifications:</td>
 	<td rowspan="3" colspan="2"><textarea name="coord:mods:<%= n %>" cols="100%" rows="5"><%= correctiveMods %></textarea></td></tr>
 	<tr><td>AssignDate</td>
-	<td><input class=datepicker type="text" name="coord:assignDate:<%= n %>" size="10" value="<%= assignDate %>" /></td></tr>
-	<tr><td>Info Only
+	<td><input class=datepicker type="text" name="coord:assignDate:<%= n %>" size="10" value="<%= assignDate %>" /></td>
+	<td><input type="button" onclick="displayCommonItemSelect(this)" name="coord:item:<%=n%>" value="Common Item" /></td></tr>
+    <tr><td>Info Only
 	<% If infoOnly = True Then %>
 		<input type="checkbox" name="coord:infoOnly:<%= n %>" checked/>
 	<% Else %>
@@ -619,7 +722,14 @@ End If %>
 		<input type="checkbox" name="coord:LD:<%= n %>" checked/>
 	<% Else %>
 		<input type="checkbox" name="coord:LD:<%= n %>" />
-	<% End If %></td></tr>
+	<% End If %></td>
+    <td> Status
+    <% If status = True Then %>
+        <input type="checkbox" name="coord:status:<%=n %>" checked />
+    <% Else %>
+        <input type="checkbox" name="coord:status:<%=n %>" />
+    <% End If %>
+    </td></tr>
 <%	IF existingBMP <> "-1" THEN %>
 	<tr>
 		<td align="right"><b>Existing BMP:</b></td>
@@ -637,7 +747,7 @@ Set rsCoord = Nothing %>
 	<input type="hidden" name="coord:coID:<%= m %>" value="0" />
 	<input type="hidden" name="coord:del:<%= m %>" value="0" />
 	<input type="hidden" name="coord:completeDate:<%= m %>" value="" />
-	<input type="hidden" name="coord:status:<%= m %>" value="0" />
+	<!--<input type="hidden" name="coord:status:<%= m %>" value="0" />-->
 	<input type="hidden" name="coord:repeat:<%= m %>" value="0" />
 	<tr><td>ID#</td>
 	<td>0</td>
@@ -656,7 +766,8 @@ Set rsCoord = Nothing %>
 	<td>Mods:</td>
 	<td rowspan="3" colspan="2"><textarea name="coord:mods:<%= m %>" cols="100%" rows="5"></textarea></td></tr>
 	<tr><td>AssignDate</td>
-	<td><input class=datepicker type="text" name="coord:assignDate:<%= m %>" size="10" value="" disabled /></td></tr>
+	<td><input class=datepicker type="text" name="coord:assignDate:<%= m %>" size="10" value="" disabled /></td>
+	<td><input type="button" onclick="displayCommonItemSelect(this)" name="coord:item:<%=m%>" value="Common Item" /></td></tr>
 	<tr><td>Info Only <input type="checkbox" name="coord:infoOnly:<%= m %>" /></td>
         <td>LD <input type="checkbox" name="coord:LD:<%= m %>" /></td></tr>
 	<tr><td colspan="5"><hr align="center" width="100%" size="1"></td></tr>

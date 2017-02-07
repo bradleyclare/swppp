@@ -1,0 +1,364 @@
+/*blue: #38939b
+red: #c70000*/
+
+body{
+	font-family: 'Bree Serif', serif;
+	background-image: url("../images/witewall_3.png");
+	padding-bottom: 0px;
+	font-size: 16px;
+}
+
+a:link, a:visited
+{
+    color: #c70000;
+    text-decoration: none;
+	font-weight: bold;
+} 
+
+a:active, a:hover
+{
+    text-decoration: underline;
+    cursor: pointer;
+}
+
+.fl {
+	float: left;
+}
+
+.fr{
+	float: right;
+	text-align: right;
+}
+
+h1{
+	font-size:4em;
+}
+
+h2{
+	font-size: 3.5em;
+}
+
+h3{
+	font-size: 3em;
+}
+
+h4{
+	font-size: 2em;
+}
+
+h5{
+	font-size: 1.5em;
+}
+
+h6{
+	font-size: 1.2em;
+}
+
+.col-lg-4 h2{
+	font-size: 2em;
+}
+
+table
+{	
+	margin: .5em;
+	border-collapse:collapse;
+}
+
+td{
+	padding: .25em .25em;
+	border: 1px solid #000;
+}
+
+.price_table
+{
+	font-size: 1.5em;
+	font-weight: bold;
+}
+
+.table_title
+{
+	font-size: 1.2em;
+	text-transform: uppercase;
+	font-weight: bold;
+	color: #223311;
+	border-bottom: 1px solid #516b32;
+}
+
+.table_alt
+{
+	background-color: #ffffff;
+}
+
+.cell_title
+{
+	font-weight: bold;
+}
+
+.desktop-only{
+	display: none;
+}
+.desktop-only-cell{
+	display: none;
+}
+.mobile-only{
+	display: block;
+}
+
+@media (min-width: 768px){
+	.desktop-only{
+		display: block;
+	}
+	.desktop-only-cell{
+		display: table-cell;
+	}
+	.mobile-only{
+		display: none;
+	}
+}
+
+.btn-primary {
+	background-color: #c70000;
+	border-color: #bdbe44;
+}
+
+.carousel-inner>.item>img, .carousel-inner>.item>a>img{
+	margin: 0 auto;
+}
+
+.login-container{
+	width: 100%;
+	background-color: #000;
+	background-image: url('../images/binding_dark.png');
+	margin-top: 60px;
+	height: 130px;
+	font-weight: bold;
+}
+
+@media (min-width: 768px){
+.login-container{
+	width: 100%;
+	background-color: #000;
+	background-image: url('../images/binding_dark.png');
+	margin-top: 60px;
+	height: 50px;
+	font-weight: bold;
+}
+}
+
+#login{
+	padding: 10px;
+	font-size: 20px;
+}
+
+.navbar-toggle{
+	background-color: #000;
+}
+
+.navbar-wrapper {
+	margin-top: 0px;
+	height: 60px;
+	background-image: url('../images/sheet_music_back_small.png');
+}
+
+.navbar-brand{
+	padding: 3px 3px;
+}
+
+.navbar-inverse {
+background-color: #fff;
+background-image: url('../images/sheet_music_back_small.png');
+border-color: #fff;
+height: 60px;
+}
+
+.navbar-inverse .navbar-collapse, .navbar-inverse .navbar-form {
+border-color: #fff;
+}
+
+.navbar-nav{
+	font-family: 'Medula One', Arial;
+font-size: 30px;
+line-height: 30px;
+}
+
+.nav>li{
+	background-image: url('../images/sheet_music_back_small.png');
+}
+
+.navbar-inverse .navbar-nav>li>a {
+	color: #000;
+}
+
+.nav>li>a {
+	position: relative;
+	display: block;
+	padding: 5px 5px;
+}
+
+@media (min-width: 767px){
+	.nav>li>a {
+		position: relative;
+		display: block;
+		padding: 20px 10px;
+	}
+}
+
+.dropdown-menu{
+	font-size: 22px;
+	background-image: url('../images/sheet_music_back_small.png');
+}
+
+.jumbotron {
+	padding-top: 10px;
+	padding-bottom: 20px;
+	background-color: #aaa;
+	text-align: center;
+}
+
+.navbar-inverse .navbar-nav>li>a:hover, .navbar-inverse .navbar-nav>li>a:focus {
+	color: #fff;
+	background-color: #c70000;
+}
+
+.featurette-divider {
+	margin: 20px 0;
+}
+
+.featurette-heading {
+	margin-top: 0px;
+	font-size: 3em;
+}
+
+.feature_title{
+	margin-top: 5px;
+}
+
+.theme-showcase{
+	padding-bottom: 0;
+}
+
+.about_pic{
+	float: left;
+	margin: 1% 1% 1% 0;
+	width: 50%;
+}
+
+.footer{
+	margin-top: 2em;
+	padding: 1em 0;
+	background-image: url("../images/vichy.png");
+	color: #000;
+}
+
+.centered-text{
+	text-align: center;
+}
+
+.jumbotron p{
+	font-size: 18px;
+}
+
+/* 
+Make the Facebook Like box responsive (fluid width)
+https://developers.facebook.com/docs/reference/plugins/like-box/ 
+*/
+
+/* 
+This element holds injected scripts inside iframes that in 
+some cases may stretch layouts. So, we're just hiding it. 
+*/
+
+#fb-root {
+    display: none;
+}
+
+/* To fill the container and nothing else */
+
+.fb_iframe_widget, .fb_iframe_widget span, .fb_iframe_widget span iframe[style] {
+    width: 100% !important;
+}
+
+/*Make youtube video scalable*/
+.auto-resizable-iframe {
+  max-width: 600px;
+  margin: 10px auto;
+}
+
+.auto-resizable-iframe > div {
+  position: relative;
+  padding-bottom: 75%;
+  height: 0px;
+}
+
+.auto-resizable-iframe iframe {
+  position: absolute;
+  top: 0px;
+  left: 0px;
+  width: 100%;
+  height: 100%;
+}
+
+.youtube_vid
+{
+	width: 150px;
+	height: 100px;
+	margin-right: 10px;
+	float: left;
+}
+
+.three_quarter_div{
+	width: 75%;
+}
+
+.on_sale
+{
+	border: 0px;
+	width: 30%;
+	height: 20%;
+	margin: 1%;
+}
+
+.on_sale_text
+{
+	color: #525252;
+	text-decoration: line-through;
+}
+
+.download_link{
+	font-weight: bold;
+	font-size: 110%;
+	padding: 5px;
+	margin: 5px;
+}
+
+blockquote {
+  background: #f9f9f9;
+  border-left: 10px solid #ccc;
+  margin: 1.5em 10px;
+  padding: 0.5em 10px;
+  quotes: "\201C""\201D""\2018""\2019";
+}
+blockquote:before {
+  color: #ccc;
+  content: open-quote;
+  font-size: 4em;
+  line-height: 0.1em;
+  margin-right: 0.25em;
+  vertical-align: -0.4em;
+}
+blockquote p {
+	display: inline;
+}
+blockquote span {
+	display: block;
+	font-style: italic;
+	margin: 10px 10px 0px 0px;
+}
+
+.ewd_cleaner 
+{ 
+    clear: both; 
+    width: 100%; 
+    height: 0px; 
+    font-size: 0px;  
+}

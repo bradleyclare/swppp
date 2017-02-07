@@ -16,7 +16,8 @@
       <a href="../maintain/releaseRepeatItems.asp" class="admin">Repeat Item Alert</a><br>
       <a href="../maintain/releaseOpenItems.asp" class="admin">Open Item Alert</a><br>
       <a href="../maintain/recentComments.asp" class="admin">Comments</a><br>
-      <a href="../maintain/manageGroups.asp" class="admin">Manage Groups</a><br><br>
+      <a href="../maintain/manageGroups.asp" class="admin">Manage Groups</a><br>
+      <a href="../maintain/manageCommonItems.asp" class="admin">Manage Items</a><br><br>
 		<% End If %>
 		<% If Session("validAdmin") then %>
 	      	<a href="../maintain/viewUsersAdmin.asp" class="admin">View Users</a><br>

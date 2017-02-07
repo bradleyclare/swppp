@@ -173,6 +173,7 @@
     <Content Include="admin\maintain\lostPassword.asp" />
     <Content Include="admin\maintain\lostPasswordUpdate1.asp" />
     <Content Include="admin\maintain\lostPasswordUpdate2.asp" />
+    <Content Include="admin\maintain\manageCommonItems.asp" />
     <Content Include="admin\maintain\manageGroups.asp" />
     <Content Include="admin\maintain\manage_addresses.asp" />
     <Content Include="admin\maintain\newReport.asp" />
@@ -182,6 +183,7 @@
     <Content Include="admin\maintain\recentComments.asp" />
     <Content Include="admin\maintain\releaseOpenItems.asp" />
     <Content Include="admin\maintain\releaseRepeatItems.asp" />
+    <Content Include="admin\maintain\releaseRepeatItems_test.asp" />
     <Content Include="admin\maintain\releasereports.asp" />
     <Content Include="admin\maintain\releaseReportsTGUpdated.asp" />
     <Content Include="admin\maintain\releaseReports_old.asp" />
@@ -221,6 +223,7 @@
     <Content Include="css\jquery-ui.theme.min.css" />
     <Content Include="dbtest.asp" />
     <Content Include="default.asp" />
+    <Content Include="default2.asp" />
     <Content Include="favicon.ico" />
     <Content Include="global.css" />
     <Content Include="googleb7764181805641c8.html" />

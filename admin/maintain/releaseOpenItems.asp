@@ -28,7 +28,7 @@ IF Request.Form.Count > 0 THEN %>
             strBody=""
             dbgBody=""
             userID = Request(Item)
-            SQLSELECT = "SELECT firstName, lastName, email FROM Users WHERE userID = " & userID
+            SQLSELECT = "SELECT firstName, lastName, email FROM Users WHERE userID = " & userID & " ORDER BY email"
             'Response.Write(SQLSELECT & "<br>")
             Set connUsers = connSWPPP.Execute(SQLSELECT) %>
         

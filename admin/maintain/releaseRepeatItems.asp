@@ -171,23 +171,27 @@ IF Request.Form.Count > 0 THEN %>
                 '--------this line of code is for testing the smtp server---------------------
 
                 '-- build the recipients list ------------------------------------------------
+                prev_email = ""
                 DO WHILE NOT RS1.EOF
+                    curRights = Trim(RS1("rights"))
+                    email     = Trim(RS1("email"))
+                    fullname  = Trim(RS1("fullname"))
+                    
                     userSQLSELECT = "SELECT userID, pswrd, rights, firstName, lastName, noImages, seeScoring, repeatItemAlerts" &_
 		                " FROM Users" & _
-		                " WHERE email = '" & Trim(RS1("email")) & "'"
+		                " WHERE seeScoring = 1 AND repeatItemAlerts = 1 AND email = '" & email & "'"
 	                ' Response.Write(userSQLSELECT & "<br>")
 	                Set connEmail = connSWPPP.execute(userSQLSELECT)
-                    If connEmail("seeScoring") and connEmail("repeatItemAlerts") Then
-		                curRights = Trim(RS1("rights"))
-                        If curRights = "user" then
-			                Mailer.AddRecipient Trim(RS1("fullName")), Trim(RS1("email"))
-                        ElseIf curRights = "email" then
-			                Mailer.AddRecipient Trim(RS1("fullName")), Trim(RS1("email"))
-                        ElseIf curRights = "ecc" then
-			                Mailer.AddRecipient Trim(RS1("fullName")), Trim(RS1("email"))
-                        ElseIf curRights = "bcc" then
-			                Mailer.AddRecipient Trim(RS1("fullName")), Trim(RS1("email"))
-			            End If
+                    
+                    If connEmail.EOF Then
+                        'skip user
+                    Else    
+                        If curRights = "user" or curRights = "email" or curRights = "ecc" or curRights = "bcc" then
+			                If prev_email <> email Then
+                                prev_email = email
+			                    Mailer.AddRecipient fullName, email
+			                End If
+                        End If
                     End If
 			        RS1.MoveNext
 		        LOOP

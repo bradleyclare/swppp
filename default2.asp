@@ -19,15 +19,12 @@ Set objFile = objFSO.OpenTextFile(base_path & "/static/about.txt")
 <html>
 <head>
 	<title>SWPPP INSPECTIONS</title>
-	<link rel="stylesheet" type="text/css" href="global.css">
-</head>
-<title>SWPPP INSPECTIONS : Home Page</title>
-    <link rel="stylesheet" type="text/css" href="css/bootstrap.min.css" />
-	<link rel="stylesheet" type="text/css" href="css/carousel.css" />
-	<link rel="stylesheet" type="text/css" href="css/my_bootstrap.css" />
+    <title>SWPPP INSPECTIONS : Home Page</title>
+    <link rel="stylesheet" type="text/css" href="./css/bootstrap.min.css" />
+	<link rel="stylesheet" type="text/css" href="./css/carousel.css" />
+	<link rel="stylesheet" type="text/css" href="./css/my_bootstrap.css" />
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
     <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
-    <link rel="stylesheet" type="text/css" href="global.css">
 </head>
 <body bgcolor="#FFFFFF" text="#000000">
     <div class="navbar-wrapper">
@@ -43,9 +40,9 @@ Set objFile = objFSO.OpenTextFile(base_path & "/static/about.txt")
                         </button>
                         <a class="navbar-brand" href="#">
                             <div class="mobile-only">
-                                <img src="./images/logo_top_white_small.png" /></div>
+                                <img src="./images/LogoOnly.jpg" /></div>
                             <div class="desktop-only">
-                                <img src="./images/logo_top_white.png" /></div>
+                                <img src="./images/LogoFull.jpg" /></div>
                         </a>
                     </div>
                     <div class="navbar-collapse collapse">
@@ -59,12 +56,10 @@ Set objFile = objFSO.OpenTextFile(base_path & "/static/about.txt")
             </div>
         </div>
     </div>
-    <div class='well'>
-        <h1>SWPPP INSPECTIONS, INC.</h1>
-    </div>
+    <div class="top-spacer"></div>
     <div class='well'>
         <div class='row featurette'>
-            <div class='col-md-5'>
+            <div class='col-md-6'>
                 <h3>WHO WE ARE:</h3>
                 <p>We specialize in compliance with the Texas Commission on Environmental Quality's 
                     (TCEQ) Permit TXR150000 and the Oklahoma Department of Environmental Quality's 
@@ -73,7 +68,7 @@ Set objFile = objFSO.OpenTextFile(base_path & "/static/about.txt")
                     homebuilders, general contractors, and other construction related subcontractors 
                     (including dirt, utility, paving, and erosion and sediment control companies).</p>
             </div>
-            <div class='col-md-5'>
+            <div class='col-md-6'>
                 <h3>SERVICES:</h3>
                 <ul>
                     <li>Storm Water Pollution Prevention Plan design or SWPPP, SWP3, SW3P design</li>
@@ -88,9 +83,9 @@ Set objFile = objFSO.OpenTextFile(base_path & "/static/about.txt")
             </div>
         </div>
     </div>
+    <center><img src="./images/swppplogo.jpg" alt="swppp inspections" width="50%"/></center>
     <div class='well'>
-        <h2>To request a proposal or receive more information, contact us today.</h2>
-        <center><strong>
+        <center><strong><h2>To request a proposal or receive more information, contact us today.</h2>
         SWPPP INSPECTIONS, INC.<br>
         PO Box 496987<br>
         Garland, TX 75049<br>

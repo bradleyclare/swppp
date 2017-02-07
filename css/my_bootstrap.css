@@ -30,30 +30,6 @@ a:active, a:hover
 	text-align: right;
 }
 
-h1{
-	font-size:4em;
-}
-
-h2{
-	font-size: 3.5em;
-}
-
-h3{
-	font-size: 3em;
-}
-
-h4{
-	font-size: 2em;
-}
-
-h5{
-	font-size: 1.5em;
-}
-
-h6{
-	font-size: 1.2em;
-}
-
 .col-lg-4 h2{
 	font-size: 2em;
 }
@@ -157,7 +133,6 @@ td{
 .navbar-wrapper {
 	margin-top: 0px;
 	height: 60px;
-	background-image: url('../images/sheet_music_back_small.png');
 }
 
 .navbar-brand{
@@ -177,8 +152,8 @@ border-color: #fff;
 
 .navbar-nav{
 	font-family: 'Medula One', Arial;
-font-size: 30px;
-line-height: 30px;
+    font-size: 20px;
+    line-height: 20px;
 }
 
 .nav>li{
@@ -201,6 +176,10 @@ line-height: 30px;
 		display: block;
 		padding: 20px 10px;
 	}
+}
+
+.top-spacer{
+    margin: 65px 0;
 }
 
 .dropdown-menu{

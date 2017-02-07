@@ -218,9 +218,15 @@
     <Content Include="b&amp;wlogoforreport2.jpg" />
     <Content Include="b&amp;wlogoforreport_new.jpg" />
     <Content Include="bwlogoforreport.jpg" />
+    <Content Include="css\bootstrap-theme.css" />
+    <Content Include="css\bootstrap-theme.min.css" />
+    <Content Include="css\bootstrap.css" />
+    <Content Include="css\bootstrap.min.css" />
+    <Content Include="css\carousel.css" />
     <Content Include="css\jquery-ui.min.css" />
     <Content Include="css\jquery-ui.structure.min.css" />
     <Content Include="css\jquery-ui.theme.min.css" />
+    <Content Include="css\my_bootstrap.css" />
     <Content Include="dbtest.asp" />
     <Content Include="default.asp" />
     <Content Include="default2.asp" />
@@ -326,6 +332,8 @@
     <Content Include="admin\maintain\archiveCreateDefault.inc" />
     <Content Include="admin\maintain\archiveCreateFullReport.inc" />
     <Content Include="admin\maintain\archiveCreateReportsHTML.inc" />
+    <Content Include="css\bootstrap-theme.css.map" />
+    <Content Include="css\bootstrap.css.map" />
     <None Include="My Project\Application.myapp">
       <Generator>MyApplicationCodeGenerator</Generator>
       <LastGenOutput>Application.Designer.vb</LastGenOutput>

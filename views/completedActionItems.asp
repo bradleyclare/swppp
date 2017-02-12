@@ -102,6 +102,9 @@ Else
             currentDate = date()
             start_n = n
 	        Do While Not rsCoord.EOF	
+                If n = 0 Then
+                    siteMapInspecID = inspecID
+                End If
 	            coID = rsCoord("coID")
 		        correctiveMods = Trim(rsCoord("correctiveMods"))
 		        coordinates = Trim(rsCoord("coordinates"))
@@ -164,7 +167,7 @@ End If%>
 </table>
 <center>
     <input type="submit" value="Submit"/><br/><br/>
-<% SQL3="SELECT oImageFileName FROM OptionalImages WHERE oitID=12 AND inspecID="& inspecID
+<% SQL3="SELECT oImageFileName FROM OptionalImages WHERE oitID=12 AND inspecID="& siteMapInspecID
     SET RS3=connSWPPP.execute(SQL3)
     IF NOT(RS3.EOF) THEN 
         sitemap_link = "http://www.swpppinspections.com/images/sitemap/"& TRIM(RS3("oImageFileName"))%>

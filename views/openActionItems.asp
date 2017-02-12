@@ -251,6 +251,9 @@ Set rsInspectInfo = connSWPPP.Execute(inspectInfoSQLSELECT)
                        do_nothing = 1 
                     Elseif status = false Then 
                         cnt = cnt + 1
+                        If cnt = 1 Then
+                            siteMapInspecID = inspecID
+                        End If
                         commSQLSELECT = "SELECT comment, userID, date" &_
 	                    " FROM CoordinatesComments WHERE coID=" & coID	
                         Set rsComm = connSWPPP.execute(commSQLSELECT) %>
@@ -300,7 +303,7 @@ Set rsInspectInfo = connSWPPP.Execute(inspectInfoSQLSELECT)
         <h3>There are no open items at this time</h3>
     <% End If %>
     <input type="submit" value="Submit" /><br /><br />
-    <% SQL3="SELECT oImageFileName FROM OptionalImages WHERE oitID=12 AND inspecID="& inspecID
+    <% SQL3="SELECT oImageFileName FROM OptionalImages WHERE oitID=12 AND inspecID="& siteMapInspecID
     SET RS3=connSWPPP.execute(SQL3)
     IF NOT(RS3.EOF) THEN 
         sitemap_link = "http://www.swpppinspections.com/images/sitemap/"& TRIM(RS3("oImageFileName"))%>

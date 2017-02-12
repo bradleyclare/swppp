@@ -95,9 +95,6 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="packages.config" />
-    <Content Include="ApplicationInsights.config">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
     <Content Include="css\bootstrap-theme.css.map" />
     <Content Include="css\bootstrap.css.map" />
     <Content Include="static\about.txt_rest" />
@@ -226,7 +223,6 @@
     <Content Include="css\my_bootstrap.css" />
     <Content Include="dbtest.asp" />
     <Content Include="default.asp" />
-    <Content Include="default2.asp" />
     <Content Include="favicon.ico" />
     <Content Include="global.css" />
     <Content Include="googleb7764181805641c8.html" />

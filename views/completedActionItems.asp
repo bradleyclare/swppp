@@ -90,6 +90,7 @@ Set rsInspectInfo = connSWPPP.Execute(inspectInfoSQLSELECT)
 	Response.Write("<tr><td colspan='4' align='center'><i style='font-size: 15px'>There are no inspection reports found.</i></td></tr>")
 Else
     n = 0
+    siteMapInspecID = 0
 	Do While Not rsInspectInfo.EOF   
         inspecID = rsInspectInfo("inspecID")
         inspecDate = Trim(rsInspectInfo("inspecDate"))

@@ -58,7 +58,7 @@ IF Request.Form.Count > 0 THEN %>
             Set connProjUsers = connSWPPP.Execute(SQLSELECT)
 
             strBody=strBody & "<table>"
-            strBody=strBody & "<tr><th>project name</th><th>group name</th><th>over 2 days</th><th>over 6 days</th><th>over 7 days</th><th>over 10 days</th><th>over 14 days</th></tr>"
+            strBody=strBody & "<tr><th>project name</th><th>group name</th><th>over 2 days</th><th>over 6 days</th><th>over 7 days</th><th>over 10 days</th><th>over 14 days</th><th></th></tr>"
 
             'tally up the open items for each project
             'Loop through all projects the user has connection with
@@ -97,6 +97,7 @@ IF Request.Form.Count > 0 THEN %>
                 coordCntLD10 = 0
                 coordCntLD14 = 0
                 displayProj = False
+                displayComments = False
                                        
                 If RS0.EOF Then
 		            dbgBody=dbgBody & "No Open Items Found<br/>"
@@ -187,6 +188,15 @@ IF Request.Form.Count > 0 THEN %>
                                         coordCntLD2 = coordCntLD2 + 1
                                     End If
                                 End If
+
+                                'check for comments
+                                commSQLSELECT = "SELECT comment, userID, date" &_
+	                                " FROM CoordinatesComments WHERE coID=" & coID	
+                                Set rsComm = connSWPPP.execute(commSQLSELECT)                
+                                if not rsComm.EOF Then
+                                    displayComments = True
+                                End If                
+
                                 rsCoord.MoveNext
                             LOOP
                             rsCoord.Close
@@ -239,6 +249,10 @@ IF Request.Form.Count > 0 THEN %>
                         If coordCntLD14 > 0 Then
                             strBody=strBody & " (" & coordCntLD14 & " LD)"
                         End If 
+                    End If
+                    strBody=strBody & "</td><td>"
+                    if displayComments Then
+                        strBody=strBody & "<a href='http://swppp.com/views/viewComments.asp?pID=" & projID &"'>Comments</a>"
                     End If
                     strBody=strBody & "</td></tr>"
 		        End If

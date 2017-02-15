@@ -108,6 +108,7 @@ Set connSWPPP = Nothing %>
     <li><a href="actionReport.asp?pID=<%= projectID%>" target="_blank">View Actions Taken</a></li>
     <li><a href="openActionItems.asp?pID=<%= projectID%>" target="_blank">Open Items</a></li>
     <li><a href="completedActionItems.asp?pID=<%= projectID%>" target="_blank">Completed Items</a></li>
+    <li><a href="viewComments.asp?pID=<%=projectID %>" target="_blank">View Item Comments</a></li>
 <% Else
     If includeItemsFlag Then
         If Session("seeScoring") Then %>

@@ -217,6 +217,7 @@ Set rsInspectInfo = connSWPPP.Execute(inspectInfoSQLSELECT)
     Else
         n = 0
         cnt = 0
+        siteMapInspecID = 0
 	    Do While Not rsInspectInfo.EOF   
             inspecID = rsInspectInfo("inspecID")
             inspecDate = Trim(rsInspectInfo("inspecDate"))

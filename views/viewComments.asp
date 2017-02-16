@@ -29,13 +29,13 @@ Set RS2=connSWPPP.execute(SQL2) %>
 <body>
 <center>
     <img src="../images/color_logo_report.jpg" width="300"><br><br>
-    <font size="+1"><b>Project Comments for<br/> (<%=projectID %>) <%= RS2("projectName") %>&nbsp;<%= RS2("projectPhase")%></b></font>
+    <font size="+1"><b>Project Notes for<br/> (<%=projectID %>) <%= RS2("projectName") %>&nbsp;<%= RS2("projectPhase")%></b></font>
     <br /><br />
 </center>
 <table>
     <tr>
         <th width="5%">Date</th>
-        <th width="25%">Comment</th>
+        <th width="25%">Note</th>
         <th width="10%">User</th>
         <th width="15%">Project Name</th>
         <th width="25%">Item</th>
@@ -124,20 +124,20 @@ Set RS2=connSWPPP.execute(SQL2) %>
                                 </tr>
                             <% rsComm.MoveNext
                             LOOP 
+                            rsComm.Close
+                            SET rsComm=nothing
                         End If
                     End If 'end status
                 rsCoord.MoveNext
                 LOOP
+                rsCoord.Close
+                SET rsCoord=nothing
             End If 'end include items
         rsInspectInfo.MoveNext
         LOOP
     End If 'end rsInspectInfo
     rsInspectInfo.Close
     SET rsInspectInfo=nothing
-    rsCoord.Close
-    SET rsCoord=nothing
-    rsComm.Close
-    SET rsComm=nothing
     connSWPPP.Close
     Set connSWPPP = Nothing %>
 </table>

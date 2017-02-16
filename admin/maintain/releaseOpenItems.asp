@@ -58,7 +58,7 @@ IF Request.Form.Count > 0 THEN %>
             Set connProjUsers = connSWPPP.Execute(SQLSELECT)
 
             strBody=strBody & "<table>"
-            strBody=strBody & "<tr><th>project name</th><th>group name</th><th>over 2 days</th><th>over 6 days</th><th>over 7 days</th><th>over 10 days</th><th>over 14 days</th><th></th></tr>"
+            strBody=strBody & "<tr><th>project name</th><th>group name</th><th>over 2 days</th><th>over 6 days</th><th>over 7 days</th><th>over 10 days</th><th>over 14 days</th><th>notes</th></tr>"
 
             'tally up the open items for each project
             'Loop through all projects the user has connection with
@@ -252,7 +252,7 @@ IF Request.Form.Count > 0 THEN %>
                     End If
                     strBody=strBody & "</td><td>"
                     if displayComments Then
-                        strBody=strBody & "<a href='http://swppp.com/views/viewComments.asp?pID=" & projID &"'>Comments</a>"
+                        strBody=strBody & "<a href='http://swppp.com/views/viewComments.asp?pID=" & projID &"'> N </a>"
                     End If
                     strBody=strBody & "</td></tr>"
 		        End If

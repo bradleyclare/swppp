@@ -31,9 +31,9 @@ Set rsComm = connSWPPP.execute(commSQLSELECT) %>
 </head>
 <!-- #include file="../adminHeader2.inc" -->
 
-<h1>Recent Comments</h1>
+<h1>Recent Notes</h1>
 <% If rsComm.EOF Then %>
-    <h3>No comments from those dates</h3>
+    <h3>No notes from those dates</h3>
 <% Else %>
     <form id="theForm" method="post" action="<%=Request.ServerVariables("script_name")%>?inspecID=<%=inspecID%>" onsubmit="return isReady(this)";>
         Start Date (MM/DD/YYYY): <input name="startDate" type="text" value="<%=startDate%>" size="8" />  
@@ -43,7 +43,7 @@ Set rsComm = connSWPPP.execute(commSQLSELECT) %>
     <table>
         <tr>
             <th width="5%">Date</th>
-            <th width="25%">Comment</th>
+            <th width="25%">Note</th>
             <th width="10%">User</th>
             <th width="15%">Project Name</th>
             <th width="25%">Item</th>

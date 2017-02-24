@@ -5,8 +5,14 @@ If Not Session("validAdmin") and not Session("validDirector") Then
 	Response.Redirect("loginUser.asp")
 End If
 
-groupID = Request("ID")
 del     = Request("del") 
+groupName = "unknown"
+
+if len(Request.QueryString("ID")) > 0 Then
+    groupID = Trim(Request("ID"))
+Else
+    groupID = 1
+End If
 
 %> <!-- #include file="../connSWPPP.asp" --> <%
 
@@ -39,40 +45,76 @@ recCount = 0
 <html>
 <head>
 	<title>SWPPP INSPECTIONS : Admin : Manage Groups</title>
-	<link rel="stylesheet" href="../../global.css" type="text/css">
+	<link rel="Stylesheet" href="../../global.css" type="text/css" />
 </head>
 <!-- #include file="../adminHeader2.inc" -->
 
 <h1>Manage Groups</h1>
-<form id="theForm" method="post" action="<%=Request.ServerVariables("script_name")%>" onsubmit="return isReady(this)";>
-    <input type="text" value="" name="newGroupName" />
-    <input type="submit" value="Add New Group" name="submit" />
-</form>
-<table width="50%" border="0">
-	<tr><th width="10%"><b>GroupID</b></th>
-		<th width="80%"><b>GroupName</b></th>
-		<th width="10%"><b>Delete</b></th></tr>
-    <% If connGroups.EOF Then
-		Response.Write("<tr><td colspan='3' align='center'><b><i>There are currently no groups.</i></b></td></tr>")
-	Else
-		altColors="#ffffff"
+<table width="90%">
+    <tr>
+        <td width="40%" valign="top">
+            <form id="theForm" method="post" action="<%=Request.ServerVariables("script_name")%>" onsubmit="return isReady(this)";>
+                <input type="text" value="" name="newGroupName" />
+                <input type="submit" value="Add New Group" name="submit" />
+            </form>
+            <table>
+	            <tr><th width="10%"><b>GroupID</b></th>
+		            <th width="80%"><b>GroupName</b></th>
+		            <th width="10%"><b>Delete</b></th></tr>
+                <% If connGroups.EOF Then
+		            Response.Write("<tr><td colspan='3' align='center'><b><i>There are currently no groups.</i></b></td></tr>")
+	            Else
+		            altColors="#ffffff"
 		
-		Do While Not connGroups.EOF
-			recCount = recCount + 1 %>
-	        <tr align="center" bgcolor="<%= altColors %>"> 
-		        <td><%= connGroups("groupID") %></td>
-		        <td><%= Trim(connGroups("groupName")) %></td>
-		        <td><a href="manageGroups.asp?ID=<%= connGroups("groupID") %>&del=1">delete</a></td></tr>
-            <% If altColors = "#e5e6e8" Then altColors = "#ffffff" Else altColors = "#e5e6e8" End If
-			connGroups.MoveNext
-		Loop
-	End If ' END No Results Found
+		            Do While Not connGroups.EOF
+			            recCount = recCount + 1 %>
+	                    <tr bgcolor="<%= altColors %>"> 
+		                    <td><%= connGroups("groupID") %></td>
+		                    <td><a href="manageGroups.asp?ID=<%= connGroups("groupID") %>"><%= Trim(connGroups("groupName")) %></a></td>
+		                    <td><a href="manageGroups.asp?ID=<%= connGroups("groupID") %>&del=1">delete</a></td></tr>
+                        <% If altColors = "#e5e6e8" Then altColors = "#ffffff" Else altColors = "#e5e6e8" End If
+			            If groupID = Trim(connGroups("groupID")) Then groupName = Trim(connGroups("groupName")) End If
+                        connGroups.MoveNext
+		            Loop
+	            End If ' END No Results Found
+                %>
+            </table>
+        </td>
+        <td width="40%" valign="top">
+            <% SQL0 = "SELECT DISTINCT projectID, projectName, projectPhase, groupName FROM Inspections" & _
+                    " WHERE groupName = '" & groupName & "'" & _
+                    " ORDER BY projectName"
+            'Response.Write(SQL0)
+            Set RS0 = connSWPPP.Execute(SQL0) %>
+            <h3>Projects in Group [<%=groupName%>]</h3>
+            <% If RS0.EOF Then %>
+                <h5>No projects assigned to group.</h5>
+            <% Else %>
+            <table>
+	            <tr><th width="10%"><b>ProjectID</b></th>
+		            <th width="90%"><b>ProjectName</b></th></tr>
+                <% Do While Not RS0.EOF %>
+                    <tr>
+                        <td><%=RS0("projectID") %></td>
+                        <td><%=RS0("projectName") %> <%=RS0("projectPhase") %></td>
+                    </tr>
+                <% RS0.MoveNext
+                Loop 
+            End If %>
+            </table>
+        </td>
+    </tr>
+</table>
+</body>
+</html>
+
+<%
+RS0.Close
+Set RS0 = Nothing
+
 connGroups.Close
 Set connGroups = Nothing
 
 connSWPPP.Close
 Set connSWPPP = Nothing
 %>
-</table>
-</body>
-</html>

@@ -94,7 +94,6 @@ If Request.Form.Count > 0 Then
 			if Request("coord:status:"& CStr(n)) = "on" then 
 				Complete = 1 
 				completedItems = completedItems + 1
-                Response.Write("Done")
 			End If
 			Repeat = 0
 			if Request("coord:repeat:"& CStr(n)) = "on" then Repeat = 1 End If

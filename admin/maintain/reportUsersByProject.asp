@@ -1,4 +1,4 @@
-<%@ Language="VBScript" %>
+<%Response.Buffer = False%>
 <%
 If Not Session("validAdmin") AND not Session("validDirector") Then
 	Session("adminReturnTo") = Request.ServerVariables("path_info")

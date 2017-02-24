@@ -45,12 +45,16 @@ If Request.Form.Count > 0 Then
 	SET connProjID=nothing
 	SQLa=""
 	SQLb=""
+    includeItems = 0
+    if Request("includeItems") = "on" then includeItems = 1 End If
+	openItemAlert = 0
+	if Request("openItemAlert") = "on" then openItemAlert = 1 End If	
 	inspectSQLINSERT = "INSERT INTO Inspections (" & _
 		"inspecDate, projectName, projectPhase, projectAddr, projectCity, projectState, projectZip, " & _
 		"projectCounty, onsiteContact, officePhone, emergencyPhone, projectID, " & _
 		"reportType, inches, bmpsInPlace, sediment, userID, compName, compAddr, " & _
 		"compAddr2, compCity, compState, compZip, compPhone, compContact, " & _
-		"contactPhone, contactFax, contactEmail, groupName" & _
+		"contactPhone, contactFax, contactEmail, groupName, includeItems, openItemAlert" & _
 		") VALUES (" & _
 		"'" & strQuoteReplace(Request("inspecDate")) & "'" & _
 		", '" & strQuoteReplace(Request("projectName")) & "'" & _
@@ -81,6 +85,8 @@ If Request.Form.Count > 0 Then
 		", '" & strQuoteReplace(Request("contactFax")) & "'" & _
 		", '" & strQuoteReplace(Request("contactEmail")) & "'" & _
         ", '" & strQuoteReplace(Request("groupName")) & "'" & _
+        ", '" & includeItems & "'" & _
+        ", '" & openItemAlert & "'" & _
 		")"
 		
 	Response.Write(inspectSQLINSERT & "<br><br>")
@@ -360,12 +366,23 @@ function swapOption(t1, t2, slideDir) {
 			<td colspan="2"><img src="../../images/dot.gif" width="5" height="5"></td>
 		</tr>
 		<tr> 
-			<td colspan="2"><hr align="center" width="95%" size="1"></td>
-		</tr>
-		<tr> 
 			<td colspan="2"><img src="../../images/dot.gif" width="5" height="5"></td>
 		</tr>
 </Table>
+<br />
+<table width="90%">
+<tr>
+<td width="25%"></td>
+<td width="25%" align="left">Apply Scoring to Report
+	<input id='includeItems-checkbox' type="checkbox" name="includeItems" checked />
+</td>
+<td width="25%" align="left">Open Item Alert
+	<input id='openItemAlert-checkbox' type="checkbox" name="openItemAlert" checked />
+</td>
+<td width="25%"></td>
+</tr>
+</table>
+<br />
 <!-- Type of Report? Weekly, Storm, Complaint, ? -->
 <table width="90%" border="0" align="center" cellpadding="1" cellspacing="0">		
 		<tr> 

@@ -30,8 +30,11 @@ If Request.Form.Count > 0 Then
 	Else
 		IF IsNull(Request("qualifications")) THEN Request("qualifications")="" END IF
 		trimmedQualifications=REPLACE(Request("qualifications"),"'","#@#")
+        if Request("seeScoring") = "on" then seeScoring = 1 Else seeScoring = 0 End If
+        if Request("openItemAlerts") = "on" then openItemAlerts = 1 Else openItemAlerts = 0 End If
+        if Request("repeatItemAlerts") = "on" then repeatItemAlerts = 1 Else repeatItemAlerts = 0 End If
 		userSQLINSERT = "INSERT INTO Users (firstName, lastName, email" & _
-			", pswrd, dateEntered, signature, noImages, rights, qualifications" & _
+			", pswrd, dateEntered, signature, noImages, rights, qualifications, seeScoring, openItemAlerts, repeatItemAlerts" & _
 			") VALUES (" & _
 			"'" & titleCase(Request("firstName")) & "'" & _
 			", '" & titleCase(Request("lastName")) & "'" & _
@@ -42,6 +45,9 @@ If Request.Form.Count > 0 Then
 			", '" & Request("noImages") & "'" & _
 			", 'user'" & _
 			", '" & trimmedQualifications & "'" & _
+            ", '" & seeScoring & "'" & _
+            ", '" & openItemAlerts & "'" & _
+            ", '" & repeatItemAlerts & "'" & _
 			")"
 			
 'Response.Write(userSQLINSERT & "<br>")
@@ -167,6 +173,15 @@ End If %>
 		<tr><td align="right">View Images:</td>
 			<td><input type="radio" name="noImages" value="0"<% IF noImages=0 THEN %> checked<% END IF%>>Yes
 				<input type="radio" name="noImages" value="1"<% IF noImages=1 THEN %> checked<% END IF%>>No</td></tr>
+        <tr><td align="right">See Scoring:</td>
+            <td><input type="checkbox" name="seeScoring" checked /></td>
+		</tr>
+        <tr><td align="right">Receive Open Item Alerts:</td>
+            <td><input type="checkbox" name="openItemAlerts" checked /></td>
+		</tr>
+        <tr><td align="right">Receive Repeat Item Alerts:</td>
+            <td><input type="checkbox" name="repeatItemAlerts" checked /></td>
+		</tr>
 <% If Session("validAdmin") then '-- only admin may set inspectors signature files and qualifications %>
 		<tr><td align="right">Signature File:</td>
 			<td><select name="signature">

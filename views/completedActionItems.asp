@@ -137,11 +137,11 @@ Else
                 <% Else %>
                     <td align="left"><input type="checkbox" name="coord:complete:<%= n %>" checked /></td>
                 <% End If %>
+                <td align="left">
                 <% If repeat = True Then %>
-			        <td align="left"><input type="checkbox" name="coord:repeat:<%= n %>" disabled checked/></td>
-		        <% Else %>
-			        <td align="left"><input type="checkbox" name="coord:repeat:<%= n %>" disabled /></td>
+			        R
 		        <% End If %>
+                </td>
 		        <td align="left"><%= coID %></td>
 		        <td align="left"><%= completeDate %></td>
 		        <td><%= inspecDate %></td>

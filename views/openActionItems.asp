@@ -262,11 +262,11 @@ Set rsInspectInfo = connSWPPP.Execute(inspectInfoSQLSELECT)
                         <input type="hidden" name="coord:inspecID:<%= n %>" value="<%= inspecID %>" />
 		                <tr>
 		                <td align="left"><input type="checkbox" name="coord:complete:<%= n %>" /></td>
-		                <% If repeat = True Then %>
-			                <td align="left"><input type="checkbox" name="coord:repeat:<%= n %>" disabled checked/></td>
-		                <% Else %>
-			                <td align="left"><input type="checkbox" name="coord:repeat:<%= n %>" disabled /></td>
+		                <td align="left">
+                        <% If repeat = True Then %>
+			                R
 		                <% End If %>
+                        </td>
 		                <td align="left"><%= coID %></td>
 		                <td align="left"><input class="datepicker" type="text" name="coord:date:<%= n %>" value="<%= currentDate %>"/></td>
 		                <td><%= age %> days</td>

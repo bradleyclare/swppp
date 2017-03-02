@@ -111,6 +111,8 @@ If Request.Form.Count > 0 Then
             End If
             LD = 0
             if Request("coord:LD:"& CStr(n)) = "on" then LD = 1 End If
+            NLN = 0
+            if Request("coord:NLN:"& CStr(n)) = "on" then NLN = 1 End If
 			AssignDate = inspecDate
             if Repeat = 1 Then
 		    	AssignDate = Request("coord:assignDate:"& CStr(n))
@@ -133,7 +135,8 @@ If Request.Form.Count > 0 Then
 			address &"', '" & _
 			locationName &"', " & _
             infoOnly &", " & _
-            LD &";"
+            LD &", " & _
+            NLN &";"
 		next	
     'Response.Write(SQLc)
         if Len(SQLc) > 0 then connSWPPP.execute(SQLc) end if
@@ -565,7 +568,7 @@ End If%>
 	<input id='openItemAlert-checkbox' type="checkbox" name="openItemAlert" />
 <% End If %>
 </td></tr></table><br/>
-<% coordSQLSELECT = "SELECT coID, coordinates, existingBMP, correctiveMods, orderby, assignDate, completeDate, status, repeat, useAddress, address, locationName, infoOnly, LD" &_
+<% coordSQLSELECT = "SELECT coID, coordinates, existingBMP, correctiveMods, orderby, assignDate, completeDate, status, repeat, useAddress, address, locationName, infoOnly, LD, NLN" &_
 	" FROM Coordinates WHERE inspecID=" & inspecID & " ORDER BY orderby"	
 'Response.Write(coordSQLSELECT)
 Set rsCoord = connSWPPP.execute(coordSQLSELECT)
@@ -665,6 +668,7 @@ End If %>
 		locationName = TRIM(rsCoord("locationName"))
         infoOnly = rsCoord("infoOnly")
         LD = rsCoord("LD")
+        NLN = rsCoord("NLN")
 		'Response.Write("ID: " & coID & ", Coord: " & coordinates & ", LocName: " & locationName & ", address: " & address & ", Mods: " & correctiveMods & "<br/>") 
 		%>
 	<input type="hidden" name="coord:coID:<%= n %>" value="<%= coID %>" />
@@ -721,7 +725,14 @@ End If %>
 		<input type="checkbox" name="coord:LD:<%= n %>" checked/>
 	<% Else %>
 		<input type="checkbox" name="coord:LD:<%= n %>" />
-	<% End If %></td>
+	<% End If %>
+    NLN
+	<% If NLN = True Then %>
+		<input type="checkbox" name="coord:NLN:<%= n %>" checked/>
+	<% Else %>
+		<input type="checkbox" name="coord:NLN:<%= n %>" />
+	<% End If %>
+    </td>
     <td> Status
     <% If status = True Then %>
         <input type="checkbox" name="coord:status:<%=n %>" checked />
@@ -768,7 +779,7 @@ Set rsCoord = Nothing %>
 	<td><input class=datepicker type="text" name="coord:assignDate:<%= m %>" size="10" value="" disabled /></td>
 	<td><input type="button" onclick="displayCommonItemSelect(this)" name="coord:item:<%=m%>" value="Common Item" /></td></tr>
 	<tr><td>Info Only <input type="checkbox" name="coord:infoOnly:<%= m %>" /></td>
-        <td>LD <input type="checkbox" name="coord:LD:<%= m %>" /></td></tr>
+        <td>LD <input type="checkbox" name="coord:LD:<%= m %>" /> NLN <input type="checkbox" name="coord:NLN:<%= m %>" /></td></tr>
 	<tr><td colspan="5"><hr align="center" width="100%" size="1"></td></tr>
 <% next %>
 	<tr><td colspan="5" align="center"><br>

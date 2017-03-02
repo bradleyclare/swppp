@@ -97,7 +97,7 @@ Else
         includeItems = rsInspectInfo("includeItems")
         
         if includeItems Then
-            coordSQLSELECT = "SELECT coID, coordinates, existingBMP, correctiveMods, orderby, assignDate, completeDate, status, repeat, useAddress, address, locationName, infoOnly, LD" &_
+            coordSQLSELECT = "SELECT coID, coordinates, existingBMP, correctiveMods, orderby, assignDate, completeDate, status, repeat, useAddress, address, locationName, infoOnly, LD, NLN" &_
 	        " FROM Coordinates WHERE inspecID=" & inspecID & " ORDER BY orderby"	
             Set rsCoord = connSWPPP.execute(coordSQLSELECT)
             currentDate = date()
@@ -126,9 +126,13 @@ Else
                 If LD = True Then
                     correctiveMods = "(LD) " & correctiveMods
                 End If 
+                NLN = rsCoord("NLN")
+                If NLN = True Then
+                    correctiveMods = "(NLN) " & correctiveMods
+                End If 
 		        If infoOnly = True Then
                    do_nothing = 1 
-                Elseif status = true Then %>
+                Elseif status = true or NLN = true Then %>
 		        <tr>
                 <input type="hidden" name="coord:coID:<%= n %>" value="<%= coID %>" />
                 <input type="hidden" name="coord:inspecID:<%= n %>" value="<%= inspecID %>" />

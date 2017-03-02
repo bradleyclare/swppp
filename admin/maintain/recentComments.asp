@@ -7,6 +7,15 @@ End If
 
 %> <!-- #include file="../connSWPPP.asp" --> <%
 
+if len(Request.QueryString("del")) > 0 Then
+    id = Trim(Request("id"))
+
+    'delete comment
+    commSQLDELETE = "DELETE FROM CoordinatesComments WHERE coID = " & id
+    'Response.Write(commSQLSELECT)
+    connSWPPP.execute(commSQLDELETE)
+End If
+
 If Request.Form.Count > 0 Then	
     endDate=Request("endDate")
     startDate=Request("startDate")
@@ -15,7 +24,7 @@ Else
     startDate=DateAdd("m",-1,endDate)
 End If
 
-Response.Write(startDate & " - " & endDate)
+'Response.Write(startDate & " - " & endDate)
 commSQLSELECT = "SELECT comment, userID, date, coID" &_
     " FROM CoordinatesComments" &_
     " WHERE date BETWEEN '"& startDate &"' AND '"& endDate &"'" &_
@@ -46,17 +55,22 @@ Set rsComm = connSWPPP.execute(commSQLSELECT) %>
             <th width="25%">Note</th>
             <th width="10%">User</th>
             <th width="15%">Project Name</th>
-            <th width="25%">Item</th>
+            <th width="20%">Item</th>
             <th width="15%">Location</th>
             <th width="5%">Inspec Date</th>
+            <th width="5%">Delete</th>
         </tr>
     <% DO WHILE NOT rsComm.EOF 
         coID = rsComm("coID")
         userID = rsComm("userID")
+
+        'Get user name
         SQLSELECT = "SELECT firstName, lastName FROM Users WHERE userID = " & userID
         'Response.Write(SQLSELECT & "<br>")
         Set connUsers = connSWPPP.Execute(SQLSELECT)
         userName = connUsers("firstName") & " " & connUsers("lastName")
+
+        'get item information
         coordSQLSELECT = "SELECT coID, inspecID, coordinates, existingBMP, correctiveMods, orderby, assignDate, completeDate, status, repeat, useAddress, address, locationName" &_
 	        " FROM Coordinates WHERE coID=" & coID & " AND status=0"
         'Response.Write(coordSQLSELECT)
@@ -72,6 +86,7 @@ Set rsComm = connSWPPP.execute(commSQLSELECT) %>
 		    locationName = TRIM(rsCoord("locationName")) 
             inspecID = rsCoord("inspecID")
             
+            'get report name
             inspecSQLSELECT = "SELECT inspecDate, i.projectName, i.projectPhase, i.projectID" & _
 		        " FROM Inspections as i, Projects as p" & _
 		        " WHERE i.projectID = p.projectID AND inspecID = " & inspecID
@@ -93,6 +108,7 @@ Set rsComm = connSWPPP.execute(commSQLSELECT) %>
 		        <% End If %>
                 </td>
                 <td><%= rsReport("inspecDate")%></td>
+                <td><a href="recentComments.asp?del=1&id=<%=coID %>"><input type="button" value="Delete" /></a></td>
             </tr>
         <% End If
         rsComm.MoveNext

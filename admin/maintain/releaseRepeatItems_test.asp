@@ -62,7 +62,7 @@ IF Request.Form.Count > 0 THEN %>
             strBody=strBody &"<font size='+1'><b>" & projectName & " " & projectPhase & "</b></font><br/>"
             strBody=strBody &"<font size='+1'><b>" & inspecDate & "</center><br/>"
 
-            coordSQLSELECT = "SELECT coID, coordinates, existingBMP, correctiveMods, orderby, assignDate, completeDate, status, repeat, useAddress, address, locationName, infoOnly, LD" &_
+            coordSQLSELECT = "SELECT coID, coordinates, existingBMP, correctiveMods, orderby, assignDate, completeDate, status, repeat, useAddress, address, locationName, infoOnly, LD, NLN" &_
 	            " FROM Coordinates WHERE inspecID=" & inspecID & " ORDER BY orderby"	
             'Response.Write(coordSQLSELECT)
             Set rsCoord = connSWPPP.execute(coordSQLSELECT)
@@ -90,6 +90,7 @@ IF Request.Form.Count > 0 THEN %>
 			        locationName = TRIM(rsCoord("locationName"))
                     infoOnly = rsCoord("infoOnly")
                     LD = rsCoord("LD")
+                    NLN = rsCoord("NLN")
 			        scoring_class = "black"
 			        If applyScoring Then
 				        If assignDate = "" Then
@@ -101,7 +102,7 @@ IF Request.Form.Count > 0 THEN %>
                             correctiveMods = "(LD) " & correctiveMods
                             scoring_class = "ld"
                         End If
-				        If infoOnly = True Then
+				        If infoOnly = True or NLN = True Then
                             do_nothing = 1 
                         Elseif  repeat and age > 0 THEN
                             send_email = True

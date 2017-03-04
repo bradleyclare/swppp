@@ -62,6 +62,28 @@ If Request.Form.Count > 0 Then
 		        'response.Write(inspectSQLUPDATE2)
 		        connSWPPP.Execute(inspectSQLUPDATE2)
 		    End If
+            If Request("coord:NLN:"& CStr(n)) = "on" Then
+                SQLc = "UPDATE Coordinates "& _
+			    "SET NLN=1, completeDate='" & Request("coord:date:"& CStr(n))& "' " & _ 
+			    "WHERE coID = " & Request("coord:coID:"& CStr(n)) & ";"
+			    'Response.Write(SQLc)
+			    connSWPPP.execute(SQLc)
+
+                'update completed item count
+                inspecID = Request("coord:inspecID:"& CStr(n))
+			    SQL1 = "SELECT completedItems from Inspections WHERE inspecID = " & inspecID
+                Set RS1 = connSWPPP.Execute(SQL1)
+                if not RS1.EOF Then
+                    totalItems = RS1("completedItems") - 1
+                Else
+                    totalItems = 1
+                End If
+                inspectSQLUPDATE2 = "UPDATE Inspections SET" & _
+			    " totalItems = " & totalItems & _
+			    " WHERE inspecID = " & inspecID
+		        'response.Write(inspectSQLUPDATE2)
+		        connSWPPP.Execute(inspectSQLUPDATE2)
+            End If 
 	    next	
     'End If
 End If
@@ -202,13 +224,16 @@ Set rsInspectInfo = connSWPPP.Execute(inspectInfoSQLSELECT)
     </center>
     <table cellpadding="2" cellspacing="0" border="0" width="100%">
 	    <tr><th width="5%" align="left">Complete</th>
+            <% If Session("validAdmin") Then %>
+            <th width="5%" align="left">NLN</th>
+            <% End If %>
             <th width="5%" align="left">Repeat</th>
             <th width="5%" align="left">ID</th>
             <th width="10%" align="left">Completion Date</th>
             <th width="5%" align="left">Age</th>
             <th width="5%" align="left">Report Date</th>
             <th width="20%" align="left">Location</th>
-            <th width="40%" align="left">Action Item</th>
+            <th width="35%" align="left">Action Item</th>
             <th width="2.5%" align="left">Add Note</th>
             <th width="2.5%" align="left">View Note</th>
 	    </tr>
@@ -263,7 +288,10 @@ Set rsInspectInfo = connSWPPP.Execute(inspectInfoSQLSELECT)
                         <input type="hidden" name="coord:inspecID:<%= n %>" value="<%= inspecID %>" />
 		                <tr>
 		                <td align="left"><input type="checkbox" name="coord:complete:<%= n %>" /></td>
-		                <td align="left">
+		                 <% If Session("validAdmin") Then %>
+                            <td align="left"><input type="checkbox" name="coord:nln:<%= n %>" /></td>
+                        <% End If %>
+                        <td align="left">
                         <% If repeat = True Then %>
 			                R
 		                <% End If %>

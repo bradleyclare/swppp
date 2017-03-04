@@ -46,25 +46,27 @@ SET RS0=connSWPPP.execute(SQL0) %>
 <div class="cleaner"></div>
 <hr />
 <h3><% =Ucase(group) %></h3>
-<table border=1>
-	<tr><td><TABLE border="0">
+<TABLE border="0">
 	<tr><td><b>KEY:</B></td>
-		<td><img align=bottom src='..\..\images\email2.jpg' height="12"> - Email</td>
-		<td><img align=bottom src='..\..\images\CC.gif' height="12"> - CC</td><% IF session("validAdmin") THEN	
-%>		<td><img align=bottom src='..\..\images\BCC.gif' height="12"> - BCC</td>
-		<td><img align=bottom src='..\..\images\I.gif' height="12"> - Inspector</td><% END IF %>
-		<td><img align=bottom src='..\..\images\D.jpg' height="12"> - Director</td>
-		<td><img align=bottom src='..\..\images\U.jpg' height="12"> - User</td>
-		<td><img align=bottom src='..\..\images\AM.gif' height="12"> - Action MGR</td>
-		<td><img align=bottom src='..\..\images\E.gif' height="12"> - Erosion</td></table>
-	</tr></td></table><br><br>
+	<td><img align=bottom src='..\..\images\email2.jpg' height="12"> - Email</td>
+	<td><img align=bottom src='..\..\images\CC.gif' height="12"> - CC</td>
+    <% IF session("validAdmin") THEN %>	
+    <td><img align=bottom src='..\..\images\BCC.gif' height="12"> - BCC</td>
+	<td><img align=bottom src='..\..\images\I.gif' height="12"> - Inspector</td>
+    <% END IF %>
+	<td><img align=bottom src='..\..\images\D.jpg' height="12"> - Director</td>
+	<td><img align=bottom src='..\..\images\U.jpg' height="12"> - User</td>
+	<td><img align=bottom src='..\..\images\AM.gif' height="12"> - Action MGR</td>
+	<td><img align=bottom src='..\..\images\E.gif' height="12"> - Erosion</td>
+</table>
+<br><br>
 <table width="100%" border="0">
 	<tr><th width="50%"><b>Project</b></th>
 	<th><b>First Name</b></th>
 	<th><b>Last Name</b></th>
 	<th><b>Rights</b></th></TR>
 	<form name=form1>
-<% 	cnt=0
+    <% cnt=0
 	DO WHILE NOT RS0.EOF 
 	    letter = LCase(Left(RS0("projectName"), 1))
         numbergroup = StrComp(group,"0-9") = 0 '0 if equal
@@ -72,15 +74,15 @@ SET RS0=connSWPPP.execute(SQL0) %>
         If LCase(group) = letter or (numbergroup and isnumber) then	
             cnt = cnt + 1 %>
 	        <tr bgcolor="<%= altColors1 %>"><td colspan=4 align=left><B><%= RS0("projectName")%>&nbsp<%= RS0("projectPhase")%></B>&nbsp;
-		    <BUTTON id=btnShow<%=cnt%> style="background-color: red; height: 10px; width:10px;"
-			    onclick="tbody<%=cnt%>.style.display='';btnHide<%=cnt%>.style.display='';btnShow<%=cnt%>.style.display='none';"></BUTTON>
-		    <BUTTON id=btnHide<%=cnt%> style="display:none; background-color: green; height: 10px; width:10px;"
-			    onclick="tbody<%=cnt%>.style.display='none';btnShow<%=cnt%>.style.display='';btnHide<%=cnt%>.style.display='none';"></BUTTON>
+		    <BUTTON type='button' id=btnShow<%=cnt%> style="background-color: red; height: 10px; width:10px;"
+			    onclick="tbody<%=cnt%>.style.display=''; btnHide<%=cnt%>.style.display=''; btnShow<%=cnt%>.style.display='none';"></BUTTON>
+		    <BUTTON type='button' id=btnHide<%=cnt%> style="display:none; background-color: green; height: 10px; width:10px;"
+			    onclick="tbody<%=cnt%>.style.display='none'; btnShow<%=cnt%>.style.display=''; btnHide<%=cnt%>.style.display='none';"></BUTTON>
             <% SQL1="SELECT DISTINCT u.userID, lastName, firstName, pu.rights" &_
 			    " FROM Users as u, ProjectsUsers as pu, Projects as p" &_
 			    " WHERE pu.projectID="& RS0("projectID") &" AND pu.userID=u.userID " 
 			IF Session("validDirector") AND NOT(session("validAdmin")) THEN		
-		        SQL1=SQL1 & " AND pu.rights IN('email','director','user','action','erosion','ecc') and u.userID not in (Select userID From Users Where rights in ('admin','inspector'))"
+		        SQL1 = SQL1 & " AND pu.rights IN('email','director','user','action','erosion','ecc') and u.userID not in (Select userID From Users Where rights in ('admin','inspector'))"
 			END IF
 		    SQL1 = SQL1 & " ORDER BY u.userID, pu.rights desc"
 		    SET RS1=connSWPPP.execute(SQL1) %>

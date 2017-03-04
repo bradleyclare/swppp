@@ -674,6 +674,7 @@ End If %>
 	<input type="hidden" name="coord:coID:<%= n %>" value="<%= coID %>" />
 	<!--<input type="hidden" name="coord:status:<%= n %>" value="<%= status %>" />-->
 	<input type="hidden" name="coord:completeDate:<%= n %>" value="" />
+    <input type="hidden" name="coord:NLN:<%= n %>" value="<%=NLN %>"/>
 	<tr><td>ID#</td>
 	<td><%= coID %></td>
 	<td>Address<input type="checkbox" name="coord:useAddress:<%= n %>" onclick="useAddressLookup(this)" 
@@ -726,12 +727,6 @@ End If %>
 	<% Else %>
 		<input type="checkbox" name="coord:LD:<%= n %>" />
 	<% End If %>
-    NLN
-	<% If NLN = True Then %>
-		<input type="checkbox" name="coord:NLN:<%= n %>" checked/>
-	<% Else %>
-		<input type="checkbox" name="coord:NLN:<%= n %>" />
-	<% End If %>
     </td>
     <td> Status
     <% If status = True Then %>
@@ -759,6 +754,7 @@ Set rsCoord = Nothing %>
 	<input type="hidden" name="coord:completeDate:<%= m %>" value="" />
 	<!--<input type="hidden" name="coord:status:<%= m %>" value="0" />-->
 	<input type="hidden" name="coord:repeat:<%= m %>" value="0" />
+    <input type="hidden" name="coord:NLN:<%= m %>" value="0" />
 	<tr><td>ID#</td>
 	<td>0</td>
 	<td>Address<input type="checkbox" name="coord:useAddress:<%= m %>" onclick="useAddressLookup(this)"/></td>
@@ -779,7 +775,7 @@ Set rsCoord = Nothing %>
 	<td><input class=datepicker type="text" name="coord:assignDate:<%= m %>" size="10" value="" disabled /></td>
 	<td><input type="button" onclick="displayCommonItemSelect(this)" name="coord:item:<%=m%>" value="Common Item" /></td></tr>
 	<tr><td>Info Only <input type="checkbox" name="coord:infoOnly:<%= m %>" /></td>
-        <td>LD <input type="checkbox" name="coord:LD:<%= m %>" /> NLN <input type="checkbox" name="coord:NLN:<%= m %>" /></td></tr>
+        <td>LD <input type="checkbox" name="coord:LD:<%= m %>" /></td></tr>
 	<tr><td colspan="5"><hr align="center" width="100%" size="1"></td></tr>
 <% next %>
 	<tr><td colspan="5" align="center"><br>

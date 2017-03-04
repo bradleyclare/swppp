@@ -136,10 +136,14 @@ Else
 		        <tr>
                 <input type="hidden" name="coord:coID:<%= n %>" value="<%= coID %>" />
                 <input type="hidden" name="coord:inspecID:<%= n %>" value="<%= inspecID %>" />
-                <% If Not Session("validAdmin") Then %>
-		            <td align="left"><input type="checkbox" name="coord:complete:<%= n %>" disabled checked /></td>
+                <% status_str = ""
+                If status = True Then
+                    status_str = "checked"
+                End If
+                If Not Session("validAdmin") Then %> 
+		            <td align="left"><input type="checkbox" name="coord:complete:<%= n %>" disabled <%=status_str %> /></td>
                 <% Else %>
-                    <td align="left"><input type="checkbox" name="coord:complete:<%= n %>" checked /></td>
+                    <td align="left"><input type="checkbox" name="coord:complete:<%= n %>" <%=status_str %> /></td>
                 <% End If %>
                 <td align="left">
                 <% If repeat = True Then %>

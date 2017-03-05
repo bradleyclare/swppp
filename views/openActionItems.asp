@@ -85,12 +85,12 @@ If Request.Form.Count > 0 Then
 			    SQL1 = "SELECT completedItems from Inspections WHERE inspecID = " & inspecID
                 Set RS1 = connSWPPP.Execute(SQL1)
                 if not RS1.EOF Then
-                    totalItems = RS1("completedItems") - 1
+                    completedItems = RS1("completedItems") + 1
                 Else
-                    totalItems = 1
+                    completedItems = 1
                 End If
                 inspectSQLUPDATE2 = "UPDATE Inspections SET" & _
-			    " totalItems = " & totalItems & _
+			    " completedItems = " & completedItems & _
 			    " WHERE inspecID = " & inspecID
 		        'response.Write(inspectSQLUPDATE2)
 		        connSWPPP.Execute(inspectSQLUPDATE2)
@@ -253,7 +253,7 @@ Set rsInspectInfo = connSWPPP.Execute(inspectInfoSQLSELECT)
             <th width="5%" align="left">Age</th>
             <th width="5%" align="left">Report Date</th>
             <th width="20%" align="left">Location</th>
-            <th width="35%" align="left">Action Item</th>
+            <th align="left">Action Item</th>
             <th width="2.5%" align="left">Add Note</th>
             <th width="2.5%" align="left">View Note</th>
 	    </tr>

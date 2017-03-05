@@ -16,6 +16,8 @@ projectID = Request("pID")
 
 %><!-- #include file="../admin/connSWPPP.asp" --><%
 
+currentDate = date()
+
 If Request.Form.Count > 0 Then
 
 	update = 0
@@ -24,10 +26,12 @@ If Request.Form.Count > 0 Then
 		if Trim(Request("coord:coID:" & CStr(n))) = "" then
 			exit for
 		end if
-        if Request("coord:complete:"& CStr(n)) <> "on" then 
+        'Response.Write(Cstr(n) & " s-" & Request("coord:complete:"& CStr(n)) & " n-" & Request("coord:nln:"& CStr(n)) & " ")
+        if Request("coord:complete:"& CStr(n)) <> "on" and Request("coord:nln:"& CStr(n)) <> "on" then 
+            'Response.Write(" Neither On ")
 			coID = Request("coord:coID:"& CStr(n))
             SQLc = "UPDATE Coordinates "& _
-			"SET status=0 " & _ 
+			"SET status=0, NLN=0" & _ 
 			"WHERE coID = " & coID & ";"
 			'Response.Write(SQLc)
 			connSWPPP.execute(SQLc)
@@ -95,7 +99,16 @@ Set rsInspectInfo = connSWPPP.Execute(inspectInfoSQLSELECT)
 
 <form id="theForm" method="post" action="<%=Request.ServerVariables("script_name")& "?pID=" & projectID %>" onsubmit="return isReady(this)";>
 <table cellpadding="2" cellspacing="0" border="0" width="90%">
-	<tr><th width="5%" align="left">Complete</th><th width="5%" align="left">Repeat</th><th width="10%" align="left">ID</th><th width="10%" align="left">Completion Date</th><th width="5%" align="left">Report Date</th><th width="25%" align="left">Location</th><th width="45%" align="left">Action Item</th></tr>
+	<tr><th width="5%" align="left">Complete</th>
+        <% If Session("validAdmin") Then %>
+            <th width="5%" align="left">NLN</th>
+        <% End If %>
+        <th width="5%" align="left">Repeat</th>
+        <th width="10%" align="left">ID</th>
+        <th width="10%" align="left">Completion Date</th>
+        <th width="5%" align="left">Report Date</th>
+        <th width="25%" align="left">Location</th>
+        <th align="left">Action Item</th></tr>
 <% If rsInspectInfo.EOF Then
 	Response.Write("<tr><td colspan='4' align='center'><i style='font-size: 15px'>There are no inspection reports found.</i></td></tr>")
 Else
@@ -150,10 +163,16 @@ Else
                 If status = True Then
                     status_str = "checked"
                 End If
+                nln_str = ""
+                If NLN = True Then
+                    nln_str = "checked"
+                End If
                 If Not Session("validAdmin") Then %> 
 		            <td align="left"><input type="checkbox" name="coord:complete:<%= n %>" disabled <%=status_str %> /></td>
+                    <td align="left"><input type="checkbox" name="coord:nln:<%= n %>" disabled <%=nln_str %> /></td>
                 <% Else %>
                     <td align="left"><input type="checkbox" name="coord:complete:<%= n %>" <%=status_str %> /></td>
+                    <td align="left"><input type="checkbox" name="coord:nln:<%= n %>" <%=nln_str %> /></td>
                 <% End If %>
                 <td align="left">
                 <% If repeat = True Then %>

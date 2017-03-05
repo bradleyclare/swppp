@@ -41,9 +41,10 @@ If Request.Form.Count > 0 Then
 			    exit for
 		    end if
             if Request("coord:complete:"& CStr(n)) = "on" then 
+                coID = Request("coord:coID:"& CStr(n))
 			    SQLc = "UPDATE Coordinates "& _
 			    "SET status=1, completeDate='" & Request("coord:date:"& CStr(n))& "' " & _ 
-			    "WHERE coID = " & Request("coord:coID:"& CStr(n)) & ";"
+			    "WHERE coID = " & coID & ";"
 			    'Response.Write(SQLc)
 			    connSWPPP.execute(SQLc)
 
@@ -61,11 +62,21 @@ If Request.Form.Count > 0 Then
 			    " WHERE inspecID = " & inspecID
 		        'response.Write(inspectSQLUPDATE2)
 		        connSWPPP.Execute(inspectSQLUPDATE2)
+
+                'add comment to keep track of the status change of the item
+                userID  = Session("userID")
+                comment = "This item was marked complete"
+                'Response.Write(coID & " - " & userID & " - " & currentDate & " - " & comment)
+                SQL3="INSERT INTO CoordinatesComments (coID, comment, userID, date)" &_
+                " VALUES ( "& coID & ", '" & comment & "', " & userID & ", '"& currentDate & "')"   
+                'response.Write(SQL3)
+                Set RS3=connSWPPP.execute(SQL3)
 		    End If
             If Request("coord:NLN:"& CStr(n)) = "on" Then
+                coID = Request("coord:coID:"& CStr(n))
                 SQLc = "UPDATE Coordinates "& _
 			    "SET NLN=1, completeDate='" & Request("coord:date:"& CStr(n))& "' " & _ 
-			    "WHERE coID = " & Request("coord:coID:"& CStr(n)) & ";"
+			    "WHERE coID = " & coID & ";"
 			    'Response.Write(SQLc)
 			    connSWPPP.execute(SQLc)
 
@@ -83,6 +94,15 @@ If Request.Form.Count > 0 Then
 			    " WHERE inspecID = " & inspecID
 		        'response.Write(inspectSQLUPDATE2)
 		        connSWPPP.Execute(inspectSQLUPDATE2)
+
+                'add comment to keep track of the status change of the item
+                userID  = Session("userID")
+                comment = "This item was marked NLN"
+                'Response.Write(coID & " - " & userID & " - " & currentDate & " - " & comment)
+                SQL3="INSERT INTO CoordinatesComments (coID, comment, userID, date)" &_
+                " VALUES ( "& coID & ", '" & comment & "', " & userID & ", '"& currentDate & "')"   
+                'response.Write(SQL3)
+                Set RS3=connSWPPP.execute(SQL3)
             End If 
 	    next	
     'End If

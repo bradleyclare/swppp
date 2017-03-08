@@ -65,9 +65,10 @@ IF Request.Form.Count > 0 THEN %>
             cnt = 0
             Do While Not connProjUsers.EOF
                 cnt = cnt + 1
-                groupName = ""
                 projID = connProjUsers("projectID")
+                groupName = ""
                 groupNameRaw = connProjUsers("collectionName")
+                Response.Write(groupNameRaw)
                 dbgBody=dbgBody & projID & "<br/>"
 
                 startDate=CDATE(Month(Date) &"/1/"& Year(Date)) 

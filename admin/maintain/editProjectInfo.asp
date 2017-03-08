@@ -21,7 +21,7 @@ If Request.Form.Count>0 THEN
 	invoiceMemo=Trim(Request("invoiceMemo"))
 	IF (Request("bCycle")<1 OR Request("bCycle")>4) THEN err=err+16 END IF
 	if err=0 then
-		SQL1="UPDATE Projects SET phaseNum="& phaseNum &", initInspecCost="& initInspecCost &", inspecCost="& inspecCost &", invoiceMemo = '"& invoiceMemo &"', billCycle="& Request("bCycle") &_
+		SQL1="UPDATE Projects SET phaseNum="& phaseNum &", initInspecCost="& initInspecCost &", inspecCost="& inspecCost &", invoiceMemo = '"& invoiceMemo &"', billCycle='"& Trim(Request("bCycle")) &"', collectionName = '"&Trim(Request("groupName")) & "'"&_
 			" WHERE projectID="& projectID
 		connSWPPP.Execute(SQL1)	
 	else
@@ -30,6 +30,14 @@ If Request.Form.Count>0 THEN
 End IF
 SQL0="SELECT * FROM Projects WHERE projectID="& projectID
 SET RS0=connSWPPP.Execute(SQL0) 
+
+SQL1="SELECT * FROM Inspections WHERE projectID="& projectID
+'Response.Write(SQL1)
+SET RS1=connSWPPP.Execute(SQL1)
+DO WHILE NOT RS1.EOF
+    Response.Write(RS1("groupName"))
+    RS1.MoveNext
+LOOP
 
 function validStr(testStr)
 	strPassed=True
@@ -92,46 +100,61 @@ End Function
 	<link rel="stylesheet" href="../../global.css" type="text/css">
 </head>
 <!-- #include file="../adminHeader2.inc" -->
-<table width="100%" border="0">
-	<tr><td><br><h1>Edit Project Information</h1></td></tr></table><table width="400" border="0">
-	<form action="<%= Request.ServerVariables("script_name") %>" method="post">
+
+<h1>Edit Project Information</h1>
+<form action="<%= Request.ServerVariables("script_name") %>" method="post">
+<table width="90%" border="0">
 	<input type="hidden" name="id" value="<%= projectID %>">
-	<tr><td colspan=2><button style="height: 20px; width:100px;" onClick="window.location.href='deleteProject.asp?id=<%= projectID %>'">
-			<font size="-2">Delete Project</font></button></td></tr>
 <% 	IF LEN(err)>0 THEN 
 		IF MID(err,Len(err),1)="1" THEN %><tr><td colspan="2"><font color="red">*The Project Name that you entered contains illegal characters*</font></td></tr><% END IF %>
 <%	END IF %>
-	<tr><th width=150 align=right>Project Name</th>
-		<td align=left><%= Trim(RS0("projectName"))%></td></tr>
+	<tr><th width="30%">Project Name</th>
+		<td align=left width="70%"><%= Trim(RS0("projectName"))%></td></tr>
 <% 	IF LEN(err)>1 THEN
 		IF MID(err,Len(err)-1,1)="1" THEN %><tr><td colspan="2"><font color="red">*The Project Phase that you entered contains illegal characters*</font></td></tr><% END IF %>
 <%	END IF %>
-	<tr><th width=150 align=right>Project Phase</th>
+	<tr><th>Project Phase</th>
 		<td align=left><%= Trim(RS0("projectPhase"))%></td></tr>
-	<tr><th width=150 align=right>Comm #</th>
-		<td align=left><INPUT width="10" maxlength="1" name="phaseNum"  value="<%= Trim(RS0("phaseNum"))%>"></td></tr>
+	<tr><th>Comm #</th>
+		<td align=left><INPUT maxlength="1" name="phaseNum"  value="<%= Trim(RS0("phaseNum"))%>"></td></tr>
 <% 	IF LEN(err)>2 THEN
 		IF MID(err,Len(err)-2,1)="1" THEN %><tr><td colspan="2"><font color="red">*The Initial Inspection Cost must be a number*</font></td></tr><% END IF %>
 <%	END IF %>
-	<tr><th width=150 align=right>Initial Inspection Cost</th>
+	<tr><th>Initial Inspection Cost</th>
 		<td align=left><INPUT name="initInspecCost" value="<%= FormatNumber(RS0("initInspecCost"),2)%>"></td></tr>
 <% 	IF LEN(err)>3 THEN
 		IF MID(err,Len(err)-3,1)="1" THEN %><tr><td colspan="2"><font color="red">*The Recurring Inspection Cost must be a number*</font></td></tr><% END IF %>
 <%	END IF %>
-	<tr><th width=150 align=right>Recurring Inspection Cost</th>
+	<tr><th>Recurring Inspection Cost</th>
 		<td align=left><INPUT name="inspecCost" value="<%= FormatNumber(RS0("inspecCost"),2)%>"></td></tr>
-	<tr><th width=150 align=right>Invoice Memo</th>
-	    <td align=left><input name="invoiceMemo" value="<%= Trim(RS0("invoiceMemo")) %>" /></td></tr>
-	<tr><th width=150 align=right>Billing Cycle</th>
+	<tr><th>Invoice Memo</th>
+	    <td align=left><input width="200" name="invoiceMemo" value="<%= Trim(RS0("invoiceMemo")) %>" /></td></tr>
+	<tr><th>Billing Cycle</th>
 		<td align=left><SELECT name="bCycle">
 			<OPTION value="1"<% IF RS0("billCycle")=1 THEN %> selected<% END IF %>>1</option>
 			<OPTION value="2"<% IF RS0("billCycle")=2 THEN %> selected<% END IF %>>2</option>
 			<OPTION value="3"<% IF RS0("billCycle")=3 THEN %> selected<% END IF %>>3</option>
 			<OPTION value="4"<% IF RS0("billCycle")=4 THEN %> selected<% END IF %>>4</option>
 			</SELECT></td></tr>
-	<tr><td colspan=2><br><input type="submit" value="Update Project Information"></td></tr>
-	</form>
+    <tr><th>Project Group: </th>
+	<td align=left>
+        <select name="groupName">
+            <option value=""></option>
+        <% SQLGroups="SELECT * FROM Groups ORDER BY groupName"
+	    SET RSGroups=connSWPPP.execute(SQLGroups)
+	    DO WHILE NOT RSGroups.EOF %>	
+            <option value="<%= RSGroups("groupName")%>"
+            <% If Trim(RS0("collectionName")) = Trim(RSGroups("groupName")) Then %> selected
+            <% End If %>><%= Trim(RSGroups("groupName"))%></option>
+        <% RSGroups.MoveNext
+	    LOOP %>	
+        </select>
+	</td></tr>
+	<tr><td></td></tr>
 </table>
+<button onClick="window.location.href='deleteProject.asp?id=<%= projectID %>'">Delete Project</button>
+<input type="submit" value="Update Project Information">
+</form>
 </body>
 </html><%
 RS0.Close

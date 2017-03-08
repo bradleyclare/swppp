@@ -16,13 +16,15 @@ SELECT CASE recordOrd
 	CASE 2		orderBy=" Order by initInspecCost asc, projectName asc, projectPhase asc"
 	CASE 3		orderBy=" Order by inspecCost asc, projectName asc, projectPhase asc"
 	CASE 4		orderBy=" Order by billCycle asc, projectName asc, projectPhase asc"
+    CASE 5      orderBy=" Order by collectionName asc, projectName asc, projectPhase asc"
 	CASE else	orderBy=" Order by projectName asc, projectPhase asc"
 END SELECT
 
 %> <!-- #include file="../connSWPPP.asp" --> <%
 SQL1 = "SELECT * FROM Projects "& orderBy
-'-- Response.Write(SQLSELECT & "<br>")
+'-- Response.Write(SQL1 & "<br>")
 Set RS1 = connSWPPP.Execute(SQL1)
+
 recCount = 0 %>
 <!doctype html public "-//w3c//dtd html 4.0 transitional//en">
 <html>
@@ -39,6 +41,7 @@ recCount = 0 %>
 		<th align=center><a class='head2' href="viewProjects.asp?orderBy=2"><b>Init Inspec Cost</b></a></th>
 		<th align=center><a class='head2' href="viewProjects.asp?orderBy=3"><b>Rec Inspec Cost</b></a></th>
 		<th align=center><a class='head2' href="viewProjects.asp?orderBy=4"><b>Bill Cycle</b></a></th>
+        <th align=center><a class='head2' href="viewProjects.asp?orderBy=5"><b>Collection Name</b></a></th>
 <%	If RS1.EOF Then
 		Response.Write("<tr><td colspan='5' align='center'><b><i>There " & _
 			"are currently no Projects.</i></b></td></tr>")
@@ -53,7 +56,9 @@ recCount = 0 %>
 		<td align=center><%= TRIM(RS1("phaseNum"))%></td>
 		<td align=center><%= TRIM(RS1("initInspecCost"))%></td>
 		<td align=center><%= TRIM(RS1("inspecCost"))%></td>
-		<td align=center><%= TRIM(RS1("billCycle"))%></td></tr>
+		<td align=center><%= TRIM(RS1("billCycle"))%></td>
+        <td align=center><%= TRIM(RS1("collectionName"))%></td>
+     </tr>
 <%			If altColors = "#e5e6e8" Then altColors = "#ffffff" Else altColors = "#e5e6e8" End If
 			RS1.MoveNext
 		Loop

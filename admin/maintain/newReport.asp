@@ -54,7 +54,7 @@ If Request.Form.Count > 0 Then
 		"projectCounty, onsiteContact, officePhone, emergencyPhone, projectID, " & _
 		"reportType, inches, bmpsInPlace, sediment, userID, compName, compAddr, " & _
 		"compAddr2, compCity, compState, compZip, compPhone, compContact, " & _
-		"contactPhone, contactFax, contactEmail, groupName, includeItems, openItemAlert" & _
+		"contactPhone, contactFax, contactEmail, includeItems, openItemAlert" & _
 		") VALUES (" & _
 		"'" & strQuoteReplace(Request("inspecDate")) & "'" & _
 		", '" & strQuoteReplace(Request("projectName")) & "'" & _
@@ -84,7 +84,6 @@ If Request.Form.Count > 0 Then
 		", '" & strQuoteReplace(Request("contactPhone")) & "'" & _
 		", '" & strQuoteReplace(Request("contactFax")) & "'" & _
 		", '" & strQuoteReplace(Request("contactEmail")) & "'" & _
-        ", '" & strQuoteReplace(Request("groupName")) & "'" & _
         ", '" & includeItems & "'" & _
         ", '" & openItemAlert & "'" & _
 		")"
@@ -223,18 +222,6 @@ function swapOption(t1, t2, slideDir) {
 		<tr><td align="right" bgcolor="#eeeeee"><b>Project Name | Phase:</b></td>
 			<td bgcolor="#999999"><input type="text" name="projectName" size="50" maxlength="50">
 								<input type="text" name="projectPhase" size="20" maxlength="20"></td>
-		</tr>
-        <tr><td align="right" bgcolor="#eeeeee"><b>Project Group:</b></td>
-			<td bgcolor="#999999">
-                <select name="groupName">
-                <% SQL0="SELECT * FROM Groups ORDER BY groupName"
-	            SET RS0=connSWPPP.execute(SQL0)
-	            DO WHILE NOT RS0.EOF %>	
-                    <option value="<%= RS0("groupName")%>"><%= Trim(RS0("groupName"))%></option>
-                <% RS0.MoveNext
-	            LOOP %>	
-                </select>
-			</td>
 		</tr>
 		<!-- project location -->
 		<tr> 

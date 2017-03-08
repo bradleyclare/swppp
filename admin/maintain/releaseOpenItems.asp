@@ -47,12 +47,12 @@ IF Request.Form.Count > 0 THEN %>
             strBody=strBody &"<b>For a complete list of open items, select the project name and log in.</b><br/>"
                    
             'get all the projects the user is assigned to
-            SQLSELECT = "SELECT DISTINCT pu.projectID, p.projectName, p.projectPhase" &_
+            SQLSELECT = "SELECT DISTINCT pu.projectID, p.projectName, p.projectPhase, p.collectionName" &_
                 " FROM ProjectsUsers as pu" &_
                 " inner join Projects as p" &_
                 " on pu.projectID=p.projectID" &_
                 " WHERE pu.userID = " & userID &_
-                " ORDER BY p.projectName, p.projectPhase"
+                " ORDER BY p.collectionName, p.projectName, p.projectPhase"
 
             'Response.Write(SQLSELECT & "<br>")
             Set connProjUsers = connSWPPP.Execute(SQLSELECT)
@@ -67,13 +67,14 @@ IF Request.Form.Count > 0 THEN %>
                 cnt = cnt + 1
                 groupName = ""
                 projID = connProjUsers("projectID")
+                groupNameRaw = connProjUsers("collectionName")
                 dbgBody=dbgBody & projID & "<br/>"
 
                 startDate=CDATE(Month(Date) &"/1/"& Year(Date)) 
                 endDate=DateAdd("m",1,startDate)
                 endDate=DateAdd("d",-1,endDate)
                 SQL0 = "SELECT inspecID, inspecDate, reportType," & _
-	                " projectID, projectName, projectPhase, released, includeItems, compliance, totalItems, completedItems, groupName" & _
+	                " projectID, projectName, projectPhase, released, includeItems, compliance, totalItems, completedItems" & _
 	                " FROM Inspections" & _
 	                " WHERE projectID = " & projID &_
                     " AND completedItems < totalItems" &_
@@ -107,7 +108,6 @@ IF Request.Form.Count > 0 THEN %>
                         inspecCnt = inspecCnt + 1
                         projName = Trim(RS0("projectName"))
                         projPhase = Trim(RS0("projectPhase"))
-                        groupNameRaw = Trim(RS0("groupName"))
                         If groupNameRaw <> "" Then
                             groupName = groupNameRaw
                         End If

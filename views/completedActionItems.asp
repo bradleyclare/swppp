@@ -12,14 +12,13 @@ Then
 	Response.Redirect("../admin/maintain/loginUser.asp")
 End If
 
-projectID = Request("pID")
+projectID = Trim(Request("pID"))
 
 %><!-- #include file="../admin/connSWPPP.asp" --><%
 
 currentDate = date()
 
 If Request.Form.Count > 0 Then
-
 	update = 0
 	for n = 0 to 999 step 1
 		'Response.Write("coord:coID:" & CStr(n)&":"& Request("coord:coID:" & CStr(n)) &"<br/>")
@@ -38,10 +37,20 @@ If Request.Form.Count > 0 Then
             
             'update completed item count
             inspecID = Request("coord:inspecID:"& CStr(n))
-			SQL1 = "SELECT completedItems from Inspections WHERE inspecID = " & inspecID
-            'Response.Write(SQL1)
+			SQL1 = "SELECT completedItems, totalItems from Inspections WHERE inspecID = " & inspecID
             Set RS1 = connSWPPP.Execute(SQL1)
-            completedItems = RS1("completedItems") - 1
+            if not RS1.EOF Then
+                compItems = RS1("completedItems")
+                totItems = RS1("totalItems")
+                newItems = compItems - 1
+                If newItems < 0 Then
+                    completedItems = 0
+                Else
+                    completedItems = newItems
+                End If
+            Else
+                completedItems = 0
+            End If
             
             inspectSQLUPDATE2 = "UPDATE Inspections SET" & _
 			" completedItems = " & completedItems & _
@@ -75,6 +84,39 @@ tr.highlighted {
 </STYLE>
 <title>SWPPP INSPECTIONS - Completed Items for <%= RS2("projectName") %>&nbsp;<%= RS2("projectPhase")%></title>
 <link rel="stylesheet" type="text/css" href="../global.css">
+<script type="text/javascript">
+    function displayCommentWindow(obj) {
+        var parts = obj.name.split(":");
+        var num = parts[2];
+
+        //display the select div
+        var s1 = document.getElementsByName("commentPopup");
+        s1[0].className = "commentPopup show";
+
+        //set the hidden div in the select div to remember what number we are modifying
+        var s2 = document.getElementsByName("commentIDNum");
+        s2[0].value = num;
+    }
+
+    function close_popup() {
+        //hide the select div
+        var s0 = document.getElementsByName("commentPopup");
+        s0[0].className = "commentPopup hide";
+
+        //set the num back to -1 so we do not save note
+        var s2 = document.getElementsByName("commentIDNum");
+        s2[0].value = "-1";
+    }
+
+    function save_note(){
+        //hide the select div
+        var s0 = document.getElementsByName("commentPopup");
+        s0[0].className = "commentPopup hide";
+
+        //submit form
+        document.getElementById("theForm").submit();
+    }
+</script>
 </head>
 
 <%
@@ -93,12 +135,12 @@ Set rsInspectInfo = connSWPPP.Execute(inspectInfoSQLSELECT)
 <img src="../images/color_logo_report.jpg" width="300"><br><br>
 <font size="+1"><b>Completed Items for<br> <%= RS2("projectName") %>&nbsp;<%= RS2("projectPhase")%></b></font>
 <br /><br />
-<a href="openActionItems.asp?pID= <%=projectID%> &inspecID= <%=inspecID%>">see Open Items</a>
+<a href="openActionItems.asp?pID=<%=projectID%>&inspecID=<%=inspecID%>">see Open Items</a>
 <br /><br />
 </center>
 
-<form id="theForm" method="post" action="<%=Request.ServerVariables("script_name")& "?pID=" & projectID %>" onsubmit="return isReady(this)";>
-<table cellpadding="2" cellspacing="0" border="0" width="90%">
+<form id="theForm" method="post" action="<%=Request.ServerVariables("script_name")&"?pID="&projectID%>" onsubmit="return isReady(this)";>
+<table cellpadding="2" cellspacing="0" border="0" width="100%">
 	<tr><th width="5%" align="left">Complete</th>
         <% If Session("validAdmin") Then %>
             <th width="5%" align="left">NLN</th>
@@ -108,7 +150,9 @@ Set rsInspectInfo = connSWPPP.Execute(inspectInfoSQLSELECT)
         <th width="10%" align="left">Completion Date</th>
         <th width="5%" align="left">Report Date</th>
         <th width="25%" align="left">Location</th>
-        <th align="left">Action Item</th></tr>
+        <th align="left">Action Item</th>
+        <th width="2.5%" align="left">View Note</th>
+    </tr>
 <% If rsInspectInfo.EOF Then
 	Response.Write("<tr><td colspan='4' align='center'><i style='font-size: 15px'>There are no inspection reports found.</i></td></tr>")
 Else
@@ -153,6 +197,9 @@ Else
                 If NLN = True Then
                     correctiveMods = "(NLN) " & correctiveMods
                 End If 
+                commSQLSELECT = "SELECT comment, userID, date" &_
+	            " FROM CoordinatesComments WHERE coID=" & coID	
+                Set rsComm = connSWPPP.execute(commSQLSELECT)
 		        If infoOnly = True Then
                    do_nothing = 1 
                 Elseif status = true or NLN = true Then %>
@@ -190,6 +237,11 @@ Else
 		        <% End If %>
 		        </td>
 		        <td><%= correctiveMods %></td>
+                <% If rsComm.EOF Then %>
+                    <td></td>
+                <% Else %>
+                    <td><button><a href="viewOpenItemComments.asp?coID=<%=coID%>" target="_blank">V</a></button></td>
+                <% End If %>
 		        </tr>
 		        <% n = n + 1
                 End If

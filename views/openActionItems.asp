@@ -12,7 +12,7 @@ Then
 	Response.Redirect("../admin/maintain/loginUser.asp")
 End If
 
-projectID = Request("pID")
+projectID = Trim(Request("pID"))
 
 %><!-- #include file="../admin/connSWPPP.asp" --><%
 
@@ -50,10 +50,17 @@ If Request.Form.Count > 0 Then
 
                 'update completed item count
                 inspecID = Request("coord:inspecID:"& CStr(n))
-			    SQL1 = "SELECT completedItems from Inspections WHERE inspecID = " & inspecID
+			    SQL1 = "SELECT completedItems, totalItems from Inspections WHERE inspecID = " & inspecID
                 Set RS1 = connSWPPP.Execute(SQL1)
                 if not RS1.EOF Then
-                    completedItems = RS1("completedItems") + 1
+                    compItems = RS1("completedItems")
+                    totItems = RS1("totalItems")
+                    newItems = compItems + 1
+                    If newItems > totItems Then
+                        completedItems = totItems
+                    Else
+                        completedItems = newItems
+                    End If
                 Else
                     completedItems = 1
                 End If
@@ -82,10 +89,17 @@ If Request.Form.Count > 0 Then
 
                 'update completed item count
                 inspecID = Request("coord:inspecID:"& CStr(n))
-			    SQL1 = "SELECT completedItems from Inspections WHERE inspecID = " & inspecID
+			    SQL1 = "SELECT completedItems, totalItems from Inspections WHERE inspecID = " & inspecID
                 Set RS1 = connSWPPP.Execute(SQL1)
                 if not RS1.EOF Then
-                    completedItems = RS1("completedItems") + 1
+                    compItems = RS1("completedItems")
+                    totItems = RS1("totalItems")
+                    newItems = compItems + 1
+                    If newItems > totItems Then
+                        completedItems = totItems
+                    Else
+                        completedItems = newItems
+                    End If
                 Else
                     completedItems = 1
                 End If
@@ -127,7 +141,7 @@ tr.highlighted {
 <link href="../css/jquery-ui.theme.min.css" rel="stylesheet" type="text/css"/>
 <script src="../js/jquery.js" type="text/javascript"></script>
 <script src="../js/jquery-ui.min.js" type="text/javascript"></script>
-<script>
+<script type="text/javascript">
   $( function() {
     $( ".datepicker" ).datepicker();
   } );
@@ -219,7 +233,7 @@ Set rsInspectInfo = connSWPPP.Execute(inspectInfoSQLSELECT)
 %>
 
 <body bgcolor="#ffffff" marginwidth="30" leftmargin="30" marginheight="15" topmargin="15">
-<form id="theForm" method="post" action="<%=Request.ServerVariables("script_name")& "?pID=" & projectID %>" onsubmit="return isReady(this)";>
+<form id="theForm" method="post" action="<%=Request.ServerVariables("script_name")&"?pID="&projectID%>" onsubmit="return isReady(this)";>
     <input type="hidden" name="commentIDNum" value="-1" />
     <div class="commentPopup hide" name="commentPopup">
     <h3>Enter Note:</h3>
@@ -239,7 +253,7 @@ Set rsInspectInfo = connSWPPP.Execute(inspectInfoSQLSELECT)
     <td><input type="button" value="Apply Date to All" onclick="apply_date_to_all(this)" /></td>
     </tr></table>
     <br/>
-    <a href="completedActionItems.asp?pID= <%=projectID%> &inspecID= <%=inspecID%>">see Completed Items</a>
+    <a href="completedActionItems.asp?pID=<%=projectID%>&inspecID=<%=inspecID%>">see Completed Items</a>
     <br/><br/>
     </center>
     <table cellpadding="2" cellspacing="0" border="0" width="100%">

@@ -1,8 +1,5 @@
-/*blue: #0159a3
-red: #ec3b41
-blue_old: #38939b
-red_old: #c70000
-*/
+/*blue: #38939b
+red: #c70000*/
 
 body{
 	font-family: 'Bree Serif', serif;
@@ -13,7 +10,7 @@ body{
 
 a:link, a:visited
 {
-    color: #ec3b41;
+    color: #c70000;
     text-decoration: none;
 	font-weight: bold;
 } 
@@ -96,7 +93,7 @@ td{
 }
 
 .btn-primary {
-	background-color: #ec3b41;
+	background-color: #c70000;
 	border-color: #bdbe44;
 }
 
@@ -199,7 +196,7 @@ border-color: #fff;
 
 .navbar-inverse .navbar-nav>li>a:hover, .navbar-inverse .navbar-nav>li>a:focus {
 	color: #fff;
-	background-color: #ec3b41;
+	background-color: #c70000;
 }
 
 .featurette-divider {

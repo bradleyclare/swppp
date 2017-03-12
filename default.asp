@@ -1,4 +1,4 @@
-<%
+﻿<%
 base_path = server.mappath(".")
 
 ' iomode settings
@@ -20,13 +20,10 @@ Set objFile = objFSO.OpenTextFile(base_path & "/static/about.txt")
 <head>
 	<title>SWPPP INSPECTIONS</title>
 	<link rel="stylesheet" type="text/css" href="global.css">
-    <link rel="stylesheet" type="text/css" href="./css/bootstrap.min.css" />
-	<link rel="stylesheet" type="text/css" href="./css/carousel.css" />
-	<link rel="stylesheet" type="text/css" href="./css/my_bootstrap.css" />
-	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
-    <title>SWPPP INSPECTIONS : Home Page</title>
-    <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
-    <link rel="stylesheet" type="text/css" href="../global.css">
+</head>
+<title>SWPPP INSPECTIONS : Home Page</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link href="../global.css" rel="stylesheet" type="text/css">
 </head>
 <body bgcolor="#FFFFFF" text="#000000">
 <!-- #include file="header3.inc" -->

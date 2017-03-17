@@ -74,7 +74,7 @@ Set rsComm = connSWPPP.execute(commSQLSELECT) %>
 
             'get item information
             coordSQLSELECT = "SELECT coID, inspecID, coordinates, existingBMP, correctiveMods, orderby, assignDate, completeDate, status, repeat, useAddress, address, locationName" &_
-	            " FROM Coordinates WHERE coID=" & coID & " AND status=0"
+	            " FROM Coordinates WHERE coID=" & coID & " AND status=0 AND NLN=0"
             'Response.Write(coordSQLSELECT)
             Set rsCoord = connSWPPP.execute(coordSQLSELECT)
     

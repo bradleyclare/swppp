@@ -126,9 +126,7 @@
     <Content Include="admin\maintain\addCoordinate.asp" />
     <Content Include="admin\maintain\addImage.asp" />
     <Content Include="admin\maintain\addReport.asp" />
-    <Content Include="admin\maintain\addReport_dev.asp" />
     <Content Include="admin\maintain\addUser.asp" />
-    <Content Include="admin\maintain\addUser_old.asp" />
     <Content Include="admin\maintain\adminAbout.asp" />
     <Content Include="admin\maintain\adminContact.asp" />
     <Content Include="admin\maintain\archive.asp" />
@@ -161,26 +159,18 @@
     <Content Include="admin\maintain\editReportOptionalLinks.asp" />
     <Content Include="admin\maintain\editReportTG.asp" />
     <Content Include="admin\maintain\editUser.asp" />
-    <Content Include="admin\maintain\editUser_org.asp" />
     <Content Include="admin\maintain\freeASPUpload.asp" />
     <Content Include="admin\maintain\loginUser.asp" />
     <Content Include="admin\maintain\lostPassword.asp" />
-    <Content Include="admin\maintain\lostPasswordUpdate1.asp" />
-    <Content Include="admin\maintain\lostPasswordUpdate2.asp" />
     <Content Include="admin\maintain\manageCommonItems.asp" />
     <Content Include="admin\maintain\manageGroups.asp" />
     <Content Include="admin\maintain\manage_addresses.asp" />
     <Content Include="admin\maintain\newReport.asp" />
-    <Content Include="admin\maintain\newReport_dev.asp" />
-    <Content Include="admin\maintain\newReport_old.asp" />
     <Content Include="admin\maintain\projects.asp" />
     <Content Include="admin\maintain\recentComments.asp" />
     <Content Include="admin\maintain\releaseOpenItems.asp" />
     <Content Include="admin\maintain\releaseRepeatItems.asp" />
-    <Content Include="admin\maintain\releaseRepeatItems_test.asp" />
     <Content Include="admin\maintain\releasereports.asp" />
-    <Content Include="admin\maintain\releaseReportsTGUpdated.asp" />
-    <Content Include="admin\maintain\releaseReports_old.asp" />
     <Content Include="admin\maintain\releasereports_test.asp" />
     <Content Include="admin\maintain\remImgFiles.asp" />
     <Content Include="admin\maintain\remMapFiles.asp" />
@@ -209,9 +199,6 @@
     <Content Include="admin\maintain\z1.asp" />
     <Content Include="admin\maintain\z2.asp" />
     <Content Include="admin\test.asp" />
-    <Content Include="b&amp;wlogoforreport2.jpg" />
-    <Content Include="b&amp;wlogoforreport_new.jpg" />
-    <Content Include="bwlogoforreport.jpg" />
     <Content Include="css\bootstrap-theme.css" />
     <Content Include="css\bootstrap-theme.min.css" />
     <Content Include="css\bootstrap.css" />
@@ -279,6 +266,7 @@
     <Content Include="views\viewAllProjectActions.asp" />
     <Content Include="views\viewAllReports.asp" />
     <Content Include="views\viewComments.asp" />
+    <Content Include="views\viewCommentsUser.asp" />
     <Content Include="views\viewOpenItemComments.asp" />
     <Content Include="Web.config" />
   </ItemGroup>

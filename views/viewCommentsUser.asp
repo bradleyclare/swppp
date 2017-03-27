@@ -1,7 +1,8 @@
 <%Response.Buffer = False %>
 <!-- #include file="../admin/connSWPPP.asp" -->
 <%
-userID = Request("userID") %>
+userID = Request("userID") 
+%>
 
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
 <HTML>
@@ -14,7 +15,7 @@ userID = Request("userID") %>
     <img src="../images/color_logo_report.jpg" width="300"><br><br>
     <%
     currentDate = date()
-    SQLSELECT = "SELECT firstName, lastName, email FROM Users WHERE userID = " & userID & " ORDER BY email"
+    SQLSELECT = "SELECT firstName, lastName FROM Users WHERE userID = " & userID
     'Response.Write(SQLSELECT & "<br>")
     Set connUsers = connSWPPP.Execute(SQLSELECT)
       
@@ -22,7 +23,7 @@ userID = Request("userID") %>
          <h3>User ID: <%=userID %> not found.</h3>
     <% Else %>
     
-        Recent Comments for <%=Trim(connUsers("firstName")) %>  <%=Trim(connUsers("lastName")) %>
+        Recent Comments for <%=Trim(connUsers("firstName")) %>&nbsp<%=Trim(connUsers("lastName")) %>
         <br /><br />
         </center>
 
@@ -51,9 +52,12 @@ userID = Request("userID") %>
         'tally up the comments for each project
         'Loop through all projects the user has connection with
         cnt = 0
+        If connProjUsers.EOF Then %>
+            <h3>No Projects Found.</h3>
+        <% Else 
         Do While Not connProjUsers.EOF
-            cnt = cnt + 1
             projectID = connProjUsers("projectID")
+            'Response.Write("ProjectID:" & projectID & "<br/>")
             groupName = ""
             groupNameRaw = connProjUsers("collectionName")
 
@@ -73,17 +77,24 @@ userID = Request("userID") %>
             Set rsInspectInfo = connSWPPP.Execute(inspectInfoSQLSELECT) 
             
             If Not rsInspectInfo.EOF Then 
-                n = 0
-                cnt = 0
 	            Do While Not rsInspectInfo.EOF   
                     inspecID = rsInspectInfo("inspecID")
+                    'Response.Write("InspecID:" & inspecID & "<br/>")
                     inspecDate = Trim(rsInspectInfo("inspecDate"))
 
                     coordSQLSELECT = "SELECT coID, coordinates, existingBMP, correctiveMods, orderby, assignDate, completeDate, status, repeat, useAddress, address, locationName, infoOnly, LD, NLN" &_
-	                    " FROM Coordinates WHERE inspecID=" & inspecID & " ORDER BY orderby"	
+						" FROM Coordinates " &_
+						" WHERE inspecID=" & inspecID &_
+                    	" AND status<>'true'" &_
+                        " AND infoOnly<>'true'" &_ 
+                        " AND NLN<>'true'" &_                 
+						" ORDER BY orderby"	
+                    'Response.Write(coordSQLSELECT)
                     Set rsCoord = connSWPPP.execute(coordSQLSELECT)
                     start_n = n
 	                Do While Not rsCoord.EOF	
+                    	'Response.Write(coordSQLSELECT)
+                        cnt = cnt + 1
 	                    coID = rsCoord("coID")
 		                correctiveMods = Trim(rsCoord("correctiveMods"))
 		                coordinates = Trim(rsCoord("coordinates"))
@@ -145,20 +156,25 @@ userID = Request("userID") %>
                                 SET rsComm=nothing
                             End If
                         End If 'end status
-                    rsCoord.MoveNext
-                    LOOP
-                    rsCoord.Close
-                    SET rsCoord=nothing
-                rsInspectInfo.MoveNext
-                LOOP
-            End If 'end rsInspectInfo
-            rsInspectInfo.Close
-            SET rsInspectInfo=nothing
-        Loop 'connProjUsers
+                    		rsCoord.MoveNext
+                    		LOOP
+                    	rsCoord.Close
+                    	SET rsCoord=nothing
+                	rsInspectInfo.MoveNext
+                	LOOP
+            	End If 'end rsInspectInfo
+            	rsInspectInfo.Close
+            	SET rsInspectInfo=nothing
+            connProjUsers.MoveNext
+            Loop 'connProjUsers
+        End If 'no connProjUsers
         connProjUsers.Close
         SET connProjUsers=nothing %>
     </table>
     <% End If
+If cnt = 0 Then %>
+    <h3>No Comments Found</h3>
+<% End If
 connSWPPP.close
 SET connSWPPP=nothing %>
 </BODY>

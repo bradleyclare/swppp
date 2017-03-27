@@ -141,8 +141,9 @@ Set rsInspectInfo = connSWPPP.Execute(inspectInfoSQLSELECT)
 
 <form id="theForm" method="post" action="<%=Request.ServerVariables("script_name")&"?pID="&projectID%>" onsubmit="return isReady(this)";>
 <table cellpadding="2" cellspacing="0" border="0" width="100%">
-	<tr><th width="5%" align="left">Complete</th>
+	<tr>
         <% If Session("validAdmin") Then %>
+            <th width="5%" align="left">Complete</th>
             <th width="5%" align="left">NLN</th>
         <% End If %>
         <th width="5%" align="left">Repeat</th>
@@ -214,10 +215,7 @@ Else
                 If NLN = True Then
                     nln_str = "checked"
                 End If
-                If Not Session("validAdmin") Then %> 
-		            <td align="left"><input type="checkbox" name="coord:complete:<%= n %>" disabled <%=status_str %> /></td>
-                    <td align="left"><input type="checkbox" name="coord:nln:<%= n %>" disabled <%=nln_str %> /></td>
-                <% Else %>
+                If Session("validAdmin") Then %> 
                     <td align="left"><input type="checkbox" name="coord:complete:<%= n %>" <%=status_str %> /></td>
                     <td align="left"><input type="checkbox" name="coord:nln:<%= n %>" <%=nln_str %> /></td>
                 <% End If %>

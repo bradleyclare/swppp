@@ -94,6 +94,8 @@
     <Reference Include="System.EnterpriseServices" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="default2.asp" />
+    <Content Include="default_test.inc" />
     <Content Include="packages.config" />
     <Content Include="css\bootstrap-theme.css.map" />
     <Content Include="css\bootstrap.css.map" />

@@ -260,7 +260,9 @@ IF Request.Form.Count > 0 THEN %>
             Loop 'connProjUsers
             connProjUsers.Close
             SET connProjUsers=nothing
-            strBody=strBody & "</table>" %>
+            strBody=strBody & "</table>" 
+            link = "http://swppp.com/views/viewCommentsUser.asp?userID=" & userID
+            strBody=strBody & "<h3><a href='"& link &"' target='_blank'>view all notes</a></h3>" %>
 
             <% 'send email
             if send_email Then

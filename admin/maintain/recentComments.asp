@@ -35,7 +35,7 @@ Set rsComm = connSWPPP.execute(commSQLSELECT) %>
 <!doctype html public "-//w3c//dtd html 4.0 transitional//en">
 <html>
 <head>
-	<title>SWPPP INSPECTIONS : Admin : Manage Groups</title>
+	<title>SWPPP INSPECTIONS : Admin : Recent Notes</title>
 	<link rel="stylesheet" href="../../global.css" type="text/css">
 </head>
 <!-- #include file="../adminHeader2.inc" -->

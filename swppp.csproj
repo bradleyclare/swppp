@@ -137,7 +137,6 @@
     <Content Include="admin\maintain\archiveCreateContactUs.inc" />
     <Content Include="admin\maintain\archiveCreateDefault.inc" />
     <Content Include="admin\maintain\archiveCreateFileStructure.asp" />
-    <Content Include="admin\maintain\archiveCreateFileStructure_dev.asp" />
     <Content Include="admin\maintain\archiveCreateFullReport.inc" />
     <Content Include="admin\maintain\archiveCreateReportsHTML.inc" />
     <Content Include="admin\maintain\archivePreview.asp" />
@@ -179,7 +178,6 @@
     <Content Include="admin\maintain\remSigFiles.asp" />
     <Content Include="admin\maintain\reportSelect.asp" />
     <Content Include="admin\maintain\reportUsersByProject.asp" />
-    <Content Include="admin\maintain\Test.asp" />
     <Content Include="admin\maintain\upConstructionSignEditRprt.asp" />
     <Content Include="admin\maintain\upConstructionSiteNoticeEditRprt.asp" />
     <Content Include="admin\maintain\upImageRpt.asp" />
@@ -198,8 +196,6 @@
     <Content Include="admin\maintain\viewUsersAdmin.asp" />
     <Content Include="admin\maintain\viewUsersDir.asp" />
     <Content Include="admin\maintain\viewUsers_old.asp" />
-    <Content Include="admin\maintain\z1.asp" />
-    <Content Include="admin\maintain\z2.asp" />
     <Content Include="admin\test.asp" />
     <Content Include="css\bootstrap-theme.css" />
     <Content Include="css\bootstrap-theme.min.css" />
@@ -250,8 +246,6 @@
     <Content Include="views\deleteActionReport.asp" />
     <Content Include="views\editActionReport.asp" />
     <Content Include="views\inspections.asp" />
-    <Content Include="views\inspections_dev.asp" />
-    <Content Include="views\kfc.asp" />
     <Content Include="views\monthlyReportsSum.asp" />
     <Content Include="views\openActionItems.asp" />
     <Content Include="views\operatorForm.asp" />
@@ -264,7 +258,6 @@
     <Content Include="views\reportPrint.asp" />
     <Content Include="views\reportPrintAll.asp" />
     <Content Include="views\reportPrintAllRecent.asp" />
-    <Content Include="views\sitePhoto.asp" />
     <Content Include="views\viewAllProjectActions.asp" />
     <Content Include="views\viewAllReports.asp" />
     <Content Include="views\viewComments.asp" />

@@ -246,6 +246,7 @@ function swapOption(t1, t2, slideDir) {
 		<tr> 
 			<td align="right" bgcolor="#eeeeee"><b>County:</b></td>
 			<td bgcolor="#999999"><select name="projectCounty">
+                <option value=""></option>
 <% 	SQL1="SELECT * FROM Counties WHERE stateAbbr='TX' OR stateAbbr='OK' ORDER BY priority DESC, countyName ASC"
 	SET RS1=connSWPPP.execute(SQL1)
 	DO WHILE NOT RS1.EOF %>
@@ -261,12 +262,12 @@ function swapOption(t1, t2, slideDir) {
 		<!-- office # -->
 		<tr> 
 			<td align="right" bgcolor="#eeeeee"><b>On-Site Contact:</b></td>
-			<td bgcolor="#999999"><input name="officePhone" type="text" size="20" maxlength="20"></td>
+			<td bgcolor="#999999"><input name="officePhone" type="text" size="50" maxlength="50"></td>
 		</tr>
 		<!-- emergency # -->
 		<tr> 
 			<td align="right" bgcolor="#eeeeee"> <b>On-Site Contact:</b></td>
-			<td bgcolor="#999999"><input name="emergencyPhone" type="text" size="20" maxlength="20"></td>
+			<td bgcolor="#999999"><input name="emergencyPhone" type="text" size="50" maxlength="50"></td>
 		</tr>
 		<!-- company -->
 		<tr> 

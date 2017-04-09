@@ -27,6 +27,8 @@ If Request.Form.Count > 0 Then
     if Request("seeScoring") = "on" then seeScoring = 1 Else seeScoring = 0 End If
     if Request("openItemAlerts") = "on" then openItemAlerts = 1 Else openItemAlerts = 0 End If
     if Request("repeatItemAlerts") = "on" then repeatItemAlerts = 1 Else repeatItemAlerts = 0 End If
+    userGroupString = Request("userGroup")
+    userGroupArray = Split(userGroupString,"-")
 	SQLUPDATE =	"UPDATE Users SET" & _
 		" firstName = '" & titleCase(Request("firstName")) & "'" & _
 		", lastName = '" & titleCase(Request("lastName")) & "'" & _
@@ -37,6 +39,7 @@ If Request.Form.Count > 0 Then
         ", seeScoring = '" & seeScoring & "'" & _
         ", openItemAlerts = '" & openItemAlerts & "'" & _
         ", repeatItemAlerts = '" & repeatItemAlerts & "'" & _
+        ", userGroupID = " & CInt(Trim(userGroupArray(0))) & _
 		", qualifications = '" & trimmedQualifications & "'" 
 ' --------------------------- Admin User --------------------------
 		If Request("admin")="on" then 
@@ -61,63 +64,67 @@ If Request.Form.Count > 0 Then
 		If Request("admin")="on" then rightsValue= "000000001" else rightsValue="000000000" End If
 ' ----------------------- Inspector, Director, User, Action, Email in Projects User  -------- 
 		For Each Item in Request.Form
-			Select Case Left(Item,3)
-				Case "use"
-					rights="user"
-					rightsValue= "1"& MID(rightsValue,2)
-				Case "act"
-					rights="action"
-					rightsValue=MID(rightsValue,1,1) &"1"& MID(rightsValue,3)
-				Case "ero"
-					rights="erosion"
-					rightsValue=MID(rightsValue,1,2) &"1"& MID(rightsValue,4)
-				Case "emr"
-					rights="email"
-					rightsValue= MID(rightsValue,1,3) &"1"& MID(rightsValue,5)
-				Case "ecc"
-					rights="ecc"
-					rightsValue= MID(rightsValue,1,4) &"1"& MID(rightsValue,6)
-				Case "bcc"
-					rights="bcc"
-					rightsValue= MID(rightsValue,1,5) &"1"& MID(rightsValue,7)
-				Case "ins"
-					rights="inspector"
-					rightsValue=MID(rightsValue,1,6) &"1"& MID(rightsValue,8)
-'					SQLa="SELECT projectName FROM Projects WHERE projectID="& Request(Item)
-'					SET RSa=connSWPPP.execute(SQLa)
-'					IF NOT(RSa.BOF AND RSa.EOF) THEN 
-'					    projName=RSa(0) 
-'					ELSE 
-'					    projName="error" 
-'					END IF
-					SQL1="SELECT * FROM Commissions WHERE userID="& userID &" AND projectID ='"& Request(Item) &"'"
-					SET RS1=connSWPPP.execute(SQL1)
-					IF RS1.EOF THEN
-						phase1=20
-						phase2=10
-						phase3=5
-						phase4=0
-						phase5=30
-					ELSE
-						phase1=RS1("phase1")
-						phase2=RS1("phase2")
-						phase3=RS1("phase3")
-						phase4=RS1("phase4")
-						phase5=RS1("phase5")
-					END IF
-					RS1.Close
-					SET RS1=nothing
-'					RSa.close
-'					SET RSa=nothing
-					SQL0=SQL0 &" EXEC sp_UpdateCommissions "& userID &", '"& projName &"', "& phase1 &", "& phase2 &", "& phase3 &", "& phase4 &", "& phase5
-				Case "dir"
-					rights="director"
-					rightsValue=MID(rightsValue,1,7) &"1"& MID(rightsValue,9)
-			End Select
-			If rights<>"" then
-				connSWPPP.Execute("sp_InsertPU "& userID &", "& Request(Item) &", '"& rights &"'")
-			end if 'item=inspector, director or user
-			rights=""
+            If Item <> "userGroup" Then
+			    Select Case Left(Item,3)
+				    Case "use"
+					    rights="user"
+					    rightsValue= "1"& MID(rightsValue,2)
+				    Case "act"
+					    rights="action"
+					    rightsValue=MID(rightsValue,1,1) &"1"& MID(rightsValue,3)
+				    Case "ero"
+					    rights="erosion"
+					    rightsValue=MID(rightsValue,1,2) &"1"& MID(rightsValue,4)
+				    Case "emr"
+					    rights="email"
+					    rightsValue= MID(rightsValue,1,3) &"1"& MID(rightsValue,5)
+				    Case "ecc"
+					    rights="ecc"
+					    rightsValue= MID(rightsValue,1,4) &"1"& MID(rightsValue,6)
+				    Case "bcc"
+					    rights="bcc"
+					    rightsValue= MID(rightsValue,1,5) &"1"& MID(rightsValue,7)
+				    Case "ins"
+					    rights="inspector"
+					    rightsValue=MID(rightsValue,1,6) &"1"& MID(rightsValue,8)
+    '					SQLa="SELECT projectName FROM Projects WHERE projectID="& Request(Item)
+    '					SET RSa=connSWPPP.execute(SQLa)
+    '					IF NOT(RSa.BOF AND RSa.EOF) THEN 
+    '					    projName=RSa(0) 
+    '					ELSE 
+    '					    projName="error" 
+    '					END IF
+					    SQL1="SELECT * FROM Commissions WHERE userID="& userID &" AND projectID ='"& Request(Item) &"'"
+					    SET RS1=connSWPPP.execute(SQL1)
+					    IF RS1.EOF THEN
+						    phase1=20
+						    phase2=10
+						    phase3=5
+						    phase4=0
+						    phase5=30
+					    ELSE
+						    phase1=RS1("phase1")
+						    phase2=RS1("phase2")
+						    phase3=RS1("phase3")
+						    phase4=RS1("phase4")
+						    phase5=RS1("phase5")
+					    END IF
+					    RS1.Close
+					    SET RS1=nothing
+    '					RSa.close
+    '					SET RSa=nothing
+					    SQL0=SQL0 &" EXEC sp_UpdateCommissions "& userID &", '"& projName &"', "& phase1 &", "& phase2 &", "& phase3 &", "& phase4 &", "& phase5
+				    Case "dir"
+					    rights="director"
+					    rightsValue=MID(rightsValue,1,7) &"1"& MID(rightsValue,9)
+			    End Select
+			    If rights<>"" then
+                    exeCmd = "sp_InsertPU "& userID &", "& Request(Item) &", '"& rights &"'"
+                    'Response.Write(exeCmd)
+				    connSWPPP.Execute(exeCmd)
+			    end if 'item=inspector, director or user
+			    rights=""
+            End If
 		Next
 		FOR n = 1 to 9 step 1
 			IF (MID(rightsValue,n,1)="1") THEN 
@@ -147,7 +154,7 @@ If Request.Form.Count > 0 Then
 		processed="true"
 End If
 	SQLSELECT = "SELECT firstName, lastName, email" & _
-		", pswrd, dateEntered, signature, noImages, qualifications, seeScoring, openItemAlerts, repeatItemAlerts" & _
+		", pswrd, dateEntered, signature, noImages, qualifications, seeScoring, openItemAlerts, repeatItemAlerts, userGroupID" & _
 		" FROM Users WHERE userID = " & userID
 	Set rsUser = connSWPPP.Execute(SQLSELECT)
 	
@@ -162,6 +169,7 @@ End If
     seeScoring = rsUser("seeScoring")
     openItemAlerts = rsUser("openItemAlerts")
     repeatItemAlerts = rsUser("repeatItemAlerts")
+    userGroupID = rsUser("userGroupID")
 	IF IsNull(qualifications) THEN qualifications="" END IF
 	rsUser.Close
 	Set rsUser = Nothing
@@ -213,7 +221,22 @@ Set objFolder = Nothing
 Set gifDirectory = Nothing %>
 				</select>&nbsp;&nbsp;<input type="button" value="Upload Signature File" 
 					onClick="location='upSigEditUser.asp?userID=<%= userID %>'; return false";></td></tr>
-
+        <tr><td align="right">User Group:</td>
+            <td><select name="userGroup">
+                    <option value="0 - No Group">0 - No Group</option>
+            <% SQLSELECT = "SELECT userGroupID, userGroupName FROM UserGroups"
+            'Response.Write(SQLSELECT & "<br>")
+            Set connGroups = connSWPPP.Execute(SQLSELECT)
+            Do While Not connGroups.EOF %>
+                <option value="<%=connGroups("userGroupID")%> - <%=connGroups("userGroupName")%>" 
+                <% If userGroupID = connGroups("userGroupID") Then %> 
+                    selected 
+                <% End If %>
+                ><%=connGroups("userGroupID")%> - <%=connGroups("userGroupName")%></option>
+                <% connGroups.MoveNext 
+            LOOP %>
+                </select>
+            </td></tr>
 		<tr><td align="right">View Images:</td>
 			<td><input type="radio" name="noImages" value="0"<% IF noImages=0 THEN %> checked<% END IF%>>Yes
 				<input type="radio" name="noImages" value="1"<% IF noImages=1 THEN %> checked<% END IF%>>No</td></tr>

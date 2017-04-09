@@ -122,8 +122,7 @@ tr.highlighted {
 <%
 inspectInfoSQLSELECT = "SELECT DISTINCT inspecID, inspecDate, totalItems, completedItems, includeItems, compliance, released, p.projectName, p.projectPhase, ImageCount = (Select Count(ImageID) From Images Where inspecID = i.inspecID)" & _
 		" FROM Projects as p, ProjectsUsers as pu, Inspections as i" & _
-		" WHERE pu.userID = " & Session("userID") &_
-		" AND i.projectID=p.projectID" &_
+		" WHERE i.projectID=p.projectID" &_
 		" AND i.projectID="& projectID &_
 		" ORDER BY inspecDate DESC"
 'Response.Write(inspectInfoSQLSELECT & "<br>")

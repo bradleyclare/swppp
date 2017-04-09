@@ -94,6 +94,7 @@
     <Reference Include="System.EnterpriseServices" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="admin\maintain\manageUserGroups.asp" />
     <Content Include="default2.asp" />
     <Content Include="default_test.inc" />
     <Content Include="packages.config" />

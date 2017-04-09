@@ -224,8 +224,7 @@ tr.highlighted {
 <%
 inspectInfoSQLSELECT = "SELECT DISTINCT inspecID, inspecDate, totalItems, completedItems, includeItems, compliance, released, p.projectName, p.projectPhase, ImageCount = (Select Count(ImageID) From Images Where inspecID = i.inspecID)" & _
 		" FROM Projects as p, ProjectsUsers as pu, Inspections as i" & _
-		" WHERE pu.userID = " & Session("userID") &_
-		" AND i.projectID=p.projectID" &_
+		" WHERE i.projectID=p.projectID" &_
 		" AND i.projectID="& projectID &_
 		" ORDER BY inspecDate DESC"
 'Response.Write(inspectInfoSQLSELECT & "<br>")
@@ -271,12 +270,12 @@ Set rsInspectInfo = connSWPPP.Execute(inspectInfoSQLSELECT)
             <th width="2.5%" align="left">Add Note</th>
             <th width="2.5%" align="left">View Note</th>
 	    </tr>
-    <% If rsInspectInfo.EOF Then
+    <% siteMapInspecID = 0
+    If rsInspectInfo.EOF Then
 	    Response.Write("<tr><td colspan='10' align='center'><i style='font-size: 15px'>There are no inspection reports found.</i></td></tr>")
     Else
         n = 0
         cnt = 0
-        siteMapInspecID = 0
 	    Do While Not rsInspectInfo.EOF   
             inspecID = rsInspectInfo("inspecID")
             inspecDate = Trim(rsInspectInfo("inspecDate"))
@@ -367,12 +366,15 @@ Set rsInspectInfo = connSWPPP.Execute(inspectInfoSQLSELECT)
         <h3>There are no open items at this time</h3>
     <% End If %>
     <input type="submit" value="Submit" /><br /><br />
-    <% SQL3="SELECT oImageFileName FROM OptionalImages WHERE oitID=12 AND inspecID="& siteMapInspecID
-    SET RS3=connSWPPP.execute(SQL3)
-    IF NOT(RS3.EOF) THEN 
-        sitemap_link = "http://www.swpppinspections.com/images/sitemap/"& TRIM(RS3("oImageFileName"))%>
-	    <a href='<%=sitemap_link%>'>link for Site Map</a>
-    <% END IF %>
+    <% If siteMapInspecID > 0 Then
+        SQL3="SELECT oImageFileName FROM OptionalImages WHERE oitID=12 AND inspecID="& siteMapInspecID
+        Response.Write(SQL3)
+        SET RS3=connSWPPP.execute(SQL3)
+        IF NOT(RS3.EOF) THEN 
+            sitemap_link = "http://www.swpppinspections.com/images/sitemap/"& TRIM(RS3("oImageFileName"))%>
+	        <a href='<%=sitemap_link%>'>link for Site Map</a>
+        <% END IF
+    END IF %>
     </center>
 </form>
 <br /><br />

@@ -819,6 +819,7 @@ Set rsAddress = Nothing %>
 		<!-- onsite contact -->
 		<tr><td align="right" bgcolor="#eeeeee"><b>County:</b></td>
 			<td bgcolor="#999999"><select name="projectCounty">
+                <option value=""></option>
 <% 	SQL1="SELECT * FROM Counties ORDER BY priority DESC, countyName ASC"
 	SET RS1=connSWPPP.execute(SQL1)
 	DO WHILE NOT RS1.EOF %><option value="<%= Trim(RS1("countyName"))%>"<% 

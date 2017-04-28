@@ -368,7 +368,7 @@ Set rsInspectInfo = connSWPPP.Execute(inspectInfoSQLSELECT)
     <input type="submit" value="Submit" /><br /><br />
     <% If siteMapInspecID > 0 Then
         SQL3="SELECT oImageFileName FROM OptionalImages WHERE oitID=12 AND inspecID="& siteMapInspecID
-        Response.Write(SQL3)
+        'Response.Write(SQL3)
         SET RS3=connSWPPP.execute(SQL3)
         IF NOT(RS3.EOF) THEN 
             sitemap_link = "http://www.swpppinspections.com/images/sitemap/"& TRIM(RS3("oImageFileName"))%>

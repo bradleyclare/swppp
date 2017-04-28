@@ -95,7 +95,12 @@ If Request.Form.Count > 0 Then
 				completedItems = completedItems + 1
 			End If
 			Repeat = 0
-			if Request("coord:repeat:"& CStr(n)) = "on" then Repeat = 1 End If
+			if Request("coord:repeat:"& CStr(n)) = "on" then 
+                Repeat = 1
+                parentID = Request("coord:parentID:"& CStr(n)) 'keep the parentID the same if repeat item
+            Else
+                parentID = Request("coord:coID:"& CStr(n)) 'set parentID to current coID, this will be zero for a new item and the current coID for a carryover item
+            End If
 			useAddress = 0
             if Request("coord:useAddress:"& Cstr(n)) = "on" then useAddress = 1 End If
 			address = TRIM(strQuoteReplace(Request("coord:addressName:"& Cstr(n))))
@@ -135,7 +140,8 @@ If Request.Form.Count > 0 Then
 			locationName &"', " & _
             infoOnly &", " & _
             LD &", " & _
-            NLN &";"
+            NLN &", " & _
+            parentID &";"
 		next	
     'Response.Write(SQLc)
         if Len(SQLc) > 0 then connSWPPP.execute(SQLc) end if
@@ -567,7 +573,7 @@ End If%>
 	<input id='openItemAlert-checkbox' type="checkbox" name="openItemAlert" />
 <% End If %>
 </td></tr></table><br/>
-<% coordSQLSELECT = "SELECT coID, coordinates, existingBMP, correctiveMods, orderby, assignDate, completeDate, status, repeat, useAddress, address, locationName, infoOnly, LD, NLN" &_
+<% coordSQLSELECT = "SELECT coID, coordinates, existingBMP, correctiveMods, orderby, assignDate, completeDate, status, repeat, useAddress, address, locationName, infoOnly, LD, NLN, parentID" &_
 	" FROM Coordinates WHERE inspecID=" & inspecID & " ORDER BY orderby"	
 'Response.Write(coordSQLSELECT)
 Set rsCoord = connSWPPP.execute(coordSQLSELECT)
@@ -668,12 +674,17 @@ End If %>
         infoOnly = rsCoord("infoOnly")
         LD = rsCoord("LD")
         NLN = rsCoord("NLN")
+        parentID = rsCoord("parentID")
+        if isNull(parentID) or parentID = "" then 'initialize the parentID if never set
+            parentID = coID
+        end if
 		'Response.Write("ID: " & coID & ", Coord: " & coordinates & ", LocName: " & locationName & ", address: " & address & ", Mods: " & correctiveMods & "<br/>") 
 		%>
 	<input type="hidden" name="coord:coID:<%= n %>" value="<%= coID %>" />
 	<!--<input type="hidden" name="coord:status:<%= n %>" value="<%= status %>" />-->
 	<input type="hidden" name="coord:completeDate:<%= n %>" value="" />
     <input type="hidden" name="coord:NLN:<%= n %>" value="<%=NLN %>"/>
+    <input type="hidden" name="coord:parentID:<%= n %>" value="<%=parentID %>" />
 	<tr><td>ID#</td>
 	<td><%= coID %></td>
 	<td>Address<input type="checkbox" name="coord:useAddress:<%= n %>" onclick="useAddressLookup(this)" 
@@ -754,6 +765,7 @@ Set rsCoord = Nothing %>
 	<!--<input type="hidden" name="coord:status:<%= m %>" value="0" />-->
 	<input type="hidden" name="coord:repeat:<%= m %>" value="0" />
     <input type="hidden" name="coord:NLN:<%= m %>" value="0" />
+    <input type="hidden" name="coord:parentID:<%= m %>" value="0" />
 	<tr><td>ID#</td>
 	<td>0</td>
 	<td>Address<input type="checkbox" name="coord:useAddress:<%= m %>" onclick="useAddressLookup(this)"/></td>

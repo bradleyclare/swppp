@@ -37,7 +37,7 @@ SQL0= SQL0 &" INSERT INTO Inspections (inspecDate, projectname, projectphase, pr
     " Where i.inspecID = (select MAX(inspecID) From Inspections Where projectID = t.projectID) " &_
     " INSERT INTO OptionalImages SELECT oi.oImageName, oi.oImageDesc, oi.oImageFileName, oi.oitID, inspecID= t.newInspecID" &_
 	" , oi.oOrder FROM OptionalImages oi inner join #tmp t on oi.inspecID = t.inspectID ;" &_
-	" INSERT INTO Coordinates SELECT inspecID= t.newInspecID, c.coordinates, c.existingBMP, c.correctiveMods, c.orderby, c.assignDate, c.completeDate, status=0, repeat=0, c.useAddress, c.address, c.locationName, c.infoOnly, c.LD, c.NLN" &_
+	" INSERT INTO Coordinates SELECT inspecID= t.newInspecID, c.coordinates, c.existingBMP, c.correctiveMods, c.orderby, c.assignDate, c.completeDate, status=0, repeat=0, c.useAddress, c.address, c.locationName, c.infoOnly, c.LD, c.NLN, c.parentID" &_
 	" FROM Coordinates c inner join #tmp t on c.inspecID = t.inspectID;"
 Response.Write(SQL0)
 'response.End

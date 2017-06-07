@@ -94,7 +94,9 @@
     <Reference Include="System.EnterpriseServices" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="admin\maintain\cleanupScoring.asp" />
     <Content Include="admin\maintain\manageUserGroups.asp" />
+    <Content Include="admin\maintain\releaseOpenItems.asp" />
     <Content Include="default2.asp" />
     <Content Include="default_test.inc" />
     <Content Include="packages.config" />
@@ -170,7 +172,6 @@
     <Content Include="admin\maintain\newReport.asp" />
     <Content Include="admin\maintain\projects.asp" />
     <Content Include="admin\maintain\recentComments.asp" />
-    <Content Include="admin\maintain\releaseOpenItems.asp" />
     <Content Include="admin\maintain\releaseRepeatItems.asp" />
     <Content Include="admin\maintain\releasereports.asp" />
     <Content Include="admin\maintain\releasereports_test.asp" />

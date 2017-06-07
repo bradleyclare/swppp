@@ -16,6 +16,8 @@ projectID = Trim(Request("pID"))
 
 %><!-- #include file="../admin/connSWPPP.asp" --><%
 
+Server.ScriptTimeout=1500
+
 currentDate = date()
 
 If Request.Form.Count > 0 Then
@@ -25,7 +27,7 @@ If Request.Form.Count > 0 Then
     if commentNum > -1 Then
         update = 0
         coID    = Request("coord:coID:" & commentNum)
-        comment = Request("commentBox")
+        comment = Replace(Request("commentBox"),"'","''")
         userID  = Session("userID")
         'Response.Write(coID & " - " & userID & " - " & currentDate & " - " & comment)
         SQL3="INSERT INTO CoordinatesComments (coID, comment, userID, date)" &_
@@ -217,13 +219,12 @@ tr.highlighted {
         //submit form
         document.getElementById("theForm").submit();
     }
-
   </script>
 </head>
 
 <%
-inspectInfoSQLSELECT = "SELECT DISTINCT inspecID, inspecDate, totalItems, completedItems, includeItems, compliance, released, p.projectName, p.projectPhase, ImageCount = (Select Count(ImageID) From Images Where inspecID = i.inspecID)" & _
-		" FROM Projects as p, ProjectsUsers as pu, Inspections as i" & _
+inspectInfoSQLSELECT = "SELECT DISTINCT inspecID, inspecDate, totalItems, completedItems, includeItems, compliance, released, p.projectName, p.projectPhase" & _
+		" FROM Projects as p, Inspections as i" & _
 		" WHERE i.projectID=p.projectID" &_
 		" AND i.projectID="& projectID &_
 		" ORDER BY inspecDate DESC"
@@ -345,7 +346,7 @@ Set rsInspectInfo = connSWPPP.Execute(inspectInfoSQLSELECT)
                         <% If rsComm.EOF Then %>
                             <td></td>
                         <% Else %>
-                            <td><button><a href="viewOpenItemComments.asp?coID=<%=coID%>" target="_blank">V</a></button></td>
+                            <td><button type="button"><a href="viewOpenItemComments.asp?coID=<%=coID%>" target="_blank">V</a></button></td>
                         <% End If %>
 		                </tr>
                         <tr><td colspan="10"></td></tr>

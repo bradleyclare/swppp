@@ -221,22 +221,6 @@ Set objFolder = Nothing
 Set gifDirectory = Nothing %>
 				</select>&nbsp;&nbsp;<input type="button" value="Upload Signature File" 
 					onClick="location='upSigEditUser.asp?userID=<%= userID %>'; return false";></td></tr>
-        <tr><td align="right">User Group:</td>
-            <td><select name="userGroup">
-                    <option value="0 - No Group">0 - No Group</option>
-            <% SQLSELECT = "SELECT userGroupID, userGroupName FROM UserGroups"
-            'Response.Write(SQLSELECT & "<br>")
-            Set connGroups = connSWPPP.Execute(SQLSELECT)
-            Do While Not connGroups.EOF %>
-                <option value="<%=connGroups("userGroupID")%> - <%=connGroups("userGroupName")%>" 
-                <% If userGroupID = connGroups("userGroupID") Then %> 
-                    selected 
-                <% End If %>
-                ><%=connGroups("userGroupID")%> - <%=connGroups("userGroupName")%></option>
-                <% connGroups.MoveNext 
-            LOOP %>
-                </select>
-            </td></tr>
 		<tr><td align="right">View Images:</td>
 			<td><input type="radio" name="noImages" value="0"<% IF noImages=0 THEN %> checked<% END IF%>>Yes
 				<input type="radio" name="noImages" value="1"<% IF noImages=1 THEN %> checked<% END IF%>>No</td></tr>
@@ -263,7 +247,6 @@ Set gifDirectory = Nothing %>
 		</tr>
         <tr><td align="right" valign=top>Qualifications:</td>
 			<td><TEXTAREA cols="50" rows="3" name="qualifications"><%= REPLACE(qualifications,"#@#","'") %></TEXTAREA></td></tr>
-            <tr><td><input type="submit" value="Update User"></td></tr>
 <% ELSE %>
 	<INPUT type="hidden" name="email" value="<%= email %>">
 	<INPUT type="hidden" name="pswrd" value="<%= pswrd %>">
@@ -271,6 +254,22 @@ Set gifDirectory = Nothing %>
 	<INPUT type="hidden" name="noImages" value="<%= noImages %>">
 	<INPUT type="hidden" name="qualifications" value="<%= REPLACE(qualifications,"#@#","'") %>">
 <% END IF %>
+    <tr><td align="right">User Group:</td>
+        <td><select name="userGroup">
+            <option value="0 - No Group">0 - No Group</option>
+        <% SQLSELECT = "SELECT userGroupID, userGroupName FROM UserGroups"
+        'Response.Write(SQLSELECT & "<br>")
+        Set connGroups = connSWPPP.Execute(SQLSELECT)
+        Do While Not connGroups.EOF %>
+            <option value="<%=connGroups("userGroupID")%> - <%=connGroups("userGroupName")%>" 
+            <% If userGroupID = connGroups("userGroupID") Then %> 
+                selected 
+            <% End If %>
+            ><%=connGroups("userGroupID")%> - <%=connGroups("userGroupName")%></option>
+            <% connGroups.MoveNext 
+        LOOP %>
+     </select></td></tr>
+    <tr><td><input type="submit" value="Update User"></td></tr>
 </TABLE>
 <!--- ----------------------------------------- Rights --------------------------------------- --->
 <table width="100%" border="0">

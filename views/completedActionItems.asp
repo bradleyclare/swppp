@@ -237,7 +237,7 @@ Else
                 <% If rsComm.EOF Then %>
                     <td></td>
                 <% Else %>
-                    <td><button><a href="viewOpenItemComments.asp?coID=<%=coID%>" target="_blank">V</a></button></td>
+                    <td><button type="button"><a href="viewOpenItemComments.asp?coID=<%=coID%>" target="_blank">V</a></button></td>
                 <% End If %>
 		        </tr>
 		        <% n = n + 1
@@ -253,13 +253,15 @@ Else
 End If%>
 </table>
 <center>
+<% If Session("validAdmin") Then  %>
     <input type="submit" value="Submit"/><br/><br/>
+<% End If %>
 <% SQL3="SELECT oImageFileName FROM OptionalImages WHERE oitID=12 AND inspecID="& siteMapInspecID
-    SET RS3=connSWPPP.execute(SQL3)
-    IF NOT(RS3.EOF) THEN 
-        sitemap_link = "http://www.swpppinspections.com/images/sitemap/"& TRIM(RS3("oImageFileName"))%>
-	    <a href='<%=sitemap_link%>'>link for Site Map</a>
-    <% END IF %>
+SET RS3=connSWPPP.execute(SQL3)
+IF NOT(RS3.EOF) THEN 
+    sitemap_link = "http://www.swpppinspections.com/images/sitemap/"& TRIM(RS3("oImageFileName"))%>
+	<a href='<%=sitemap_link%>'>link for Site Map</a>
+<% End If %>
 </center>
 </form>
 <br><br>

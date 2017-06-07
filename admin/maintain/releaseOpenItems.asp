@@ -61,7 +61,7 @@ IF Request.Form.Count > 0 THEN %>
                 Set connProjUsers = connSWPPP.Execute(SQLSELECT)
 
                 strBody=strBody & "<table>"
-                strBody=strBody & "<tr><th>project name</th><th>group name</th><th>over 2 days</th><th>over 6 days</th><th>over 7 days</th><th>over 10 days</th><th>over 14 days</th><th>notes</th></tr>"
+                strBody=strBody & "<tr><th>project name</th><th>group name</th><th>over 2 days</th><th>over 6 days</th><th>over 7 days</th><th>over 10 days</th><th>over 14 days</th><th>repeats</th><th>notes</th></tr>"
 
                 'tally up the open items for each project
                 'Loop through all projects the user has connection with
@@ -81,7 +81,6 @@ IF Request.Form.Count > 0 THEN %>
 	                    " projectID, projectName, projectPhase, released, includeItems, compliance, totalItems, completedItems" & _
 	                    " FROM Inspections" & _
 	                    " WHERE projectID = " & projID &_
-                        " AND completedItems < totalItems" &_
                         " AND includeItems = 1" &_
                         " AND compliance = 0" &_
                         " AND openItemAlert = 1" 
@@ -101,6 +100,7 @@ IF Request.Form.Count > 0 THEN %>
                     coordCntLD7 = 0
                     coordCntLD10 = 0
                     coordCntLD14 = 0
+                    repeatCnt = 0
                     displayProj = False
                     displayComments = False
                                        
@@ -120,10 +120,10 @@ IF Request.Form.Count > 0 THEN %>
                             totalItems = RS0("totalItems")
                             completedItems = RS0("completedItems")
 
-                            dbgBody=dbgBody & inspecDate & "<br/>"
+                            dbgBody=dbgBody & projName & ": " & inspecDate & "<br/>"
                     
                             'open items on report tally up the open item dates 
-                            coordSQLSELECT = "SELECT coID, coordinates, correctiveMods, orderby, assignDate, completeDate, status, repeat, useAddress, address, locationName, infoOnly, LD FROM Coordinates" &_
+                            coordSQLSELECT = "SELECT coID, coordinates, correctiveMods, orderby, assignDate, completeDate, status, repeat, useAddress, address, locationName, infoOnly, LD, parentID FROM Coordinates" &_
 	                            " WHERE inspecID=" & inspecID &_
                                 " AND status=0" &_
                                 " AND repeat=0" &_
@@ -150,6 +150,7 @@ IF Request.Form.Count > 0 THEN %>
 			                        locationName = TRIM(rsCoord("locationName"))
                                     infoOnly = rsCoord("infoOnly")
                                     LD = rsCoord("LD")
+                                    parentID = rsCoord("parentID")
                                     If assignDate = "" Then
 					                    age = 0
 				                    Else
@@ -255,6 +256,8 @@ IF Request.Form.Count > 0 THEN %>
                             End If 
                         End If
                         strBody=strBody & "</td><td>"
+                        strBody=strBody & repeatCnt
+                        strBody=strBody & "</td><td>"
                         if displayComments Then
                             strBody=strBody & "<a href='http://swppp.com/views/viewComments.asp?pID=" & projID &"'> N </a>"
                         End If
@@ -268,6 +271,7 @@ IF Request.Form.Count > 0 THEN %>
                 strBody=strBody & "<h3><a href='"& link &"' target='_blank'>view all notes</a></h3>" %>
 
                 <% 'send email
+                'send_email = false
                 if send_email Then
                     fullName = Trim(connUsers("firstName")) & " " & Trim(connUsers("lastName"))
                     contentSubject= "Open Item Report for "& fullName &" on "& currentDate

@@ -23,10 +23,20 @@ IF Request.Form.Count > 0 THEN %>
     <!-- #INCLUDE FILE="../adminHeader2.inc" -->
     <table>
         <%
+        testing = false
         FOR EACH Item IN Request.Form 'loop through each user
-            If Item <> "userGroup" Then
+            If Item = "testing" Then
+                If Request(Item) = "on" then 
+                    testing = true %> 
+                    TESTING ONLY MODE - NO EMAIL WILL BE SENT 
+                <% End If
+            ElseIf Item <> "userGroup" Then
                 send_email = False
-                debug_msg  = False
+                If testing Then
+                    debug_msg = True
+                Else
+                    debug_msg  = False
+                End If
                 currentDate = date()
                 strBody=""
                 dbgBody=""
@@ -61,7 +71,8 @@ IF Request.Form.Count > 0 THEN %>
                 Set connProjUsers = connSWPPP.Execute(SQLSELECT)
 
                 strBody=strBody & "<table>"
-                strBody=strBody & "<tr><th>project name</th><th>group name</th><th>over 2 days</th><th>over 6 days</th><th>over 7 days</th><th>over 10 days</th><th>over 14 days</th><th>repeats</th><th>notes</th></tr>"
+                'strBody=strBody & "<tr><th>project name</th><th>group name</th><th>over 2 days</th><th>over 6 days</th><th>over 7 days</th><th>over 10 days</th><th>over 14 days</th><th>repeats</th><th>notes</th></tr>"
+                strBody=strBody & "<tr><th>project name</th><th>group name</th><th>over 2 days</th><th>over 6 days</th><th>over 7 days</th><th>over 10 days</th><th>over 14 days</th><th>notes</th></tr>"
 
                 'tally up the open items for each project
                 'Loop through all projects the user has connection with
@@ -120,7 +131,7 @@ IF Request.Form.Count > 0 THEN %>
                             totalItems = RS0("totalItems")
                             completedItems = RS0("completedItems")
 
-                            dbgBody=dbgBody & projName & ": " & inspecDate & "<br/>"
+                            dbgBody=dbgBody & projName & ": " & projPhase & ": " & inspecDate & "<br/>"
                     
                             'open items on report tally up the open item dates 
                             coordSQLSELECT = "SELECT coID, coordinates, correctiveMods, orderby, assignDate, completeDate, status, repeat, useAddress, address, locationName, infoOnly, LD, parentID FROM Coordinates" &_
@@ -133,7 +144,7 @@ IF Request.Form.Count > 0 THEN %>
                             Set rsCoord = connSWPPP.execute(coordSQLSELECT)
 
                             If rsCoord.EOF Then
-		                        dbgBody=dbgBody & "No Open Items Found<br/>"
+		                        'no nothing
 	                        Else
                                 Do While Not rsCoord.EOF
                                     coordCnt = coordCnt + 1
@@ -143,8 +154,6 @@ IF Request.Form.Count > 0 THEN %>
 			                        coordinates = Trim(rsCoord("coordinates"))
 			                        assignDate = rsCoord("assignDate") 
 			                        completeDate = rsCoord("completeDate")
-			                        status = rsCoord("status")
-			                        repeat = rsCoord("repeat")
 			                        useAddress = rsCoord("useAddress")
 			                        address = TRIM(rsCoord("address"))
 			                        locationName = TRIM(rsCoord("locationName"))
@@ -156,7 +165,7 @@ IF Request.Form.Count > 0 THEN %>
 				                    Else
 					                    age = datediff("d",assignDate,currentDate) 
 				                    End If
-                                    dbgBody=dbgBody & coID &" "& status &" "& age &"<br/>"
+                                    dbgBody=dbgBody & "ID: " & coID &", Age: "& age &", LD: "& LD &"<br/>"
                                 
                                     If age > 14 Then
                                         coordCnt14 = coordCnt14 + 1
@@ -193,13 +202,16 @@ IF Request.Form.Count > 0 THEN %>
                                             coordCntLD2 = coordCntLD2 + 1
                                         End If
                                     End If
-
+                                    
                                     'check for comments
                                     commSQLSELECT = "SELECT comment, userID, date" &_
 	                                    " FROM CoordinatesComments WHERE coID=" & coID	
-                                    Set rsComm = connSWPPP.execute(commSQLSELECT)                
+                                    Set rsComm = connSWPPP.execute(commSQLSELECT)     
+                                    comment = rsComm("comment")           
                                     if not rsComm.EOF Then
-                                        displayComments = True
+                                        if InStr(comment,"This item was marked") <> 1 Then
+                                            displayComments = True
+                                        End If
                                     End If                
 
                                     rsCoord.MoveNext
@@ -255,8 +267,8 @@ IF Request.Form.Count > 0 THEN %>
                                 strBody=strBody & " (" & coordCntLD14 & " LD)"
                             End If 
                         End If
-                        strBody=strBody & "</td><td>"
-                        strBody=strBody & repeatCnt
+                        'strBody=strBody & "</td><td>"
+                        'strBody=strBody & repeatCnt
                         strBody=strBody & "</td><td>"
                         if displayComments Then
                             strBody=strBody & "<a href='http://swppp.com/views/viewComments.asp?pID=" & projID &"'> N </a>"
@@ -271,7 +283,9 @@ IF Request.Form.Count > 0 THEN %>
                 strBody=strBody & "<h3><a href='"& link &"' target='_blank'>view all notes</a></h3>" %>
 
                 <% 'send email
-                'send_email = false
+                If testing Then
+                    send_email = false
+                End If
                 if send_email Then
                     fullName = Trim(connUsers("firstName")) & " " & Trim(connUsers("lastName"))
                     contentSubject= "Open Item Report for "& fullName &" on "& currentDate
@@ -344,7 +358,7 @@ ELSE
             <FORM action="<%= Request.ServerVariables("SCRIPT_NAME") %>" method="post">
             <div align="center">
                 Select the Users Below To Send Open Item Alerts via Email<br />
-                <input type="submit" value="Send Emails"><br /><br />
+                <input type="submit" value="Send Emails"><input type="checkbox" name="testing"/>Test Mode (Do Not Send Email)<br /><br />
                 Select User Group
                 <select name="userGroup" onchange="selectUsers(this)">
                     <option value="0 - No Group">0 - No Group</option>

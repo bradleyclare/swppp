@@ -42,10 +42,10 @@ Set RS2=connSWPPP.execute(SQL2) %>
         <th width="15%">Location</th>
         <th width="5%">Inspec Date</th>
     </tr>
-    <% inspectInfoSQLSELECT = "SELECT DISTINCT inspecID, inspecDate, totalItems, completedItems, includeItems, compliance, released, p.projectName, p.projectPhase, ImageCount = (Select Count(ImageID) From Images Where inspecID = i.inspecID)" & _
-	" FROM Projects as p, ProjectsUsers as pu, Inspections as i" & _
-	" WHERE pu.userID = " & Session("userID") &_
-	" AND i.projectID=p.projectID" &_
+    <% dbg_str = ""
+    inspectInfoSQLSELECT = "SELECT DISTINCT inspecID, inspecDate, totalItems, completedItems, includeItems, compliance, released, p.projectName, p.projectPhase" & _
+	" FROM Projects as p, Inspections as i" & _
+	" WHERE i.projectID=p.projectID" &_
 	" AND i.projectID="& projectID &_
 	" ORDER BY inspecDate DESC"
     'Response.Write(inspectInfoSQLSELECT & "<br>")
@@ -63,6 +63,7 @@ Set RS2=connSWPPP.execute(SQL2) %>
             includeItems = rsInspectInfo("includeItems")
         
             if includeItems Then
+                dbg_str = dbg_str & "InspecID: " & inspecID & "<br/>"
                 coordSQLSELECT = "SELECT coID, coordinates, existingBMP, correctiveMods, orderby, assignDate, completeDate, status, repeat, useAddress, address, locationName, infoOnly, LD, NLN" &_
 	                " FROM Coordinates WHERE inspecID=" & inspecID & " ORDER BY orderby"	
                 Set rsCoord = connSWPPP.execute(coordSQLSELECT)
@@ -90,7 +91,7 @@ Set RS2=connSWPPP.execute(SQL2) %>
                     NLN = rsCoord("NLN")
 		            If infoOnly = True or NLN = True Then
                         do_nothing = 1 
-                    Elseif status = false Then 
+                    Else 
                         cnt = cnt + 1
                         If cnt = 1 Then
                             siteMapInspecID = inspecID
@@ -102,28 +103,30 @@ Set RS2=connSWPPP.execute(SQL2) %>
                         If not rsComm.EOF Then
                             DO WHILE NOT rsComm.EOF 
                                 userID = rsComm("userID")
-                                SQLSELECT = "SELECT firstName, lastName FROM Users WHERE userID = " & userID
-                                'Response.Write(SQLSELECT & "<br>")
-                                Set connUsers = connSWPPP.Execute(SQLSELECT)
-                                userName = connUsers("firstName") & " " & connUsers("lastName")%> 
-
-                                <tr>
-                                    <td><%= rsComm("date") %></td>
-                                    <td><a href='../../views/openActionItems.asp?pID=<%=projectID %>' target="_blank"><%= rsComm("comment")%></a></td>
-                                    <td><%= userName %></td>
+                                comment = rsComm("comment")
+                                If InStr(comment,"This item was marked") <> 1 Then 'returns the position that the string starts 
+                                    SQLSELECT = "SELECT firstName, lastName FROM Users WHERE userID = " & userID
+                                    'Response.Write(SQLSELECT & "<br>")
+                                    Set connUsers = connSWPPP.Execute(SQLSELECT)
+                                    userName = connUsers("firstName") & " " & connUsers("lastName")%> 
+                                    <tr>
+                                        <td><%= rsComm("date") %></td>
+                                        <td><a href='../../views/openActionItems.asp?pID=<%=projectID %>' target="_blank"><%= comment%></a></td>
+                                        <td><%= userName %></td>
                 
-                                    <td align="left"><%= rsInspectInfo("projectName")%>&nbsp;<%= rsInspectInfo("projectPhase") %></td>
-                                    <td><%= correctiveMods %></td>
-                                    <td>
-                                    <% if (useAddress) = False Then %>
-			                            <%=coordinates%>
-		                            <% Else %>
-			                            <%=locationName%> (<%=address%>)
-		                            <% End If %>
-                                    </td>
-                                    <td><%=inspecDate%></td>
-                                </tr>
-                            <% rsComm.MoveNext
+                                        <td align="left"><%= rsInspectInfo("projectName")%>&nbsp;<%= rsInspectInfo("projectPhase") %></td>
+                                        <td><%= correctiveMods %></td>
+                                        <td>
+                                        <% if (useAddress) = False Then %>
+			                                <%=coordinates%>
+		                                <% Else %>
+			                                <%=locationName%> (<%=address%>)
+		                                <% End If %>
+                                        </td>
+                                        <td><%=inspecDate%></td>
+                                    </tr>
+                               <% End If
+                               rsComm.MoveNext
                             LOOP 
                             rsComm.Close
                             SET rsComm=nothing

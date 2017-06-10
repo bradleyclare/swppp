@@ -95,7 +95,6 @@ IF Request.Form.Count > 0 THEN %>
                         " AND includeItems = 1" &_
                         " AND compliance = 0" &_
                         " AND openItemAlert = 1" 
-                    '" AND inspecDate BETWEEN '"& startDate &"' AND '"& endDate &"'" &_
                     'Response.Write(SQL0)
                     Set RS0 = connSWPPP.Execute(SQL0)
 
@@ -134,10 +133,9 @@ IF Request.Form.Count > 0 THEN %>
                             dbgBody=dbgBody & projName & ": " & projPhase & ": " & inspecDate & "<br/>"
                     
                             'open items on report tally up the open item dates 
-                            coordSQLSELECT = "SELECT coID, coordinates, correctiveMods, orderby, assignDate, completeDate, status, repeat, useAddress, address, locationName, infoOnly, LD, parentID FROM Coordinates" &_
+                            coordSQLSELECT = "SELECT coID, coordinates, correctiveMods, orderby, assignDate, completeDate, status, repeat, useAddress, address, locationName, infoOnly, LD, NLN, parentID FROM Coordinates" &_
 	                            " WHERE inspecID=" & inspecID &_
                                 " AND status=0" &_
-                                " AND repeat=0" &_
                                 " AND infoOnly=0" &_
                                 " ORDER BY orderby"	
                             'Response.Write(coordSQLSELECT)
@@ -154,66 +152,71 @@ IF Request.Form.Count > 0 THEN %>
 			                        coordinates = Trim(rsCoord("coordinates"))
 			                        assignDate = rsCoord("assignDate") 
 			                        completeDate = rsCoord("completeDate")
+                                    repeat = rsCoord("repeat")
 			                        useAddress = rsCoord("useAddress")
 			                        address = TRIM(rsCoord("address"))
 			                        locationName = TRIM(rsCoord("locationName"))
                                     infoOnly = rsCoord("infoOnly")
                                     LD = rsCoord("LD")
+                                    NLN = rsCoord("NLN")
                                     parentID = rsCoord("parentID")
                                     If assignDate = "" Then
 					                    age = 0
 				                    Else
 					                    age = datediff("d",assignDate,currentDate) 
 				                    End If
-                                    dbgBody=dbgBody & "ID: " & coID &", Age: "& age &", LD: "& LD &"<br/>"
-                                
-                                    If age > 14 Then
-                                        coordCnt14 = coordCnt14 + 1
-                                        displayProj = True
-                                        If LD = True Then
-                                            coordCntLD14 = coordCntLD14 + 1
-                                        End If
-                                    End If
-                                    If age > 10 Then
-                                        coordCnt10 = coordCnt10 + 1
-                                        displayProj = True
-                                        If LD = True Then
-                                            coordCntLD10 = coordCntLD10 + 1
-                                        End If
-                                    End If
-                                    If age > 7 Then
-                                        coordCnt7 = coordCnt7 + 1
-                                        displayProj = True
-                                        If LD = True Then
-                                            coordCntLD7 = coordCntLD7 + 1
-                                        End If
-                                    End If
-                                    If age > 6 Then
-                                        coordCnt6 = coordCnt6 + 1
-                                        displayProj = True
-                                        If LD = True Then
-                                            coordCntLD6 = coordCntLD6 + 1
-                                        End If
-                                    End If
-                                    If age > 2 Then
-                                        coordCnt2 = coordCnt2 + 1
-                                        displayProj = True
-                                        If LD = True Then
-                                            coordCntLD2 = coordCntLD2 + 1
-                                        End If
-                                    End If
+                                    dbgBody=dbgBody & "ID: " & coID &", Age: "& age &", LD: "& LD &", NLN: "& NLN &"<br/>"
+                                	
+									If infoOnly = True or NLN = True Then
+					                    do_nothing = 1 
+					                Elseif status = false Then 
+	                                    If age > 14 Then
+	                                        coordCnt14 = coordCnt14 + 1
+	                                        displayProj = True
+	                                        If LD = True Then
+	                                            coordCntLD14 = coordCntLD14 + 1
+	                                        End If
+	                                    End If
+	                                    If age > 10 Then
+	                                        coordCnt10 = coordCnt10 + 1
+	                                        displayProj = True
+	                                        If LD = True Then
+	                                            coordCntLD10 = coordCntLD10 + 1
+	                                        End If
+	                                    End If
+	                                    If age > 7 Then
+	                                        coordCnt7 = coordCnt7 + 1
+	                                        displayProj = True
+	                                        If LD = True Then
+	                                            coordCntLD7 = coordCntLD7 + 1
+	                                        End If
+	                                    End If
+	                                    If age > 6 Then
+	                                        coordCnt6 = coordCnt6 + 1
+	                                        displayProj = True
+	                                        If LD = True Then
+	                                            coordCntLD6 = coordCntLD6 + 1
+	                                        End If
+	                                    End If
+	                                    If age > 2 Then
+	                                        coordCnt2 = coordCnt2 + 1
+	                                        displayProj = True
+	                                        If LD = True Then
+	                                            coordCntLD2 = coordCntLD2 + 1
+	                                        End If
+	                                    End If
                                     
-                                    'check for comments
-                                    commSQLSELECT = "SELECT comment, userID, date" &_
-	                                    " FROM CoordinatesComments WHERE coID=" & coID	
-                                    Set rsComm = connSWPPP.execute(commSQLSELECT)     
-                                    comment = rsComm("comment")           
-                                    if not rsComm.EOF Then
-                                        if InStr(comment,"This item was marked") <> 1 Then
-                                            displayComments = True
-                                        End If
-                                    End If                
-
+	                                    'check for comments
+	                                    commSQLSELECT = "SELECT comment, userID, date" &_
+		                                    " FROM CoordinatesComments WHERE coID=" & coID	
+	                                    Set rsComm = connSWPPP.execute(commSQLSELECT)       
+	                                    if not rsComm.EOF Then
+	                                        comment = rsComm("comment")   
+                                            if InStr(comment,"This item was marked") <> 1 Then
+	                                            displayComments = True
+	                                        End If
+	                                    End If                
+									End If
                                     rsCoord.MoveNext
                                 LOOP
                                 rsCoord.Close

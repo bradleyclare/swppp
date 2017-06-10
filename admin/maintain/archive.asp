@@ -12,6 +12,7 @@ localDest = Request.ServerVariables("APPL_PHYSICAL_PATH") & "admin\maintain\temp
 Set f = fso.GetFolder(localDest)
 Set fc = f.SubFolders
 For Each fl in fc
+    Response.Write("Attemping to Delete: " & fl)
 	fl.Delete
 Next
 

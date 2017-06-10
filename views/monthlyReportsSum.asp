@@ -26,7 +26,7 @@ recordOrd = Request("orderBy")
 If recordOrd = "" Then recordOrd = " p.projectName ASC, p.projectPhase, inspecDate DESC" End If
 %><!-- #include file="../admin/connSWPPP.asp" --><%
 SQL0 = "SELECT inspecID, inspecDate, projectCounty" & _
-	", i.projectID, p.projectName, p.projectPhase" & _
+	", i.projectID, p.projectName, p.projectPhase, p.collectionName" & _
 	" FROM Inspections as i, Projects as p" & _
 	" WHERE i.projectID = p.projectID" &_
 	" AND i.inspecDate BETWEEN '"& startDate &"' AND '"& endDate &"'" &_
@@ -89,7 +89,8 @@ Set RS0 = connSWPPP.execute(SQL0) %>
 				onClick="navigate();">GO</button></span></TD></tr>
 	<tr><!--		<th><a href="<%= Request.ServerVariables("script_name") %>?orderBy=projectCounty&startDate=<%=startDate%>"><b>County</b></a></th>-->
 		<th><a href="<%= Request.ServerVariables("script_name") %>?orderBy=p.projectName, p.projectPhase, inspecDate DESC&startDate=<%=startDate%>"><b>Project</b></a></th>
-		<th><a href="<%= Request.ServerVariables("script_name") %>?orderBy=inspecDate DESC&startDate=<%=startDate%>"><b>Date</b></a></th></tr>
+		<th><a href="<%= Request.ServerVariables("script_name") %>?orderBy=collectionName, p.projectName, p.projectPhase DESC&startDate=<%=startDate%>"><b>Group</b></a></th>
+        <th><a href="<%= Request.ServerVariables("script_name") %>?orderBy=inspecDate DESC&startDate=<%=startDate%>"><b>Date</b></a></th></tr>
 	<tr><td colspan="3"><img src="../../images/dot.gif" width="5" height="5"></td></tr><%	
 	If RS0.EOF Then
 		Response.Write("<tr><td colspan='5' align='center'><b><i>Sorry " & _
@@ -101,11 +102,13 @@ Set RS0 = connSWPPP.execute(SQL0) %>
 			inspecDate = RS0("inspecDate")
 			projectName = Trim(RS0("projectName"))
 			projectPhase = Trim(RS0("projectPhase"))
-			projectCounty = Trim(RS0("projectCounty"))%>
+			projectCounty = Trim(RS0("projectCounty"))
+            groupName = Trim(RS0("collectionName"))%>
 	<tr align="center" bgcolor="<% = altColors %>" onMouseOver="this.bgColor='#006699';" onMouseOut="this.bgColor='<%=altColors%>';" onClick="window.location='report.asp?inspecID=<%= inspecID%>';"> 
 <!--		<td nowrap><% = projectCounty %></td>-->
 		<td nowrap><% = projectName %>&nbsp<%= projectPhase%></td>
-		<td><% = inspecDate %></td>
+		<td><% = groupName %></td>
+        <td><% = inspecDate %></td>
 	</tr><%
 			' Alternate Row Colors
 			If altColors = "#e5e6e8" Then altColors = "#ffffff" Else altColors = "#e5e6e8" End If			

@@ -238,6 +238,7 @@
     <Content Include="static\about.txt" />
     <Content Include="static\contact.asp" />
     <Content Include="static\contact.txt" />
+    <Content Include="testsql.asp" />
     <Content Include="views\actionReport.asp" />
     <Content Include="views\addActionReport.asp" />
     <Content Include="views\addOperatorForm.asp" />

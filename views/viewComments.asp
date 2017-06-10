@@ -89,7 +89,7 @@ Set RS2=connSWPPP.execute(SQL2) %>
                         correctiveMods = "(LD) " & correctiveMods
                     End If 
                     NLN = rsCoord("NLN")
-		            If infoOnly = True or NLN = True Then
+		            If infoOnly = True or NLN = True or status = True Then
                         do_nothing = 1 
                     Else 
                         cnt = cnt + 1

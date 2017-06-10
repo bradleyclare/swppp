@@ -181,8 +181,62 @@ End If
 	<title>SWPPP INSPECTIONS : Admin : Edit User</title>
 	<link rel="stylesheet" href="../../global.css" type="text/css">
 	<script language="JavaScript" src="../js/validUsers.js"></script>
-	<script language="JavaScript" src="../js/validUsers1.2.js"></script>
+   <script language="JavaScript" src="../js/validUsers1.2.js"></script>
+   <script type="text/javascript">
+      function check_all_bcc(obj) {
+        for (i=0; i<999; i++){
+            var name = "coord:complete:" + i.toString();
+            var s = document.getElementsByName(name);
+            if (s.length > 0){
+                s[0].value = 'on';
+                s[0].checked = true;
+            } else {
+                break;
+            }
+        }
+      }
+
+      function uncheck_all_bcc(obj){
+         for (i=0; i<999; i++){
+            var name = "coord:complete:" + i.toString();
+            var s = document.getElementsByName(name);
+            if (s.length > 0){
+                s[0].value = 'off';
+                s[0].checked = false;
+            } else {
+                break;
+            }
+         }
+      }
+
+      function check_all_inspector(obj) {
+         for (i=0; i<999; i++){
+            var name = "coord:complete:" + i.toString();
+            var s = document.getElementsByName(name);
+            if (s.length > 0){
+               s[0].value = 'on';
+               s[0].checked = true;
+            } else {
+               break;
+            }
+         }
+      }
+
+      function uncheck_all_inspector(obj){
+         for (i=0; i<999; i++){
+            var name = "coord:complete:" + i.toString();
+            var s = document.getElementsByName(name);
+            if (s.length > 0){
+               s[0].value = 'off';
+               s[0].checked = false;
+            } else {
+               break;
+            }
+         }
+      }
+   </script>
 </head>
+<body>
 <!-- #include file="../adminHeader2.inc" -->
 <table width="100%" border="0">
 	<form action="<%= Request.ServerVariables("script_name") %>" method="post" onSubmit="return isReady(this)";>
@@ -270,7 +324,15 @@ Set gifDirectory = Nothing %>
         LOOP %>
      </select></td></tr>
     <tr><td><input type="submit" value="Update User"></td></tr>
-</TABLE>
+</table>
+<br /><br />
+<!---<table><tr>
+   <td><input type="button" value="Check all BCC" onclick="check_all_bcc(this)" /></td>
+   <td><input type="button" value="UnCheck all BCC" onclick="uncheck_all_bcc(this)" /></td>
+   <td><input type="button" value="Check all Inspector" onclick="check_all_inspector(this)" /></td>
+   <td><input type="button" value="UnCheck all Inspector" onclick="uncheck_all_inspector(this)" /></td>
+</tr></table>
+<br /><br />-->
 <!--- ----------------------------------------- Rights --------------------------------------- --->
 <table width="100%" border="0">
 		<tr><td align="left"><br><font size="+1">Rights</font><br><br></td></tr>		

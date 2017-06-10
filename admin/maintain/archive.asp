@@ -5,6 +5,8 @@ If Not Session("validAdmin") Then
 	Response.Redirect("loginUser.asp")
 End If 
 
+Server.ScriptTimeout=1500
+
 '-- delete all subfolders and files from the temp_archives directory
 DIM fso, f, fl, fc
 SET fso = CreateObject("Scripting.FileSystemObject")

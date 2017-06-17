@@ -274,7 +274,7 @@ Set RS0 = connSWPPP.Execute(SQL0)
             <th width="2.5%" align="left">View Note</th>
 	    </tr>
     <% siteMapInspecID = 0
-    show_debug = true
+    show_debug = false
     dbgBody = ""
     If RS0.EOF Then
 		dbgBody=dbgBody & "No Open Items Found<br/>"

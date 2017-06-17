@@ -61,14 +61,14 @@ imageID = Request("imageID") %>
 		On Error Resume Next
 		' upLoad.Save		
 		If Err <> 0 Then %>
-	<tr><td><font color="red">An error occurred when saving the file on the server. 
+	      <tr><td><font color="red">An error occurred when saving the file on the server. 
 			Possible causes include:</font>
 			<ul><li>An incorrect filename was specified when trying to upload.</li>
 				<li>File permissions do not allow writing to the specified area.</li></ul>
 			Please contact <a href="http://www.swppp.com/">SWPPP</a> 
 			for more troubleshooting information, or send e-mail to <a href="mailto:dwims@swppp.com">susan@plonka.com</A> 
 			for additional help on this matter.</td></tr></table>
-<% 		Else %>
+<% 	Else %>
 		<!-- #include file="../connSWPPP.asp" --><%
 			upLoad.Save			
 			' Parse NEW File Name from Upload with Replace()

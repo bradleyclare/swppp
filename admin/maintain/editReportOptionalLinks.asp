@@ -29,16 +29,17 @@ If Request.Form.Count > 0 Then
 		tList=SPLIT(Request(Trim(RSa("oitName"))),":")
 		For m=1 to Ubound(tList) Step 1
 '--	dbo.sp_AddOptImage 	@oImageName char(50),@oIamgeDesc char(50),@inspecID int,@oitID int,@oImageFileName char(50),@oOrder smallint
-			SQLb=SQLb &"/*<br>*/ EXEC sp_AddOptImage null,null,"& inspecID &","& RSa("oitID") &",'"& Trim(tList(m-1)) &"',"& cnt
+			SQLb="EXEC sp_AddOptImage null,null,"& inspecID &","& RSa("oitID") &",'"& Trim(tList(m-1)) &"',"& cnt
+         'Response.Write(SQLb & "<br/>")
+         connSWPPP.execute(SQLb)
 			cnt=cnt+1
 		Next
 		RSa.MoveNext
 	LOOP 
-'Response.Write(SQLb)
-    if Len(SQLb) > 1 then connSWPPP.execute(SQLb) End If
+   'if Len(SQLb) > 1 then connSWPPP.execute(SQLb) End If
 		
 	if Request.Form("submit") = "Save Updates and Return to Report" then
-		Response.Redirect("editReport.asp?inspecID=" + inspecID)
+		'Response.Redirect("editReport.asp?inspecID=" + inspecID)
 	End If
 		
 End If

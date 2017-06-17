@@ -1,4 +1,6 @@
 <%
+Server.ScriptTimeout=7200 '7200 seconds or 2 hrs
+
 If Not Session("validAdmin") Then
 	Session("adminReturnTo") = Request.ServerVariables("path_info") & _
 		"?" & Request.ServerVariables("query_string")
@@ -100,6 +102,7 @@ DO WHILE NOT RS0.EOF
 	SET RS1=connSWPPP.execute(SQL1)
 	cnt1=1
 	curOITDesc=""
+   On Error Resume Next
 	DO WHILE NOT RS1.EOF
 		fileDesc= TRIM(RS1("oitDesc"))
 		dir2Name=TRIM(RS1("oitName"))
@@ -113,8 +116,12 @@ DO WHILE NOT RS0.EOF
 		end if
 		if (cnt1>1) then fileDesc=fileDesc &" "& cnt1 end if 
 		AddArcElement fileExt, (fileDesc), (imagePath & dir2Name &"\"& fileName), (localDest & dirName & (fileDesc) & fileExt), (clientDest & dirName & (fileDesc) &"."& fileExt)
-		fso.CopyFile arr1(3,UBound(arr1,2)), arr1(4,UBound(arr1,2)), True
-		RS1.MoveNext
+      If Err <> 0 Then
+         Response.Write("Problem copying file " & arr1(3,UBound(arr1,2)))
+      Else
+		   fso.CopyFile arr1(3,UBound(arr1,2)), arr1(4,UBound(arr1,2)), True
+		End If
+      RS1.MoveNext
 	LOOP 
 	AddArcElement "html","Default.html","database:inspecID="&RS0(0), localDest & dirName &"Default.html", clientDest & dirName &"Default.html"
 	createDefault RS0(0), localDest & dirName 

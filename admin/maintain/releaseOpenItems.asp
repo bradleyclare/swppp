@@ -27,9 +27,9 @@ IF Request.Form.Count > 0 THEN %>
         FOR EACH Item IN Request.Form 'loop through each user
             If Item = "testing" Then
                 If Request(Item) = "on" then 
-                    testing = true %> 
-                    TESTING ONLY MODE - NO EMAIL WILL BE SENT 
-                <% End If
+                    testing = true 
+                     %> TESTING ONLY MODE - NO EMAIL WILL BE SENT <% 
+                End If
             ElseIf Item <> "userGroup" Then
                 send_email = False
                 If testing Then
@@ -44,8 +44,8 @@ IF Request.Form.Count > 0 THEN %>
                 SQLSELECT = "SELECT firstName, lastName, email FROM Users WHERE userID = " & userID & " ORDER BY email"
                 'Response.Write(SQLSELECT & "<br>")
                 Set connUsers = connSWPPP.Execute(SQLSELECT) %>
-        
-                <br />Processing: <%=userID %> - <%=Trim(connUsers("firstName")) %> <%=Trim(connUsers("lastName")) %> - <%=Trim(connUsers("email")) %> -
+                <br />
+                Processing: <%=userID %> - <%=Trim(connUsers("firstName")) %> <%=Trim(connUsers("lastName")) %> - <%=Trim(connUsers("email")) %> -
 
                 <% strBody=strBody &"<head><style>"
                 strBody=strBody &"table {border-collapse: collapse;}"
@@ -71,8 +71,7 @@ IF Request.Form.Count > 0 THEN %>
                 Set connProjUsers = connSWPPP.Execute(SQLSELECT)
 
                 strBody=strBody & "<table>"
-                'strBody=strBody & "<tr><th>project name</th><th>group name</th><th>over 2 days</th><th>over 6 days</th><th>over 7 days</th><th>over 10 days</th><th>over 14 days</th><th>repeats</th><th>notes</th></tr>"
-                strBody=strBody & "<tr><th>project name</th><th>group name</th><th>over 2 days</th><th>over 6 days</th><th>over 7 days</th><th>over 10 days</th><th>over 14 days</th><th>notes</th><th>systemic</th></tr>"
+                strBody=strBody & "<tr><th>project name</th><th>group name</th><th>over 2 days</th><th>over 6 days</th><th>over 7 days</th><th>over 10 days</th><th>over 14 days</th><th>repeats</th><th>notes</th><th>systemic</th></tr>"
 
                 'tally up the open items for each project
                 'Loop through all projects the user has connection with
@@ -116,10 +115,10 @@ IF Request.Form.Count > 0 THEN %>
                     displaySystemic = False
                                        
                     If RS0.EOF Then
-		                dbgBody=dbgBody & "No Open Items Found<br/>"
-	                Else
-                        inspecCnt = 0
-                        Do While Not RS0.EOF
+		                 dbgBody=dbgBody & "No Open Items Found<br/>"
+	                 Else
+                       inspecCnt = 0
+                       Do While Not RS0.EOF
                             inspecCnt = inspecCnt + 1
                             projName = Trim(RS0("projectName"))
                             projPhase = Trim(RS0("projectPhase"))
@@ -144,86 +143,92 @@ IF Request.Form.Count > 0 THEN %>
 
                             If rsCoord.EOF Then
 		                        'no nothing
-	                        Else
+	                         Else
                                 Do While Not rsCoord.EOF
                                     coordCnt = coordCnt + 1
                                     coID = rsCoord("coID")
-			                        correctiveMods = Trim(rsCoord("correctiveMods"))
-			                        orderby = rsCoord("orderby")
-			                        coordinates = Trim(rsCoord("coordinates"))
-			                        assignDate = rsCoord("assignDate") 
-			                        completeDate = rsCoord("completeDate")
+			                           correctiveMods = Trim(rsCoord("correctiveMods"))
+			                           orderby = rsCoord("orderby")
+			                           coordinates = Trim(rsCoord("coordinates"))
+			                           assignDate = rsCoord("assignDate") 
+			                           completeDate = rsCoord("completeDate")
+                                    status = rsCoord("status")
                                     repeat = rsCoord("repeat")
-			                        useAddress = rsCoord("useAddress")
-			                        address = TRIM(rsCoord("address"))
-			                        locationName = TRIM(rsCoord("locationName"))
+			                           useAddress = rsCoord("useAddress")
+			                           address = TRIM(rsCoord("address"))
+			                           locationName = TRIM(rsCoord("locationName"))
                                     infoOnly = rsCoord("infoOnly")
                                     LD = rsCoord("LD")
                                     NLN = rsCoord("NLN")
                                     parentID = rsCoord("parentID")
                                     If assignDate = "" Then
-					                    age = 0
-				                    Else
-					                    age = datediff("d",assignDate,currentDate) 
-				                    End If
-                                    dbgBody=dbgBody & "ID: " & coID &", Age: "& age &", LD: "& LD &", NLN: "& NLN &"<br/>"
+					                        age = 0
+				                        Else
+					                        age = datediff("d",assignDate,currentDate) 
+				                        End If
+                                    dbgBody=dbgBody & "ID: " & coID &", Age: "& age &", Status: "& status &", LD: "& LD &", NLN: "& NLN &", Repeat: "& repeat &"<br/>"
                                 	
-									     If infoOnly = True or NLN = True Then
-					                    do_nothing = 1 
-					                 Elseif status = false Then 
-	                                    If age > 14 Then
-	                                        coordCnt14 = coordCnt14 + 1
-	                                        displayProj = True
-	                                        If LD = True Then
-	                                            coordCntLD14 = coordCntLD14 + 1
-	                                        End If
-	                                    End If
-	                                    If age > 10 Then
-	                                        coordCnt10 = coordCnt10 + 1
-	                                        displayProj = True
-	                                        If LD = True Then
-	                                            coordCntLD10 = coordCntLD10 + 1
-	                                        End If
-	                                    End If
-	                                    If age > 7 Then
-	                                        coordCnt7 = coordCnt7 + 1
-	                                        displayProj = True
-	                                        If LD = True Then
-	                                            coordCntLD7 = coordCntLD7 + 1
-	                                        End If
-	                                    End If
-	                                    If age > 6 Then
-	                                        coordCnt6 = coordCnt6 + 1
-	                                        displayProj = True
-	                                        If LD = True Then
-	                                            coordCntLD6 = coordCntLD6 + 1
-	                                        End If
-	                                    End If
-	                                    If age > 2 Then
-	                                        coordCnt2 = coordCnt2 + 1
-	                                        displayProj = True
-	                                        If LD = True Then
-	                                            coordCntLD2 = coordCntLD2 + 1
-	                                        End If
-	                                    End If
-                                    
+									        If infoOnly = True or NLN = True Then
+					                       do_nothing = 1 
+					                    Elseif status = False Then 
+	                                    If repeat = True Then
+                                          displayProj = True
+                                          repeatCnt = repeatCnt + 1
+                                       Else
+                                          If age > 14 Then
+	                                             coordCnt14 = coordCnt14 + 1
+	                                             displayProj = True
+	                                             If LD = True Then
+	                                                coordCntLD14 = coordCntLD14 + 1
+	                                             End If
+	                                       End If
+	                                       If age > 10 Then
+	                                             coordCnt10 = coordCnt10 + 1
+	                                             displayProj = True
+	                                             If LD = True Then
+	                                                coordCntLD10 = coordCntLD10 + 1
+	                                             End If
+	                                       End If
+	                                       If age > 7 Then
+	                                             coordCnt7 = coordCnt7 + 1
+	                                             displayProj = True
+	                                             If LD = True Then
+	                                                coordCntLD7 = coordCntLD7 + 1
+	                                             End If
+	                                       End If
+	                                       If age > 6 Then
+	                                             coordCnt6 = coordCnt6 + 1
+	                                             displayProj = True
+	                                             If LD = True Then
+	                                                coordCntLD6 = coordCntLD6 + 1
+	                                             End If
+	                                       End If
+	                                       If age > 2 Then
+	                                             coordCnt2 = coordCnt2 + 1
+	                                             displayProj = True
+	                                             If LD = True Then
+	                                                coordCntLD2 = coordCntLD2 + 1
+	                                             End If
+	                                       End If
+                                       End If 'end repeat
+
 	                                    'check for comments
 	                                    commSQLSELECT = "SELECT comment, userID, date" &_
 		                                    " FROM CoordinatesComments WHERE coID=" & coID	
 	                                    Set rsComm = connSWPPP.execute(commSQLSELECT)       
 	                                    if not rsComm.EOF Then
-	                                        comment = rsComm("comment")   
-                                            if InStr(comment,"This item was marked") <> 1 Then
-	                                            displayComments = True
-	                                        End If
+	                                          comment = rsComm("comment")   
+                                             if InStr(comment,"This item was marked") <> 1 Then
+	                                             displayComments = True
+	                                          End If
 	                                    End If
                                        
                                        if RS0("systemic") then
                                           displaySystemic = True
                                        end if
                                    
-									      End If
-                                    rsCoord.MoveNext
+									        End If
+                                   rsCoord.MoveNext
                                 LOOP
                                 rsCoord.Close
                                 SET rsCoord=nothing
@@ -234,6 +239,7 @@ IF Request.Form.Count > 0 THEN %>
                         SET RS0=nothing
                     End If
                     connProjUsers.MoveNext
+                    dbgBody = dbgBody & "inspecCnt: " & inspecCnt & ", coordCnt: " & coordCnt & ", displayProj: " & displayProj & "<br/>"
                     If inspecCnt > 0 and coordCnt > 0 and displayProj = True Then
                         reportLink = "http://swppp.com/views/openActionItems.asp?pID=" & projID
                         strBody=strBody & VBCrLf & "<tr><td><a href='" & reportLink & "' target='_blank'>" & projName &" "& projPhase &"</td><td>"& groupName &"</td><td>"
@@ -276,8 +282,11 @@ IF Request.Form.Count > 0 THEN %>
                                 strBody=strBody & " (" & coordCntLD14 & " LD)"
                             End If 
                         End If
-                        'strBody=strBody & "</td><td>"
-                        'strBody=strBody & repeatCnt
+                        strBody=strBody & "</td><td>"
+                        If repeatCnt > 0 Then
+                            send_email = True
+                            strBody=strBody & repeatCnt
+                        End If
                         strBody=strBody & "</td><td>"
                         if displayComments Then
                             strBody=strBody & "<a href='http://swppp.com/views/viewComments.asp?pID=" & projID &"'> N </a>"
@@ -293,9 +302,12 @@ IF Request.Form.Count > 0 THEN %>
                 Loop 'connProjUsers
                 connProjUsers.Close
                 SET connProjUsers=nothing
+                
                 strBody=strBody & "</table>" 
                 link = "http://swppp.com/views/viewCommentsUser.asp?userID=" & userID
-                strBody=strBody & "<h3><a href='"& link &"' target='_blank'>view all notes</a></h3>" %>
+                strBody=strBody & "<h3><a href='"& link &"' target='_blank'>view all notes</a></h3>" 
+                dbgBody = dbgBody & "coordCntLD2: " & coordCntLD2 & ", coordCntLD6: " & coordCntLD6 & ", coordCntLD7: " & coordCntLD7 & ", coordCntLD10: " & coordCntLD10 & ", coordCntLD14: " & coordCntLD14 & ", repeatCnt: " & repeatCnt &", sendEmail: " & send_email & "<br/>"   
+                %>
 
                 <% 'send email
                 If testing Then

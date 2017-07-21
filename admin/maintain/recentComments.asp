@@ -52,12 +52,13 @@ Set rsComm = connSWPPP.execute(commSQLSELECT) %>
     <table>
         <tr>
             <th width="5%">Date</th>
-            <th width="25%">Note</th>
+            <th width="20%">Note</th>
             <th width="10%">User</th>
             <th width="15%">Project Name</th>
             <th width="20%">Item</th>
             <th width="15%">Location</th>
             <th width="5%">Inspec Date</th>
+            <th width="5%">Inspector</th>
             <th width="5%">Delete</th>
         </tr>
     <% DO WHILE NOT rsComm.EOF 
@@ -82,18 +83,18 @@ Set rsComm = connSWPPP.execute(commSQLSELECT) %>
                 note = False
             Else
                 correctiveMods = Trim(rsCoord("correctiveMods"))
-		        coordinates = Trim(rsCoord("coordinates"))
+		          coordinates = Trim(rsCoord("coordinates"))
                 useAddress = rsCoord("useAddress")
-		        address = TRIM(rsCoord("address"))
-		        locationName = TRIM(rsCoord("locationName")) 
+		          address = TRIM(rsCoord("address"))
+		          locationName = TRIM(rsCoord("locationName")) 
                 inspecID = rsCoord("inspecID")
             
                 'get report name
-                inspecSQLSELECT = "SELECT inspecDate, i.projectName, i.projectPhase, i.projectID" & _
-		            " FROM Inspections as i, Projects as p" & _
-		            " WHERE i.projectID = p.projectID AND inspecID = " & inspecID
+                inspecSQLSELECT = "SELECT inspecDate, firstName, lastName, i.projectName, i.projectPhase, i.projectID" & _
+		            " FROM Inspections as i, Users as u, Projects as p" & _
+		            " WHERE i.userID = u.userID AND i.projectID = p.projectID AND inspecID = " & inspecID
                 '--Response.Write(inspecSQLSELECT & "<br>")
-	            Set rsReport = connSWPPP.execute(inspecSQLSELECT) %> 
+	             Set rsReport = connSWPPP.execute(inspecSQLSELECT) %> 
 
                 <tr>
                     <td><%= rsComm("date") %></td>
@@ -110,6 +111,7 @@ Set rsComm = connSWPPP.execute(commSQLSELECT) %>
 		            <% End If %>
                     </td>
                     <td><%= rsReport("inspecDate")%></td>
+                    <td><%= rsReport("firstName") %><%= rsReport("lastName") %></td>
                     <td><a href="recentComments.asp?del=1&id=<%=coID %>"><input type="button" value="Delete" /></a></td>
                 </tr>
             <% End If

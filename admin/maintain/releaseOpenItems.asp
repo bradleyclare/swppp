@@ -72,7 +72,7 @@ IF Request.Form.Count > 0 THEN %>
 
                 strBody=strBody & "<table>"
                 'strBody=strBody & "<tr><th>project name</th><th>group name</th><th>over 2 days</th><th>over 6 days</th><th>over 7 days</th><th>over 10 days</th><th>over 14 days</th><th>repeats</th><th>notes</th></tr>"
-                strBody=strBody & "<tr><th>project name</th><th>group name</th><th>over 2 days</th><th>over 6 days</th><th>over 7 days</th><th>over 10 days</th><th>over 14 days</th><th>notes</th></tr>"
+                strBody=strBody & "<tr><th>project name</th><th>group name</th><th>over 2 days</th><th>over 6 days</th><th>over 7 days</th><th>over 10 days</th><th>over 14 days</th><th>notes</th><th>systemic</th></tr>"
 
                 'tally up the open items for each project
                 'Loop through all projects the user has connection with
@@ -89,7 +89,7 @@ IF Request.Form.Count > 0 THEN %>
                     endDate=DateAdd("m",1,startDate)
                     endDate=DateAdd("d",-1,endDate)
                     SQL0 = "SELECT inspecID, inspecDate, reportType," & _
-	                    " projectID, projectName, projectPhase, released, includeItems, compliance, totalItems, completedItems" & _
+	                    " projectID, projectName, projectPhase, released, includeItems, compliance, totalItems, completedItems, systemic" & _
 	                    " FROM Inspections" & _
 	                    " WHERE projectID = " & projID &_
                         " AND includeItems = 1" &_
@@ -113,6 +113,7 @@ IF Request.Form.Count > 0 THEN %>
                     repeatCnt = 0
                     displayProj = False
                     displayComments = False
+                    displaySystemic = False
                                        
                     If RS0.EOF Then
 		                dbgBody=dbgBody & "No Open Items Found<br/>"
@@ -167,9 +168,9 @@ IF Request.Form.Count > 0 THEN %>
 				                    End If
                                     dbgBody=dbgBody & "ID: " & coID &", Age: "& age &", LD: "& LD &", NLN: "& NLN &"<br/>"
                                 	
-									If infoOnly = True or NLN = True Then
+									     If infoOnly = True or NLN = True Then
 					                    do_nothing = 1 
-					                Elseif status = false Then 
+					                 Elseif status = false Then 
 	                                    If age > 14 Then
 	                                        coordCnt14 = coordCnt14 + 1
 	                                        displayProj = True
@@ -215,8 +216,13 @@ IF Request.Form.Count > 0 THEN %>
                                             if InStr(comment,"This item was marked") <> 1 Then
 	                                            displayComments = True
 	                                        End If
-	                                    End If                
-									End If
+	                                    End If
+                                       
+                                       if RS0("systemic") then
+                                          displaySystemic = True
+                                       end if
+                                   
+									      End If
                                     rsCoord.MoveNext
                                 LOOP
                                 rsCoord.Close
@@ -276,6 +282,12 @@ IF Request.Form.Count > 0 THEN %>
                         if displayComments Then
                             strBody=strBody & "<a href='http://swppp.com/views/viewComments.asp?pID=" & projID &"'> N </a>"
                         End If
+                        
+                        strBody=strBody & "</td><td>"
+                        if displaySystemic Then
+                            strBody=strBody & "<a href='http://swppp.com/views/viewSystemicNote.asp?pID=" & projID &"'> S </a>"
+                        End If
+
                         strBody=strBody & "</td></tr>"
 		            End If
                 Loop 'connProjUsers

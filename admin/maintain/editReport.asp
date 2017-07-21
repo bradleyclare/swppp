@@ -35,9 +35,11 @@ If Request.Form.Count > 0 Then
 		END IF
 		includeItems = 0
 		if Request("includeItems") = "on" then includeItems = 1 End If
-	    openItemAlert = 0
+	   openItemAlert = 0
 		if Request("openItemAlert") = "on" then openItemAlert = 1 End If	
-        compliance = 0
+      systemic = 0
+		if Request("systemic") = "on" then systemic = 1 End If	
+      compliance = 0
 		if Request("compliance") = "on" then compliance = 1 End If
 		inspectSQLUPDATE=inspectSQLUPDATE &", projectAddr = '" & strQuoteReplace(Request("projectAddr")) & "'" & _
 		", projectCity = '" & strQuoteReplace(Request("projectCity")) & "'" & _
@@ -64,15 +66,17 @@ If Request.Form.Count > 0 Then
 		", contactFax = '" & strQuoteReplace(Request("contactFax")) & "'" & _
 		", contactEmail = '" & strQuoteReplace(Request("contactEmail")) & "'" & _
 		", includeItems = " & includeItems & _
-        ", openItemAlert = " & openItemAlert & _
+      ", openItemAlert = " & openItemAlert & _
 		", compliance = " & compliance & _
+      ", systemic = " & systemic & _
+      ", systemicNote = '" & strQuoteReplace(Request("systemicNote")) & "'" & _
 		" WHERE inspecID = " & inspecID
-    'response.Write(inspectSQLUPDATE)
-	connSWPPP.Execute(inspectSQLUPDATE)
+      'response.Write(inspectSQLUPDATE)
+	   connSWPPP.Execute(inspectSQLUPDATE)
     
 		totalItems = 0
 		completedItems = 0
-        inspecDate = strQuoteReplace(Request("inspecDate"))
+      inspecDate = strQuoteReplace(Request("inspecDate"))
 		for n = 1 to 999 step 1
 'Response.Write("coord:coID:" & CStr(n)&":"& Request("coord:coID:" & CStr(n)) &"<br/>")
 		    if Trim(Request("coord:coID:" & CStr(n))) = "" then
@@ -169,7 +173,7 @@ End If
 	inspecSQLSELECT = "SELECT inspecDate, i.projectName, i.projectPhase, projectAddr, projectCity, projectState" & _
 		", projectZip, projectCounty, onsiteContact, officePhone, emergencyPhone, i.projectID, compName" & _
 		", compAddr, compAddr2, compCity, compState, compZip, compPhone, compContact, contactPhone, contactFax" & _
-		", contactEmail, reportType, inches, bmpsInPlace, sediment, userID, includeItems, compliance, totalItems, completedItems, openItemAlert, p.collectionName" & _
+		", contactEmail, reportType, inches, bmpsInPlace, sediment, userID, includeItems, compliance, totalItems, completedItems, openItemAlert, systemic, systemicNote, p.collectionName" & _
 		" FROM Inspections as i, Projects as p" & _
 		" WHERE i.projectID = p.projectID AND inspecID = " & inspecID
 '--Response.Write(inspecSQLSELECT & "<br>")
@@ -228,15 +232,50 @@ baseDir = "D:\Inetpub\wwwroot\SWPPP\"%>
         });
 
         $('#compliance-checkbox').click(
-            function () {
+             function () {
                 if ($('#compliance-checkbox').is(":checked")) {
-                    $("#dialog-confirm").dialog('open');
-                    return false;
+                   $("#dialog-confirm").dialog('open');
+                   return false;
                 } else {
-                    $('#compliance-checkbox')[0].checked = false;
+                   $('#compliance-checkbox')[0].checked = false;
+                   document.getElementById("theForm").submit();
                 }
-            }
-        );
+             }
+         );
+
+        $('#systemic-confirm').dialog({
+           autoOpen: false,
+           resizable: false,
+           height: "auto",
+           width: 500,
+           modal: true,
+           buttons: {
+              "Save Note": function () {
+                 //submit form to save note and checkbox
+                 var s_ta = document.getElementsByName("systemic_note");
+                 var s_h = document.getElementsByName("systemicNote");
+                 s_h[0].value = s_ta[0].value;
+                 $('#systemic-checkbox')[0].checked = true;
+                 $(this).dialog("close");
+                 document.getElementById("theForm").submit();
+              },
+              Cancel: function () {
+                 $(this).dialog("close");
+              }
+           }
+        });
+
+        $('#systemic-checkbox').click(
+             function () {
+                if ($('#systemic-checkbox').is(":checked")) {
+                   $("#systemic-confirm").dialog('open');
+                   return false;
+                } else {
+                   $('#systemic-checkbox')[0].checked = false;
+                   document.getElementById("theForm").submit();
+                }
+             }
+          );
 
         $('#includeItems-checkbox').click(
             function () {
@@ -487,11 +526,16 @@ baseDir = "D:\Inetpub\wwwroot\SWPPP\"%>
 <!-- #include file="../adminHeader2.inc" -->
 <h1>Edit Inspection Report</h1>
 <form id="theForm" method="post" action="<%=Request.ServerVariables("script_name")%>?inspecID=<%=inspecID%>" onsubmit="return isReady(this)";>
-	<input type="hidden" name="inspecID" value="<%=inspecID %>"/>
-	<input type="hidden" name="projectID" value="<%=rsReport("projectID") %>"/>
+	<input type="hidden" name="inspecID" value="<%=inspecID %>" />
+	<input type="hidden" name="projectID" value="<%=rsReport("projectID") %>" />
+   <input type="hidden" name="systemicNote" value="<%=Trim(rsReport("systemicNote"))%>" />
 	
-<div id="dialog-confirm" title="My Dialog Title">
+<div id="dialog-confirm" title="Confirm Compliance">
 	<p>Site in Compliance? What do you want to do with the open items?</p>
+</div>
+<div id="systemic-confirm" title="Systemic Note">
+	<p>Site has systemic issues. Please enter note detailing issue.</p>
+   <textarea name="systemic_note" cols="65" rows="3"><%=Trim(rsReport("systemicNote"))%></textarea>
 </div>
 <table width="90%">
 <tr><th width="30%" align="center">Report Date</th><th width="30%" align="center">Project Name</th><th width="30%" align="center">Customer Name</th></tr>
@@ -553,24 +597,29 @@ Else
 	score = "N/A"
 End If%>
 <table width="100%">
-<tr width="20%"><td>Total Items: <%=totalItems%></td><td width="15%">Completed Items: <%=completedItems%></td><td width="15%">Report Score:<%=score%></td><td width="15%">Site is in Compliance
+<tr width="13%"><td>Total Items: <%=totalItems%></td><td width="13%">Completed Items: <%=completedItems%></td><td width="13%">Report Score:<%=score%></td><td width="13%">Site is in Compliance
 <% If rsReport("compliance") = True Then %>
 	<input id="compliance-checkbox" type="checkbox" name="compliance" checked/>
 <% Else %>
 	<input id="compliance-checkbox" type="checkbox" name="compliance" />
 <% End If %>
-</td><td width="15%" align="left">Apply Scoring to Report
+</td><td width="13%" align="left">Apply Scoring to Report
 <% If rsReport("includeItems") = True Then %>
 	<input id='includeItems-checkbox' type="checkbox" name="includeItems" checked/>
 <% Else %>
 	<input id='includeItems-checkbox' type="checkbox" name="includeItems" />
 <% End If %>
-</td><td width="15%" align="left">Open Item Alert
-
+</td><td width="13%" align="left">Open Item Alert
 <% If rsReport("openItemAlert") = True Then %>
 	<input id='openItemAlert-checkbox' type="checkbox" name="openItemAlert" checked/>
 <% Else %>
 	<input id='openItemAlert-checkbox' type="checkbox" name="openItemAlert" />
+<% End If %>
+</td><td width="13%" align="left">Systemic
+<% If rsReport("systemic") = True Then %>
+	<input id='systemic-checkbox' type="checkbox" name="systemic" checked/>
+<% Else %>
+	<input id='systemic-checkbox' type="checkbox" name="systemic" />
 <% End If %>
 </td></tr></table><br/>
 <% coordSQLSELECT = "SELECT coID, coordinates, existingBMP, correctiveMods, orderby, assignDate, completeDate, status, repeat, useAddress, address, locationName, infoOnly, LD, NLN, parentID" &_

@@ -263,6 +263,7 @@
     <Content Include="views\reportPrintAllRecent.asp" />
     <Content Include="views\viewAllProjectActions.asp" />
     <Content Include="views\viewAllReports.asp" />
+    <Content Include="views\viewSystemicNote.asp" />
     <Content Include="views\viewComments.asp" />
     <Content Include="views\viewCommentsUser.asp" />
     <Content Include="views\viewOpenItemComments.asp" />

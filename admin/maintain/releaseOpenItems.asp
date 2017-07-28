@@ -71,7 +71,7 @@ IF Request.Form.Count > 0 THEN %>
                 Set connProjUsers = connSWPPP.Execute(SQLSELECT)
 
                 strBody=strBody & "<table>"
-                strBody=strBody & "<tr><th>project name</th><th>group name</th><th>over 2 days</th><th>over 6 days</th><th>over 7 days</th><th>over 10 days</th><th>over 14 days</th><th>repeats</th><th>notes</th><th>systemic</th></tr>"
+                strBody=strBody & "<tr><th>project name</th><th>group name</th><th>over 1 day</th><th>over 5 days</th><th>over 7 days</th><th>over 10 days</th><th>over 14 days</th><th>repeats</th><th>notes</th><th>systemic</th></tr>"
 
                 'tally up the open items for each project
                 'Loop through all projects the user has connection with
@@ -99,17 +99,18 @@ IF Request.Form.Count > 0 THEN %>
 
                     'Loop through each inspection report and look for open items
                     coordCnt = 0
-                    coordCnt2 = 0
-                    coordCnt6 = 0
+                    coordCnt1 = 0
+                    coordCnt5 = 0
                     coordCnt7 = 0
                     coordCnt10 = 0
                     coordCnt14 = 0
-                    coordCntLD2 = 0
-                    coordCntLD6 = 0
+                    coordCntLD1 = 0
+                    coordCntLD5 = 0
                     coordCntLD7 = 0
                     coordCntLD10 = 0
                     coordCntLD14 = 0
                     repeatCnt = 0
+                    repeatCntLD = 0
                     displayProj = False
                     displayComments = False
                     displaySystemic = False
@@ -174,6 +175,9 @@ IF Request.Form.Count > 0 THEN %>
 	                                    If repeat = True Then
                                           displayProj = True
                                           repeatCnt = repeatCnt + 1
+                                          if LD = True Then
+                                             repeatCntLD = repeatCntLD + 1
+                                          End If
                                        Else
                                           If age > 14 Then
 	                                             coordCnt14 = coordCnt14 + 1
@@ -196,18 +200,18 @@ IF Request.Form.Count > 0 THEN %>
 	                                                coordCntLD7 = coordCntLD7 + 1
 	                                             End If
 	                                       End If
-	                                       If age > 6 Then
-	                                             coordCnt6 = coordCnt6 + 1
+	                                       If age > 5 Then
+	                                             coordCnt5 = coordCnt5 + 1
 	                                             displayProj = True
 	                                             If LD = True Then
-	                                                coordCntLD6 = coordCntLD6 + 1
+	                                                coordCntLD5 = coordCntLD5 + 1
 	                                             End If
 	                                       End If
-	                                       If age > 2 Then
-	                                             coordCnt2 = coordCnt2 + 1
+	                                       If age > 1 Then
+	                                             coordCnt1 = coordCnt1 + 1
 	                                             displayProj = True
 	                                             If LD = True Then
-	                                                coordCntLD2 = coordCntLD2 + 1
+	                                                coordCntLD1 = coordCntLD1 + 1
 	                                             End If
 	                                       End If
                                        End If 'end repeat
@@ -243,19 +247,19 @@ IF Request.Form.Count > 0 THEN %>
                     If inspecCnt > 0 and coordCnt > 0 and displayProj = True Then
                         reportLink = "http://swppp.com/views/openActionItems.asp?pID=" & projID
                         strBody=strBody & VBCrLf & "<tr><td><a href='" & reportLink & "' target='_blank'>" & projName &" "& projPhase &"</td><td>"& groupName &"</td><td>"
-                        If coordCnt2 > 0 Then
+                        If coordCnt1 > 0 Then
                             send_email = True
-                            strBody=strBody & coordCnt2
-                            If coordCntLD2 > 0 Then
-                                strBody=strBody & " (" & coordCntLD2 & " LD)"
+                            strBody=strBody & coordCnt1
+                            If coordCntLD1 > 0 Then
+                                strBody=strBody & " (" & coordCntLD1 & " LD)"
                             End If 
                         End If
                         strBody=strBody &"</td><td>"
-                        If coordCnt6 > 0 Then
+                        If coordCnt5 > 0 Then
                             send_email = True
-                            strBody=strBody & coordCnt6
-                            If coordCntLD6 > 0 Then
-                                strBody=strBody & " (" & coordCntLD6 & " LD)"
+                            strBody=strBody & coordCnt5
+                            If coordCntLD5 > 0 Then
+                                strBody=strBody & " (" & coordCntLD5 & " LD)"
                             End If 
                         End If
                         strBody=strBody &"</td><td>"
@@ -286,6 +290,9 @@ IF Request.Form.Count > 0 THEN %>
                         If repeatCnt > 0 Then
                             send_email = True
                             strBody=strBody & repeatCnt
+                            If repeatCntLD > 0 Then
+                                strBody=strBody & " (" & repeatCntLD & " LD)"
+                            End If 
                         End If
                         strBody=strBody & "</td><td>"
                         if displayComments Then
@@ -306,7 +313,7 @@ IF Request.Form.Count > 0 THEN %>
                 strBody=strBody & "</table>" 
                 link = "http://swppp.com/views/viewCommentsUser.asp?userID=" & userID
                 strBody=strBody & "<h3><a href='"& link &"' target='_blank'>view all notes</a></h3>" 
-                dbgBody = dbgBody & "coordCntLD2: " & coordCntLD2 & ", coordCntLD6: " & coordCntLD6 & ", coordCntLD7: " & coordCntLD7 & ", coordCntLD10: " & coordCntLD10 & ", coordCntLD14: " & coordCntLD14 & ", repeatCnt: " & repeatCnt &", sendEmail: " & send_email & "<br/>"   
+                dbgBody = dbgBody & "coordCntLD1: " & coordCntLD1 & ", coordCntLD5: " & coordCntLD5 & ", coordCntLD7: " & coordCntLD7 & ", coordCntLD10: " & coordCntLD10 & ", coordCntLD14: " & coordCntLD14 & ", repeatCnt: " & repeatCnt &", sendEmail: " & send_email & "<br/>"   
                 %>
 
                 <% 'send email

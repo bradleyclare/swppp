@@ -77,72 +77,79 @@ imagePath = Request.ServerVariables("APPL_PHYSICAL_PATH") & "images\"
 localDest = Request.ServerVariables("APPL_PHYSICAL_PATH") & "admin\maintain\temporary_archives\"
 clientDest= TRIM(Request("destination")) 
 '--- Time to Create the Default Directory ---------------------------------------------------------------
-	AddArcElement "dir","Root Folder","", localDest & SID, clientDest
-IF (fso.FolderExists(localDest & SID)) THEN
-	SET folder1 = fso.GetFolder(localDest & dirName)
+	AddArcElement "dir","Root Folder","", localDest & projectName, clientDest
+IF (fso.FolderExists(localDest & projectName)) THEN
+	SET folder1 = fso.GetFolder(localDest & projectName)
 ELSE
-	SET folder1 = fso.CreateFolder(localDest & SID)
+	SET folder1 = fso.CreateFolder(localDest & projectName)
 END IF
-localDest = localDest & SID &"\"
+localDest = localDest & projectName &"\"
 DO WHILE NOT RS0.EOF
-	dirName = DATEDIFF("d",#1/1/2000#,CDATE(RS0(1))) &"\"
-'-- Now we check to see if this directory already exists. create it or get it ---------------------------
+	'dirName = DATEDIFF("d",#1/1/2000#,CDATE(RS0(1))) &"\"
+   dirName = MonthName(Month(RS0(1))) &"_"& Day(RS0(1)) &"_"& Year(RS0(1)) &"\"
+   '-- Now we check to see if this directory already exists. create it or get it ---------------------------
 	AddArcElement "dir",dirName,dirName,localDest & dirName, clientDest & dirName
-	IF (fso.FolderExists(localDest & dirName)) THEN
+	copyDir = False
+   IF (fso.FolderExists(localDest & dirName)) THEN
 		SET folder1 = fso.GetFolder(localDest & dirName)
+      Response.Write("Skipping Dir: " & dirName & ", " & CDATE(RS0(1)))
 	ELSE
 		SET folder1 = fso.CreateFolder(localDest & dirName)
+      copyDir = True
+      Response.Write("Processing Dir: " & dirName & ", " & CDATE(RS0(1)))
 	END IF
-	AddArcElement "html","FullReport.html","database:inspecID="&RS0(0), localDest & dirName &"FullReport.html", clientDest & dirName &"FullReport.html"
-'-- run the function to create the fullReport.asp file for this inspection report -----------------------
-'-- we must pass the inspecID and the fullPath file information for the FSO.createFile ------------------
-	createFullReportHTML RS0(0), localDest & dirName &"FullReport.html"
-	SQL1="sp_GetOptionalImages("& RS0(0) &")" 
-'-Response.Write(SQL1 &"<br>")
-	SET RS1=connSWPPP.execute(SQL1)
-	cnt1=1
-	curOITDesc=""
-   On Error Resume Next
-	DO WHILE NOT RS1.EOF
-		fileDesc= TRIM(RS1("oitDesc"))
-		dir2Name=TRIM(RS1("oitName"))
-		fileName= Trim(RS1("oImageFileName"))
-		fileExt= "."& RIGHT(fileName,(LEN(fileName)-InStr(fileName,".")))
-		if curOITDesc=fileDesc then 
-			cnt1=cnt1+1
-		else
-			cnt1=1
-			curOITDesc=fileDesc
-		end if
-		if (cnt1>1) then fileDesc=fileDesc &" "& cnt1 end if 
-		AddArcElement fileExt, (fileDesc), (imagePath & dir2Name &"\"& fileName), (localDest & dirName & (fileDesc) & fileExt), (clientDest & dirName & (fileDesc) &"."& fileExt)
-      If Err <> 0 Then
-         Response.Write("Problem copying file " & arr1(3,UBound(arr1,2)))
-      Else
-		   fso.CopyFile arr1(3,UBound(arr1,2)), arr1(4,UBound(arr1,2)), True
-		End If
-      RS1.MoveNext
-	LOOP 
-	AddArcElement "html","Default.html","database:inspecID="&RS0(0), localDest & dirName &"Default.html", clientDest & dirName &"Default.html"
-	createDefault RS0(0), localDest & dirName 
-'-- Cheack for any images associated with the Inspection Report -----------------------------
-	imgSQLSELECT = "SELECT imageID, largeImage, smallImage, description FROM Images WHERE inspecID = " & RS0(0)
-	Set rsImages = connSWPPP.execute(imgSQLSELECT)
-	If Not rsImages.EOF Then
-'--	create the sm and lg image file and array values ----------------------------------------
-		AddArcElement "dir","sm","sm",localDest & dirName &"\sm", clientDest & dirName &"\sm"
-		IF fso.FolderExists(localDest & dirName &"\sm") THEN fso.GetFolder(localDest & dirName &"\sm") ELSE fso.CreateFolder(localDest & dirName &"\sm") END IF
-		AddArcElement "dir","lg","lg",localDest & dirName &"\lg", clientDest & dirName &"\lg"
-		IF fso.FolderExists(localDest & dirName &"\lg") THEN fso.GetFolder(localDest & dirName &"\lg") ELSE fso.CreateFolder(localDest & dirName &"\lg") END IF
-		Do While Not rsImages.EOF 
-'--	create an array record of each image file and copy it to the correct dir ----------------
-			AddArcElement "img", Trim(rsImages("smallImage")), imagePath &"\sm\"& Trim(rsImages("smallImage")), localDest & dirName & "\sm\"& Trim(rsImages("smallImage")), clientDest & dirName & "\sm\"& Trim(rsImages("smallImage"))
-			fso.CopyFile arr1(3,UBound(arr1,2)), arr1(4,UBound(arr1,2)), True
-			AddArcElement "img", Trim(rsImages("largeImage")), imagePath &"\lg\"& Trim(rsImages("largeImage")), localDest & dirName & "\lg\"& Trim(rsImages("largeImage")), clientDest & dirName & "\lg\"& Trim(rsImages("largeImage"))
-			fso.CopyFile arr1(3,UBound(arr1,2)), arr1(4,UBound(arr1,2)), True
-			RSImages.MoveNext
-		LOOP
-	End If
+   if copyDir Then
+	   AddArcElement "html","FullReport.html","database:inspecID="&RS0(0), localDest & dirName &"FullReport.html", clientDest & dirName &"FullReport.html"
+   '-- run the function to create the fullReport.asp file for this inspection report -----------------------
+   '-- we must pass the inspecID and the fullPath file information for the FSO.createFile ------------------
+	   createFullReportHTML RS0(0), localDest & dirName &"FullReport.html"
+	   SQL1="sp_GetOptionalImages("& RS0(0) &")" 
+   '-Response.Write(SQL1 &"<br>")
+	   SET RS1=connSWPPP.execute(SQL1)
+	   cnt1=1
+	   curOITDesc=""
+      On Error Resume Next
+	   DO WHILE NOT RS1.EOF
+		   fileDesc= TRIM(RS1("oitDesc"))
+		   dir2Name=TRIM(RS1("oitName"))
+		   fileName= Trim(RS1("oImageFileName"))
+		   fileExt= "."& RIGHT(fileName,(LEN(fileName)-InStr(fileName,".")))
+		   if curOITDesc=fileDesc then 
+			   cnt1=cnt1+1
+		   else
+			   cnt1=1
+			   curOITDesc=fileDesc
+		   end if
+		   if (cnt1>1) then fileDesc=fileDesc &" "& cnt1 end if 
+		   AddArcElement fileExt, (fileDesc), (imagePath & dir2Name &"\"& fileName), (localDest & dirName & (fileDesc) & fileExt), (clientDest & dirName & (fileDesc) &"."& fileExt)
+         If Err <> 0 Then
+            Response.Write("Problem copying file " & arr1(3,UBound(arr1,2)))
+         Else
+		      fso.CopyFile arr1(3,UBound(arr1,2)), arr1(4,UBound(arr1,2)), True
+		   End If
+         RS1.MoveNext
+	   LOOP 
+	   AddArcElement "html","Default.html","database:inspecID="&RS0(0), localDest & dirName &"Default.html", clientDest & dirName &"Default.html"
+	   createDefault RS0(0), localDest & dirName 
+   '-- Cheack for any images associated with the Inspection Report -----------------------------
+	   imgSQLSELECT = "SELECT imageID, largeImage, smallImage, description FROM Images WHERE inspecID = " & RS0(0)
+	   Set rsImages = connSWPPP.execute(imgSQLSELECT)
+	   If Not rsImages.EOF Then
+   '--	create the sm and lg image file and array values ----------------------------------------
+		   AddArcElement "dir","sm","sm",localDest & dirName &"\sm", clientDest & dirName &"\sm"
+		   IF fso.FolderExists(localDest & dirName &"\sm") THEN fso.GetFolder(localDest & dirName &"\sm") ELSE fso.CreateFolder(localDest & dirName &"\sm") END IF
+		   AddArcElement "dir","lg","lg",localDest & dirName &"\lg", clientDest & dirName &"\lg"
+		   IF fso.FolderExists(localDest & dirName &"\lg") THEN fso.GetFolder(localDest & dirName &"\lg") ELSE fso.CreateFolder(localDest & dirName &"\lg") END IF
+		   Do While Not rsImages.EOF 
+   '--	create an array record of each image file and copy it to the correct dir ----------------
+			   AddArcElement "img", Trim(rsImages("smallImage")), imagePath &"\sm\"& Trim(rsImages("smallImage")), localDest & dirName & "\sm\"& Trim(rsImages("smallImage")), clientDest & dirName & "\sm\"& Trim(rsImages("smallImage"))
+			   fso.CopyFile arr1(3,UBound(arr1,2)), arr1(4,UBound(arr1,2)), True
+			   AddArcElement "img", Trim(rsImages("largeImage")), imagePath &"\lg\"& Trim(rsImages("largeImage")), localDest & dirName & "\lg\"& Trim(rsImages("largeImage")), clientDest & dirName & "\lg\"& Trim(rsImages("largeImage"))
+			   fso.CopyFile arr1(3,UBound(arr1,2)), arr1(4,UBound(arr1,2)), True
+			   RSImages.MoveNext
+		   LOOP
+	   End If
+   End If
 	RS0.MoveNext
 LOOP
 '-- now that all of the files are loaded. the last few things that need to happen are... ----

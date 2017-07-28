@@ -88,9 +88,9 @@ IF Request.Form.Count > 0 THEN %>
 			        useAddress = rsCoord("useAddress")
 			        address = TRIM(rsCoord("address"))
 			        locationName = TRIM(rsCoord("locationName"))
-                    infoOnly = rsCoord("infoOnly")
-                    LD = rsCoord("LD")
-                    NLN = rsCoord("NLN")
+                 infoOnly = rsCoord("infoOnly")
+                 LD = rsCoord("LD")
+                 NLN = rsCoord("NLN")
 			        scoring_class = "black"
 			        If applyScoring Then
 				        If assignDate = "" Then
@@ -98,28 +98,28 @@ IF Request.Form.Count > 0 THEN %>
 				        Else
 					        age = datediff("d",assignDate,currentDate) 
 				        End If
-                        If LD = True Then
-                            correctiveMods = "(LD) " & correctiveMods
-                            scoring_class = "ld"
-                        End If
+                    If LD = True Then
+                       correctiveMods = "(LD) " & correctiveMods
+                       scoring_class = "ld"
+                    End If
 				        If infoOnly = True or NLN = True Then
-                            do_nothing = 1 
-                        Elseif  repeat and age > 0 THEN
-                            send_email = True
-                            scoring_class = "red"
-                            If useAddress Then
-				                strBody=strBody &"<tr valign='top'><td width='20%' align='right'><b>location:</b></td>	<td width='80%' align='left' class='red'>"&  locationName &"<br></td></tr>"
-				                strBody=strBody &"<tr valign='top'><td width='20%' align='right'><b>address:</b></td>	<td width='80%' align='left' class='red'>"&  address &"<br></td></tr>"
-			                Else
-				                strBody=strBody &"<tr valign='top'><td width='20%' align='right'><b>location:</b></td>	<td width='80%' align='left' class='red'>"&  coordinates &"<br></td></tr>"
-			                End If
-			                strBody=strBody &"<tr valign='top'><td width='20%' align='right'><b>action needed:</b></td><td width='80%' align='left' class='red'>"&  correctiveMods &"</td></tr>"
-			                If applyScoring Then
-				                strBody=strBody &"<tr valign='top'><td width='20%' align='right'><b>item age:</b></td><td width='80%' align='left' class='red'>"&  age &" days<br></td></tr>"
-			                End If
-			                strBody=strBody &"<tr><td colspan='2'><hr noshade size='1' align='center' width='90%'></td></tr>"  & vbCrLf
+                       do_nothing = 1 
+                    Elseif  repeat and age > 0 THEN
+                       send_email = True
+                       scoring_class = "red"
+                       If useAddress Then
+				              strBody=strBody &"<tr valign='top'><td width='20%' align='right'><b>location:</b></td>	<td width='80%' align='left' class='red'>"&  locationName &"<br></td></tr>"
+				              strBody=strBody &"<tr valign='top'><td width='20%' align='right'><b>address:</b></td>	<td width='80%' align='left' class='red'>"&  address &"<br></td></tr>"
+			              Else
+				              strBody=strBody &"<tr valign='top'><td width='20%' align='right'><b>location:</b></td>	<td width='80%' align='left' class='red'>"&  coordinates &"<br></td></tr>"
+			              End If
+			              strBody=strBody &"<tr valign='top'><td width='20%' align='right'><b>action needed:</b></td><td width='80%' align='left' class='red'>"&  correctiveMods &"</td></tr>"
+			              If applyScoring Then
+				              strBody=strBody &"<tr valign='top'><td width='20%' align='right'><b>item age:</b></td><td width='80%' align='left' class='red'>"&  age &" days<br></td></tr>"
+			              End If
+			              strBody=strBody &"<tr><td colspan='2'><hr noshade size='1' align='center' width='90%'></td></tr>"  & vbCrLf
 				        End If
-			        End If
+			        End If 'end applyScoring
 			        rsCoord.MoveNext
 		        Loop
 	        End If ' END No Results Found

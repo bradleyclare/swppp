@@ -8,15 +8,15 @@ End If
 Server.ScriptTimeout=7200 '7200 seconds or 2 hrs
 
 '-- delete all subfolders and files from the temp_archives directory
-DIM fso, f, fl, fc
-SET fso = CreateObject("Scripting.FileSystemObject")
-localDest = Request.ServerVariables("APPL_PHYSICAL_PATH") & "admin\maintain\temporary_archives\"
-Set f = fso.GetFolder(localDest)
-Set fc = f.SubFolders
-For Each fl in fc
-    Response.Write("Attemping to Delete: " & fl)
-	fl.Delete
-Next
+'DIM fso, f, fl, fc
+'SET fso = CreateObject("Scripting.FileSystemObject")
+'localDest = Request.ServerVariables("APPL_PHYSICAL_PATH") & "admin\maintain\temporary_archives\"
+'Set f = fso.GetFolder(localDest)
+'Set fc = f.SubFolders
+'For Each fl in fc
+'    Response.Write("Attemping to Delete: " & fl)
+'	fl.Delete
+'Next
 
 SQL0="sp_GetAllProjects"
 %><!-- #include file="../connSWPPP.asp" --><%

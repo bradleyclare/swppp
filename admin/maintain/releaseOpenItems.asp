@@ -6,7 +6,7 @@
 If Not Session("validInspector") and not Session("validAdmin") then Response.Redirect("../default.asp") End If
 %><!-- #INCLUDE FILE="../connSWPPP.asp" --><%
 
-Server.ScriptTimeout=1500
+Server.ScriptTimeout=3000
 
 userGroupID = Request("groupNum")
 
@@ -39,7 +39,6 @@ IF Request.Form.Count > 0 THEN %>
                 End If
                 currentDate = date()
                 strBody=""
-                dbgBody=""
                 userID = Request(Item)
                 SQLSELECT = "SELECT firstName, lastName, email FROM Users WHERE userID = " & userID & " ORDER BY email"
                 'Response.Write(SQLSELECT & "<br>")
@@ -76,14 +75,16 @@ IF Request.Form.Count > 0 THEN %>
                 'tally up the open items for each project
                 'Loop through all projects the user has connection with
                 cnt = 0
+                iterCnt = 0
                 Do While Not connProjUsers.EOF
                     cnt = cnt + 1
                     projID = connProjUsers("projectID")
                     groupName = ""
                     groupNameRaw = connProjUsers("collectionName")
                     'Response.Write(groupNameRaw)
-                    dbgBody=dbgBody & projID & "<br/>"
-
+                    If debug_msg=True Then
+                        Response.Write(projID & "<br/>")
+                    End If
                     startDate=CDATE(Month(Date) &"/1/"& Year(Date)) 
                     endDate=DateAdd("m",1,startDate)
                     endDate=DateAdd("d",-1,endDate)
@@ -93,7 +94,8 @@ IF Request.Form.Count > 0 THEN %>
 	                    " WHERE projectID = " & projID &_
                         " AND includeItems = 1" &_
                         " AND compliance = 0" &_
-                        " AND openItemAlert = 1" 
+                        " AND openItemAlert = 1" &_
+                        " AND completedItems < totalItems"
                     'Response.Write(SQL0)
                     Set RS0 = connSWPPP.Execute(SQL0)
 
@@ -116,8 +118,10 @@ IF Request.Form.Count > 0 THEN %>
                     displaySystemic = False
                                        
                     If RS0.EOF Then
-		                 dbgBody=dbgBody & "No Open Items Found<br/>"
-	                 Else
+                        If debug_msg=True Then
+		                     Response.Write("No Open Items Found<br/>")
+	                     End If 
+                   Else
                        inspecCnt = 0
                        Do While Not RS0.EOF
                             inspecCnt = inspecCnt + 1
@@ -131,48 +135,43 @@ IF Request.Form.Count > 0 THEN %>
                             totalItems = RS0("totalItems")
                             completedItems = RS0("completedItems")
 
-                            dbgBody=dbgBody & projName & ": " & projPhase & ": " & inspecDate & "<br/>"
-                    
-                            'open items on report tally up the open item dates 
-                            coordSQLSELECT = "SELECT coID, coordinates, correctiveMods, orderby, assignDate, completeDate, status, repeat, useAddress, address, locationName, infoOnly, LD, NLN, parentID FROM Coordinates" &_
-	                            " WHERE inspecID=" & inspecID &_
-                                " AND status=0" &_
-                                " AND infoOnly=0" &_
-                                " ORDER BY orderby"	
-                            'Response.Write(coordSQLSELECT)
-                            Set rsCoord = connSWPPP.execute(coordSQLSELECT)
+                            if completedItems < totalItems then
+                               If debug_msg=True Then
+                                  Response.Write(projName & ": " & projPhase & ": " & inspecDate & ", total: " & totalItems & ", completed: " & completedItems &"<br/>")
+                               End If
+                               'open items on report tally up the open item dates 
+                               coordSQLSELECT = "SELECT coID, assignDate, status, repeat, NLN, LD FROM Coordinates" &_
+	                               " WHERE inspecID=" & inspecID &_
+                                   " AND status=0" &_
+                                   " AND infoOnly=0" &_
+                                   " ORDER BY orderby"	
+                               'Response.Write(coordSQLSELECT)
+                               Set rsCoord = connSWPPP.execute(coordSQLSELECT)
 
-                            If rsCoord.EOF Then
-		                        'no nothing
-	                         Else
-                                Do While Not rsCoord.EOF
-                                    coordCnt = coordCnt + 1
-                                    coID = rsCoord("coID")
-			                           correctiveMods = Trim(rsCoord("correctiveMods"))
-			                           orderby = rsCoord("orderby")
-			                           coordinates = Trim(rsCoord("coordinates"))
-			                           assignDate = rsCoord("assignDate") 
-			                           completeDate = rsCoord("completeDate")
-                                    status = rsCoord("status")
-                                    repeat = rsCoord("repeat")
-			                           useAddress = rsCoord("useAddress")
-			                           address = TRIM(rsCoord("address"))
-			                           locationName = TRIM(rsCoord("locationName"))
-                                    infoOnly = rsCoord("infoOnly")
-                                    LD = rsCoord("LD")
-                                    NLN = rsCoord("NLN")
-                                    parentID = rsCoord("parentID")
-                                    If assignDate = "" Then
-					                        age = 0
-				                        Else
-					                        age = datediff("d",assignDate,currentDate) 
-				                        End If
-                                    dbgBody=dbgBody & "ID: " & coID &", Age: "& age &", Status: "& status &", LD: "& LD &", NLN: "& NLN &", Repeat: "& repeat &"<br/>"
-                                	
-									        If infoOnly = True or NLN = True Then
-					                       do_nothing = 1 
-					                    Elseif status = False Then 
-	                                    If repeat = True Then
+                               If rsCoord.EOF Then
+		                           'no nothing
+	                            Else
+                                   Do While Not rsCoord.EOF
+                                       iterCnt = iterCnt + 1
+                                       coordCnt = coordCnt + 1
+                                       coID = rsCoord("coID")
+			                              assignDate = rsCoord("assignDate") 
+                                       status = rsCoord("status")
+                                       repeat = rsCoord("repeat")
+                                       NLN = rsCoord("NLN")
+                                       LD = rsCoord("LD")
+                                       If assignDate = "" Then
+					                           age = 0
+				                           Else
+					                           age = datediff("d",assignDate,currentDate) 
+				                           End If
+                                       If debug_msg=True Then
+                                          'Response.Write("ID: " & coID &", Age: "& age &", Status: "& status &", LD: "& LD &", Repeat: "& repeat &"<br/>")
+                                	      End If
+                                       
+                                       If NLN = True Then
+                                          'continue
+	                                    ElseIf repeat = True Then
                                           displayProj = True
                                           repeatCnt = repeatCnt + 1
                                           if LD = True Then
@@ -230,12 +229,11 @@ IF Request.Form.Count > 0 THEN %>
                                        if RS0("systemic") then
                                           displaySystemic = True
                                        end if
-                                   
-									        End If
-                                   rsCoord.MoveNext
-                                LOOP
-                                rsCoord.Close
-                                SET rsCoord=nothing
+                                      rsCoord.MoveNext
+                                   LOOP
+                                   rsCoord.Close
+                                   SET rsCoord=nothing
+                               End If
                             End If
                             RS0.MoveNext
                         Loop 'RSO
@@ -243,7 +241,9 @@ IF Request.Form.Count > 0 THEN %>
                         SET RS0=nothing
                     End If
                     connProjUsers.MoveNext
-                    dbgBody = dbgBody & "inspecCnt: " & inspecCnt & ", coordCnt: " & coordCnt & ", displayProj: " & displayProj & "<br/>"
+                    If debug_msg=True Then
+                        Response.Write("inspecCnt: " & inspecCnt & ", coordCnt: " & coordCnt & ", displayProj: " & displayProj & "<br/>")
+                    End If 
                     If inspecCnt > 0 and coordCnt > 0 and displayProj = True Then
                         reportLink = "http://swppp.com/views/openActionItems.asp?pID=" & projID
                         strBody=strBody & VBCrLf & "<tr><td><a href='" & reportLink & "' target='_blank'>" & projName &" "& projPhase &"</td><td>"& groupName &"</td><td>"
@@ -305,6 +305,9 @@ IF Request.Form.Count > 0 THEN %>
                         End If
 
                         strBody=strBody & "</td></tr>"
+                        If debug_msg=True Then
+                           Response.Write("coordCnt1: " & coordCnt1 & ", coordCnt5: " & coordCnt5 & ", coordCnt7: " & coordCnt7 & ", coordCnt10: " & coordCnt10 & ", coordCnt14: " & coordCnt14 & ", repeatCnt: " & repeatCnt &", iterCnt: " & iterCnt &", sendEmail: " & send_email & "<br/>")   
+                        End If
 		            End If
                 Loop 'connProjUsers
                 connProjUsers.Close
@@ -313,10 +316,8 @@ IF Request.Form.Count > 0 THEN %>
                 strBody=strBody & "</table>" 
                 link = "http://swppp.com/views/viewCommentsUser.asp?userID=" & userID
                 strBody=strBody & "<h3><a href='"& link &"' target='_blank'>view all notes</a></h3>" 
-                dbgBody = dbgBody & "coordCntLD1: " & coordCntLD1 & ", coordCntLD5: " & coordCntLD5 & ", coordCntLD7: " & coordCntLD7 & ", coordCntLD10: " & coordCntLD10 & ", coordCntLD14: " & coordCntLD14 & ", repeatCnt: " & repeatCnt &", sendEmail: " & send_email & "<br/>"   
-                %>
-
-                <% 'send email
+                
+                'send email
                 If testing Then
                     send_email = false
                 End If
@@ -348,7 +349,6 @@ IF Request.Form.Count > 0 THEN %>
 
                 If debug_msg=True Then
                     Response.Write(strBody)      
-                    Response.Write(dbgBody)     
                 End If 'send_email
             End If 'Item <> 
         NEXT 'FOR item %>

@@ -155,7 +155,9 @@ DO WHILE NOT RS1.EOF
 	t3=dirName &"UP"
 
 	Set FSO = Server.CreateObject("Scripting.FileSystemObject")
-	Set objTemp = FSO.GetFolder(baseDir & "images\"& dirName &"\")
+   imgDir = baseDir & "images\"& dirName &"\"
+   'Response.Write(imgDir & "<br/>")
+	Set objTemp = FSO.GetFolder(imgDir)
 	Set TempImage = objTemp.Files 
 	SQLa="sp_oImagesByType "& inspecID &",'"& RS1("oitID") &"'" 
 	SET RSa=connSWPPP.Execute(SQLa)

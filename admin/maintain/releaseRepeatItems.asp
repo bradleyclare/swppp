@@ -98,6 +98,9 @@ IF Request.Form.Count > 0 THEN %>
 				        Else
 					        age = datediff("d",assignDate,currentDate) 
 				        End If
+                    If age > 6 Then
+                       scoring_class = "red"
+                    End If
                     If LD = True Then
                        correctiveMods = "(LD) " & correctiveMods
                        scoring_class = "ld"

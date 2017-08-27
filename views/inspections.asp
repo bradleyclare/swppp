@@ -27,7 +27,7 @@ Else
 		" WHERE pu.userID = " & Session("userID") &_
 		" AND i.projectID=p.projectID" &_
 		" AND i.projectID="& projectID &_
-		" ORDER BY inspecDate DESC"
+      " ORDER BY inspecDate DESC"
 End If
 SQL0="SELECT * FROM ProjectsUsers WHERE "& Session("userID") &" IN (SELECT userID FROM ProjectsUsers WHERE rights in ('action','erosion') AND projectID="& projectID &")"
 SET RS0=connSWPPP.execute(SQL0)
@@ -48,7 +48,11 @@ projectPhase= Trim(rsInspectInfo("projectPhase")) %>
 	<button onClick="window.open('reportPrintAll.asp?projID=<%= projectID%>&projName=<%= projectName%>&projPhase=<%= projectPhase %>','','width=800, height=600, location=no, menubar=no, status=no, toolbar=no, scrollbars=yes, resizable=yes')">Print All Reports</button>
 	    <br /></div></h1>
 <h2><font color="#003399"><% = projectName %>&nbsp;<%= projectPhase %></font></h2>
-<% includeItemsFlag = False
+<table>
+   <tr><th>Report Date</th><th>Report Score</th><th>Items</th><th>Report Link</th><th>Site Map Link</th></tr>
+<% 
+includeItemsFlag = False
+firstInspecID = 0
 rsInspectInfo.MoveFirst()
 If rsInspectInfo.EOF Then
 	Response.Write("<b><i>Sorry no current " & _
@@ -58,25 +62,55 @@ Else
 	Do While Not rsInspectInfo.EOF 
 		If rsInspectInfo("released") Then
 			If inspecID = 0 Then
-				inspecID     = rsInspectInfo("inspecID")
+				firstInspecID     = rsInspectInfo("inspecID")
 			End If	
-            includeItems = rsInspectInfo("includeItems")
+         inspecID = rsInspectInfo("inspecID")
+         includeItems = rsInspectInfo("includeItems")
 			totalItems     = rsInspectInfo("totalItems")
 			completedItems = rsInspectInfo("completedItems")
 			If includeItems Then
-                includeItemsFlag = True
-            End If
-            If includeItems and Session("seeScoring") and totalItems <> "" Then
-                If totalItems <> 0 Then
-				    score = " - Report Score: " & FormatNumber((completedItems/totalItems)*100,0) & "% (" & completedItems & "/" & totalItems & ")" 
-                Else
-                    score = " - Report Score: 100% (" & completedItems & "/" & totalItems & ")" 
-                End If
-            Else
-				score = ""
+            includeItemsFlag = True
+         End If
+         If includeItems and Session("seeScoring") and totalItems <> "" Then
+             If totalItems <> 0 Then
+                percentage = FormatNumber((completedItems/totalItems)*100,0) & "%"
+             Else
+                percentage = "100%"
+             End If
+             stats = "(" & completedItems & "/" & totalItems & ")"
+         Else
+			   percentage = ""
+            stats = ""
 			End If
 			%>
-			<br><a href="report.asp?inspecID=<% = rsInspectInfo("inspecID") %>"><% = Trim(rsInspectInfo("inspecDate")) %></a><%=score%>
+			<tr><td align="right"><% = Trim(rsInspectInfo("inspecDate")) %></td>
+            <td align="center"><%=percentage%></td>
+            <td align="center"><%=stats%></td>
+            <td align="center"><a href="reportPrint.asp?inspecID=<% = inspecID %>" target="_blank">Report</a></td>
+            <td align="center">
+               <% dirName="sitemap"
+	               fileDesc= "Site Map"
+	               SQLa="sp_oImagesByType "& inspecID &",'12'"
+	               SET RSa=connSWPPP.Execute(SQLa)
+	               cnt1=1
+	               curOITDesc=""
+ 	               DO WHILE NOT(RSa.EOF)
+		               thisFileDesc=fileDesc
+		               if curOITDesc=fileDesc then
+			               cnt1=cnt1+1
+		               else
+			               cnt1=1
+			               curOITDesc=fileDesc
+		               end if
+		               if (cnt1>1) then thisFileDesc=thisFileDesc &" "& cnt1 end if
+		               IF dirName = "sitemap" THEN %>
+      	               <a href="<% = "../images/"& dirName &"/"& RSa("oImageFileName") %>" target="_blank">Site Map</a><br>
+                        <% Exit Do
+                     End If
+		               RSa.MoveNext
+	               LOOP %>
+              </td>
+			</tr>
 			<% If Not Session("noImages") Then
 	'			imgSQLSELECT = "SELECT COUNT(imageID) FROM Images WHERE inspecID = " & rsInspectInfo("inspecID")
 	'			Set rsImages = connSWPPP.execute(imgSQLSELECT)
@@ -94,13 +128,12 @@ End If ' END No Results Found
 RS0.Close
 Set RS0=nothing
 rsInspectInfo.Close
-Set rsInspectInfo = Nothing
-connSWPPP.Close
-Set connSWPPP = Nothing %>
-</td><td width="175" valign="top">
+Set rsInspectInfo = Nothing %>
+</table>
+</td>   
+<td width="175" valign="top">
+<h5>Project Management</h5>
 <ul>
-
-
 <!--<li><a href="addOperatorForm.asp?pID=<%= projectID%>" target="_blank">Add Operator Form</a></li>
 <li><a href="operatorForm.asp?pID=<%= projectID%>" target="_blank">View Operator Form</a></li>-->
 <% If Session("validAdmin") Then %>
@@ -122,7 +155,38 @@ Set connSWPPP = Nothing %>
         <li><a href="actionReport.asp?pID=<%= projectID%>" target="_blank">View Actions Taken</a></li>
     <% End If
 End If %>
-
+</ul>
+<h5>Project Documents</h5>
+<ul>
+   <% SQL2="SELECT * FROM OptionalImagesTypes WHERE oitSortByVal>=-1 ORDER BY oitSortByVal asc"
+   SET RS2=connSWPPP.execute(SQL2)
+   DO WHILE NOT RS2.EOF
+	   dirName=Trim(RS2("oitName"))
+	   fileDesc= TRIM(RS2("oitDesc"))
+	   SQLA="sp_oImagesByType "& firstInspecID &",'"& RS2("oitID") &"'"
+	   SET RSA=connSWPPP.Execute(SQLA)
+	   cnt1=1
+	   curOITDesc=""
+ 	   DO WHILE NOT(RSA.EOF)
+		   thisFileDesc=fileDesc
+		   if curOITDesc=fileDesc then
+			   cnt1=cnt1+1
+		   else
+			   cnt1=1
+			   curOITDesc=fileDesc
+		   end if
+		   if (cnt1>1) then thisFileDesc=thisFileDesc &" "& cnt1 end if
+		   IF dirName <> "sitemap" THEN
+			   If Not Session("validErosion") Then %>
+      	   <li><a href="<% = "../images/"& dirName &"/"& RSa("oImageFileName") %>" target="_blank"><%= thisFileDesc%></a></li>
+   <%			End If
+		   END IF
+		   RSA.MoveNext
+	   LOOP
+	   RS2.MoveNext
+   LOOP 
+connSWPPP.Close
+Set connSWPPP = Nothing %>
 </ul>
 </td></tr></table>
 </td></tr></table>

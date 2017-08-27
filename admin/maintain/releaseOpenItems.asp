@@ -70,7 +70,7 @@ IF Request.Form.Count > 0 THEN %>
                 Set connProjUsers = connSWPPP.Execute(SQLSELECT)
 
                 strBody=strBody & "<table>"
-                strBody=strBody & "<tr><th>project name</th><th>group name</th><th>over 1 day</th><th>over 5 days</th><th>over 7 days</th><th>over 10 days</th><th>over 14 days</th><th>repeats</th><th>notes</th><th>systemic</th></tr>"
+                strBody=strBody & "<tr><th>project name</th><th>group name</th><th>over 1 day</th><th>over 5 days</th><th class='red'>over 7 days</th><th class='red'>over 10 days</th><th class='red'>over 14 days</th><th class='red'>repeats</th><th>notes</th><th>systemic</th></tr>"
 
                 'tally up the open items for each project
                 'Loop through all projects the user has connection with
@@ -262,7 +262,7 @@ IF Request.Form.Count > 0 THEN %>
                                 strBody=strBody & " (" & coordCntLD5 & " LD)"
                             End If 
                         End If
-                        strBody=strBody &"</td><td>"
+                        strBody=strBody &"</td><td class='red'>"
                         If coordCnt7 > 0 Then
                             send_email = True
                             strBody=strBody & coordCnt7
@@ -270,7 +270,7 @@ IF Request.Form.Count > 0 THEN %>
                                 strBody=strBody & " (" & coordCntLD7 & " LD)"
                             End If 
                         End If
-                        strBody=strBody &"</td><td>"
+                        strBody=strBody &"</td><td class='red'>"
                         If coordCnt10 > 0 Then
                             send_email = True
                             strBody=strBody & coordCnt10
@@ -278,7 +278,7 @@ IF Request.Form.Count > 0 THEN %>
                                 strBody=strBody & " (" & coordCntLD10 & " LD)"
                             End If 
                         End If
-                        strBody=strBody & "</td><td>"
+                        strBody=strBody & "</td><td class='red'>"
                         If coordCnt14 > 0 Then
                             send_email = True
                             strBody=strBody & coordCnt14
@@ -286,7 +286,7 @@ IF Request.Form.Count > 0 THEN %>
                                 strBody=strBody & " (" & coordCntLD14 & " LD)"
                             End If 
                         End If
-                        strBody=strBody & "</td><td>"
+                        strBody=strBody & "</td><td class='red'>"
                         If repeatCnt > 0 Then
                             send_email = True
                             strBody=strBody & repeatCnt

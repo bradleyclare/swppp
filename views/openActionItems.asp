@@ -227,7 +227,8 @@ SQL0 = "SELECT inspecID, inspecDate, reportType," & _
     " projectID, projectName, projectPhase, released, includeItems, compliance, totalItems, completedItems" & _
     " FROM Inspections" & _
     " WHERE projectID = " & projID &_
-    " AND includeItems = 1" &_
+    " AND includeItems = 1" &_ 
+    " AND released = 1" &_
     " AND compliance = 0" &_
     " AND openItemAlert = 1" 
 'Response.Write(SQL0)

@@ -44,12 +44,11 @@ projectPhase= Trim(rsInspectInfo("projectPhase")) %>
 <body bgcolor="#FFFFFF" text="#000000">
 <!-- #include file="../header2.inc" -->
 <table width="100%"><tr><td>
-<h1>Please select an inspection date to view the report or&nbsp;&nbsp;
-	<button onClick="window.open('reportPrintAll.asp?projID=<%= projectID%>&projName=<%= projectName%>&projPhase=<%= projectPhase %>','','width=800, height=600, location=no, menubar=no, status=no, toolbar=no, scrollbars=yes, resizable=yes')">Print All Reports</button>
-	    <br /></div></h1>
-<h2><font color="#003399"><% = projectName %>&nbsp;<%= projectPhase %></font></h2>
+<h1><font color="#003399"><% = projectName %>&nbsp;<%= projectPhase %></font></h1>
+<h2><button onClick="window.open('reportPrintAll.asp?projID=<%= projectID%>&projName=<%= projectName%>&projPhase=<%= projectPhase %>','','width=800, height=600, location=no, menubar=no, status=no, toolbar=no, scrollbars=yes, resizable=yes')">Print All Reports</button></h2>
+<br />
 <table>
-   <tr><th>Report Date</th><th>Report Score</th><th>Items</th><th>Report Link</th><th>Site Map Link</th></tr>
+   <tr><th>Report Date</th><th>Report Score</th><th>Items</th><th>Report</th><th>Site Map</th></tr>
 <% 
 includeItemsFlag = False
 firstInspecID = 0

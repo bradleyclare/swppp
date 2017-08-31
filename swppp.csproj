@@ -95,6 +95,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="admin\maintain\cleanupScoring.asp" />
+    <Content Include="admin\maintain\editUsersByProject.asp" />
     <Content Include="admin\maintain\manageUserGroups.asp" />
     <Content Include="admin\maintain\releaseOpenItems.asp" />
     <Content Include="default2.asp" />

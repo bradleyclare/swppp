@@ -48,8 +48,11 @@ projectPhase= Trim(rsInspectInfo("projectPhase")) %>
 <h2><button onClick="window.open('reportPrintAll.asp?projID=<%= projectID%>&projName=<%= projectName%>&projPhase=<%= projectPhase %>','','width=800, height=600, location=no, menubar=no, status=no, toolbar=no, scrollbars=yes, resizable=yes')">Print All Reports</button></h2>
 <br />
 <table>
+<%  If Session("seeScoring") Then %>
    <tr><th>Report Date</th><th>Report Score</th><th>Items</th><th>Report</th><th>Site Map</th></tr>
-<% 
+<% Else %>
+   <tr><th>Report Date</th><th></th><th></th><th>Report</th><th>Site Map</th></tr>
+<% End If
 includeItemsFlag = False
 firstInspecID = 0
 rsInspectInfo.MoveFirst()
@@ -140,9 +143,9 @@ Set rsInspectInfo = Nothing %>
     <li><a href="actionReport.asp?pID=<%= projectID%>" target="_blank">View Actions Taken</a></li>
     <li><a href="openActionItems.asp?pID=<%= projectID%>" target="_blank">Open Items</a></li>
     <li><a href="completedActionItems.asp?pID=<%= projectID%>" target="_blank">Completed Items</a></li>
-    <li><a href="viewComments.asp?pID=<%=projectID %>" target="_blank">View Item Notes</a></li>
-<% Else
-    If includeItemsFlag Then
+<% Else %>
+   <li><a href="viewComments.asp?pID=<%=projectID %>" target="_blank">View Item Notes</a></li>
+    <% If includeItemsFlag Then
         If Session("seeScoring") Then %>
             <li><a href="openActionItems.asp?pID=<%= projectID%>" target="_blank">Open Items</a></li>
         <% End If %>
@@ -155,7 +158,9 @@ Set rsInspectInfo = Nothing %>
     <% End If
 End If %>
 </ul>
+<% If Not Session("validErosion") Then %>
 <h5>Project Documents</h5>
+<% End If %>
 <ul>
    <% SQL2="SELECT * FROM OptionalImagesTypes WHERE oitSortByVal>=-1 ORDER BY oitSortByVal asc"
    SET RS2=connSWPPP.execute(SQL2)

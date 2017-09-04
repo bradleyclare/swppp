@@ -49,9 +49,9 @@ projectPhase= Trim(rsInspectInfo("projectPhase")) %>
 <br />
 <table>
 <%  If Session("seeScoring") Then %>
-   <tr><th>Report Date</th><th>Report Score</th><th>Items</th><th>Report</th><th>Site Map</th></tr>
+   <tr><th>Report Date</th><th>Report</th><th>Site Map</th><th>Report Score</th><th>Items</th></tr>
 <% Else %>
-   <tr><th>Report Date</th><th></th><th></th><th>Report</th><th>Site Map</th></tr>
+   <tr><th>Report Date</th><th>Report</th><th>Site Map</th><th></th><th></th></tr>
 <% End If
 includeItemsFlag = False
 firstInspecID = 0
@@ -86,8 +86,6 @@ Else
 			End If
 			%>
 			<tr><td align="right"><% = Trim(rsInspectInfo("inspecDate")) %></td>
-            <td align="center"><%=percentage%></td>
-            <td align="center"><%=stats%></td>
             <td align="center"><a href="reportPrint.asp?inspecID=<% = inspecID %>" target="_blank">Report</a></td>
             <td align="center">
                <% dirName="sitemap"
@@ -112,6 +110,8 @@ Else
 		               RSa.MoveNext
 	               LOOP %>
               </td>
+              <td align="center"><%=percentage%></td>
+              <td align="center"><%=stats%></td>
 			</tr>
 			<% If Not Session("noImages") Then
 	'			imgSQLSELECT = "SELECT COUNT(imageID) FROM Images WHERE inspecID = " & rsInspectInfo("inspecID")

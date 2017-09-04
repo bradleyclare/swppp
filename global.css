@@ -226,6 +226,11 @@ th
 	color: red;
 }
 
+.checked{
+   height: 20px;
+   background-color: red;
+}
+
 .addressOptionsPopup{
     z-index: 100;
     position: fixed;

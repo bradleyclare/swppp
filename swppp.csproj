@@ -246,6 +246,7 @@
     <Content Include="views\cleaner.vb" />
     <Content Include="views\companies.asp" />
     <Content Include="views\completedActionItems.asp" />
+    <Content Include="views\completedItemPrint.asp" />
     <Content Include="views\counties.asp" />
     <Content Include="views\deleteActionReport.asp" />
     <Content Include="views\editActionReport.asp" />
@@ -259,7 +260,6 @@
     <Content Include="views\qbFormat1_new.asp" />
     <Content Include="views\qbXLS.asp" />
     <Content Include="views\report.asp" />
-    <Content Include="views\reportPrint.asp" />
     <Content Include="views\reportPrintAll.asp" />
     <Content Include="views\reportPrintAllRecent.asp" />
     <Content Include="views\viewAllProjectActions.asp" />

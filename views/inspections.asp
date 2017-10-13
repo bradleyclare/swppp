@@ -62,10 +62,11 @@ If rsInspectInfo.EOF Then
 Else
 	inspecID = 0
 	Do While Not rsInspectInfo.EOF 
+		If inspecID = 0 Then
+			firstInspecID     = rsInspectInfo("inspecID")
+		End If
 		If rsInspectInfo("released") Then
-			If inspecID = 0 Then
-				firstInspecID     = rsInspectInfo("inspecID")
-			End If	
+		    	
          inspecID = rsInspectInfo("inspecID")
          includeItems = rsInspectInfo("includeItems")
 			totalItems     = rsInspectInfo("totalItems")
@@ -150,11 +151,6 @@ Set rsInspectInfo = Nothing %>
             <li><a href="openActionItems.asp?pID=<%= projectID%>" target="_blank">Open Items</a></li>
         <% End If %>
         <li><a href="completedActionItems.asp?pID=<%= projectID%>" target="_blank">Completed Items</a></li>
-    <% Else
-        IF validAct OR Session("validDirector") Then %>
-            <li><a href="addActionReport.asp?pID=<%= projectID%>" target="_blank">Add Actions Taken</a></li>
-        <% END IF %>
-        <li><a href="actionReport.asp?pID=<%= projectID%>" target="_blank">View Actions Taken</a></li>
     <% End If
 End If %>
 </ul>

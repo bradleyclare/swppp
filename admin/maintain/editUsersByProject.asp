@@ -6,6 +6,8 @@ If Not Session("validAdmin") and not Session("validDirector") Then
 	Response.Redirect("loginUser.asp")
 End If
 
+Server.ScriptTimeout=4500
+
 projectID = Request("pID")
 
 %> <!-- #include file="../connSWPPP.asp" --> <%
@@ -132,7 +134,7 @@ Set RS1=connSWPPP.execute(SQL1) %>
 			   <% If recBCCChecked then %>checked class="checked"  <% End If %>
 			   >b</td>
          <% If (Session("validDirector") or Session("validAdmin")) then '- directors can create action managers %>	
-			   <td><input type="checkbox" name="act:<%= userID %>"
+			   <td><input type="checkbox" name="act:<%= userID %>" disabled 
 			   <% If actChecked then %>checked class="checked"  <% End If %>
 			   >a</td>	
 			   <td><input type="checkbox" name="ero:<%= userID %>"

@@ -100,11 +100,12 @@ Set RS0 = connSWPPP.execute(SQL0) %>
 		Do While Not RS0.EOF
 			inspecID = RS0("inspecID")
 			inspecDate = RS0("inspecDate")
+         projectID = RS0("projectID")
 			projectName = Trim(RS0("projectName"))
 			projectPhase = Trim(RS0("projectPhase"))
 			projectCounty = Trim(RS0("projectCounty"))
             groupName = Trim(RS0("collectionName"))%>
-	<tr align="center" bgcolor="<% = altColors %>" onMouseOver="this.bgColor='#006699';" onMouseOut="this.bgColor='<%=altColors%>';" onClick="window.location='report.asp?inspecID=<%= inspecID%>';"> 
+	<tr align="center" bgcolor="<% = altColors %>" onMouseOver="this.bgColor='#006699';" onMouseOut="this.bgColor='<%=altColors%>';" onClick="window.location='inspections.asp?projID=<%= projectID%>&projName=<%= projectName%>&projPhase=<%= projectPhase%>';"> 
 <!--		<td nowrap><% = projectCounty %></td>-->
 		<td nowrap><% = projectName %>&nbsp<%= projectPhase%></td>
 		<td><% = groupName %></td>

@@ -84,7 +84,7 @@ SET RS0=connSWPPP.execute(SQL0) %>
 			IF Session("validDirector") AND NOT(session("validAdmin")) THEN		
 		        SQL1 = SQL1 & " AND pu.rights IN('email','director','user','action','erosion','ecc') and u.userID not in (Select userID From Users Where rights in ('admin','inspector'))"
 			END IF
-		    SQL1 = SQL1 & " ORDER BY u.userID, pu.rights desc"
+		    SQL1 = SQL1 & " ORDER BY firstName, lastName, pu.rights desc"
 		    SET RS1=connSWPPP.execute(SQL1) %>
 			<TBODY id="tbody<%=cnt%>" style="display: none;">
             <% altColors2 = "#F8F8FF"

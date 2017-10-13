@@ -261,7 +261,7 @@ Set RS0 = connSWPPP.Execute(SQL0)
     </center>
     <table cellpadding="2" cellspacing="0" border="0" width="100%">
 	    <tr><th width="5%" align="left">Complete</th>
-            <% If Session("validAdmin") Then %>
+            <% If Session("validAdmin") or Session("validDirector") Then %>
             <th width="5%" align="left">NLN</th>
             <% End If %>
             <th width="5%" align="left">Repeat</th>
@@ -347,7 +347,7 @@ Set RS0 = connSWPPP.Execute(SQL0)
 	                 <input type="hidden" name="coord:inspecID:<%= n %>" value="<%= inspecID %>" />
 			           <tr>
 			           <td align="left"><input type="checkbox" name="coord:complete:<%= n %>" /></td>
-			           <% If Session("validAdmin") Then %>
+			           <% If Session("validAdmin") or Session("validDirector") Then %>
 	                    <td align="left"><input type="checkbox" name="coord:NLN:<%= n %>" /></td>
 	                 <% End If %>
 	                 <td align="left">

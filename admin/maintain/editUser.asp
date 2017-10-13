@@ -432,7 +432,7 @@ DO WHILE NOT RS1.EOF
 <%  End If
  	If (Session("validDirector") OR Session("validAdmin")) then '- directors can create action managers %>		
 <!--- ----------------------------------------- Action ----------------------------------------- --->
-		<td align=center><input type="checkbox" name="act<%= compCount %>" value="<%= dispProjID %>"
+		<td align=center><input type="checkbox" name="act<%= compCount %>" value="<%= dispProjID %>" disabled 
 			<% If actChecked then %>checked<% End If %>></td>		
 <!--- ----------------------------------------- Erosion ----------------------------------------- --->
 		<td align=center><input type="checkbox" name="ero<%= compCount %>" value="<%= dispProjID %>"

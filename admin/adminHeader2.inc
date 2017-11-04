@@ -29,7 +29,8 @@
 			
 		<% If Session("validAdmin") or Session("validDirector") then %>
 			<a href="../maintain/addUser.asp" class="admin">Add User</a><br>
-			<a href="../maintain/reportUsersByProject.asp" class="admin">Users by Project</a><br><br>
+			<a href="../maintain/reportUsersByProject.asp" class="admin">Users by Project</a><br>
+         <a href="../maintain/reportProjectsByUser.asp" class="admin">Projects by User</a><br><br>
 		<% end if %>
 		<% If Session("validAdmin") then 
 	testStr="dwims@swpppinspections.com:jwright@swpppinspections.com"

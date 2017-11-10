@@ -309,8 +309,11 @@ Set gifDirectory = Nothing %>
 	<INPUT type="hidden" name="qualifications" value="<%= REPLACE(qualifications,"#@#","'") %>">
 <% END IF %>
     <tr><td align="right">User Group:</td>
-        <td><select name="userGroup">
-            <option value="0 - No Group">0 - No Group</option>
+        <td><select name="userGroup"
+           <% If not Session("validAdmin") then %>
+           disabled 
+           <% End If %>
+           ><option value="0 - No Group">0 - No Group</option>
         <% SQLSELECT = "SELECT userGroupID, userGroupName FROM UserGroups"
         'Response.Write(SQLSELECT & "<br>")
         Set connGroups = connSWPPP.Execute(SQLSELECT)

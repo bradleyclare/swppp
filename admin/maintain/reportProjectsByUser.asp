@@ -11,8 +11,42 @@ If isempty(group) Then
     group = "A"
 End If
 
-SQL0="SELECT * FROM Users ORDER BY lastName, firstName ASC"
-SET RS0=connSWPPP.execute(SQL0) %>
+'SQL0="SELECT * FROM Users ORDER BY lastName, firstName ASC"
+'SET RS0=connSWPPP.execute(SQL0) 
+
+'select the companies for which this user is a valid Director
+SQLSELECT = "SELECT projectID" & _
+		" FROM ProjectsUsers" &_
+		" WHERE userID=" & Session("userID") &_
+		" AND rights='director'"
+Set connComp = connSWPPP.Execute(SQLSELECT)
+
+' select users who have rights to those companies
+SQLSELECT = "SELECT DISTINCT u.userID, firstName, lastName, pu.rights" &_
+	" FROM Users as u JOIN ProjectsUsers as pu" &_
+	" ON u.userID=pu.userID JOIN Projects as p" &_
+	" ON pu.projectId=p.projectID" &_
+	" WHERE u.userID = pu.userID AND pu.rights IN ('director', 'user')"  &_
+	" AND u.rights!='admin' AND p.projectID IN (" 
+Do while not connComp.eof
+	if not subsequent then 'first time
+		SQLSELECT = SQLSELECT & connComp("projectID")
+		subsequent=true
+	else
+		SQLSELECT = SQLSELECT & ", " & connComp("projectID")
+	end if
+	connComp.movenext
+Loop
+
+SQLSELECT = SQLSELECT & ") ORDER BY lastName"
+'Response.Write(SQLSELECT & "<br>")
+connComp.movefirst
+Set RS0 = connSWPPP.Execute(SQLSELECT)
+
+connComp.Close
+Set connComp = Nothing
+   
+%>
 
 <!doctype html public "-//w3c//dtd html 4.0 transitional//en">
 <html>

@@ -117,25 +117,33 @@ coordSQLSELECT = "SELECT coID, coordinates, existingBMP, correctiveMods, orderby
 'Response.Write(coordSQLSELECT)
 Set rsCoord = connSWPPP.execute(coordSQLSELECT)%>
 <p><center><div style="font-size: 8px"><%
-If RS2("projectState") = "OK" Then %>
-   <i>A qualified inspector familiar with the OPDES Permit OKR10 and the SWPPP should inspect all areas of the site that have been cleared,
-   graded, or excavated and that have not yet completed stabilization; all stormwater controls (including pollution prevention measures) installed at the site; material,
-   waste, borrow, or equipment storage and maintenance areas; areas where stormwater typically flows within the site, including drainage ways designed to divert, convey,
-   and/or treat stormwater; all points of discharge from the site, including exit points that sediment that has been tracked out from the site; and all locations where
-   stabilization measures have been implemented.<br/><br/>
-   A qualified inspector should check whether all erosion and sediment controls and pollution prevention controls are properly installed, appear to be operational, and are
-   working as intended to minimize pollutants discharges. Determine if any controls need to be replaced, repaired, or maintained. Check for the presence of conditions that
-   could lead to spills, leaks, or other accumulations of pollutants on the site. Identify any locations where new or modified stormwater controls are necessary to minimize
-   track-out, minimize dust, minimize the disturbance of steep slopes, protect storm drain inlets, and meet stabilization requirements. At discharge points and the banks of any
-   surface waters, check for signs of visible erosion and sedimentation that have occurred.<br/></br/>
-   Sediment must be removed before it has accumulated to one-half of the above-ground height of any perimeter control. Dewatering must have appropriate controls unless there
-   is uncontaminated clear dewatering water. Cover must be provided for building materials. Chemicals must be stored in water-tight containers and provide either cover or
-   secondary containment. Hazardous or toxic waste must be separated from construction or domestic waste and stored in sealed containers labeled with RCRA requirements. For
-   construction and domestic waste, a dumpster or trash receptacle with a lid must be closed during rain or chance of rain, and covered at end of each work shift and when workers
-   not present. Tarp or plastic must be provided if no lid is used.<br/><br/>
-   If a discharge is occurring during your inspection, you are required to observe and document the visual quality of the discharge, and take note of the characteristics of the
-   stormwater discharge, including color, odor, floating, settled, or suspended solids, foam, oil sheen, and other obvious indicators of stormwater pollutants; and document whether
-   your stormwater controls are operating effectively, and describe any such controls that are clearly not operating as intended or are in need of maintenance.</i>
+If RS2("projectState") = "OK" Then 
+      inspecDate = Trim(rsInspec("inspecDate"))
+      MsgDateStart = "11/07/2017"
+      If DateDiff("d", inspecDate, MsgDateStart) < 1 Then %>
+         <i>A qualified inspector familiar with the OPDES Permit OKR10 and the SWPPP should inspect all areas of the site that have been cleared,
+         graded, or excavated and that have not yet completed stabilization; all stormwater controls (including pollution prevention measures) installed at the site; material,
+         waste, borrow, or equipment storage and maintenance areas; areas where stormwater typically flows within the site, including drainage ways designed to divert, convey,
+         and/or treat stormwater; all points of discharge from the site, including exit points that sediment that has been tracked out from the site; and all locations where
+         stabilization measures have been implemented.<br/><br/>
+         A qualified inspector should check whether all erosion and sediment controls and pollution prevention controls are properly installed, appear to be operational, and are
+         working as intended to minimize pollutants discharges. Determine if any controls need to be replaced, repaired, or maintained. Check for the presence of conditions that
+         could lead to spills, leaks, or other accumulations of pollutants on the site. Identify any locations where new or modified stormwater controls are necessary to minimize
+         track-out, minimize dust, minimize the disturbance of steep slopes, protect storm drain inlets, and meet stabilization requirements. At discharge points and the banks of any
+         surface waters, check for signs of visible erosion and sedimentation that have occurred.<br/></br/>
+         Sediment must be removed before it has accumulated to one-half of the above-ground height of any perimeter control. Dewatering must have appropriate controls unless there
+         is uncontaminated clear dewatering water. Cover must be provided for building materials. Chemicals must be stored in water-tight containers and provide either cover or
+         secondary containment. Hazardous or toxic waste must be separated from construction or domestic waste and stored in sealed containers labeled with RCRA requirements. For
+         construction and domestic waste, a dumpster or trash receptacle with a lid must be closed during rain or chance of rain, and covered at end of each work shift and when workers
+         not present. Tarp or plastic must be provided if no lid is used.<br/><br/>
+         If a discharge is occurring during your inspection, you are required to observe and document the visual quality of the discharge, and take note of the characteristics of the
+         stormwater discharge, including color, odor, floating, settled, or suspended solids, foam, oil sheen, and other obvious indicators of stormwater pollutants; and document whether
+         your stormwater controls are operating effectively, and describe any such controls that are clearly not operating as intended or are in need of maintenance.</i>
+   <% Else %>
+         <i>Inspectors familiar with the OPDES Permit OKR10 and the SWPPP should inspect disturbed areas of the site that have not been finally stabilized, areas used for storage 
+         of materials that are exposed to precipitation, structural controls (all erosion and sediment controls), discharge locations, locations where vehicles enter and exit 
+         the site, off-site material storage areas, overburden and stockpiles of dirt, borrow areas, equipment staging areas, vehicle repair areas, and fueling areas.</i>
+   <% End If %>
 <% Else %>
    <i>Inspectors familiar with the TPDES Permit TXR150000 and the SWPPP should inspect disturbed areas of the site that have not been finally stabilized,
    areas used for storage of materials that are exposed to precipitation, structural controls (all erosion and sediment controls), discharge locations, locations where vehicles

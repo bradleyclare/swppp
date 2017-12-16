@@ -39,8 +39,11 @@ If Request.Form.Count > 0 Then
         ", seeScoring = '" & seeScoring & "'" & _
         ", openItemAlerts = '" & openItemAlerts & "'" & _
         ", repeatItemAlerts = '" & repeatItemAlerts & "'" & _
-        ", userGroupID = " & CInt(Trim(userGroupArray(0))) & _
 		", qualifications = '" & trimmedQualifications & "'" 
+' -----------------------------------------------------------------
+		If Len(userGroupString) > 0 Then
+         SQLUPDATE = SQLUPDATE & ", userGroupID = " & CInt(Trim(userGroupArray(0)))
+      End If
 ' --------------------------- Admin User --------------------------
 		If Request("admin")="on" then 
 			SQLUPDATE = SQLUPDATE & ", rights= 'admin'"
@@ -49,7 +52,7 @@ If Request.Form.Count > 0 Then
 			SQLUPDATE = SQLUPDATE & ", rights= 'user'"
 		End If
 ' -----------------------------------------------------------------
-		SQLUPDATE = SQLUPDATE & " WHERE userID = " & userID
+   SQLUPDATE = SQLUPDATE & " WHERE userID = " & userID
 	'Response.Write(SQLUPDATE)
     connSWPPP.Execute(SQLUPDATE)
 	

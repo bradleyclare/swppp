@@ -118,7 +118,7 @@ coordSQLSELECT = "SELECT coID, coordinates, existingBMP, correctiveMods, orderby
 Set rsCoord = connSWPPP.execute(coordSQLSELECT)%>
 <p><center><div style="font-size: 8px"><%
 If RS2("projectState") = "OK" Then 
-      inspecDate = Trim(rsInspec("inspecDate"))
+      inspecDate = Trim(RS2("inspecDate"))
       MsgDateStart = "11/07/2017"
       If DateDiff("d", inspecDate, MsgDateStart) < 1 Then %>
          <i>A qualified inspector familiar with the OPDES Permit OKR10 and the SWPPP should inspect all areas of the site that have been cleared,

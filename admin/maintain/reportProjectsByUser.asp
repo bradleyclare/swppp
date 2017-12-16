@@ -14,13 +14,19 @@ End If
 'SQL0="SELECT * FROM Users ORDER BY lastName, firstName ASC"
 'SET RS0=connSWPPP.execute(SQL0) 
 
-'select the companies for which this user is a valid Director
-SQLSELECT = "SELECT projectID" & _
-		" FROM ProjectsUsers" &_
-		" WHERE userID=" & Session("userID") &_
-		" AND rights='director'"
-Set connComp = connSWPPP.Execute(SQLSELECT)
-
+if Session("validAdmin") Then
+   'select the companies for which this user is a valid Director
+   SQLSELECT = "SELECT projectID" & _
+		   " FROM ProjectsUsers"
+   Set connComp = connSWPPP.Execute(SQLSELECT)
+Else
+   'select the companies for which this user is a valid Director
+   SQLSELECT = "SELECT projectID" & _
+		   " FROM ProjectsUsers" &_
+		   " WHERE userID=" & Session("userID") &_
+		   " AND rights='director'"
+   Set connComp = connSWPPP.Execute(SQLSELECT)
+End If
 ' select users who have rights to those companies
 SQLSELECT = "SELECT DISTINCT u.userID, firstName, lastName, pu.rights" &_
 	" FROM Users as u JOIN ProjectsUsers as pu" &_
@@ -39,8 +45,8 @@ Do while not connComp.eof
 Loop
 
 SQLSELECT = SQLSELECT & ") ORDER BY lastName"
+
 'Response.Write(SQLSELECT & "<br>")
-connComp.movefirst
 Set RS0 = connSWPPP.Execute(SQLSELECT)
 
 connComp.Close

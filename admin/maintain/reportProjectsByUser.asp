@@ -27,24 +27,26 @@ Else
 		   " AND rights='director'"
    Set connComp = connSWPPP.Execute(SQLSELECT)
 End If
+
+'build project list for which we care
+proj_list = ""
+Do while not connComp.eof
+	if not subsequent then 'first time
+		proj_list = proj_list & connComp("projectID")
+		subsequent=true
+	else
+		proj_list = proj_list & ", " & connComp("projectID")
+	end if
+	connComp.movenext
+Loop
+
 ' select users who have rights to those companies
 SQLSELECT = "SELECT DISTINCT u.userID, firstName, lastName, pu.rights" &_
 	" FROM Users as u JOIN ProjectsUsers as pu" &_
 	" ON u.userID=pu.userID JOIN Projects as p" &_
 	" ON pu.projectId=p.projectID" &_
 	" WHERE u.userID = pu.userID AND pu.rights IN ('director', 'user')"  &_
-	" AND u.rights!='admin' AND p.projectID IN (" 
-Do while not connComp.eof
-	if not subsequent then 'first time
-		SQLSELECT = SQLSELECT & connComp("projectID")
-		subsequent=true
-	else
-		SQLSELECT = SQLSELECT & ", " & connComp("projectID")
-	end if
-	connComp.movenext
-Loop
-
-SQLSELECT = SQLSELECT & ") ORDER BY lastName"
+	" AND u.rights!='admin' AND p.projectID IN (" & proj_list & ") ORDER BY lastName"
 
 'Response.Write(SQLSELECT & "<br>")
 Set RS0 = connSWPPP.Execute(SQLSELECT)
@@ -115,8 +117,9 @@ Set connComp = Nothing
 			      onclick="tbody<%=cnt%>.style.display='none'; btnShow<%=cnt%>.style.display=''; btnHide<%=cnt%>.style.display='none';"></BUTTON>
          <% SQL1 = "SELECT p.*, u.userID, u.firstName, u.lastName, u.rights as rights1, pu.rights as rights2" &_
 	            " FROM Projects as p LEFT JOIN ProjectsUsers as pu ON p.projectID=pu.projectID LEFT JOIN Users as u" &_
-	            " ON pu.userID=u.userID WHERE u.userID=" & userID & " ORDER BY projectName ASC, projectPhase ASC"
-         '--Response.Write(SQL1)
+	            " ON pu.userID=u.userID WHERE u.userID=" & userID & " AND pu.rights IN ('director', 'user')"  &_
+	            " AND u.rights!='admin' AND p.projectID IN (" & proj_list & ") ORDER BY projectName ASC, projectPhase ASC"
+         'Response.Write(SQL1)
          SET RS1=connSWPPP.execute(SQL1) %>
          <TBODY id="tbody<%=cnt%>" style="display: none;">
          <% altColors2 = "#F8F8FF"

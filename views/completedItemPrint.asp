@@ -119,7 +119,7 @@ Else
               Else
                  'find the completion note
                  Do While Not rsComm.EOF
-                    If rsComm("comment") = "This item was marked complete" Then
+                    If rsComm("comment") = "This item was marked complete" or rsComm("comment") = "This item was marked NLN" Then
                        completer = rsComm("firstName") & " " & rsComm("lastName")
                        completeDate = rsComm("date")
                     Else

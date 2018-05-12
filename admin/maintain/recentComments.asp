@@ -71,10 +71,16 @@ Set rsComm = connSWPPP.execute(commSQLSELECT) %>
             SQLSELECT = "SELECT firstName, lastName FROM Users WHERE userID = " & userID
             'Response.Write(SQLSELECT & "<br>")
             Set connUsers = connSWPPP.Execute(SQLSELECT)
-            userName = connUsers("firstName") & " " & connUsers("lastName")
-
+			if connUsers.EOF Then
+				userName = "UNKNOWN"
+			else
+				userName = connUsers("firstName") & " " & connUsers("lastName")
+			end if
+			
+			'Response.Write(connUsers("firstName") & " " & connUsers("lastName") & "<br>")
+			
             'get item information
-            coordSQLSELECT = "SELECT coID, inspecID, coordinates, existingBMP, correctiveMods, orderby, assignDate, completeDate, status, repeat, useAddress, address, locationName" &_
+            coordSQLSELECT = "SELECT coID, inspecID, coordinates, existingBMP, correctiveMods, orderby, assignDate, completeDate, status, repeat, useAddress, address, locationName, LD" &_
 	            " FROM Coordinates WHERE coID=" & coID & " AND status=0 AND NLN=0"
             'Response.Write(coordSQLSELECT)
             Set rsCoord = connSWPPP.execute(coordSQLSELECT)
@@ -83,11 +89,16 @@ Set rsComm = connSWPPP.execute(commSQLSELECT) %>
                 note = False
             Else
                 correctiveMods = Trim(rsCoord("correctiveMods"))
-		          coordinates = Trim(rsCoord("coordinates"))
+		        coordinates = Trim(rsCoord("coordinates"))
                 useAddress = rsCoord("useAddress")
-		          address = TRIM(rsCoord("address"))
-		          locationName = TRIM(rsCoord("locationName")) 
+		        address = TRIM(rsCoord("address"))
+		        locationName = TRIM(rsCoord("locationName")) 
                 inspecID = rsCoord("inspecID")
+				LD = rsCoord("LD")
+				
+				If LD = True Then
+					correctiveMods = "(LD) " & correctiveMods
+				End If 
             
                 'get report name
                 inspecSQLSELECT = "SELECT inspecDate, firstName, lastName, i.projectName, i.projectPhase, i.projectID" & _

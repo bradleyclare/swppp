@@ -69,8 +69,8 @@ If Request.Form.Count > 0 Then
             userID  = Session("userID")
             comment = "This item was marked incomplete"
             'Response.Write(coID & " - " & userID & " - " & currentDate & " - " & comment)
-            SQL3="INSERT INTO CoordinatesComments (coID, comment, userID, date)" &_
-            " VALUES ( "& coID & ", '" & comment & "', " & userID & ", '"& currentDate & "')"   
+            SQL3="INSERT INTO CoordinatesComments (coID, comment, userID, date, inspecID, projectID)" &_
+            " VALUES ( "& coID & ", '" & comment & "', " & userID & ", '"& currentDate & "', "& inspecID & ", "& projectID & ")"   
             'response.Write(SQL3)
             Set RS3=connSWPPP.execute(SQL3)
       End If

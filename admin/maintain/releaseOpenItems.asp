@@ -184,29 +184,25 @@ IF Request.Form.Count > 0 THEN %>
 	                                             If LD = True Then
 	                                                coordCntLD14 = coordCntLD14 + 1
 	                                             End If
-	                                       End If
-	                                       If age > 10 Then
+	                                       ElseIf age > 10 Then
 	                                             coordCnt10 = coordCnt10 + 1
 	                                             displayProj = True
 	                                             If LD = True Then
 	                                                coordCntLD10 = coordCntLD10 + 1
 	                                             End If
-	                                       End If
-	                                       If age > 7 Then
+	                                       ElseIf age > 7 Then
 	                                             coordCnt7 = coordCnt7 + 1
 	                                             displayProj = True
 	                                             If LD = True Then
 	                                                coordCntLD7 = coordCntLD7 + 1
 	                                             End If
-	                                       End If
-	                                       If age > 5 Then
+	                                       ElseIf age > 5 Then
 	                                             coordCnt5 = coordCnt5 + 1
 	                                             displayProj = True
 	                                             If LD = True Then
 	                                                coordCntLD5 = coordCntLD5 + 1
 	                                             End If
-	                                       End If
-	                                       If age > 1 Then
+	                                       ElseIf age > 1 Then
 	                                             coordCnt1 = coordCnt1 + 1
 	                                             displayProj = True
 	                                             If LD = True Then

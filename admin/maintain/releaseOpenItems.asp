@@ -320,22 +320,24 @@ IF Request.Form.Count > 0 THEN %>
                 if send_email Then
                     fullName = Trim(connUsers("firstName")) & " " & Trim(connUsers("lastName"))
                     contentSubject= "Open Item Report for "& fullName &" on "& currentDate
-	                Set Mailer = Server.CreateObject("SMTPsvg.Mailer")
-	                Mailer.FromName    = "Don Wims"
-	                Mailer.FromAddress = "dwims@swppp.com"
-	                Mailer.RemoteHost = "127.0.0.1"
+	                Set Mailer = Server.CreateObject("Persits.MailSender")
+	                Mailer.FromName   = "Don Wims"
+	                Mailer.From       = "dwims@swppp.com"
+	                Mailer.Host       = "127.0.0.1"
 	                Mailer.Subject    = contentSubject
-	                Mailer.BodyText = strBody
-	                Mailer.ContentType = "text/html"
+	                Mailer.Body       = strBody
+	                Mailer.isHTML     = True
 
                     '--------this line of code is for testing the smtp server---------------------
-                    Mailer.AddBCC contentSubject, "dwims@swppp.com"
-                    'Mailer.AddBCC contentSubject, "brad.leishman@gmail.com"
+                    Mailer.AddBCC "dwims@swppp.com", contentSubject
+                    'Mailer.AddBCC "brad.leishman@gmail.com", contentSubject
                     '--------this line of code is for testing the smtp server---------------------
                 
-                    Mailer.AddRecipient fullName, Trim(connUsers("email"))
-		            if not Mailer.SendMail then %>
-			            <div class="red">Mail send failure.- </div><%= Mailer.Response %> <br />
+                    Mailer.AddAddress Trim(connUsers("email")), fullName
+		            On Error Resume Next
+					Mailer.Send
+					If Err <> 0 Then %>
+			            <div class="red">Mail send failure.- </div><%= Err.Description %> <br />
                     <% Else %>
 			            Email Sent <br />
                     <% End If

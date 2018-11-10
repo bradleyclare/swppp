@@ -162,16 +162,16 @@ IF Request.Form.Count > 0 THEN %>
                 updateDB = True
             ElseIf send_email Then
                 contentSubject= "Repeat Item Report for "& projectName & " " & projectPhase & " on "& inspecDate
-	            Set Mailer = Server.CreateObject("SMTPsvg.Mailer")
-	            Mailer.FromName    = "Don Wims"
-	            Mailer.FromAddress = "dwims@swppp.com"
-	            Mailer.RemoteHost = "127.0.0.1"
+	            Set Mailer = Server.CreateObject("Persits.MailSender")
+	            Mailer.FromName   = "Don Wims"
+	            Mailer.From       = "dwims@swppp.com"
+	            Mailer.Host       = "127.0.0.1"
 	            Mailer.Subject    = contentSubject
-	            Mailer.BodyText = strBody & strImages & "<Body>"
-	            Mailer.ContentType = "text/html"
+	            Mailer.Body       = strBody & strImages & "<Body>"
+	            Mailer.isHTML     = True
 
                 '--------this line of code is for testing the smtp server---------------------
-                'Mailer.AddBCC "SWPPP Server testing", "brad.leishman@gmail.com"
+                'Mailer.AddBCC "brad.leishman@gmail.com", "SWPPP Server testing"
                 '--------this line of code is for testing the smtp server---------------------
 
                 '-- build the recipients list ------------------------------------------------
@@ -193,14 +193,16 @@ IF Request.Form.Count > 0 THEN %>
                         If curRights = "user" or curRights = "email" or curRights = "ecc" or curRights = "bcc" then
 			                If prev_email <> email Then
                                 prev_email = email
-			                    Mailer.AddRecipient fullName, email
+			                    Mailer.AddAddress email, fullName
 			                End If
                         End If
                     End If
 			        RS1.MoveNext
 		        LOOP
-		        if not Mailer.SendMail then %>
-			        <td><FONT color="red">Mail send failure.- </FONT><%= Mailer.Response %></td>
+		        On Error Resume Next
+				Mailer.Send
+				If Err <> 0 Then %>
+			            <div class="red">Mail send failure.- </div><%= Err.Description %> <br />
         <%		else %>
 			        <td>Emails Sent</td>
                     <% updateDB = True

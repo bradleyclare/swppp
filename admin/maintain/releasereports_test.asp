@@ -249,15 +249,15 @@ RS1.Open SQL1, connSWPPP
 
 '--------------------- process mailing -------------------------------------------
 contentSubject= "Inspection Report for "& TRIM(RS1("projectName")) &" "& TRIM(RS1("projectPhase")) &" on "& TRIM(RS1("inspecDate"))
-Set Mailer = Server.CreateObject("SMTPsvg.Mailer")
+Set Mailer = Server.CreateObject("Persits.MailSender")
 Mailer.FromName    = "SWPPP.COM"
-Mailer.FromAddress = "dwims@swppp.com"
-Mailer.RemoteHost = "127.0.0.1"
+Mailer.From = "dwims@swppp.com"
+Mailer.Host = "127.0.0.1"
 Mailer.Subject    = contentSubject
-Mailer.BodyText = strBody & strImages & "<Body>"
+Mailer.Body = strBody & strImages & "<Body>"
 BodyText = strBody & strImages & "<Body>"
-Mailer.ContentType = "text/html"
-Mailer.AddRecipient "Brad Leishman", "bradleyclare@gmail.com" %>
+Mailer.isHTML     = True
+Mailer.AddAddress "bradleyclare@gmail.com", "Brad Leishman" %>
 
 
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">

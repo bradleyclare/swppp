@@ -264,13 +264,13 @@ projectID=projID(0)
 
 '--------------------- process mailing -------------------------------------------
 		contentSubject= "Inspection Report for "& TRIM(RS1("projectName")) &" "& TRIM(RS1("projectPhase")) &" on "& TRIM(RS1("inspecDate"))
-		Set Mailer = Server.CreateObject("SMTPsvg.Mailer")
+		Set Mailer = Server.CreateObject("Persits.MailSender")
 		Mailer.FromName    = "Don Wims"
-		Mailer.FromAddress = "dwims@swppp.com"
-		Mailer.RemoteHost = "127.0.0.1"
-		Mailer.Subject    = contentSubject
-		Mailer.BodyText = strBody & strImages & "<Body>"
-		Mailer.ContentType = "text/html"
+		Mailer.From        = "dwims@swppp.com"
+		Mailer.Host        = "127.0.0.1"
+		Mailer.Subject     = contentSubject
+		Mailer.Body        = strBody & strImages & "<Body>"
+		Mailer.isHTML      = True
 
 
 '--------this line of code is for testing the smtp server---------------------
@@ -282,18 +282,20 @@ projectID=projID(0)
 		DO WHILE NOT RS1.EOF
 		    curRights = Trim(RS1("rights"))
             if curRights = "email" then
-			    Mailer.AddRecipient Trim(RS1("fullName")), Trim(RS1("email"))
+			    Mailer.AddAddress Trim(RS1("email")), Trim(RS1("fullName"))
 			End if
             if curRights = "ecc" then
-			    Mailer.AddCC Trim(RS1("fullName")), Trim(RS1("email"))
+			    Mailer.AddCC Trim(RS1("email")), Trim(RS1("fullName"))
 			End if
             if curRights = "bcc" then
-			    Mailer.AddBCC Trim(RS1("fullName")), Trim(RS1("email"))
+			    Mailer.AddBCC Trim(RS1("email")), Trim(RS1("fullName"))
 			End if
 			RS1.MoveNext
 		LOOP
-		if not Mailer.SendMail then %>
-			<FONT color="red">Mail send failure.- </FONT><%= Mailer.Response %><br>
+		On Error Resume Next
+		Mailer.Send
+		If Err <> 0 Then %>
+			<FONT color="red">Mail send failure.- </FONT><%= Err.Description %><br>
 <%		else %>
 			Emails Sent<BR>
 <%		end if

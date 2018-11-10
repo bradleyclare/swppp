@@ -23,11 +23,11 @@ If Request.Form.Count > 0 Then
 		connUsers.Close
 		Set connUsers = Nothing
 
-		Set Mailer = Server.CreateObject("SMTPsvg.Mailer")
+		Set Mailer = Server.CreateObject("Persits.MailSender")
 		Mailer.FromName   = "SWPPP"
-		Mailer.FromAddress= fromAddr
+		Mailer.From = fromAddr
 		Mailer.RemoteHost = remoteHost
-		Mailer.AddRecipient firstName & " " & lastName, Request("email")
+		Mailer.AddAddress firstName & " " & lastName, Request("email")
 		Mailer.Subject    = "password for swppp.com"
 		Mailer.BodyText   = sendEmail
 
@@ -35,12 +35,12 @@ If Request.Form.Count > 0 Then
 		  Response.Write "Mail send failure. Error was " & Mailer.Response
 		end if
 
-'Set Mailer = Server.CreateObject("SMTPsvg.Mailer")
+'Set Mailer = Server.CreateObject("Persits.MailSender")
 'Mailer.FromName   = "SWPPP"
-'Mailer.FromAddress= "info@swppp.com"
+'Mailer.From = "info@swppp.com"
 'Mailer.RemoteHost = "127.0.0.1"
-'Mailer.AddRecipient firstName & " " & lastName, Request("email")
-'Mailer.AddRecipient "test", Request(email)
+'Mailer.AddAddress firstName & " " & lastName, Request("email")
+'Mailer.AddAddress "test", Request(email)
 'Mailer.AddCC "jeremy zuther", "jzuther@gmail.com"
 'Mailer.Subject    = "password for swppp.com"
 'Mailer.BodyText   = sendEmail

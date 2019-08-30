@@ -20,7 +20,7 @@ SET RS1=connSWPPP.execute(SQL1)
 	Session("oitID")=oitID
 	imgDir=Trim(RS1("oitName"))
 	imgType=Trim(RS1("oitDesc"))
-	baseDir = "d:\Inetpub\wwwroot\swppp\images\" %>
+	baseDir = "C:\Inetpub\wwwroot\SWPPP\images\" %>
 <!doctype html public "-//w3c//dtd html 4.0 transitional//en">
 <html>
 <head>

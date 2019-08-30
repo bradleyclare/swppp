@@ -135,8 +135,7 @@ Response.Write(SQLb)
 	
 	Response.Redirect("addCoordinate.asp?inspecID=" & maxInspectID)
 End If
-'baseDir = "c:\Inetpub\wwwroot\SWPPP\"
-baseDir = "d:\inetpub\wwwroot\swppp\" %>
+baseDir = "C:\Inetpub\wwwroot\SWPPP\" %>
 <html>
 <head>
 <title>SWPPP INSPECTIONS : Add New Inspection Report</title>

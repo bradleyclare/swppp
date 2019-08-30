@@ -41,6 +41,9 @@ if ((navigator.appVersion.indexOf("MSIE") > 0)
 <tr><td calspan=*>
 <%= objFile.ReadAll %>
 </td></tr>
+<tr><td>
+<span id="siteseal"><script async type="text/javascript" src="https://seal.godaddy.com/getSeal?sealID=WAZqkjKfwncrXQiy57BnnkkIp0xnpa50j7Om4owvXUaaZQu6tQU4wBV9R1iL"></script></span>
+</td></tr>
 </table>
 </body>
 </html>

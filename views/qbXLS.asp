@@ -1,7 +1,8 @@
-<%	response.buffer = true
-	response.ContentType = "application/vnd.ms-excel"
-	xFileName= QB & REPLACE(Date(),"/","_") & Request("iNum")
-	response.AddHeader "content-disposition", "inline; filename="& xFileName &".xls"
+<% Server.ScriptTimeout = 360 %> 
+<%response.buffer = true
+response.ContentType = "application/vnd.ms-excel"
+xFileName= QB & REPLACE(Date(),"/","_") & Request("iNum")
+response.AddHeader "content-disposition", "inline; filename="& xFileName &".xls"
 err=0
 xDate=Request("xDate")
 IF IsDate(xDate) THEN

@@ -78,13 +78,15 @@ Set rsAddress = connSWPPP.execute(addressSQLSELECT) %>
 			End If
 		Next
 		mod_name = join(parts)
-		'remove any trailing commas in the address name
-		last_char = right(addname,1)
-		if last_char = "," THEN
-			mod_flag = True
-			addname_class = "red"
-			mod_addname = left(addname,len(addname)-1)
-		End If
+		'remove any trailing commas and spaces in the address name
+		for i=0 to len(mod_addname) step 1
+			last_char = right(mod_addname,1)
+			if last_char = "," OR last_char = " " THEN
+				mod_flag = True
+				addname_class = "red"
+				mod_addname = left(mod_addname,len(mod_addname)-1)
+			End If
+		Next
 		if mod_flag Then 
 			n = n + 1 %>
 			<tr><td><input type="text" name="id:<%= n %>" value="<%=id%>" readonly/></td>

@@ -58,6 +58,7 @@ End If ' Request.Form.Count>0
 	<link rel="stylesheet" href="../../global.css" type="text/css">
 </head>
 <body>
+<span id="siteseal"><script async type="text/javascript" src="https://seal.godaddy.com/getSeal?sealID=WAZqkjKfwncrXQiy57BnnkkIp0xnpa50j7Om4owvXUaaZQu6tQU4wBV9R1iL"></script></span>
 <form action="<%= Request.ServerVariables("SCRIPT_NAME") %>" method="post">
 <div align="center"><br><br>
 <% 	If noMatch Then %>

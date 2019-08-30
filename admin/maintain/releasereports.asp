@@ -279,6 +279,7 @@ projectID=projID(0)
 
 
 '-- build the recipients list ------------------------------------------------
+		fullname = TRIM(RS1("projectName")) &" "& TRIM(RS1("projectPhase"))
 		DO WHILE NOT RS1.EOF
 		    curRights = Trim(RS1("rights"))
             if curRights = "email" then
@@ -295,9 +296,9 @@ projectID=projID(0)
 		On Error Resume Next
 		Mailer.Send
 		If Err <> 0 Then %>
-			<FONT color="red">Mail send failure.- </FONT><%= Err.Description %><br>
+			<FONT color="red"><%=fullname%>: Mail send failure.- </FONT><%= Err.Description %><br>
 <%		else %>
-			Emails Sent<BR>
+			<FONT color="red"><%=fullname%>: Emails Sent</FONT><br>
 <%		end if
 '--	now it is time to set the released bit on the inspection -------------------------------
 		SQL2="UPDATE Inspections SET released=1 WHERE inspecID="& inspecID
@@ -306,13 +307,20 @@ projectID=projID(0)
 	NEXT
 '	Response.End
 ELSE
-SQL0 = "SELECT i.projectName, i.projectPhase, i.inspecDate, i.inspecID, pu.projectID, i.ReportType, i.released" &_
-	" FROM ProjectsUsers pu JOIN Inspections i ON pu.projectID=i.projectID" &_
-	" WHERE pu.rights='inspector' AND i.released=0 AND i.userID=pu.userID AND pu.userID="& Session("userID")
-If Session("userID") = 42 Then
-    SQL0 = SQL0 & " and datediff(m, i.inspecdate, getdate()) <4"
-End	If
-SQL0 = SQL0 & " ORDER BY i.projectName, i.projectPhase, i.inspecDate DESC"
+If Session("userID") = 1370 Then
+	SQL0 = "SELECT i.projectName, i.projectPhase, i.inspecDate, i.inspecID, pu.projectID, i.ReportType, i.released" &_
+		" FROM ProjectsUsers pu JOIN Inspections i ON pu.projectID=i.projectID" &_
+		" WHERE pu.rights='inspector' AND i.released=0" &_
+	    " ORDER BY i.projectName, i.projectPhase, i.inspecDate DESC"
+Else
+	SQL0 = "SELECT i.projectName, i.projectPhase, i.inspecDate, i.inspecID, pu.projectID, i.ReportType, i.released" &_
+		" FROM ProjectsUsers pu JOIN Inspections i ON pu.projectID=i.projectID" &_
+		" WHERE pu.rights='inspector' AND i.released=0 AND i.userID=pu.userID AND pu.userID="& Session("userID")
+	If Session("userID") = 42 Then
+		SQL0 = SQL0 & " and datediff(m, i.inspecdate, getdate()) <4"
+	End	If
+	SQL0 = SQL0 & " ORDER BY i.projectName, i.projectPhase, i.inspecDate DESC"
+End If
 Set RS0 = Server.CreateObject("ADODB.Recordset")
 'Response.Write(SQL0)
 RS0.Open SQL0, connSWPPP
@@ -328,7 +336,7 @@ RS0.Open SQL0, connSWPPP
 	marginwidth="5" marginheight="5">
 
 <% If not Request("print") then %> <!-- #INCLUDE FILE="../adminHeader2.inc" --> <% end if %>
-<h1>Send Reports via Email</h1>
+<h1>Send Reports via Email - <%=Session("userID")%></h1>
 <FORM action="<%= Request.ServerVariables("SCRIPT_NAME") %>" method="post">
 <div align="center">
 <table border="0" cellpadding=1 cellspacing=1>

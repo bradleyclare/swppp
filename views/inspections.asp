@@ -88,29 +88,7 @@ Else
 			%>
 			<tr><td align="right"><% = Trim(rsInspectInfo("inspecDate")) %></td>
             <td align="center"><a href="reportPrint.asp?inspecID=<% = inspecID %>" target="_blank">Report</a></td>
-            <td align="center">
-               <% dirName="sitemap"
-	               fileDesc= "Site Map"
-	               SQLa="sp_oImagesByType "& inspecID &",'12'"
-	               SET RSa=connSWPPP.Execute(SQLa)
-	               cnt1=1
-	               curOITDesc=""
- 	               DO WHILE NOT(RSa.EOF)
-		               thisFileDesc=fileDesc
-		               if curOITDesc=fileDesc then
-			               cnt1=cnt1+1
-		               else
-			               cnt1=1
-			               curOITDesc=fileDesc
-		               end if
-		               if (cnt1>1) then thisFileDesc=thisFileDesc &" "& cnt1 end if
-		               IF dirName = "sitemap" THEN %>
-      	               <a href="<% = "../images/"& dirName &"/"& RSa("oImageFileName") %>" target="_blank">Site Map</a><br>
-                        <% Exit Do
-                     End If
-		               RSa.MoveNext
-	               LOOP %>
-              </td>
+            <td align="center"><a href="viewSitemap.asp?inspecID=<% = inspecID %>" target="_blank">Site Map</a></td>
               <td align="center"><%=percentage%></td>
               <td align="center"><%=stats%></td>
 			</tr>

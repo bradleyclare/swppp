@@ -58,8 +58,7 @@ recCount = 0
                 <input type="submit" value="Add New Group" name="submit" />
             </form>
             <table>
-	            <tr><th width="10%"><b>userGroupID</b></th>
-		            <th width="80%"><b>userGroupName</b></th>
+	            <tr><th width="80%"><b>userGroupName</b></th>
 		            <th width="10%"><b>Delete</b></th></tr>
                 <% If connGroups.EOF Then
 		            Response.Write("<tr><td colspan='3' align='center'><b><i>There are currently no user groups.</i></b></td></tr>")
@@ -69,9 +68,8 @@ recCount = 0
 		            Do While Not connGroups.EOF
 			            recCount = recCount + 1 %>
 	                    <tr bgcolor="<%= altColors %>"> 
-		                    <td><%= connGroups("userGroupID") %></td>
 		                    <td><a href="manageUserGroups.asp?ID=<%= connGroups("userGroupID") %>"><%= Trim(connGroups("userGroupName")) %></a></td>
-		                    <td><a href="manageUserGroups.asp?ID=<%= connGroups("userGroupID") %>&del=1">delete</a></td></tr>
+		                    <td><a href="manageUserGroups.asp?ID=<%= connGroups("userGroupID") %>&del=1" onclick="return confirm('Are you sure you want to delete this user group?')">delete</a></td></tr>
                         <% If altColors = "#e5e6e8" Then altColors = "#ffffff" Else altColors = "#e5e6e8" End If
 			            If userGroupID = Trim(connGroups("userGroupID")) Then userGroupName = Trim(connGroups("userGroupName")) End If
                         connGroups.MoveNext
@@ -92,6 +90,9 @@ recCount = 0
             'Response.Write(SQLSELECT & "<br>")
             Set connGroups = connSWPPP.Execute(SQLSELECT) %>
             
+			<% if connGroups.EOF Then %>
+				<h5>Not a valid Group</h5>
+			<% else %>
             <h3>Users in Group [<%=connGroups("userGroupName")%>]</h3>
             <% If RS0.EOF Then %>
                 <h5>No users assigned to group.</h5>
@@ -106,21 +107,11 @@ recCount = 0
                     </tr>
                 <% RS0.MoveNext
                 Loop 
-            End If %>
+            End If 
+			End If %>
             </table>
         </td>
     </tr>
 </table>
 </body>
 </html>
-
-<%
-RS0.Close
-Set RS0 = Nothing
-
-connGroups.Close
-Set connGroups = Nothing
-
-connSWPPP.Close
-Set connSWPPP = Nothing
-%>

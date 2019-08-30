@@ -24,39 +24,24 @@ If Request.Form.Count > 0 Then
 		Set connUsers = Nothing
 
 		Set Mailer = Server.CreateObject("Persits.MailSender")
-		Mailer.FromName   = "SWPPP"
-		Mailer.From = fromAddr
-		Mailer.RemoteHost = remoteHost
-		Mailer.AddAddress firstName & " " & lastName, Request("email")
-		Mailer.Subject    = "password for swppp.com"
-		Mailer.BodyText   = sendEmail
-
-		if not Mailer.SendMail then
-		  Response.Write "Mail send failure. Error was " & Mailer.Response
-		end if
-
-'Set Mailer = Server.CreateObject("Persits.MailSender")
-'Mailer.FromName   = "SWPPP"
-'Mailer.From = "info@swppp.com"
-'Mailer.RemoteHost = "127.0.0.1"
-'Mailer.AddAddress firstName & " " & lastName, Request("email")
-'Mailer.AddAddress "test", Request(email)
-'Mailer.AddCC "jeremy zuther", "jzuther@gmail.com"
-'Mailer.Subject    = "password for swppp.com"
-'Mailer.BodyText   = sendEmail
-'if Mailer.SendMail then
-'  Response.Write "Mail sent..."
-'else
-'  Response.Write "Mail send failure. Error was " & Mailer.Response
-'end if
-
-
-
-
+		Mailer.FromName    = "Don Wims"
+		Mailer.From        = "dwims@swppp.com"
+		Mailer.Host        = "127.0.0.1"
+		Mailer.Subject     = "password for swppp.com"
+		Mailer.Body        = sendEmail
+		Mailer.isHTML      = True
+		
+		Mailer.AddAddress Request("email"), firstName & " " & lastName
+		On Error Resume Next
+		Mailer.Send
+		If Err <> 0 Then %>
+			<FONT color="red">Mail send failure.- </FONT><%= Err.Description %><br>
+<%		else %>
+			<FONT color="red">An email was sent to your email address containing your password. <a href="loginUser.asp">Return to login page.</a></FONT><br>
+<%		end if
 
 		connSWPPP.Close
 		Set connSWPPP = Nothing
-		Response.Redirect("loginUser.asp")
 	End If ' no matching email
 End If ' Request.Form.Count>0
 %>

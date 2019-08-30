@@ -25,6 +25,9 @@ Set objFile = objFSO.OpenTextFile(base_path & "/contact.txt")
 <body bgcolor="#FFFFFF" text="#000000">
 <!-- #include file="../header2.inc" -->
 <% = objFile.ReadAll %>
+<br/>
+<br/>
+<span id="siteseal"><script async type="text/javascript" src="https://seal.godaddy.com/getSeal?sealID=WAZqkjKfwncrXQiy57BnnkkIp0xnpa50j7Om4owvXUaaZQu6tQU4wBV9R1iL"></script></span>
 </body></html>
 <%
 Set objFSO = Nothing

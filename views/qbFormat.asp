@@ -39,7 +39,7 @@ DO WHILE NOT RS0.EOF
 <tr><td>TRNS</td><td><%= cnt %></td><td>INVOICE</td><td><%= Date() %></td><td>Accounts Receivable</td>
 <td><%= RS0("compName")%>:<%= RS0("projectName")%></td><td></td><td><%= (totNumWeeks * 100)%></td><td><%= iNum %></td><td>N</td><td>N</td><td>N</td>
 <td><%= RS0("compName")%></td><td><%= RS0("compAddr")%></td><td><%= RS0("compAddr2")%></td><td><% '--compAddr3 does not exist%></td>
-<td><%= Date()%></td><td></td><td>N</td><td></td><td></td><td><%= Date()%></td><td></td><td></td><td></td><td></td><td></td><td>Thank you for your business.</td>
+<td><%= Date()%></td><td></td><td>N</td><td></td><td></td><td><%= Date()%></td><td></td><td></td><td></td><td></td><td></td><td>Due upon receipt.</td>
 <td><%= RS0("projectName")%></td><td><%= RS0("projectCity")%></td><td></td><td></td><td></td><td></td><td></td><td></td><td>N</td><td>N</td></tr><%
 		iNum=iNum+1
 	END IF 

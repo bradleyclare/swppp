@@ -166,7 +166,7 @@ IF Request.Form.Count > 0 THEN %>
 					                           age = datediff("d",assignDate,currentDate) 
 				                           End If
                                        If debug_msg=True Then
-                                          'Response.Write("ID: " & coID &", Age: "& age &", Status: "& status &", LD: "& LD &", Repeat: "& repeat &"<br/>")
+                                          Response.Write("ID: " & coID &", Age: "& age &", Status: "& status &", LD: "& LD &", Repeat: "& repeat &"<br/>")
                                 	      End If
                                        
                                        If NLN = True Then

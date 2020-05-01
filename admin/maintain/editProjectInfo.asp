@@ -115,7 +115,7 @@ End Function
 <%	END IF %>
 	<tr><th>Project Phase</th>
 		<td align=left><%= Trim(RS0("projectPhase"))%></td></tr>
-	<tr><th>Comm #</th>
+	<tr><th>Active Project</th>
 		<td align=left><INPUT maxlength="1" name="phaseNum"  value="<%= Trim(RS0("phaseNum"))%>"></td></tr>
 <% 	IF LEN(err)>2 THEN
 		IF MID(err,Len(err)-2,1)="1" THEN %><tr><td colspan="2"><font color="red">*The Initial Inspection Cost must be a number*</font></td></tr><% END IF %>

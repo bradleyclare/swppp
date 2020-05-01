@@ -1,5 +1,5 @@
 <%@ Language="VBScript" %>
-<%
+<% Response.Buffer = False
 If Not Session("validAdmin") and not Session("validDirector") Then
 	Session("adminReturnTo") = Request.ServerVariables("path_info")
 	Response.Redirect("loginUser.asp")

@@ -21,7 +21,7 @@
       <a href="maintain/manageCommonItems.asp" class="admin">Manage Items</a><br><br>
 		<% End If %>
 		<% If Session("validAdmin") then %>
-	      	<a href="maintain/viewUsersAdmin.asp" class="admin">View Users</a><br>
+	      	<a href="maintain/viewUsersAdmin.asp" class="admin">View Users</a><br><br>
 		<% end if %>			
 		<% If Session("validDirector") then %>
 	      	<a href="maintain/viewUsersDir.asp" class="admin">View Users</a><br>
@@ -35,7 +35,6 @@
 	testStr="dwims@swpppinspections.com:jwright@swpppinspections.com"
 	If InStr(testStr,Session("email"))>0 Then %>
 			<a href="maintain/viewProjects.asp" class="admin">View Projects</a><br>
-			<a href="maintain/commissions.asp" class="admin">Commissions</a><br><br>
 <%	End If %>
 			<a href="maintain/adminAbout.asp" class="admin">Modify About Us</a><br>
 	    	<a href="maintain/adminContact.asp" class="admin">Modify Contact Us</a><br><br>
@@ -45,7 +44,8 @@
 		<% end if %>
 		
 		<% If Session("validAdmin") then %>
-		<a href="maintain/archive.asp" class="admin">Archive Reports</a><br><br>
+		<a href="maintain/setActiveProjects.asp" class="admin">Active Reports</a><br><br>
+		<!--<a href="maintain/archive.asp" class="admin">Archive Reports</a><br><br>-->
 		<% End IF %>
 		<a href="../" class="admin">Public Home</a><br><br>
     <a href="../logout.asp" class="admin">Logout</a><br/><br/>

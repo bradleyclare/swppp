@@ -72,14 +72,19 @@ End If ' Request.Form.Count>0
 <table bgcolor="#006699">
 <tr><td colspan="2" align="center"><br><h1><font color="#FFffff">User Login</font></h1>
 		</td></tr>
+	<tr><td colspan="2" align="center"><br><h3><font color="#FFffff">Due to a security upgrade all passwords will need to be reset.<br/>  
+	Click the lost password link below to generate a new password.<br/>After receiving the new password by email, <br/>click on the change your password link to set it to what you want.</font></h3>
+		</td></tr>
 	<tr><td colspan="2" bgcolor="#ff3333"><img src="../../images/dot.gif" width="1" height="1"
 			border="0" alt=""></td></tr>
 	<tr><td align="right"><br><font color="#FFFFFF">Email: </font></td>
 		<td><br><input type="text" name="email" size="30" maxlength="50"></td></tr>
 	<tr><td align="right"><font color="#FFFFFF">Password: </font></td>
 		<td><input type="password" name="pswrd" size="8" maxlength="8"></td></tr>
-	<tr><td colspan="2" align="center"><br><font color="#FFFFFF">Have you <a href="lostPassword.asp" style="color:#FFFFFF; font-weight:600;"><u>lost</u></a>
-			your password?</font><br><br></td></tr>
+	<tr><td colspan="2" align="center"><br><font color="#FFFFFF"><a href="lostPassword.asp" style="color:#FFFFFF; font-weight:600;">have you lost your password?</a>
+			</font><br><br></td></tr>
+	<tr><td colspan="2" align="center"><br><font color="#FFFFFF"><a href="changePassword.asp" style="color:#FFFFFF; font-weight:600;">change your password</a>
+			</font><br><br></td></tr>
 	<tr><td colspan="2" align="center"><br><input type="submit" value="Submit"><br><br></td></tr>
 	</table></div>
 	<script language="javascript"><!--

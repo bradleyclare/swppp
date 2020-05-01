@@ -38,7 +38,7 @@ recCount = 0 %>
 	<tr width=50><th align=right><b>Count&nbsp;&nbsp;&nbsp;</b></th>
 		<th align=left><b>&nbsp;&nbsp;&nbsp;<a class='head2' href="viewProjects.asp?orderBy=0">Project Name and Phase</a></b></th>
       <th align=center><a class='head2'><b>Manage Rights</b></a></th>
-		<th align=center><a class='head2' href="viewProjects.asp?orderBy=1"><b>Comm #</b></a></th>
+		<th align=center><a class='head2' href="viewProjects.asp?orderBy=1"><b>Active</b></a></th>
 		<th align=center><a class='head2' href="viewProjects.asp?orderBy=2"><b>Init Inspec Cost</b></a></th>
 		<th align=center><a class='head2' href="viewProjects.asp?orderBy=3"><b>Rec Inspec Cost</b></a></th>
 		<th align=center><a class='head2' href="viewProjects.asp?orderBy=4"><b>Bill Cycle</b></a></th>

@@ -125,7 +125,7 @@ Set RS0 = connSWPPP.execute(SQL0) %>
 <td></td>
 <td></td>
 <td></td>
-<td>Thank you for your business.</td>
+<td>Due upon receipt.</td>
 <td>&lt;project name&gt;</td>
 <td>&lt;project city&gt;</td>
 <td></td>
@@ -304,7 +304,7 @@ Set RS0 = connSWPPP.execute(SQL0) %>
 <td></td>
 <td></td>
 <td></td>
-<td>Thank you for your business.</td>
+<td>Due upon receipt.</td>
 <td>Ames Meadow Phase IIIA</td>
 <td>Lancaster, TX</td>
 <td></td>

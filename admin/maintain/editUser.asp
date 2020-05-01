@@ -372,11 +372,13 @@ SQL1 = "SELECT p.*, u.userID, u.firstName, u.lastName, u.rights as rights1, pu.r
 	" FROM Projects as p LEFT JOIN ProjectsUsers as pu ON p.projectID=pu.projectID LEFT JOIN Users as u" &_
 	" ON pu.userID=u.userID"
 	IF Session("validDirector") AND NOT(Session("validAdmin")) THEN 
-		SQL1=SQL1 & " WHERE p.projectID IN (SELECT projectID FROM ProjectsUsers" &_
-		" WHERE userID=" & listUserID &" AND rights='director')"
+		SQL1=SQL1 & " WHERE p.phaseNum=1 AND p.projectID IN (SELECT projectID FROM ProjectsUsers" &_
+		" AND userID=" & listUserID &" AND rights='director')"
+	ELSE
+		SQL1=SQL1 & " WHERE p.phaseNum=1"
 	END IF
 SQL1=SQL1 & " ORDER BY projectName ASC, projectPhase ASC"
-'--Response.Write(SQL1)
+'Response.Write(SQL1)
 SET RS1=connSWPPP.execute(SQL1)
 '---	Initialize loop variables -------------------------------------------------------------------
 compCount=0 

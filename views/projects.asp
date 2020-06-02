@@ -25,10 +25,7 @@ Else
 		" ORDER BY p.projectName"
 End If
 '--Response.Write(projInfoSQLSELECT)
-Set rsProjInfo = connSWPPP.Execute(projInfoSQLSELECT)
-projectID = rsProjInfo("projectID")
-projectName = Trim(rsProjInfo("projectName"))
-projectPhase = Trim(rsProjInfo("projectPhase")) %>
+Set rsProjInfo = connSWPPP.Execute(projInfoSQLSELECT) %>
 <html>
 <head>
 <title>SWPPP INSPECTIONS : Select Project</title>
@@ -45,6 +42,9 @@ projectPhase = Trim(rsProjInfo("projectPhase")) %>
 If rsProjInfo.EOF Then
 	Response.Write("<b><i>Sorry no current data entered at this time.</i></b>")
 Else
+    projectID = rsProjInfo("projectID")
+    projectName = Trim(rsProjInfo("projectName"))
+    projectPhase = Trim(rsProjInfo("projectPhase")) 
 	rsProjInfo.MoveFirst
 	Do While Not rsProjInfo.EOF
 		projectName = Trim(rsProjInfo("projectName"))

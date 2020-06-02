@@ -23,19 +23,19 @@ Set RS2=connSWPPP.execute(SQL2) %>
 <!doctype html public "-//w3c//dtd html 4.0 transitional//en">
 <html>
 <head>
-	<title>SWPPP INSPECTIONS : View Systemic Notes</title>
+	<title>SWPPP INSPECTIONS : View Alert Notes</title>
 	<link rel="stylesheet" href="../../global.css" type="text/css">
 </head>
 <body>
 <center>
     <img src="../images/color_logo_report.jpg" width="300"><br><br>
-    <font size="+1"><b>systemic items for<br/> (<%=projectID %>) <%= RS2("projectName") %>&nbsp;<%= RS2("projectPhase")%></b></font>
+    <font size="+1"><b>alert items for<br/> (<%=projectID %>) <%= RS2("projectName") %>&nbsp;<%= RS2("projectPhase")%></b></font>
     <br /><br />
 </center>
 <table>
     <tr>
         <th width="25%">inspection date</th>
-        <th width="75%">systemic item</th>
+        <th width="75%">alert item</th>
     </tr>
     <% dbg_str = ""
     inspectInfoSQLSELECT = "SELECT DISTINCT inspecID, inspecDate, totalItems, completedItems, includeItems, compliance, released, systemic, systemicNote, p.projectName, p.projectPhase" & _

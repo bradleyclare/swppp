@@ -253,10 +253,7 @@ If RS2("projectState") = "OK" Then %>
 <%	RS1.MoveNext 
 LOOP
 RS1.Close
-SET RS1=nothing
-
-RS2.Close
-Set RS2 = Nothing %>
+SET RS1=nothing %>
 </body>
 </html><%
 connSWPPP.Close

@@ -70,7 +70,7 @@ IF Request.Form.Count > 0 THEN %>
                 Set connProjUsers = connSWPPP.Execute(SQLSELECT)
 
                 strBody=strBody & "<table>"
-                strBody=strBody & "<tr><th>project name</th><th>group name</th><th>over 1 day</th><th>over 5 days</th><th class='red'>over 7 days</th><th class='red'>over 10 days</th><th class='red'>over 14 days</th><th class='red'>repeats</th><th>notes</th><th>systemic</th></tr>"
+                strBody=strBody & "<tr><th>project name</th><th>group name</th><th>over 1 day</th><th>over 5 days</th><th class='red'>over 7 days</th><th class='red'>over 10 days</th><th class='red'>over 14 days</th><th class='red'>repeats</th><th>notes</th><th>alert</th></tr>"
 
                 'tally up the open items for each project
                 'Loop through all projects the user has connection with
@@ -297,7 +297,7 @@ IF Request.Form.Count > 0 THEN %>
                         
                         strBody=strBody & "</td><td>"
                         if displaySystemic Then
-                            strBody=strBody & "<a href='http://swppp.com/views/viewSystemicNote.asp?pID=" & projID &"'> S </a>"
+                            strBody=strBody & "<a href='http://swppp.com/views/viewSystemicNote.asp?pID=" & projID &"'> A </a>"
                         End If
 
                         strBody=strBody & "</td></tr>"

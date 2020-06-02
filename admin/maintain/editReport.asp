@@ -615,7 +615,7 @@ End If%>
 <% Else %>
 	<input id='openItemAlert-checkbox' type="checkbox" name="openItemAlert" />
 <% End If %>
-</td><td width="13%" align="left">Systemic
+</td><td width="13%" align="left">Alert
 <% If rsReport("systemic") = True Then %>
 	<input id='systemic-checkbox' type="checkbox" name="systemic" checked/>
 <% Else %>

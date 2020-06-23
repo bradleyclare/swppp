@@ -32,6 +32,7 @@ Set RS2=connSWPPP.execute(SQL2) %>
     <font size="+1"><b>alert items for<br/> (<%=projectID %>) <%= RS2("projectName") %>&nbsp;<%= RS2("projectPhase")%></b></font>
     <br /><br />
 </center>
+<center>
 <table>
     <tr>
         <th width="25%">inspection date</th>
@@ -60,8 +61,8 @@ Set RS2=connSWPPP.execute(SQL2) %>
             systemicNote = rsInspectInfo("systemicNote")
             
             if systemic = True then %>
-               <td><%=inspecDate %></td>
-               <td><%=systemicNote %></td>
+               <tr><td><%=inspecDate %></td>
+               <td><%=systemicNote %></td></tr>
             <% end if
             
         rsInspectInfo.MoveNext
@@ -72,5 +73,6 @@ Set RS2=connSWPPP.execute(SQL2) %>
     connSWPPP.Close
     Set connSWPPP = Nothing %>
 </table>
+</center>
 </body>
 </html>

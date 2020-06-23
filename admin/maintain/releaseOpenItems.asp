@@ -83,7 +83,7 @@ IF Request.Form.Count > 0 THEN %>
                     groupNameRaw = connProjUsers("collectionName")
                     'Response.Write(groupNameRaw)
                     If debug_msg=True Then
-                        Response.Write(projID & "<br/>")
+                        Response.Write("ProjID: " & projID & "<br/>")
                     End If
                     startDate=CDATE(Month(Date) &"/1/"& Year(Date)) 
                     endDate=DateAdd("m",1,startDate)
@@ -134,11 +134,11 @@ IF Request.Form.Count > 0 THEN %>
                             inspecDate = RS0("inspecDate")
                             totalItems = RS0("totalItems")
                             completedItems = RS0("completedItems")
+                            If debug_msg=True Then
+                                Response.Write(projName & ": " & projPhase & ": " & inspecDate & ", total: " & totalItems & ", completed: " & completedItems &"<br/>")
+                            End If
 
                             if completedItems < totalItems then
-                               If debug_msg=True Then
-                                  Response.Write(projName & ": " & projPhase & ": " & inspecDate & ", total: " & totalItems & ", completed: " & completedItems &"<br/>")
-                               End If
                                'open items on report tally up the open item dates 
                                coordSQLSELECT = "SELECT coID, assignDate, status, repeat, NLN, LD FROM Coordinates" &_
 	                               " WHERE inspecID=" & inspecID &_
@@ -166,8 +166,8 @@ IF Request.Form.Count > 0 THEN %>
 					                           age = datediff("d",assignDate,currentDate) 
 				                           End If
                                        If debug_msg=True Then
-                                          Response.Write("ID: " & coID &", Age: "& age &", Status: "& status &", LD: "& LD &", Repeat: "& repeat &"<br/>")
-                                	      End If
+                                          Response.Write("ID: " & coID &", Age: "& age &", Status: "& status &", LD: "& LD &", Repeat: "& repeat & ", Systemic: " & RS0("systemic") &"<br/>")
+                                	    End If
                                        
                                        If NLN = True Then
                                           'continue
@@ -224,6 +224,8 @@ IF Request.Form.Count > 0 THEN %>
                                        
                                        if RS0("systemic") then
                                           displaySystemic = True
+                                       Else
+                                          displaySystemic = False
                                        end if
                                       rsCoord.MoveNext
                                    LOOP

@@ -72,9 +72,6 @@ End If ' Request.Form.Count>0
 <table bgcolor="#006699">
 <tr><td colspan="2" align="center"><br><h1><font color="#FFffff">User Login</font></h1>
 		</td></tr>
-	<tr><td colspan="2" align="center"><br><h3><font color="#FFffff">Due to a security upgrade all passwords will need to be reset.<br/>  
-	Click the lost password link below to generate a new password.<br/>After receiving the new password by email, <br/>click on the change your password link to set it to what you want.</font></h3>
-		</td></tr>
 	<tr><td colspan="2" bgcolor="#ff3333"><img src="../../images/dot.gif" width="1" height="1"
 			border="0" alt=""></td></tr>
 	<tr><td align="right"><br><font color="#FFFFFF">Email: </font></td>

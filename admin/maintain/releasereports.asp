@@ -30,12 +30,13 @@ inspecSQLSELECT = "SELECT inspecDate, Inspections.projectName, Inspections.proje
 "projectZip, projectCounty, onsiteContact, officePhone, emergencyPhone, compName, " &_
 "compAddr, compAddr2, compCity, compState, compZip, compPhone, compContact, contactPhone, contactFax, " &_
 "contactEmail, reportType, inches, bmpsInPlace, sediment, " &_
-"narrative, firstName, lastName, signature, qualifications, includeItems, compliance, totalItems, completedItems" &_
-	" FROM Inspections, Projects, Users" &_
-	" WHERE inspecID = " & inspecID &_
-	" AND Inspections.projectID = Projects.projectID" &_
-	" AND Inspections.userID = Users.userID"
-'--Response.Write("Inspec: "& inspecSQLSELECT &"<br>")
+"narrative, firstName, lastName, signature, qualifications, includeItems, compliance, totalItems, completedItems, horton" &_
+" FROM Inspections, Projects, Users" &_
+" WHERE inspecID = " & inspecID &_
+" AND Inspections.projectID = Projects.projectID" &_
+" AND Inspections.userID = Users.userID"
+'Response.Write("Inspec: "& inspecSQLSELECT &"<br>")
+
 Set rsInspec = connSWPPP.Execute(inspecSQLSELECT)
 bmpsInPlace = "No"
 If rsInspec("bmpsInPlace") = "1" Then bmpsInPlace = "Yes" End If
@@ -55,7 +56,7 @@ strBody=strBody &".ld{font-weight: bold;}"
 strBody=strBody &"</style></head>"
 strBody=strBody &"<body bgcolor='#ffffff' marginwidth='30' leftmargin='30' marginheight='15' topmargin='15'>"
 strBody=strBody &"<center><img src='http://www.swpppinspections.com/images/color_logo_report.jpg' width='300'><br><br>"
-strBody=strBody &"<font size='+1'><b>Inspection Report</b></font><hr noshade size='1' width='90%'></center>"
+strBody=strBody &"<font size='+1'><b>Inspection Report</b></font><hr noshade size='1' ></center>"
 strBody=strBody &"<table cellpadding='2' cellspacing='0' border='0' width='90%'>"
 strBody=strBody &"<tr><td align='right'><b>Date:</b></td><td colspan='3'>"&  Trim(rsInspec("inspecDate")) &"</td></tr>"
 strBody=strBody &"<tr><td align='right'><b>Project Name:</b></td><td colspan='3'>"&  Trim(rsInspec("projectName")) &"&nbsp;"&  Trim(rsInspec("projectPhase")) &"</td></tr>"
@@ -64,10 +65,10 @@ strBody=strBody &"<tr><td align='right'>&nbsp;</td><td colspan='3'>"&  (Trim(rsI
 strBody=strBody &"<tr><td align='right'><b>County:</b></td><td colspan='3'>"&  Trim(rsInspec("projectCounty")) &"</td></tr>"
 strBody=strBody &"<tr><td align='right'><b>On-Site Contact:</b></td><td colspan='3'>"&  Trim(rsInspec("onsiteContact")) &"</td></tr>"
 if Trim(rsInspec("officePhone")) <> "" Then
-    strBody=strBody &"<tr><td align='right'><b>On-Site Contact:</b></td><td colspan='3'>"&  Trim(rsInspec("officePhone")) &"</td></tr>"
+	strBody=strBody &"<tr><td align='right'><b>On-Site Contact:</b></td><td colspan='3'>"&  Trim(rsInspec("officePhone")) &"</td></tr>"
 End If
 if Trim(rsInspec("emergencyPhone")) <> "" Then
-    strBody=strBody &"<tr><td align='right'><b>On-Site Contact:</b></td><td colspan='3'>"&  Trim(rsInspec("emergencyPhone")) &"</td></tr>"
+	strBody=strBody &"<tr><td align='right'><b>On-Site Contact:</b></td><td colspan='3'>"&  Trim(rsInspec("emergencyPhone")) &"</td></tr>"
 End If
 strBody=strBody &"<tr><td align='right'><b>Company:</b></td><td>"&  Trim(rsInspec("compName")) &"</td><td align='right'><b>Contact:</b></td><td>"&  Trim(rsInspec("compContact")) &"</td></tr>"
 strBody=strBody &"<tr><td align='right' valign='top'><b>Address:</b></td><td>"&  Trim(rsInspec("compAddr"))
@@ -96,7 +97,6 @@ IF rsInspec("sediment")>-1 THEN
 	strBody=strBody &"<td align='right'><b>Sediment Loss or Pollution?</b></td><td>"&  sediment &"</td>"
 END IF
 strBody=strBody &"</tr>"
-
 strBody=strBody &"</table>"
 signature = Trim(rsInspec("signature"))
 coordSQLSELECT = "SELECT coID, coordinates, existingBMP, correctiveMods, orderby, assignDate, completeDate, status, repeat, useAddress, address, locationName, infoOnly, LD, NLN" &_
@@ -131,12 +131,44 @@ If rsInspec("projectState") = "OK" Then
          " the site, off-site material storage areas, overburden and stockpiles of dirt, borrow areas, equipment staging areas, vehicle repair areas, and fueling areas.</i></center></p></div>"
    End If
 Else
-    strBody=strBody &"<div style='font-size: 8px'><p><center><i>Inspectors familiar with the TPDES Permit TXR150000 and the SWPPP should inspect disturbed areas of the site that have not been finally stabilized," &_
+	strBody=strBody &"<div style='font-size: 8px'><p><center><i>Inspectors familiar with the TPDES Permit TXR150000 and the SWPPP should inspect disturbed areas of the site that have not been finally stabilized," &_
       " areas used for storage of materials that are exposed to precipitation, structural controls (all erosion and sediment controls), discharge locations, locations where vehicles" &_
       " enter and exit the site, off-site material storage areas, overburden and stockpiles of dirt, borrow areas, equipment staging areas, vehicle repair areas, and fueling areas.</i></center></p></div>"
 End If
-strBody=strBody &"<p><table border='0' cellpadding='3' width='100%' cellspacing='0'>"
-strBody=strBody &"<tr><td colspan='2'><hr noshade size='1' align='center' width='90%'></td></tr>"
+'print dr horton questions if desired
+If rsInspec("horton") Then
+	'get questions
+	SQLQ = "SELECT * FROM HortonQuestions ORDER BY orderby"
+	Set RSQ = connSWPPP.Execute(SQLQ)
+	'get answer data if available
+	SQLA = "SELECT * FROM HortonAnswers WHERE inspecID = " & inspecID
+	Set RSA = connSWPPP.execute(SQLA)
+	strBody=strBody &"<hr noshade size='1' align='center' >"
+	If RSQ.EOF Then
+		strBody=strBody &"<p>No Questions Found</p>"
+	Else
+    	strBody=strBody &"<table border='0' cellpadding='3' width='100%' cellspacing='0'>"
+		cnt = 0
+		altColors="#ffffff"
+		Do While Not RSQ.EOF
+			cnt = cnt + 1
+			size = "90%"
+			weight = "bold"
+			If Trim(RSA("Q"&cnt)) = Trim(RSQ("default_answer")) Then
+				size = "70%"
+				weight = "normal"
+			End If
+			strBody=strBody &"<tr bgcolor="& altColors &"><td style='font-size:"& size &"; font-weight:"& weight &"'>"& Trim(RSQ("question")) &"</td>" & _ 
+			"<td style='font-size:"& size &"; font-weight:"& weight &"'>"& Trim(RSA("Q"&cnt)) &"</td></tr>"
+			If altColors = "#e5e6e8" Then altColors = "#ffffff" Else altColors = "#e5e6e8" End If
+			RSQ.MoveNext
+    	Loop 'RSO
+    End If
+	RSQ.Close
+    SET RSQ=nothing
+End If
+strBody=strBody &"<table border='0' cellpadding='3' width='100%' cellspacing='0'>"
+strBody=strBody &"<tr><td colspan='2'><hr noshade size='1' align='center' ></td></tr>"
 If rsInspec("compliance") Then
 	strBody=strBody &"<tr><td colspan='2' align='center'><h2>SITE IS IN COMPLIANCE WITH THE SWPPP</h2></td></tr>"
 Else 
@@ -162,6 +194,7 @@ Else
             LD = rsCoord("LD")
             NLN = rsCoord("NLN")
 			scoring_class = "black"
+			'Response.Write("ID: " & coID & ", Coord: " & coordinates & ", LocName: " & locationName & ", address: " & address & ", Mods: " & correctiveMods & "<br/>") 
 			IF applyScoring THEN
 				IF assignDate = "" THEN
 					age = 0
@@ -179,29 +212,29 @@ Else
             If NLN = True Then
                 'do nothing
             ElseIf infoOnly = True Then
-                strBody=strBody &"<tr valign='top'><td width='20%' align='right'><b>note:</b></td><td width='80%' align='left' class = '"& scoring_class &"'>"&  correctiveMods &"</td></tr>"
+			    strBody=strBody &"<tr valign='top'><td width='20%' align='right'><b>note:</b></td><td width='80%' align='left' class = '"& scoring_class &"'>"&  correctiveMods &"</td></tr>"
             Else
-			    IF useAddress THEN
+                IF useAddress THEN
 				    strBody=strBody &"<tr valign='top'><td width='20%' align='right'><b>location:</b></td>	<td width='80%' align='left' class = '"& scoring_class &"'>"&  locationName &"<br></td></tr>"
 				    strBody=strBody &"<tr valign='top'><td width='20%' align='right'><b>address:</b></td>	<td width='80%' align='left' class = '"& scoring_class &"'>"&  address &"<br></td></tr>"
 			    ELSE
 				    strBody=strBody &"<tr valign='top'><td width='20%' align='right'><b>location:</b></td>	<td width='80%' align='left' class = '"& scoring_class &"'>"&  coordinates &"<br></td></tr>"
 			    END IF
 			    IF TRIM(rsCoord("existingBMP"))<>"-1" THEN
-				    strBody=strBody &"<tr valign='top'><td width='20%' align='right'><b>existing BMP:</b></td><td width='80%' align='left'>"&  existingBMP &"<br></td></tr>"
+				    strBody=strBody &"<tr valign='top'><td width='20%' align='right'><b>existing BMP:</b></td><td width='80%' align='left' class = '"& scoring_class &"'>"&  existingBMP &"<br></td></tr>"
 			    END IF
 			    strBody=strBody &"<tr valign='top'><td width='20%' align='right'><b>action needed:</b></td><td width='80%' align='left' class = '"& scoring_class &"'>"&  correctiveMods &"</td></tr>"
 			    IF applyScoring and repeat THEN
 				    strBody=strBody &"<tr valign='top'><td width='20%' align='right'><b>item age:</b></td><td width='80%' align='left' class = '"& scoring_class &"'>"&  age &"<br></td></tr>"
 			    END IF
             End If
-			strBody=strBody &"<tr><td colspan='2'><hr noshade size='1' align='center' width='90%'></td></tr>"  & vbCrLf
+			strBody=strBody &"<tr><td colspan='2'><hr noshade size='1' align='center' ></td></tr>" & vbCrLf	
         rsCoord.MoveNext
 		Loop
 	End If ' END No Results Found
 End If
 If rsInspec("projectState") = "OK" Then
-    strBody=strBody &"<TR><TD colspan=4><p><small>You must initiate stabilization measures immediately whenever earth-disturbing activities have permanently or temporarily ceased on any portion of the site and will not resume for a period exceeding 14 calendar days.</small></TD></TR>"
+	strBody=strBody &"<TR><TD colspan=4><p><small>You must initiate stabilization measures immediately whenever earth-disturbing activities have permanently or temporarily ceased on any portion of the site and will not resume for a period exceeding 14 calendar days.</small></TD></TR>"
 Else
 	strBody=strBody &"<TR><TD colspan=4><p><small>Erosion control and stabilization measures must be initiated immediately in portions of the site where construction activities have temporarily ceased and will not resume for a period exceeding 14 calendar days. Stabilization measures that provide a protective cover must be initiated immediately in portions of the site where construction activities have permanently ceased.</small></TD></TR>"
 END IF
@@ -213,7 +246,8 @@ strBody=strBody &"<br><br>"
 SQL3="SELECT oImageFileName FROM OptionalImages WHERE oitID=12 AND inspecID="& inspecID
 SET RS3=connSWPPP.execute(SQL3)
 IF NOT(RS3.EOF) THEN
-strBody=strBody &"<div align='center'><a href='http://www.swpppinspections.com/images/sitemap/"& TRIM(RS3("oImageFileName")) &"'>link for Site Map</a></div>"
+	strBody=strBody &"<div align='center'><a href='http://www.swpppinspections.com/images/sitemap/"& TRIM(RS3("oImageFileName")) &"'>link for Site Map</a></div>"
+
 '-- images portion -----------------------------------------------------------------------------------
 imgSQLSELECT = "SELECT imageID, largeImage, smallImage, description FROM Images WHERE inspecID = " & inspecID
 '--Response.Write("images?: "& imgSQLSELECT &"<br>")
@@ -227,17 +261,16 @@ If Not rsImages.EOF Then
 			strImages=strImages &"</tr>"& VBCrLf &"<tr>"
 			iDataRows = 1
 		End If
-			strImages=strImages &"<td align=center><a href='"& "http://www.swpppinspections.com/images/lg/" & Trim(rsImages("largeImage")) &"' target='_blank'>"& Trim(rsImages("description")) &"<br>"
-			If Right(Trim(rsImages("smallImage")),3)="pdf" then
-				strImages=strImages &"<img src='http://www.swpppinspections.com/images/acrobat.gif' width=87 height=30 border=0 alt='Acrobat PDF Doc'>"
-			else
-				strImages=strImages &"<img src='"& "http://www.swpppinspections.com/images/sm/" & Trim(rsImages("smallImage")) &"' border=0	alt='"& Trim(rsImages("smallImage")) &"'>"
-			end if
-				strImages=strImages &"</a></td>"
+		strImages=strImages &"<td align=center><a href='"& "http://www.swpppinspections.com/images/lg/" & Trim(rsImages("largeImage")) &"' target='_blank'>"& Trim(rsImages("description")) &"<br>"
+		If Right(Trim(rsImages("smallImage")),3)="pdf" then
+			strImages=strImages &"<img src='http://www.swpppinspections.com/images/acrobat.gif' width=87 height=30 border=0 alt='Acrobat PDF Doc'>"
+		else
+			strImages=strImages &"<img src='"& "http://www.swpppinspections.com/images/sm/" & Trim(rsImages("smallImage")) &"' border=0	alt='"& Trim(rsImages("smallImage")) &"'>"
+		end if
+		strImages=strImages &"</a></td>"
 		rsImages.MoveNext
 	Loop
 End If
-
 strBody=strBody &"<br><div align='center'><a href='http://www.swppp.com'>link to: www.swppp.com</a></div></Body>"
 END IF
 

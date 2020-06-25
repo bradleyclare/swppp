@@ -41,6 +41,8 @@ If Request.Form.Count > 0 Then
 		if Request("systemic") = "on" then systemic = 1 End If	
       compliance = 0
 		if Request("compliance") = "on" then compliance = 1 End If
+		hortonQuestions = 0
+		if Request("horton") = "on" then hortonQuestions = 1 End If
 		inspectSQLUPDATE=inspectSQLUPDATE &", projectAddr = '" & strQuoteReplace(Request("projectAddr")) & "'" & _
 		", projectCity = '" & strQuoteReplace(Request("projectCity")) & "'" & _
 		", projectState = '" & Request("projectState") & "'" & _
@@ -70,6 +72,7 @@ If Request.Form.Count > 0 Then
 		", compliance = " & compliance & _
       ", systemic = " & systemic & _
       ", systemicNote = '" & strQuoteReplace(Request("systemicNote")) & "'" & _
+	  ", horton = " & hortonQuestions & _
 		" WHERE inspecID = " & inspecID
       'response.Write(inspectSQLUPDATE)
 	   connSWPPP.Execute(inspectSQLUPDATE)
@@ -127,13 +130,13 @@ If Request.Form.Count > 0 Then
 			End If
 			OrderBy = 0
             if IsNumeric(Request("coord:orderby:"& CStr(n))) then OrderBy = Request("coord:orderby:"& CStr(n)) End If
-			'SQLc = SQLc &"/*<br/>*/Exec spAEDCoordinate "& Request("coord:coID:"& CStr(n)) &", "& DelCoord &", "& inspecID &", '"& Replace(Request("coord:coord:"& CStr(n)),"--","—") &"', '"& Replace(Request("coord:mods:"& CStr(n)),"--","—") &"', "& OrderBy &";"
+			'SQLc = SQLc &"/*<br/>*/Exec spAEDCoordinate "& Request("coord:coID:"& CStr(n)) &", "& DelCoord &", "& inspecID &", '"& Replace(Request("coord:coord:"& CStr(n)),"--","ï¿½") &"', '"& Replace(Request("coord:mods:"& CStr(n)),"--","ï¿½") &"', "& OrderBy &";"
 			SQLc = SQLc &"/*<br/>*/Exec spAEDCoordinate "& _ 
 			Request("coord:coID:"& CStr(n)) &", "& _ 
 			DelCoord &", "& _ 
 			inspecID &", '"& _ 
-			Replace(Request("coord:coord:"& CStr(n)),"--","—") &"', '"& _ 
-			Replace(Request("coord:mods:"& CStr(n)),"--","—") &"', "& _ 
+			Replace(Request("coord:coord:"& CStr(n)),"--","ï¿½") &"', '"& _ 
+			Replace(Request("coord:mods:"& CStr(n)),"--","ï¿½") &"', "& _ 
 			OrderBy &", '"& _ 
 			AssignDate &"', '"& _ 
 			Request("coord:completeDate:"& CStr(n)) &"', "& _ 
@@ -173,7 +176,7 @@ End If
 	inspecSQLSELECT = "SELECT inspecDate, i.projectName, i.projectPhase, projectAddr, projectCity, projectState" & _
 		", projectZip, projectCounty, onsiteContact, officePhone, emergencyPhone, i.projectID, compName" & _
 		", compAddr, compAddr2, compCity, compState, compZip, compPhone, compContact, contactPhone, contactFax" & _
-		", contactEmail, reportType, inches, bmpsInPlace, sediment, userID, includeItems, compliance, totalItems, completedItems, openItemAlert, systemic, systemicNote, p.collectionName" & _
+		", contactEmail, reportType, inches, bmpsInPlace, sediment, userID, includeItems, compliance, totalItems, completedItems, openItemAlert, systemic, systemicNote, horton, p.collectionName" & _
 		" FROM Inspections as i, Projects as p" & _
 		" WHERE i.projectID = p.projectID AND inspecID = " & inspecID
 '--Response.Write(inspecSQLSELECT & "<br>")
@@ -350,6 +353,13 @@ baseDir = "D:\Inetpub\wwwroot\SWPPP\"%>
         var basePath = "http://www.swppp.com";
         var URL = "/admin/maintain/editNarrative.asp?inspecID=" + inspID;
         var params = "height=420,width=520,status=yes,toolbar=no,menubar=no, directories=no, location=no, scrollbars=no, resizable=no";
+        window.open(URL, "", params);
+    }
+
+	function hortonQuestions(inspID) {
+        var basePath = "http://www.swppp.com";
+        var URL = "/admin/maintain/hortonQuestions.asp?inspecID=" + inspID;
+        var params = "";
         window.open(URL, "", params);
     }
 
@@ -584,6 +594,14 @@ If Session("validAdmin") Then
 			<td bgcolor="#999999"><%= Trim(connUser("firstName"))%> <%=Trim(connUser("lastName"))%>
 				<INPUT type="hidden" name="inspector" value="<%= rsReport("userID")%>"></td></tr>
 <%	End If %>
+	<tr><td align="right" bgcolor="#eeeeee"><b>Apply DR Horton Questions</b></td>
+	<td bgcolor="#999999">Yes?
+	<% If rsReport("horton") = True Then %>
+		<input id="horton-checkbox" type="checkbox" name="horton" onChange="this.form.submit()" checked/> <input type="button" value="View Questions" onClick="hortonQuestions('<%= inspecID%>')">
+	<% Else %>
+		<input id="horton-checkbox" type="checkbox" name="horton" onChange="this.form.submit()" />
+	<% End If %>
+	</td></tr>
 </table>
 
 <!------------------------------------- Coordinates --------------------------- --->

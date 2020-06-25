@@ -15,7 +15,7 @@ inspecSQLSELECT = "SELECT inspecDate, Inspections.projectName, Inspections.proje
 "projectZip, projectCounty, onsiteContact, officePhone, emergencyPhone, compName, " &_
 "compAddr, compAddr2, compCity, compState, compZip, compPhone, compContact, contactPhone, contactFax, " &_
 "contactEmail, reportType, inches, bmpsInPlace, sediment, " &_
-"narrative, firstName, lastName, signature, qualifications, includeItems, compliance, totalItems, completedItems" &_
+"narrative, firstName, lastName, signature, qualifications, includeItems, compliance, totalItems, completedItems, horton" &_
 " FROM Inspections, Projects, Users" &_
 " WHERE inspecID = " & inspecID &_
 " AND Inspections.projectID = Projects.projectID" &_
@@ -41,7 +41,7 @@ strBody=strBody &".ld{font-weight: bold;}"
 strBody=strBody &"</style></head>"
 strBody=strBody &"<body bgcolor='#ffffff' marginwidth='30' leftmargin='30' marginheight='15' topmargin='15'>"
 strBody=strBody &"<center><img src='http://www.swpppinspections.com/images/color_logo_report.jpg' width='300'><br><br>"
-strBody=strBody &"<font size='+1'><b>Inspection Report</b></font><hr noshade size='1' width='90%'></center>"
+strBody=strBody &"<font size='+1'><b>Inspection Report</b></font><hr noshade size='1' ></center>"
 strBody=strBody &"<table cellpadding='2' cellspacing='0' border='0' width='90%'>"
 strBody=strBody &"<tr><td align='right'><b>Date:</b></td><td colspan='3'>"&  Trim(rsInspec("inspecDate")) &"</td></tr>"
 strBody=strBody &"<tr><td align='right'><b>Project Name:</b></td><td colspan='3'>"&  Trim(rsInspec("projectName")) &"&nbsp;"&  Trim(rsInspec("projectPhase")) &"</td></tr>"
@@ -120,8 +120,40 @@ Else
       " areas used for storage of materials that are exposed to precipitation, structural controls (all erosion and sediment controls), discharge locations, locations where vehicles" &_
       " enter and exit the site, off-site material storage areas, overburden and stockpiles of dirt, borrow areas, equipment staging areas, vehicle repair areas, and fueling areas.</i></center></p></div>"
 End If
+'print dr horton questions if desired
+If rsInspec("horton") Then
+	'get questions
+	SQLQ = "SELECT * FROM HortonQuestions ORDER BY orderby"
+	Set RSQ = connSWPPP.Execute(SQLQ)
+	'get answer data if available
+	SQLA = "SELECT * FROM HortonAnswers WHERE inspecID = " & inspecID
+	Set RSA = connSWPPP.execute(SQLA)
+	strBody=strBody &"<hr noshade size='1' align='center' >"
+	If RSQ.EOF Then
+		strBody=strBody &"<p>No Questions Found</p>"
+	Else
+    	strBody=strBody &"<table border='0' cellpadding='3' width='100%' cellspacing='0'>"
+		cnt = 0
+		altColors="#ffffff"
+		Do While Not RSQ.EOF
+			cnt = cnt + 1
+			size = "90%"
+			weight = "bold"
+			If Trim(RSA("Q"&cnt)) = Trim(RSQ("default_answer")) Then
+				size = "70%"
+				weight = "normal"
+			End If
+			strBody=strBody &"<tr bgcolor="& altColors &"><td style='font-size:"& size &"; font-weight:"& weight &"'>"& Trim(RSQ("question")) &"</td>" & _ 
+			"<td style='font-size:"& size &"; font-weight:"& weight &"'>"& Trim(RSA("Q"&cnt)) &"</td></tr>"
+			If altColors = "#e5e6e8" Then altColors = "#ffffff" Else altColors = "#e5e6e8" End If
+			RSQ.MoveNext
+    	Loop 'RSO
+    End If
+	RSQ.Close
+    SET RSQ=nothing
+End If
 strBody=strBody &"<table border='0' cellpadding='3' width='100%' cellspacing='0'>"
-strBody=strBody &"<tr><td colspan='2'><hr noshade size='1' align='center' width='90%'></td></tr>"
+strBody=strBody &"<tr><td colspan='2'><hr noshade size='1' align='center' ></td></tr>"
 If rsInspec("compliance") Then
 	strBody=strBody &"<tr><td colspan='2' align='center'><h2>SITE IS IN COMPLIANCE WITH THE SWPPP</h2></td></tr>"
 Else 
@@ -181,7 +213,7 @@ Else
 				    strBody=strBody &"<tr valign='top'><td width='20%' align='right'><b>item age:</b></td><td width='80%' align='left' class = '"& scoring_class &"'>"&  age &"<br></td></tr>"
 			    END IF
             End If
-			strBody=strBody &"<tr><td colspan='2'><hr noshade size='1' align='center' width='90%'></td></tr>" & vbCrLf	
+			strBody=strBody &"<tr><td colspan='2'><hr noshade size='1' align='center' ></td></tr>" & vbCrLf	
         rsCoord.MoveNext
 		Loop
 	End If ' END No Results Found
@@ -200,7 +232,6 @@ SQL3="SELECT oImageFileName FROM OptionalImages WHERE oitID=12 AND inspecID="& i
 SET RS3=connSWPPP.execute(SQL3)
 IF NOT(RS3.EOF) THEN
 	strBody=strBody &"<div align='center'><a href='http://www.swpppinspections.com/images/sitemap/"& TRIM(RS3("oImageFileName")) &"'>link for Site Map</a></div>"
-END IF
 
 '-- images portion -----------------------------------------------------------------------------------
 imgSQLSELECT = "SELECT imageID, largeImage, smallImage, description FROM Images WHERE inspecID = " & inspecID
@@ -226,6 +257,7 @@ If Not rsImages.EOF Then
 	Loop
 End If
 strBody=strBody &"<br><div align='center'><a href='http://www.swppp.com'>link to: www.swppp.com</a></div></Body>"
+END IF
 
 rsCoord.Close
 Set rsCoord = Nothing

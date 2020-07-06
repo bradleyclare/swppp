@@ -37,7 +37,7 @@ IF Request.Form.Count > 0 THEN %>
                 "projectZip, projectCounty, onsiteContact, officePhone, emergencyPhone, compName, " &_
                 "compAddr, compAddr2, compCity, compState, compZip, compPhone, compContact, contactPhone, contactFax, " &_
                 "contactEmail, reportType, inches, bmpsInPlace, sediment, " &_
-                "narrative, firstName, lastName, signature, qualifications, includeItems, compliance, totalItems, completedItems, sentRepeatItemReport" &_
+                "narrative, firstName, lastName, signature, qualifications, includeItems, compliance, totalItems, completedItems, horton, sentRepeatItemReport" &_
 	                " FROM Inspections, Projects, Users" &_
 	                " WHERE inspecID = " & inspecID &_
 	                " AND Inspections.projectID = Projects.projectID" &_
@@ -67,11 +67,47 @@ IF Request.Form.Count > 0 THEN %>
             'Response.Write(coordSQLSELECT)
             Set rsCoord = connSWPPP.execute(coordSQLSELECT)
     
+            If rsInspec("horton") Then
+                'get questions
+                SQLQ = "SELECT * FROM HortonQuestions ORDER BY orderby"
+                Set RSQ = connSWPPP.Execute(SQLQ)
+                strBody=strBody &"<hr noshade size='1' align='center' >"
+                If RSQ.EOF Then
+                    strBody=strBody &"<p>No Questions Found</p>"
+                Else
+                    'get answer data if available
+                    SQLA = "SELECT * FROM HortonAnswers WHERE inspecID = " & inspecID
+                    Set RSA = connSWPPP.execute(SQLA)
+                    If RSA.EOF Then
+                        strBody=strBody &"<p>No Answers Found</p>"
+                    Else
+                        strBody=strBody &"<table border='0' cellpadding='3' width='100%' cellspacing='0'>"
+                        cnt = 0
+                        altColors="#ffffff"
+                        Do While Not RSQ.EOF
+                            cnt = cnt + 1
+                            size = "90%"
+                            weight = "bold"
+                            If Trim(RSA("Q"&cnt)) = Trim(RSQ("default_answer")) Then
+                                size = "70%"
+                                weight = "normal"
+                            End If
+                            strBody=strBody &"<tr bgcolor="& altColors &"><td style='font-size:"& size &"; font-weight:"& weight &"'>"& Trim(RSQ("question")) &"</td>" & _ 
+                            "<td style='font-size:"& size &"; font-weight:"& weight &"'>"& Trim(RSA("Q"&cnt)) &"</td></tr>"
+                            If altColors = "#e5e6e8" Then altColors = "#ffffff" Else altColors = "#e5e6e8" End If
+                            RSQ.MoveNext
+                        Loop 'RSO
+                        strBody=strBody &"</table>" 
+                    End If
+                End If
+                RSQ.Close
+                SET RSQ=nothing
+            End If
             strBody=strBody &"<h3>Repeat Items</h3>"
             strBody=strBody &"<p><table border='0' cellpadding='3' width='100%' cellspacing='0'>"
             strBody=strBody &"<tr><td colspan='2'><hr noshade size='1' align='center' width='90%'></td></tr>"
 	        If rsCoord.EOF Then
-		        'do nothing
+                strBody=strBody &"<h5>No Items Found</h5>"
 	        Else
 		        applyScoring = rsInspec("includeItems")
 		        currentDate = date()
@@ -88,9 +124,9 @@ IF Request.Form.Count > 0 THEN %>
 			        useAddress = rsCoord("useAddress")
 			        address = TRIM(rsCoord("address"))
 			        locationName = TRIM(rsCoord("locationName"))
-                 infoOnly = rsCoord("infoOnly")
-                 LD = rsCoord("LD")
-                 NLN = rsCoord("NLN")
+                    infoOnly = rsCoord("infoOnly")
+                    LD = rsCoord("LD")
+                    NLN = rsCoord("NLN")
 			        scoring_class = "black"
 			        If applyScoring Then
 				        If assignDate = "" Then

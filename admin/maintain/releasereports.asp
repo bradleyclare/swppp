@@ -140,29 +140,34 @@ If rsInspec("horton") Then
 	'get questions
 	SQLQ = "SELECT * FROM HortonQuestions ORDER BY orderby"
 	Set RSQ = connSWPPP.Execute(SQLQ)
-	'get answer data if available
-	SQLA = "SELECT * FROM HortonAnswers WHERE inspecID = " & inspecID
-	Set RSA = connSWPPP.execute(SQLA)
 	strBody=strBody &"<hr noshade size='1' align='center' >"
 	If RSQ.EOF Then
 		strBody=strBody &"<p>No Questions Found</p>"
 	Else
-    	strBody=strBody &"<table border='0' cellpadding='3' width='100%' cellspacing='0'>"
-		cnt = 0
-		altColors="#ffffff"
-		Do While Not RSQ.EOF
-			cnt = cnt + 1
-			size = "90%"
-			weight = "bold"
-			If Trim(RSA("Q"&cnt)) = Trim(RSQ("default_answer")) Then
-				size = "70%"
-				weight = "normal"
-			End If
-			strBody=strBody &"<tr bgcolor="& altColors &"><td style='font-size:"& size &"; font-weight:"& weight &"'>"& Trim(RSQ("question")) &"</td>" & _ 
-			"<td style='font-size:"& size &"; font-weight:"& weight &"'>"& Trim(RSA("Q"&cnt)) &"</td></tr>"
-			If altColors = "#e5e6e8" Then altColors = "#ffffff" Else altColors = "#e5e6e8" End If
-			RSQ.MoveNext
-    	Loop 'RSO
+		'get answer data if available
+		SQLA = "SELECT * FROM HortonAnswers WHERE inspecID = " & inspecID
+		Set RSA = connSWPPP.execute(SQLA)
+    	If RSA.EOF Then
+			strBody=strBody &"<p>No Answers Found</p>"
+		Else
+			strBody=strBody &"<table border='0' cellpadding='3' width='100%' cellspacing='0'>"
+			cnt = 0
+			altColors="#ffffff"
+			Do While Not RSQ.EOF
+				cnt = cnt + 1
+				size = "90%"
+				weight = "bold"
+				If Trim(RSA("Q"&cnt)) = Trim(RSQ("default_answer")) Then
+					size = "70%"
+					weight = "normal"
+				End If
+				strBody=strBody &"<tr bgcolor="& altColors &"><td style='font-size:"& size &"; font-weight:"& weight &"'>"& Trim(RSQ("question")) &"</td>" & _ 
+				"<td style='font-size:"& size &"; font-weight:"& weight &"'>"& Trim(RSA("Q"&cnt)) &"</td></tr>"
+				If altColors = "#e5e6e8" Then altColors = "#ffffff" Else altColors = "#e5e6e8" End If
+				RSQ.MoveNext
+			Loop 'RSO
+			strBody=strBody &"</table>" 
+		End If
     End If
 	RSQ.Close
     SET RSQ=nothing

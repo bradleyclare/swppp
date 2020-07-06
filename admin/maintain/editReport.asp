@@ -68,11 +68,11 @@ If Request.Form.Count > 0 Then
 		", contactFax = '" & strQuoteReplace(Request("contactFax")) & "'" & _
 		", contactEmail = '" & strQuoteReplace(Request("contactEmail")) & "'" & _
 		", includeItems = " & includeItems & _
-      ", openItemAlert = " & openItemAlert & _
+        ", openItemAlert = " & openItemAlert & _
 		", compliance = " & compliance & _
-      ", systemic = " & systemic & _
-      ", systemicNote = '" & strQuoteReplace(Request("systemicNote")) & "'" & _
-	  ", horton = " & hortonQuestions & _
+        ", systemic = " & systemic & _
+        ", systemicNote = '" & strQuoteReplace(Request("systemicNote")) & "'" & _
+	    ", horton = " & hortonQuestions & _
 		" WHERE inspecID = " & inspecID
       'response.Write(inspectSQLUPDATE)
 	   connSWPPP.Execute(inspectSQLUPDATE)
@@ -124,6 +124,32 @@ If Request.Form.Count > 0 Then
             if Request("coord:LD:"& CStr(n)) = "on" then LD = 1 End If
             NLN = 0
             if Request("coord:NLN:"& CStr(n)) = "on" then NLN = 1 End If
+			pond = 0
+            if Request("coord:pond:"& CStr(n)) = "on" then pond = 1 End If
+			sedloss = 0
+            if Request("coord:sedloss:"& CStr(n)) = "on" then sedloss = 1 End If
+			sedlossw = 0
+            if Request("coord:sedlossw:"& CStr(n)) = "on" then sedlossw = 1 End If
+			ce = 0
+            if Request("coord:ce:"& CStr(n)) = "on" then ce = 1 End If
+			street = 0
+            if Request("coord:street:"& CStr(n)) = "on" then street = 1 End If
+			sfeb = 0
+            if Request("coord:sfeb:"& CStr(n)) = "on" then sfeb = 1 End If
+			rdrr = 0
+            if Request("coord:rdrr:"& CStr(n)) = "on" then rdrr = 1 End If
+			ip = 0
+            if Request("coord:ip:"& CStr(n)) = "on" then ip = 1 End If
+			wo = 0
+            if Request("coord:wo:"& CStr(n)) = "on" then wo = 1 End If
+			veg = 0
+            if Request("coord:veg:"& CStr(n)) = "on" then veg = 1 End If
+			stock = 0
+            if Request("coord:stock:"& CStr(n)) = "on" then stock = 1 End If
+			toilet = 0
+            if Request("coord:toilet:"& CStr(n)) = "on" then toilet = 1 End If
+			twm = 0
+            if Request("coord:twm:"& CStr(n)) = "on" then twm = 1 End If
 			AssignDate = inspecDate
             if Repeat = 1 Then
 		    	AssignDate = Request("coord:assignDate:"& CStr(n))
@@ -148,7 +174,20 @@ If Request.Form.Count > 0 Then
             infoOnly &", " & _
             LD &", " & _
             NLN &", " & _
-            parentID &";"
+            parentID &", " & _
+            pond &", " & _
+			sedloss &", " & _
+			sedlossw &", " & _
+			ce &", " & _
+			street &", " & _
+			sfeb &", " & _
+			rdrr &", " & _
+			ip &", " & _
+			wo &", " & _
+			veg &", " & _
+			stock &", " & _
+			toilet &", " & _
+			twm &";"
 		next	
     'Response.Write(SQLc)
         if Len(SQLc) > 0 then connSWPPP.execute(SQLc) end if
@@ -640,8 +679,7 @@ End If%>
 	<input id='systemic-checkbox' type="checkbox" name="systemic" />
 <% End If %>
 </td></tr></table><br/>
-<% coordSQLSELECT = "SELECT coID, coordinates, existingBMP, correctiveMods, orderby, assignDate, completeDate, status, repeat, useAddress, address, locationName, infoOnly, LD, NLN, parentID" &_
-	" FROM Coordinates WHERE inspecID=" & inspecID & " ORDER BY orderby"	
+<% coordSQLSELECT = "SELECT * FROM Coordinates WHERE inspecID=" & inspecID & " ORDER BY orderby"	
 'Response.Write(coordSQLSELECT)
 Set rsCoord = connSWPPP.execute(coordSQLSELECT)
 addressSQLSELECT = "SELECT addressID, locationName, address FROM Addresses WHERE projectID=" & rsReport("projectID") & " ORDER BY locationName"
@@ -719,7 +757,7 @@ End If %>
     <td><a href="../../views/completedActionItems.asp?pID=<%=rsReport("projectID")%>" target="_blank">Completed Items Page</a></td>
     </tr></table>
 </center><br/>
-<table width="90%" border="0" align="center" cellpadding="2" cellspacing="0">
+<table width="100%" border="0" align="center" cellpadding="2" cellspacing="0">
 <% 
 'If rsCoord.EOF Then
 '	Response.Write("<tr><td colspan='2' align='center'><i>There is no data at this time.</i></td></tr>")		
@@ -742,6 +780,19 @@ End If %>
         LD = rsCoord("LD")
         NLN = rsCoord("NLN")
         parentID = rsCoord("parentID")
+		pond = rsCoord("pond")
+		sedloss = rsCoord("sedloss")
+		sedlossw = rsCoord("sedlossw")
+		ce = rsCoord("ce")
+		street = rsCoord("street")
+		sfeb = rsCoord("sfeb")
+		rdrr = rsCoord("rdrr")
+		ip = rsCoord("ip")
+		wo = rsCoord("wo")
+		veg = rsCoord("veg")
+		stock = rsCoord("stock")
+		toilet = rsCoord("toilet")
+		twm = rsCoord("twm")
         if isNull(parentID) or parentID = "" then 'initialize the parentID if never set
             parentID = coID
         end if
@@ -759,13 +810,13 @@ End If %>
 		 checked
 	<% End If %>
 	/></td>
-	<td>
+	<td colspan="5">
     <input type="text" size="40" name="coord:locationName:<%= n %>" onclick="displayAddressSelect(this)" value="<%=locationName %>"
 	<% if (useAddress) = False Then %>
 		class="hide"
 	<% End If %>
 	/></td>
-	<td>
+	<td colspan="5">
     <input type="text" size="40" name="coord:addressName:<%= n %>" value="<%=address%>"
 	<% if (useAddress) = False Then %>
 		class="hide"
@@ -775,7 +826,7 @@ End If %>
 	<tr><td>Order</td>
 	<td><input type="text" name="coord:orderby:<%= n %>" size="10" value="<% = orderby %>" /></td>
 	<td>Location Info:</td>
-	<td colspan="2"><input name="coord:coord:<%= n %>" type="text" value="<%= coordinates %>" size="100%"  
+	<td colspan="10"><input name="coord:coord:<%= n %>" type="text" value="<%= coordinates %>" size="100%"  
 	<% if (useAddress) = True Then %>
 		class="hide"
 	<% End If %>
@@ -788,7 +839,7 @@ End If %>
 		<input type="checkbox" name="coord:repeat:<%= n %>" />
 	<% End If %>
 	</td><td>Modifications:</td>
-	<td rowspan="3" colspan="2"><textarea name="coord:mods:<%= n %>" cols="100%" rows="5"><%= correctiveMods %></textarea></td></tr>
+	<td rowspan="3" colspan="10"><textarea name="coord:mods:<%= n %>" cols="100%" rows="5"><%= correctiveMods %></textarea></td></tr>
 	<tr><td>AssignDate</td>
 	<td><input class=datepicker type="text" name="coord:assignDate:<%= n %>" size="10" value="<%= assignDate %>" /></td>
 	<td><input type="button" onclick="displayCommonItemSelect(this)" name="coord:item:<%=n%>" value="Common Item" /></td></tr>
@@ -818,7 +869,103 @@ End If %>
 		<td><font face="Times" size="2.5pt"><%= existingBMP %></font></td>
 	</tr>
 <% 	END IF %>
-	<tr><td colspan="5"><hr align="center" width="100%" size="1"></td></tr>
+
+<%	IF rsReport("horton") = True THEN %>
+	<tr>
+		<td> ce
+		<% If ce = True Then %>
+			<input type="checkbox" name="coord:ce:<%=n %>" checked />
+		<% Else %>
+			<input type="checkbox" name="coord:ce:<%=n %>" />
+		<% End If %>
+		</td>
+		<td> ip
+		<% If ip = True Then %>
+			<input type="checkbox" name="coord:ip:<%=n %>" checked />
+		<% Else %>
+			<input type="checkbox" name="coord:ip:<%=n %>" />
+		<% End If %>
+		</td>
+		<td> pond
+		<% If pond = True Then %>
+			<input type="checkbox" name="coord:pond:<%=n %>" checked />
+		<% Else %>
+			<input type="checkbox" name="coord:pond:<%=n %>" />
+		<% End If %>
+		</td>
+		<td> rd/rr
+		<% If rdrr = True Then %>
+			<input type="checkbox" name="coord:rdrr:<%=n %>" checked />
+		<% Else %>
+			<input type="checkbox" name="coord:rdrr:<%=n %>" />
+		<% End If %>
+		</td>
+		<td> sedloss
+		<% If sedloss = True Then %>
+			<input type="checkbox" name="coord:sedloss:<%=n %>" checked />
+		<% Else %>
+			<input type="checkbox" name="coord:sedloss:<%=n %>" />
+		<% End If %>
+		</td>
+		<td> sedlossw
+		<% If sedlossw = True Then %>
+			<input type="checkbox" name="coord:sedlossw:<%=n %>" checked />
+		<% Else %>
+			<input type="checkbox" name="coord:sedlossw:<%=n %>" />
+		<% End If %>
+		</td>
+		<td> sf/eb
+		<% If sfeb = True Then %>
+			<input type="checkbox" name="coord:sfeb:<%=n %>" checked />
+		<% Else %>
+			<input type="checkbox" name="coord:sfeb:<%=n %>" />
+		<% End If %>
+		</td>
+		<td> stock
+		<% If stock = True Then %>
+			<input type="checkbox" name="coord:stock:<%=n %>" checked />
+		<% Else %>
+			<input type="checkbox" name="coord:stock:<%=n %>" />
+		<% End If %>
+		</td>
+		<td> street
+		<% If street = True Then %>
+			<input type="checkbox" name="coord:street:<%=n %>" checked />
+		<% Else %>
+			<input type="checkbox" name="coord:street:<%=n %>" />
+		<% End If %>
+		</td>
+		<td> toilet
+		<% If toilet = True Then %>
+			<input type="checkbox" name="coord:toilet:<%=n %>" checked />
+		<% Else %>
+			<input type="checkbox" name="coord:toilet:<%=n %>" />
+		<% End If %>
+		</td>
+		<td> twm
+		<% If twm = True Then %>
+			<input type="checkbox" name="coord:twm:<%=n %>" checked />
+		<% Else %>
+			<input type="checkbox" name="coord:twm:<%=n %>" />
+		<% End If %>
+		</td>
+		<td> veg
+		<% If veg = True Then %>
+			<input type="checkbox" name="coord:veg:<%=n %>" checked />
+		<% Else %>
+			<input type="checkbox" name="coord:veg:<%=n %>" />
+		<% End If %>
+		</td>
+		<td> wo
+		<% If wo = True Then %>
+			<input type="checkbox" name="coord:wo:<%=n %>" checked />
+		<% Else %>
+			<input type="checkbox" name="coord:wo:<%=n %>" />
+		<% End If %>
+		</td>
+	</tr>
+<% 	END IF %>
+	<tr><td colspan="13"><hr align="center" width="100%" size="1"></td></tr>
 <%	 	rsCoord.MoveNext
         n = n + 1
 	Loop 	
@@ -835,26 +982,43 @@ Set rsCoord = Nothing %>
     <input type="hidden" name="coord:parentID:<%= m %>" value="0" />
 	<tr><td>ID#</td>
 	<td>0</td>
-	<td>Address<input type="checkbox" name="coord:useAddress:<%= m %>" onclick="useAddressLookup(this)"/></td>
+	<td colspan="5">Address<input type="checkbox" name="coord:useAddress:<%= m %>" onclick="useAddressLookup(this)"/></td>
 	<td>
     <input type="text" name="coord:locationName:<%= m %>" onclick="displayAddressSelect(this)" value="<%=locationName1 %>" class="hide" /></td>
-	<td>
+	<td colspan="5">
 	<%temp = addressName1 %>
     <input type="text" name="coord:addressName:<%= m %>" value="<%=temp%>" class="hide" readonly /></td></tr>
 	<tr><td>Order</td>
 	<td><input type="text" name="coord:orderby:<%= m %>" size="10" value="" /></td>
 	<td>Location:</td>
-	<td colspan="2"><input name="coord:coord:<%= m %>" type="text" value="" size="100%" ></td></tr>
+	<td colspan="10"><input name="coord:coord:<%= m %>" type="text" value="" size="100%" ></td></tr>
 	<tr><td></td>
 	<td></td>
 	<td>Mods:</td>
-	<td rowspan="3" colspan="2"><textarea name="coord:mods:<%= m %>" cols="100%" rows="5"></textarea></td></tr>
+	<td rowspan="3" colspan="10"><textarea name="coord:mods:<%= m %>" cols="100%" rows="5"></textarea></td></tr>
 	<tr><td>AssignDate</td>
 	<td><input class=datepicker type="text" name="coord:assignDate:<%= m %>" size="10" value="" disabled /></td>
 	<td><input type="button" onclick="displayCommonItemSelect(this)" name="coord:item:<%=m%>" value="Common Item" /></td></tr>
 	<tr><td>Info Only <input type="checkbox" name="coord:infoOnly:<%= m %>" /></td>
         <td>LD <input type="checkbox" name="coord:LD:<%= m %>" /></td></tr>
-	<tr><td colspan="5"><hr align="center" width="100%" size="1"></td></tr>
+	<%	IF rsReport("horton") = True THEN %>
+	<tr>
+		<td> ce <input type="checkbox" name="coord:ce:<%=m %>" /></td>
+		<td> ip <input type="checkbox" name="coord:ip:<%=m %>" /></td>
+		<td> pond <input type="checkbox" name="coord:pond:<%=m %>" /></td>
+		<td> rd/rr <input type="checkbox" name="coord:rdrr:<%=m %>" /></td>
+		<td> sedloss <input type="checkbox" name="coord:sedloss:<%=m %>" /></td>
+		<td> sedlossw <input type="checkbox" name="coord:sedlossw:<%=m %>" /></td>
+		<td> sf/eb <input type="checkbox" name="coord:sfeb:<%=m %>" /></td>
+		<td> stock <input type="checkbox" name="coord:stock:<%=m %>" /></td>
+		<td> street <input type="checkbox" name="coord:street:<%=m %>" /></td>
+		<td> toilet <input type="checkbox" name="coord:toilet:<%=m %>" /></td>
+		<td> twm <input type="checkbox" name="coord:twm:<%=m %>" /></td>
+		<td> veg <input type="checkbox" name="coord:veg:<%=m %>" /></td>
+		<td> wo <input type="checkbox" name="coord:wo:<%=m %>" /></td>
+	</tr>
+<% 	END IF %>
+	<tr><td colspan="13"><hr align="center" width="100%" size="1"></td></tr>
 <% next %>
 	<tr><td colspan="5" align="center"><br>
 	<input name="submit_coord_btn" type="submit" style="font-size: 20px;" value="Submit"/>

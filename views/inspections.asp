@@ -15,44 +15,95 @@ projectID = Request("projID")
 projectName = Request("projName")
 projectPhase = Request("projPhase")
 %><!-- #include file="../admin/connSWPPP.asp" --><%
+
+If Request.Form.Count > 0 Then
+	SQLI="SELECT inspecID FROM Inspections WHERE horton=1 AND projectID="& projectID
+	SET RSI=connSWPPP.execute(SQLI)
+	Do While Not RSI.EOF
+		inspecID = RSI("inspecID")
+		userID = Session("userID")
+		currentDate = date()
+		if Request("approval:" & inspecID ) = "on" Then
+			'log the report approval in the database, check if it exists
+			SQLHA="SELECT * FROM HortonApprovals WHERE inspecID="& inspecID
+			SET RSHA=connSWPPP.execute(SQLHA)
+			If RSHA.EOF Then
+				'add new entry
+				SQLHU = "INSERT into HortonApprovals (inspecID, userID, date) VALUES (" & inspecID & ", " & userID & ", '" & currentDate & "')"
+			Else
+				'update the entry
+				SQLHU = "UPDATE HortonApprovals set userID=" & userID & ", date=" & currentDate & " WHERE inspecID=" & inspecID
+			End If
+			Response.Write(SQLHU)
+			connSWPPP.Execute(SQLHU)
+		End If
+		RSI.MoveNext
+	Loop
+End If
+
 If Session("validAdmin") Then
-	inspectInfoSQLSELECT = "SELECT DISTINCT inspecID, inspecDate, totalItems, completedItems, includeItems, compliance, released, p.projectName, p.projectPhase, ImageCount = (Select Count(ImageID) From Images Where inspecID = i.inspecID)" & _
+	inspectInfoSQLSELECT = "SELECT DISTINCT inspecID, inspecDate, totalItems, completedItems, includeItems, compliance, released, horton, hortonApproved, p.projectName, p.projectPhase, ImageCount = (Select Count(ImageID) From Images Where inspecID = i.inspecID)" & _
 		" FROM Projects as p, Inspections as i" & _
 		" WHERE i.projectID=p.projectID" &_
 		" AND i.projectID="& projectID &_
 		" ORDER BY inspecDate DESC"
 Else
-	inspectInfoSQLSELECT = "SELECT DISTINCT inspecID, inspecDate, totalItems, completedItems, includeItems, compliance, released, p.projectName, p.projectPhase, ImageCount = (Select Count(ImageID) From Images Where inspecID = i.inspecID)" & _
+	inspectInfoSQLSELECT = "SELECT DISTINCT inspecID, inspecDate, totalItems, completedItems, includeItems, compliance, released, horton, hortonApproved, p.projectName, p.projectPhase, ImageCount = (Select Count(ImageID) From Images Where inspecID = i.inspecID)" & _
 		" FROM Projects as p, ProjectsUsers as pu, Inspections as i" & _
 		" WHERE pu.userID = " & Session("userID") &_
 		" AND i.projectID=p.projectID" &_
 		" AND i.projectID="& projectID &_
       " ORDER BY inspecDate DESC"
 End If
-SQL0="SELECT * FROM ProjectsUsers WHERE "& Session("userID") &" IN (SELECT userID FROM ProjectsUsers WHERE rights in ('action','erosion') AND projectID="& projectID &")"
-SET RS0=connSWPPP.execute(SQL0)
-'-Response.Write(SQL0 &"<BR>")
-validAct=False
-IF NOT(RS0.EOF) THEN validAct=True END IF
 'Response.Write(inspectInfoSQLSELECT & "<br>")
 Set rsInspectInfo = connSWPPP.Execute(inspectInfoSQLSELECT)
 projectName= Trim(rsInspectInfo("projectName"))
-projectPhase= Trim(rsInspectInfo("projectPhase")) %>
-<html><head><title>SWPPP INSPECTIONS : Report Dates</title>
-<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
-<link href="../global.css" rel="stylesheet" type="text/css"></head>
+projectPhase= Trim(rsInspectInfo("projectPhase"))
+'SQL0="SELECT * FROM ProjectsUsers WHERE "& Session("userID") &" IN (SELECT userID FROM ProjectsUsers WHERE rights in ('action','erosion') AND projectID="& projectID &")"
+'SET RS0=connSWPPP.execute(SQL0)
+'Response.Write(SQL0 &"<BR>")
+'validAct=False
+'IF NOT(RS0.EOF) THEN validAct=True END IF
+SQL1="SELECT inspecID FROM Inspections WHERE horton=1 AND projectID="& projectID
+SET RS1=connSWPPP.execute(SQL1)
+'-Response.Write(SQL1 &"<BR>")
+hortonFlag=False
+if NOT(RS1.EOF) THEN hortonFlag=True END IF %>
+
+<html>
+<head>
+	<title>SWPPP INSPECTIONS : Report Dates</title>
+	<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+	<link href="../global.css" rel="stylesheet" type="text/css">
+</head>
 <body bgcolor="#FFFFFF" text="#000000">
 <!-- #include file="../header2.inc" -->
+<form id="theForm" method="post" action="<%=Request.ServerVariables("script_name")%>?projID=<%=projectID%>&projName=<%=projectName%>&projPhase=<%=projectPhase%>%>" onsubmit="return isReady(this)";>
 <table width="100%"><tr><td>
 <h1><font color="#003399"><% = projectName %>&nbsp;<%= projectPhase %></font></h1>
-<h2><button onClick="window.open('reportPrintAll.asp?projID=<%= projectID%>&projName=<%= projectName%>&projPhase=<%= projectPhase %>','','width=800, height=600, location=no, menubar=no, status=no, toolbar=no, scrollbars=yes, resizable=yes')">Print All Reports</button></h2>
+<table>
+<tr><td><button onClick="window.open('reportPrintAll.asp?projID=<%= projectID%>&projName=<%= projectName%>&projPhase=<%= projectPhase %>','','width=800, height=600, location=no, menubar=no, status=no, toolbar=no, scrollbars=yes, resizable=yes')">Print All Reports</button></td>
+<td>
+<% If hortonFlag Then %>
+<input type="submit" value="Approve Reports" name="approve_reports"></input>
+<% End If %>
+</td></tr>
+</table>
 <br />
 <table>
-<%  If Session("seeScoring") Then %>
-   <tr><th>Report Date</th><th>Report</th><th>Site Map</th><th>Report Score</th><th>Items</th></tr>
-<% Else %>
-   <tr><th>Report Date</th><th>Report</th><th>Site Map</th><th></th><th></th></tr>
-<% End If
+<%  If Session("seeScoring") Then 
+	If hortonFlag Then %>
+   		<tr><th>Report Date</th><th>Report</th><th>Site Map</th><th>Report Score</th><th>Items</th><th>Acknowledged</th><th>Acknowledged By</th><th>Acknowledged Date</th></tr>
+	<% Else %>
+		<tr><th>Report Date</th><th>Report</th><th>Site Map</th><th>Report Score</th><th>Items</th></tr>
+	<% End If 
+Else
+	If hortonFlag Then %>
+   		<tr><th>Report Date</th><th>Report</th><th>Site Map</th><th></th><th></th><th>Acknowledged</th><th>Acknowledged By</th><th>Acknowledged Date</th></tr>
+   <% Else %>
+		<tr><th>Report Date</th><th>Report</th><th>Site Map</th><th></th><th></th></tr>
+	<% End If 
+End If
 includeItemsFlag = False
 firstInspecID = 0
 rsInspectInfo.MoveFirst()
@@ -89,8 +140,38 @@ Else
 			<tr><td align="right"><% = Trim(rsInspectInfo("inspecDate")) %></td>
             <td align="center"><a href="reportPrint.asp?inspecID=<% = inspecID %>" target="_blank">Report</a></td>
             <td align="center"><a href="viewSitemap.asp?inspecID=<% = inspecID %>" target="_blank">Site Map</a></td>
-              <td align="center"><%=percentage%></td>
-              <td align="center"><%=stats%></td>
+            <td align="center"><%=percentage%></td>
+            <td align="center"><%=stats%></td>
+			<% If rsInspectInfo("horton") Then 
+				'check for approval status 
+				SQLA="SELECT * FROM HortonApprovals WHERE inspecID="& inspecID
+				SET RSA=connSWPPP.execute(SQLA)
+				If RSA.EOF Then 
+					hortonStatus = False
+					hortonApprovalUser = ""
+					hortonApprovalDate = ""
+				Else
+					hortonStatus = True
+					SQLU="SELECT firstName, lastName FROM Users WHERE userID="& RSA("userID")
+					SET RSU=connSWPPP.execute(SQLU)
+					hortonApprovalUser = RSU("firstName") & " " & RSU("lastName")
+					hortonApprovalDate = RSA("date")
+				End If %>
+				<td align="center">
+				<% If hortonStatus Then %>
+					x
+				<% Else %>
+					<input type="checkbox" name="approval:<%=inspecID%>"></input>
+				<% End If %>
+				</td>
+				<td align="center"><%=hortonApprovalUser%></td>
+				<td align="center"><%=hortonApprovalDate%></td>
+			<% Else 'horton questions are used on some reports in this collection but not this one 
+			%> 
+				<td></td>
+				<td></td>
+				<td></td>
+			<% End If %>
 			</tr>
 			<% If Not Session("noImages") Then
 	'			imgSQLSELECT = "SELECT COUNT(imageID) FROM Images WHERE inspecID = " & rsInspectInfo("inspecID")
@@ -106,8 +187,8 @@ Else
 End If ' END No Results Found
 'rsImages.Close
 'Set rsImages = Nothing
-RS0.Close
-Set RS0=nothing
+'RS0.Close
+'Set RS0=nothing
 rsInspectInfo.Close
 Set rsInspectInfo = Nothing %>
 </table>
@@ -143,6 +224,7 @@ End If %>
 	   fileDesc= TRIM(RS2("oitDesc"))
 	   SQLA="sp_oImagesByType "& firstInspecID &",'"& RS2("oitID") &"'"
 	   SET RSA=connSWPPP.Execute(SQLA)
+	   'Response.Write(SQLA)
 	   cnt1=1
 	   curOITDesc=""
  	   DO WHILE NOT(RSA.EOF)
@@ -157,7 +239,7 @@ End If %>
 		   IF dirName <> "sitemap" THEN
 			   If Not Session("validErosion") Then %>
       	   <li><a href="<% = "../images/"& dirName &"/"& RSa("oImageFileName") %>" target="_blank"><%= thisFileDesc%></a></li>
-   <%			End If
+   			<% End If
 		   END IF
 		   RSA.MoveNext
 	   LOOP
@@ -168,4 +250,5 @@ Set connSWPPP = Nothing %>
 </ul>
 </td></tr></table>
 </td></tr></table>
+</form>
 </body></html>

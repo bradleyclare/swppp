@@ -33,6 +33,7 @@ If Request.Form.Count > 0 Then
 		" firstName = '" & titleCase(Request("firstName")) & "'" & _
 		", lastName = '" & titleCase(Request("lastName")) & "'" & _
 		", email = '" & Request("email") & "'" & _
+		", phone = '" & Request("phone") & "'" & _
 		", pswrd = '" & Request("pswrd") & "'" & _
 		", signature = '" & Request("signature") & "'" & _
 		", noImages = '" & Request("noImages") & "'" & _
@@ -156,15 +157,14 @@ If Request.Form.Count > 0 Then
 '		connSWPPP.execute(SQL0)	
 		processed="true"
 End If
-	SQLSELECT = "SELECT firstName, lastName, email" & _
-		", pswrd, dateEntered, signature, noImages, qualifications, seeScoring, openItemAlerts, repeatItemAlerts, userGroupID" & _
-		" FROM Users WHERE userID = " & userID
+	SQLSELECT = "SELECT * FROM Users WHERE userID = " & userID
 	Set rsUser = connSWPPP.Execute(SQLSELECT)
 	
 	dateEntered = rsUser("dateEntered")
 	firstName = Trim(rsUser("firstName"))
 	lastName = Trim(rsUser("lastName"))
 	email = Trim(rsUser("email"))
+	phone = Trim(rsUser("phone"))
 	pswrd = Trim(rsUser("pswrd"))
 	signature = Trim(rsUser("signature"))
 	noImages = TRIM(rsUser("noImages"))
@@ -256,8 +256,10 @@ End If
 			<td><input type="text" name="lastName" size="20" maxlength="20" 
 				value="<%= lastName %>"></td></tr>
 <% If Session("validAdmin") then 'only admin may set rights for other admin, directors and inspectors %>		
-		<tr><td align="right"eEmail:</td>
+		<tr><td align="right">email:</td>
 			<td><input type="text" name="email" size="30" maxlength="50" value="<%= email %>"></td></tr>
+		<tr><td align="right">phone:</td>
+			<td><input type="text" name="phone" size="15" maxlength="15" value="<%= phone %>"></td></tr>
 		<tr><td align="right">password:</td>
 			<td><input type="password" name="pswrd" size="8" maxlength="8"
 				value="<%= pswrd %>">&nbsp;&nbsp;<input type="button" value="View" 

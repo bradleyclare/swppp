@@ -26,7 +26,7 @@ IF Request.Form.Count > 0 THEN %>
 		strBody=""
 inspecID = Request(Item)
 
-inspecSQLSELECT = "SELECT inspecDate, Inspections.projectName, Inspections.projectPhase, projectAddr, projectCity, projectState, " &_
+inspecSQLSELECT = "SELECT inspecDate, Inspections.projectID, Inspections.projectName, Inspections.projectPhase, projectAddr, projectCity, projectState, " &_
 "projectZip, projectCounty, onsiteContact, officePhone, emergencyPhone, compName, " &_
 "compAddr, compAddr2, compCity, compState, compZip, compPhone, compContact, contactPhone, contactFax, " &_
 "contactEmail, reportType, inches, bmpsInPlace, sediment, " &_
@@ -99,8 +99,7 @@ END IF
 strBody=strBody &"</tr>"
 strBody=strBody &"</table>"
 signature = Trim(rsInspec("signature"))
-coordSQLSELECT = "SELECT coID, coordinates, existingBMP, correctiveMods, orderby, assignDate, completeDate, status, repeat, useAddress, address, locationName, infoOnly, LD, NLN" &_
-	" FROM Coordinates WHERE inspecID=" & inspecID & " ORDER BY orderby"	
+coordSQLSELECT = "SELECT * FROM Coordinates WHERE inspecID=" & inspecID & " ORDER BY orderby"	
 'Response.Write(coordSQLSELECT)
 Set rsCoord = connSWPPP.execute(coordSQLSELECT)
 If rsInspec("projectState") = "OK" Then 
@@ -157,11 +156,11 @@ If rsInspec("horton") Then
 				cnt = cnt + 1
 				size = "90%"
 				weight = "bold"
-				If Trim(RSA("Q"&cnt)) = Trim(RSQ("default_answer")) Then
+				If Trim(RSA("Q"&cnt)) = Trim(RSQ("default_answer")) or Trim(RSA("Q"&cnt)) = "na" Then
 					size = "70%"
 					weight = "normal"
 				End If
-				strBody=strBody &"<tr bgcolor="& altColors &"><td style='font-size:"& size &"; font-weight:"& weight &"'>"& Trim(RSQ("question")) &"</td>" & _ 
+				strBody=strBody &"<tr bgcolor="& altColors &"><td style='font-size:"& size &"; font-weight:"& weight &"'>"& cnt & " : " & Trim(RSQ("question")) &"</td>" & _ 
 				"<td style='font-size:"& size &"; font-weight:"& weight &"'>"& Trim(RSA("Q"&cnt)) &"</td></tr>"
 				If altColors = "#e5e6e8" Then altColors = "#ffffff" Else altColors = "#e5e6e8" End If
 				RSQ.MoveNext
@@ -195,9 +194,26 @@ Else
 			useAddress = rsCoord("useAddress")
 			address = TRIM(rsCoord("address"))
 			locationName = TRIM(rsCoord("locationName"))
-            infoOnly = rsCoord("infoOnly")
-            LD = rsCoord("LD")
-            NLN = rsCoord("NLN")
+			infoOnly = rsCoord("infoOnly")
+			LD = rsCoord("LD")
+			NLN = rsCoord("NLN")
+			pond = rsCoord("pond")
+			sedloss = rsCoord("sedloss")
+			sedlossw = rsCoord("sedlossw")
+			ce = rsCoord("ce")
+			street = rsCoord("street")
+			sfeb = rsCoord("sfeb")
+			rockdam = rsCoord("rockdam")
+			ip = rsCoord("ip")
+			wo = rsCoord("wo")
+			veg = rsCoord("veg")
+			stock = rsCoord("stock")
+			toilet = rsCoord("toilet")
+			trash = rsCoord("trash")
+			dewater = rsCoord("dewater")
+			dust = rsCoord("dust")
+        	riprap = rsCoord("riprap")
+        	outfall = rsCoord("outfall")
 			scoring_class = "black"
 			'Response.Write("ID: " & coID & ", Coord: " & coordinates & ", LocName: " & locationName & ", address: " & address & ", Mods: " & correctiveMods & "<br/>") 
 			IF applyScoring THEN
@@ -214,6 +230,57 @@ Else
                 correctiveMods = "(LD) " & correctiveMods
                 scoring_class = "ld"
             End If
+			If pond = True Then
+                correctiveMods = "(pond) " & correctiveMods
+            End If
+			If sedloss = True Then
+                correctiveMods = "(sediment loss) " & correctiveMods
+            End If
+			If sedlossw = True Then
+                correctiveMods = "(sediment loss to waters) " & correctiveMods
+            End If
+			If ce = True Then
+                correctiveMods = "(construction entrance) " & correctiveMods
+            End If
+			If street = True Then
+                correctiveMods = "(street cleaning) " & correctiveMods
+            End If
+			If sfeb = True Then
+                correctiveMods = "(perimeter controls) " & correctiveMods
+            End If
+			If rockdam = True Then
+	        	correctiveMods = "(rock dam) " & correctiveMods
+            End If
+			If ip = True Then
+                correctiveMods = "(inlet protection) " & correctiveMods
+            End If
+			If wo = True Then
+                correctiveMods = "(wash out) " & correctiveMods
+            End If
+			If veg = True Then
+                correctiveMods = "(vegetation) " & correctiveMods
+            End If
+			If stock = True Then
+                correctiveMods = "(stockpile) " & correctiveMods
+            End If
+			If toilet = True Then
+                correctiveMods = "(toilet) " & correctiveMods
+            End If
+			If trash = True Then
+                correctiveMods = "(trash/waste/material) " & correctiveMods
+            End If
+			If dewater = True Then
+				correctiveMods = "(dewatering) " & correctiveMods
+			End If
+			If dust = True Then
+				correctiveMods = "(dust control) " & correctiveMods
+			End If
+			If riprap = True Then
+	        	correctiveMods = "(riprap) " & correctiveMods
+	        End If
+	        If outfall = True Then
+	        	correctiveMods = "(outfall) " & correctiveMods
+	        End If
             If NLN = True Then
                 'do nothing
             ElseIf infoOnly = True Then
@@ -276,8 +343,14 @@ If Not rsImages.EOF Then
 		rsImages.MoveNext
 	Loop
 End If
-strBody=strBody &"<br><div align='center'><a href='http://www.swppp.com'>link to: www.swppp.com</a></div></Body>"
 END IF
+If rsInspec("horton") Then
+	projectID = rsInspec("projectID")
+	projectName = Trim(rsInspec("projectName"))
+	projectPhase = Trim(rsInspec("projectPhase"))
+	strBody=strBody &"<br><div align='center'><a href='http://swppp.com/views/inspections.asp?projID=" & projectID & "&projName=" & projectName & "&projPhase=" & projectPhase & "'>acknowledge  reports</a></div>"
+End If
+strBody=strBody &"<br><div align='center'><a href='http://www.swppp.com'>link to: www.swppp.com</a></div></Body>"
 
 rsCoord.Close
 Set rsCoord = Nothing

@@ -1,4 +1,5 @@
 <%
+Session.Timeout=120 'session timeout
 Session("userID")= ""
 Session("validAdmin")= "False"
 Session("validDirector")= "False"
@@ -7,9 +8,7 @@ Session("validUser")= "False"
 Session("validErosion")= "False"
 Session("seeScoring")= "True"
 If Request.Form.Count > 0 Then
-	userSQLSELECT = "SELECT userID, pswrd, rights, firstName, lastName, noImages, seeScoring" &_
-		" FROM Users" & _
-		" WHERE email = '" & Request("email") & "'"
+	userSQLSELECT = "SELECT * FROM Users WHERE email = '" & Request("email") & "'"
 	%> <!-- #INCLUDE FILE="../connSWPPP.asp" --> <%
 	' Response.Write(userSQLSELECT & "<br>")
 	Set connEmail = connSWPPP.execute(userSQLSELECT)
@@ -43,7 +42,7 @@ If Request.Form.Count > 0 Then
 			END IF
 			connSWPPP.Close
 			Set connSWPPP = Nothing
-Response.Write(Session("adminReturnTo"))
+			'Response.Write(Session("adminReturnTo"))
 			Response.Redirect(Session("adminReturnTo"))
 		End If ' no matching password
 	End If ' no matching email

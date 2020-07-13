@@ -136,8 +136,8 @@ If Request.Form.Count > 0 Then
             if Request("coord:street:"& CStr(n)) = "on" then street = 1 End If
 			sfeb = 0
             if Request("coord:sfeb:"& CStr(n)) = "on" then sfeb = 1 End If
-			rdrr = 0
-            if Request("coord:rdrr:"& CStr(n)) = "on" then rdrr = 1 End If
+			rockdam = 0
+            if Request("coord:rockdam:"& CStr(n)) = "on" then rockdam = 1 End If
 			ip = 0
             if Request("coord:ip:"& CStr(n)) = "on" then ip = 1 End If
 			wo = 0
@@ -148,8 +148,16 @@ If Request.Form.Count > 0 Then
             if Request("coord:stock:"& CStr(n)) = "on" then stock = 1 End If
 			toilet = 0
             if Request("coord:toilet:"& CStr(n)) = "on" then toilet = 1 End If
-			twm = 0
-            if Request("coord:twm:"& CStr(n)) = "on" then twm = 1 End If
+			trash = 0
+            if Request("coord:trash:"& CStr(n)) = "on" then trash = 1 End If
+			dewater = 0
+            if Request("coord:dewater:"& CStr(n)) = "on" then dewater = 1 End If
+			dust = 0
+            if Request("coord:dust:"& CStr(n)) = "on" then dust = 1 End If
+			riprap = 0
+            if Request("coord:riprap:"& CStr(n)) = "on" then riprap = 1 End If
+			outfall = 0
+            if Request("coord:outfall:"& CStr(n)) = "on" then outfall = 1 End If
 			AssignDate = inspecDate
             if Repeat = 1 Then
 		    	AssignDate = Request("coord:assignDate:"& CStr(n))
@@ -171,23 +179,27 @@ If Request.Form.Count > 0 Then
 			useAddress &", '" & _ 
 			address &"', '" & _
 			locationName &"', " & _
-            infoOnly &", " & _
-            LD &", " & _
-            NLN &", " & _
-            parentID &", " & _
-            pond &", " & _
+         infoOnly &", " & _
+         LD &", " & _
+         NLN &", " & _
+         parentID &", " & _
+         pond &", " & _
 			sedloss &", " & _
 			sedlossw &", " & _
 			ce &", " & _
 			street &", " & _
 			sfeb &", " & _
-			rdrr &", " & _
+			rockdam &", " & _
 			ip &", " & _
 			wo &", " & _
 			veg &", " & _
 			stock &", " & _
 			toilet &", " & _
-			twm &";"
+			trash &", " & _
+			dewater &", " & _
+			dust &", " & _
+			riprap &", " & _
+			outfall &";"
 		next	
     'Response.Write(SQLc)
         if Len(SQLc) > 0 then connSWPPP.execute(SQLc) end if
@@ -786,13 +798,17 @@ End If %>
 		ce = rsCoord("ce")
 		street = rsCoord("street")
 		sfeb = rsCoord("sfeb")
-		rdrr = rsCoord("rdrr")
+		rockdam = rsCoord("rockdam")
 		ip = rsCoord("ip")
 		wo = rsCoord("wo")
 		veg = rsCoord("veg")
 		stock = rsCoord("stock")
 		toilet = rsCoord("toilet")
-		twm = rsCoord("twm")
+		trash = rsCoord("trash")
+		dewater = rsCoord("dewater")
+		dust = rsCoord("dust")
+		riprap = rsCoord("riprap")
+		outfall = rsCoord("outfall")
         if isNull(parentID) or parentID = "" then 'initialize the parentID if never set
             parentID = coID
         end if
@@ -826,7 +842,7 @@ End If %>
 	<tr><td>Order</td>
 	<td><input type="text" name="coord:orderby:<%= n %>" size="10" value="<% = orderby %>" /></td>
 	<td>Location Info:</td>
-	<td colspan="10"><input name="coord:coord:<%= n %>" type="text" value="<%= coordinates %>" size="100%"  
+	<td colspan="14"><input name="coord:coord:<%= n %>" type="text" value="<%= coordinates %>" size="100%"  
 	<% if (useAddress) = True Then %>
 		class="hide"
 	<% End If %>
@@ -839,7 +855,7 @@ End If %>
 		<input type="checkbox" name="coord:repeat:<%= n %>" />
 	<% End If %>
 	</td><td>Modifications:</td>
-	<td rowspan="3" colspan="10"><textarea name="coord:mods:<%= n %>" cols="100%" rows="5"><%= correctiveMods %></textarea></td></tr>
+	<td rowspan="3" colspan="14"><textarea name="coord:mods:<%= n %>" cols="100%" rows="5"><%= correctiveMods %></textarea></td></tr>
 	<tr><td>AssignDate</td>
 	<td><input class=datepicker type="text" name="coord:assignDate:<%= n %>" size="10" value="<%= assignDate %>" /></td>
 	<td><input type="button" onclick="displayCommonItemSelect(this)" name="coord:item:<%=n%>" value="Common Item" /></td></tr>
@@ -879,11 +895,39 @@ End If %>
 			<input type="checkbox" name="coord:ce:<%=n %>" />
 		<% End If %>
 		</td>
+		<td> dewater
+		<% If dewater = True Then %>
+			<input type="checkbox" name="coord:dewater:<%=n %>" checked />
+		<% Else %>
+			<input type="checkbox" name="coord:dewater:<%=n %>" />
+		<% End If %>
+		</td>
+		<td> dust
+		<% If dust = True Then %>
+			<input type="checkbox" name="coord:dust:<%=n %>" checked />
+		<% Else %>
+			<input type="checkbox" name="coord:dust:<%=n %>" />
+		<% End If %>
+		</td>
+		<td> eb/ft/sf
+		<% If sfeb = True Then %>
+			<input type="checkbox" name="coord:sfeb:<%=n %>" checked />
+		<% Else %>
+			<input type="checkbox" name="coord:sfeb:<%=n %>" />
+		<% End If %>
+		</td>
 		<td> ip
 		<% If ip = True Then %>
 			<input type="checkbox" name="coord:ip:<%=n %>" checked />
 		<% Else %>
 			<input type="checkbox" name="coord:ip:<%=n %>" />
+		<% End If %>
+		</td>
+		<td> outfall
+		<% If outfall = True Then %>
+			<input type="checkbox" name="coord:outfall:<%=n %>" checked />
+		<% Else %>
+			<input type="checkbox" name="coord:outfall:<%=n %>" />
 		<% End If %>
 		</td>
 		<td> pond
@@ -893,11 +937,18 @@ End If %>
 			<input type="checkbox" name="coord:pond:<%=n %>" />
 		<% End If %>
 		</td>
-		<td> rd/rr
-		<% If rdrr = True Then %>
-			<input type="checkbox" name="coord:rdrr:<%=n %>" checked />
+		<td> riprap
+		<% If riprap = True Then %>
+			<input type="checkbox" name="coord:riprap:<%=n %>" checked />
 		<% Else %>
-			<input type="checkbox" name="coord:rdrr:<%=n %>" />
+			<input type="checkbox" name="coord:riprap:<%=n %>" />
+		<% End If %>
+		</td>
+		<td> rockdam
+		<% If rockdam = True Then %>
+			<input type="checkbox" name="coord:rockdam:<%=n %>" checked />
+		<% Else %>
+			<input type="checkbox" name="coord:rockdam:<%=n %>" />
 		<% End If %>
 		</td>
 		<td> sedloss
@@ -912,13 +963,6 @@ End If %>
 			<input type="checkbox" name="coord:sedlossw:<%=n %>" checked />
 		<% Else %>
 			<input type="checkbox" name="coord:sedlossw:<%=n %>" />
-		<% End If %>
-		</td>
-		<td> sf/eb
-		<% If sfeb = True Then %>
-			<input type="checkbox" name="coord:sfeb:<%=n %>" checked />
-		<% Else %>
-			<input type="checkbox" name="coord:sfeb:<%=n %>" />
 		<% End If %>
 		</td>
 		<td> stock
@@ -942,11 +986,11 @@ End If %>
 			<input type="checkbox" name="coord:toilet:<%=n %>" />
 		<% End If %>
 		</td>
-		<td> twm
-		<% If twm = True Then %>
-			<input type="checkbox" name="coord:twm:<%=n %>" checked />
+		<td> trash
+		<% If trash = True Then %>
+			<input type="checkbox" name="coord:trash:<%=n %>" checked />
 		<% Else %>
-			<input type="checkbox" name="coord:twm:<%=n %>" />
+			<input type="checkbox" name="coord:trash:<%=n %>" />
 		<% End If %>
 		</td>
 		<td> veg
@@ -965,7 +1009,7 @@ End If %>
 		</td>
 	</tr>
 <% 	END IF %>
-	<tr><td colspan="13"><hr align="center" width="100%" size="1"></td></tr>
+	<tr><td colspan="17"><hr align="center" width="100%" size="1"></td></tr>
 <%	 	rsCoord.MoveNext
         n = n + 1
 	Loop 	
@@ -991,11 +1035,11 @@ Set rsCoord = Nothing %>
 	<tr><td>Order</td>
 	<td><input type="text" name="coord:orderby:<%= m %>" size="10" value="" /></td>
 	<td>Location:</td>
-	<td colspan="10"><input name="coord:coord:<%= m %>" type="text" value="" size="100%" ></td></tr>
+	<td colspan="14"><input name="coord:coord:<%= m %>" type="text" value="" size="100%" ></td></tr>
 	<tr><td></td>
 	<td></td>
 	<td>Mods:</td>
-	<td rowspan="3" colspan="10"><textarea name="coord:mods:<%= m %>" cols="100%" rows="5"></textarea></td></tr>
+	<td rowspan="3" colspan="14"><textarea name="coord:mods:<%= m %>" cols="100%" rows="5"></textarea></td></tr>
 	<tr><td>AssignDate</td>
 	<td><input class=datepicker type="text" name="coord:assignDate:<%= m %>" size="10" value="" disabled /></td>
 	<td><input type="button" onclick="displayCommonItemSelect(this)" name="coord:item:<%=m%>" value="Common Item" /></td></tr>
@@ -1004,21 +1048,25 @@ Set rsCoord = Nothing %>
 	<%	IF rsReport("horton") = True THEN %>
 	<tr>
 		<td> ce <input type="checkbox" name="coord:ce:<%=m %>" /></td>
+		<td> dewater <input type="checkbox" name="coord:dewater:<%=m %>" /></td>
+		<td> dust <input type="checkbox" name="coord:dust:<%=m %>" /></td>
+		<td> eb/ft/sf <input type="checkbox" name="coord:sfeb:<%=m %>" /></td>
 		<td> ip <input type="checkbox" name="coord:ip:<%=m %>" /></td>
+		<td> outfall <input type="checkbox" name="coord:outfall:<%=m %>" /></td>
 		<td> pond <input type="checkbox" name="coord:pond:<%=m %>" /></td>
-		<td> rd/rr <input type="checkbox" name="coord:rdrr:<%=m %>" /></td>
+		<td> riprap <input type="checkbox" name="coord:riprap:<%=m %>" /></td>
+		<td> rockdam <input type="checkbox" name="coord:rockdam:<%=m %>" /></td>
 		<td> sedloss <input type="checkbox" name="coord:sedloss:<%=m %>" /></td>
 		<td> sedlossw <input type="checkbox" name="coord:sedlossw:<%=m %>" /></td>
-		<td> sf/eb <input type="checkbox" name="coord:sfeb:<%=m %>" /></td>
 		<td> stock <input type="checkbox" name="coord:stock:<%=m %>" /></td>
 		<td> street <input type="checkbox" name="coord:street:<%=m %>" /></td>
 		<td> toilet <input type="checkbox" name="coord:toilet:<%=m %>" /></td>
-		<td> twm <input type="checkbox" name="coord:twm:<%=m %>" /></td>
+		<td> trash <input type="checkbox" name="coord:trash:<%=m %>" /></td>
 		<td> veg <input type="checkbox" name="coord:veg:<%=m %>" /></td>
 		<td> wo <input type="checkbox" name="coord:wo:<%=m %>" /></td>
 	</tr>
 <% 	END IF %>
-	<tr><td colspan="13"><hr align="center" width="100%" size="1"></td></tr>
+	<tr><td colspan="17"><hr align="center" width="100%" size="1"></td></tr>
 <% next %>
 	<tr><td colspan="5" align="center"><br>
 	<input name="submit_coord_btn" type="submit" style="font-size: 20px;" value="Submit"/>

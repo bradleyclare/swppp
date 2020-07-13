@@ -62,47 +62,10 @@ IF Request.Form.Count > 0 THEN %>
             strBody=strBody &"<font size='+1'><b>" & projectName & " " & projectPhase & "</b></font><br/>"
             strBody=strBody &"<font size='+1'><b>" & inspecDate & "</center><br/>"
 
-            coordSQLSELECT = "SELECT coID, coordinates, existingBMP, correctiveMods, orderby, assignDate, completeDate, status, repeat, useAddress, address, locationName, infoOnly, LD, NLN" &_
-	            " FROM Coordinates WHERE inspecID=" & inspecID & " ORDER BY orderby"	
+            coordSQLSELECT = "SELECT * FROM Coordinates WHERE inspecID=" & inspecID & " ORDER BY orderby"	
             'Response.Write(coordSQLSELECT)
             Set rsCoord = connSWPPP.execute(coordSQLSELECT)
     
-            If rsInspec("horton") Then
-                'get questions
-                SQLQ = "SELECT * FROM HortonQuestions ORDER BY orderby"
-                Set RSQ = connSWPPP.Execute(SQLQ)
-                strBody=strBody &"<hr noshade size='1' align='center' >"
-                If RSQ.EOF Then
-                    strBody=strBody &"<p>No Questions Found</p>"
-                Else
-                    'get answer data if available
-                    SQLA = "SELECT * FROM HortonAnswers WHERE inspecID = " & inspecID
-                    Set RSA = connSWPPP.execute(SQLA)
-                    If RSA.EOF Then
-                        strBody=strBody &"<p>No Answers Found</p>"
-                    Else
-                        strBody=strBody &"<table border='0' cellpadding='3' width='100%' cellspacing='0'>"
-                        cnt = 0
-                        altColors="#ffffff"
-                        Do While Not RSQ.EOF
-                            cnt = cnt + 1
-                            size = "90%"
-                            weight = "bold"
-                            If Trim(RSA("Q"&cnt)) = Trim(RSQ("default_answer")) Then
-                                size = "70%"
-                                weight = "normal"
-                            End If
-                            strBody=strBody &"<tr bgcolor="& altColors &"><td style='font-size:"& size &"; font-weight:"& weight &"'>"& Trim(RSQ("question")) &"</td>" & _ 
-                            "<td style='font-size:"& size &"; font-weight:"& weight &"'>"& Trim(RSA("Q"&cnt)) &"</td></tr>"
-                            If altColors = "#e5e6e8" Then altColors = "#ffffff" Else altColors = "#e5e6e8" End If
-                            RSQ.MoveNext
-                        Loop 'RSO
-                        strBody=strBody &"</table>" 
-                    End If
-                End If
-                RSQ.Close
-                SET RSQ=nothing
-            End If
             strBody=strBody &"<h3>Repeat Items</h3>"
             strBody=strBody &"<p><table border='0' cellpadding='3' width='100%' cellspacing='0'>"
             strBody=strBody &"<tr><td colspan='2'><hr noshade size='1' align='center' width='90%'></td></tr>"
@@ -127,7 +90,25 @@ IF Request.Form.Count > 0 THEN %>
                     infoOnly = rsCoord("infoOnly")
                     LD = rsCoord("LD")
                     NLN = rsCoord("NLN")
+					pond = rsCoord("pond")
+					sedloss = rsCoord("sedloss")
+					sedlossw = rsCoord("sedlossw")
+					ce = rsCoord("ce")
+					street = rsCoord("street")
+					sfeb = rsCoord("sfeb")
+					rockdam = rsCoord("rockdam")
+					ip = rsCoord("ip")
+					wo = rsCoord("wo")
+					veg = rsCoord("veg")
+					stock = rsCoord("stock")
+					toilet = rsCoord("toilet")
+					trash = rsCoord("trash")
+                    dewater = rsCoord("dewater")
+                    dust = rsCoord("dust")
+			        riprap = rsCoord("riprap")
+			        outfall = rsCoord("outfall")
 			        scoring_class = "black"
+					'Response.Write("ID: " & coID & ", Coord: " & coordinates & ", LocName: " & locationName & ", address: " & address & ", Mods: " & correctiveMods & "<br/>") 
 			        If applyScoring Then
 				        If assignDate = "" Then
 					        age = 0
@@ -140,6 +121,57 @@ IF Request.Form.Count > 0 THEN %>
                     If LD = True Then
                        correctiveMods = "(LD) " & correctiveMods
                        scoring_class = "ld"
+                    End If
+					If pond = True Then
+		                correctiveMods = "(pond) " & correctiveMods
+		            End If
+					If sedloss = True Then
+                		correctiveMods = "(sediment loss) " & correctiveMods
+		            End If
+					If sedlossw = True Then
+                		correctiveMods = "(sediment loss to waters) " & correctiveMods
+		            End If
+					If ce = True Then
+                		correctiveMods = "(construction entrance) " & correctiveMods
+		            End If
+					If street = True Then
+                		correctiveMods = "(street cleaning) " & correctiveMods
+		            End If
+					If sfeb = True Then
+                		correctiveMods = "(perimeter controls) " & correctiveMods
+		            End If
+	          	    If rockdam = True Then
+        	            correctiveMods = "(rock dam) " & correctiveMods
+		            End If
+					If ip = True Then
+                		correctiveMods = "(inlet protection) " & correctiveMods
+		            End If
+					If wo = True Then
+                		correctiveMods = "(wash out) " & correctiveMods
+		            End If
+					If veg = True Then
+                		correctiveMods = "(vegetation) " & correctiveMods
+		            End If
+					If stock = True Then
+                		correctiveMods = "(stockpile) " & correctiveMods
+		            End If
+					If toilet = True Then
+		                correctiveMods = "(toilet) " & correctiveMods
+		            End If
+		            If trash = True Then
+                		correctiveMods = "(trash/waste/material) " & correctiveMods
+		            End If
+                    If dewater = True Then
+                        correctiveMods = "(dewatering) " & correctiveMods
+                    End If
+                    If dust = True Then
+        	            correctiveMods = "(dust control) " & correctiveMods
+			        End If
+			         If riprap = True Then
+			        	correctiveMods = "(riprap) " & correctiveMods
+			        End If
+			        If outfall = True Then
+			        	correctiveMods = "(outfall) " & correctiveMods
                     End If
 				        If infoOnly = True or NLN = True Then
                        do_nothing = 1 

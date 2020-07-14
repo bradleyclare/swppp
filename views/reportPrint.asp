@@ -192,12 +192,16 @@ If rsInspec("horton") Then
 				cnt = cnt + 1
 				size = "90%"
 				weight = "bold"
-				If Trim(RSA("Q"&cnt)) = Trim(RSQ("default_answer")) or Trim(RSA("Q"&cnt)) = "na" Then
+				answer = Trim(RSA("Q"&cnt))
+				If answer = Trim(RSQ("default_answer")) or answer = "na" Then
 					size = "70%"
 					weight = "normal"
+				End If
+				If answer = "na" Then
+					answer = "n/a"
 				End If %>
 				<tr bgcolor=<%=altColors%>><td style="font-size:<%=size%>; font-weight:<% =weight %>"><%=cnt%> : <%=Trim(RSQ("question"))%></td> 
-				<td style="font-size:<%=size%>; font-weight:<%=weight%>"><%=Trim(RSA("Q"&cnt))%></td></tr>
+				<td style="font-size:<%=size%>; font-weight:<%=weight%>"><%=answer%></td></tr>
 				<% If altColors = "#e5e6e8" Then altColors = "#ffffff" Else altColors = "#e5e6e8" End If
 				RSQ.MoveNext
 			Loop %>
@@ -293,7 +297,7 @@ Else
                 correctiveMods = "(inlet protection) " & correctiveMods
             End If
 			If wo = True Then
-                correctiveMods = "(wash out) " & correctiveMods
+                correctiveMods = "(washout) " & correctiveMods
             End If
 			If veg = True Then
                 correctiveMods = "(vegetation) " & correctiveMods

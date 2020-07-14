@@ -23,131 +23,171 @@ Set RS0 = connSWPPP.Execute(SQL0)
 
 numQuestions = 26
 If Request.Form.Count > 0 Then
-    if Request.Form("sync_btn") = "Sync/Submit" then
-        'reset all variables to defaults
-        answerSQL = "UPDATE HortonAnswers SET "
-        cnt = 0
-        Do While Not RS0.EOF
-            cnt = cnt + 1
-            default_val = Trim(RS0("default_answer"))
-            answerSQL = answerSQL & "Q" & cnt & " = '" & default_val & "'"    
-            If cnt < numQuestions Then
-                answerSQL = answerSQL & ", "
+    if Request.Form("sync_btn") = "Sync" then
+        If RSA.EOF Then
+            answerSQL = "INSERT INTO HortonAnswers (inspecID, " 
+            For i = 1 To numQuestions
+                answerSQL = answerSQL & "Q" & i
+                If i < numQuestions Then
+                    answerSQL = answerSQL & ", "
+                End If
+            Next
+            answerSQL = answerSQL & ") VALUES (" & inspecID & ", "
+            For i = 1 To numQuestions
+                answerSQL = answerSQL & "'" & TRIM(Request("A:" & i)) & "'"
+                If i < numQuestions Then
+                    answerSQL = answerSQL & ", "
+                End If
+            Next
+            answerSQL = answerSQL & ")"
+        Else
+            'reset all variables to defaults
+            answerSQL = "UPDATE HortonAnswers SET "
+            cnt = 0
+            Do While Not RS0.EOF
+                cnt = cnt + 1
+                default_val = Trim(RS0("default_answer"))
+                If cnt = 4 or cnt = 10 or cnt >= 12 Then
+                    answerSQL = answerSQL & "Q" & cnt & " = '" & default_val & "'"    
+                Else
+                    answerSQL = answerSQL & "Q" & cnt & " = '" & TRIM(Request("A:" & cnt)) & "'"
+                End If
+                If cnt < numQuestions Then
+                    answerSQL = answerSQL & ", "
+                End If
+                RS0.MoveNext
+            Loop 'RSO
+            answerSQL = answerSQL & " WHERE inspecID = " & inspecID
+            'Response.Write(answerSQL)
+            connSWPPP.Execute(answerSQL)
+            
+            'load current items in report and look for categories
+            coordSQLSELECT = "SELECT * FROM Coordinates WHERE inspecID=" & inspecID & " ORDER BY orderby"	
+            'Response.Write(coordSQLSELECT)
+            Set rsCoord = connSWPPP.execute(coordSQLSELECT)
+            repeat_item_found = false
+            bmp_issue_found = false
+            If rsCoord.EOF Then
+                Response.Write("No Items found to sync to!")
             End If
-            RS0.MoveNext
-        Loop 'RSO
-        answerSQL = answerSQL & " WHERE inspecID = " & inspecID
-        'Response.Write(answerSQL)
-        connSWPPP.Execute(answerSQL)
-        
-        'load current items in report and look for categories
-        coordSQLSELECT = "SELECT * FROM Coordinates WHERE inspecID=" & inspecID & " ORDER BY orderby"	
-        'Response.Write(coordSQLSELECT)
-        Set rsCoord = connSWPPP.execute(coordSQLSELECT)
-        repeat_item_found = false
-        bmp_issue_found = false
-        If rsCoord.EOF Then
-            Response.Write("No Items found to sync to!")
+            Do While Not rsCoord.EOF
+                'Response.Write("ID: " & rsCoord("coID"))
+                repeat = rsCoord("repeat")
+                pond = rsCoord("pond")
+                sedloss = rsCoord("sedloss")
+                sedlossw = rsCoord("sedlossw")
+                ce = rsCoord("ce")
+                street = rsCoord("street")
+                sfeb = rsCoord("sfeb")
+                rockdam = rsCoord("rockdam")
+                ip = rsCoord("ip")
+                wo = rsCoord("wo")
+                veg = rsCoord("veg")
+                stock = rsCoord("stock")
+                toilet = rsCoord("toilet")
+                trash = rsCoord("trash")
+                dewater = rsCoord("dewater")
+                dust = rsCoord("dust")
+                riprap = rsCoord("riprap")
+                outfall = rsCoord("outfall")
+                if repeat then
+                    repeat_item_found = True
+                end if
+                if pond then
+                    bmp_issue_found = true
+                    answerSQL = "UPDATE HortonAnswers SET Q12 = 'no' WHERE inspecID = " & inspecID 
+                    connSWPPP.Execute(answerSQL)
+                end if
+                if sedloss then
+                    answerSQL = "UPDATE HortonAnswers SET Q14 = 'yes' WHERE inspecID = " & inspecID 
+                    connSWPPP.Execute(answerSQL)
+                end if
+                if sedlossw then
+                    answerSQL = "UPDATE HortonAnswers SET Q15 = 'yes' WHERE inspecID = " & inspecID 
+                    connSWPPP.Execute(answerSQL)
+                end if
+                if ce then
+                    bmp_issue_found = true
+                    answerSQL = "UPDATE HortonAnswers SET Q16 = 'no' WHERE inspecID = " & inspecID 
+                    connSWPPP.Execute(answerSQL)
+                end if
+                if street then
+                    bmp_issue_found = true
+                    answerSQL = "UPDATE HortonAnswers SET Q17 = 'no' WHERE inspecID = " & inspecID 
+                    connSWPPP.Execute(answerSQL)
+                end if
+                if sfeb then
+                    bmp_issue_found = true
+                    answerSQL = "UPDATE HortonAnswers SET Q18 = 'no' WHERE inspecID = " & inspecID 
+                    connSWPPP.Execute(answerSQL)
+                end if
+                if rockdam or riprap then
+                    bmp_issue_found = true
+                    answerSQL = "UPDATE HortonAnswers SET Q19 = 'no' WHERE inspecID = " & inspecID  
+                    connSWPPP.Execute(answerSQL)
+                end if
+                if ip then
+                    bmp_issue_found = true
+                    answerSQL = "UPDATE HortonAnswers SET Q20 = 'no' WHERE inspecID = " & inspecID 
+                    connSWPPP.Execute(answerSQL)
+                end if
+                if wo then
+                    bmp_issue_found = true
+                    answerSQL = "UPDATE HortonAnswers SET Q21 = 'no' WHERE inspecID = " & inspecID  
+                    connSWPPP.Execute(answerSQL)
+                end if
+                if veg then
+                    bmp_issue_found = true
+                    answerSQL = "UPDATE HortonAnswers SET Q22 = 'no' WHERE inspecID = " & inspecID 
+                    connSWPPP.Execute(answerSQL)
+                end if
+                if stock then
+                    bmp_issue_found = true
+                    answerSQL = "UPDATE HortonAnswers SET Q23 = 'no' WHERE inspecID = " & inspecID 
+                    connSWPPP.Execute(answerSQL)
+                end if
+                if toilet then
+                    bmp_issue_found = true
+                    answerSQL = "UPDATE HortonAnswers SET Q24 = 'no' WHERE inspecID = " & inspecID 
+                    connSWPPP.Execute(answerSQL)
+                end if
+                if trash then
+                    bmp_issue_found = true
+                    answerSQL = "UPDATE HortonAnswers SET Q25 = 'no' WHERE inspecID = " & inspecID 
+                    connSWPPP.Execute(answerSQL)
+                end if
+                if dewater then
+                    bmp_issue_found = true
+                    answerSQL = "UPDATE HortonAnswers SET Q26 = 'no' WHERE inspecID = " & inspecID 
+                    connSWPPP.Execute(answerSQL)
+                end if
+                if dust then
+                    bmp_issue_found = true
+                    answerSQL = "UPDATE HortonAnswers SET Q26 = 'no' WHERE inspecID = " & inspecID 
+                    connSWPPP.Execute(answerSQL)
+                end if
+                if outfall then
+                    answerSQL = "UPDATE HortonAnswers SET Q13 = 'no' WHERE inspecID = " & inspecID 
+                    connSWPPP.Execute(answerSQL)
+                end if
+                rsCoord.MoveNext
+            Loop 	
+            if repeat_item_found then
+                answerSQL = "UPDATE HortonAnswers SET Q4 = 'no' WHERE inspecID = " & inspecID  
+                connSWPPP.Execute(answerSQL)
+            Else
+                answerSQL = "UPDATE HortonAnswers SET Q4 = 'yes' WHERE inspecID = " & inspecID  
+                connSWPPP.Execute(answerSQL)
+            End if
+            if bmp_issue_found then
+                answerSQL = "UPDATE HortonAnswers SET Q10 = 'no' WHERE inspecID = " & inspecID  
+                connSWPPP.Execute(answerSQL)
+            Else
+                answerSQL = "UPDATE HortonAnswers SET Q10 = 'yes' WHERE inspecID = " & inspecID  
+                connSWPPP.Execute(answerSQL)
+            End if
         End If
-        Do While Not rsCoord.EOF
-            'Response.Write("ID: " & rsCoord("coID"))
-            if rsCoord("repeat") then
-                repeat_item_found = True
-            end if
-            if rsCoord("pond") then
-                bmp_issue_found = true
-                answerSQL = "UPDATE HortonAnswers SET Q12 = 'no' WHERE inspecID = " & inspecID 
-                connSWPPP.Execute(answerSQL)
-            end if
-            if rsCoord("outfall") then
-                answerSQL = "UPDATE HortonAnswers SET Q13 = 'no' WHERE inspecID = " & inspecID 
-                connSWPPP.Execute(answerSQL)
-            end if
-            if rsCoord("sedloss") then
-                answerSQL = "UPDATE HortonAnswers SET Q14 = 'yes' WHERE inspecID = " & inspecID 
-                connSWPPP.Execute(answerSQL)
-            end if
-			if rsCoord("sedlossw") then
-                answerSQL = "UPDATE HortonAnswers SET Q15 = 'yes' WHERE inspecID = " & inspecID 
-                connSWPPP.Execute(answerSQL)
-            end if
-            if rsCoord("ce") then
-                bmp_issue_found = true
-                answerSQL = "UPDATE HortonAnswers SET Q16 = 'no' WHERE inspecID = " & inspecID 
-                connSWPPP.Execute(answerSQL)
-            end if
-            if rsCoord("street") then
-                bmp_issue_found = true
-                answerSQL = "UPDATE HortonAnswers SET Q17 = 'no' WHERE inspecID = " & inspecID 
-                connSWPPP.Execute(answerSQL)
-            end if
-            if rsCoord("sfeb") then
-                bmp_issue_found = true
-                answerSQL = "UPDATE HortonAnswers SET Q18 = 'no' WHERE inspecID = " & inspecID 
-                connSWPPP.Execute(answerSQL)
-            end if
-            if rsCoord("rockdam") or rsCoord("riprap") then
-                bmp_issue_found = true
-                answerSQL = "UPDATE HortonAnswers SET Q19 = 'no' WHERE inspecID = " & inspecID  
-                connSWPPP.Execute(answerSQL)
-            end if
-            if rsCoord("ip") then
-                bmp_issue_found = true
-                answerSQL = "UPDATE HortonAnswers SET Q20 = 'no' WHERE inspecID = " & inspecID 
-                connSWPPP.Execute(answerSQL)
-            end if
-            if rsCoord("wo") then
-                bmp_issue_found = true
-                answerSQL = "UPDATE HortonAnswers SET Q21 = 'no' WHERE inspecID = " & inspecID  
-                connSWPPP.Execute(answerSQL)
-            end if
-            if rsCoord("veg") then
-                bmp_issue_found = true
-                answerSQL = "UPDATE HortonAnswers SET Q22 = 'no' WHERE inspecID = " & inspecID 
-                connSWPPP.Execute(answerSQL)
-            end if
-			if rsCoord("stock") then
-                bmp_issue_found = true
-                answerSQL = "UPDATE HortonAnswers SET Q23 = 'no' WHERE inspecID = " & inspecID 
-                connSWPPP.Execute(answerSQL)
-            end if
-            if rsCoord("toilet") then
-                bmp_issue_found = true
-                answerSQL = "UPDATE HortonAnswers SET Q24 = 'no' WHERE inspecID = " & inspecID 
-                connSWPPP.Execute(answerSQL)
-            end if
-            if rsCoord("trash") then
-                bmp_issue_found = true
-                answerSQL = "UPDATE HortonAnswers SET Q25 = 'no' WHERE inspecID = " & inspecID 
-                connSWPPP.Execute(answerSQL)
-            end if
-            if rsCoord("dewater") then
-                bmp_issue_found = true
-                answerSQL = "UPDATE HortonAnswers SET Q26 = 'no' WHERE inspecID = " & inspecID 
-                connSWPPP.Execute(answerSQL)
-            end if
-            if rsCoord("dust") then
-                bmp_issue_found = true
-                answerSQL = "UPDATE HortonAnswers SET Q26 = 'no' WHERE inspecID = " & inspecID 
-                connSWPPP.Execute(answerSQL)
-            end if
-            rsCoord.MoveNext
-	    Loop 	
-        if repeat_item_found then
-            answerSQL = "UPDATE HortonAnswers SET Q4 = 'no' WHERE inspecID = " & inspecID  
-            connSWPPP.Execute(answerSQL)
-        Else
-            answerSQL = "UPDATE HortonAnswers SET Q4 = 'yes' WHERE inspecID = " & inspecID  
-            connSWPPP.Execute(answerSQL)
-        end if
-        if bmp_issue_found then
-            answerSQL = "UPDATE HortonAnswers SET Q10 = 'no' WHERE inspecID = " & inspecID  
-            connSWPPP.Execute(answerSQL)
-        Else
-            answerSQL = "UPDATE HortonAnswers SET Q10 = 'yes' WHERE inspecID = " & inspecID  
-            connSWPPP.Execute(answerSQL)
-        end if
-	Else
+    Else
         'insert or update answers to database
         If RSA.EOF Then
             answerSQL = "INSERT INTO HortonAnswers (inspecID, " 
@@ -250,7 +290,7 @@ Set RSA = connSWPPP.execute(answerSQLSELECT)
     RS0.Close
     SET RS0=nothing %>
     <tr><td></td>
-    <td><input name="sync_btn" type="submit" style="font-size: 15px;" value="Sync/Submit"/></td>
+    <td><input name="sync_btn" type="submit" style="font-size: 15px;" value="Sync"/></td>
     <td><input name="submit_btn" type="submit" style="font-size: 15px;" value="Submit"/></td>
     </tr>
     </table>

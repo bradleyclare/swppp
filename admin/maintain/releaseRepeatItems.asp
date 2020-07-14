@@ -147,7 +147,7 @@ IF Request.Form.Count > 0 THEN %>
                 		correctiveMods = "(inlet protection) " & correctiveMods
 		            End If
 					If wo = True Then
-                		correctiveMods = "(wash out) " & correctiveMods
+                		correctiveMods = "(washout) " & correctiveMods
 		            End If
 					If veg = True Then
                 		correctiveMods = "(vegetation) " & correctiveMods

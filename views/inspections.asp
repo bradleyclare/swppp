@@ -85,7 +85,7 @@ if NOT(RS1.EOF) THEN hortonFlag=True END IF %>
 <tr><td><button onClick="window.open('reportPrintAll.asp?projID=<%= projectID%>&projName=<%= projectName%>&projPhase=<%= projectPhase %>','','width=800, height=600, location=no, menubar=no, status=no, toolbar=no, scrollbars=yes, resizable=yes')">Print All Reports</button></td>
 <td>
 <% If hortonFlag Then %>
-<input type="submit" value="Approve Reports" name="approve_reports"></input>
+<input type="submit" value="Acknowledge Reports" name="approve_reports"></input>
 <% End If %>
 </td></tr>
 </table>

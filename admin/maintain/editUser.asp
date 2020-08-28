@@ -13,9 +13,9 @@ companyID = Request("companyID")
 processed=false
 If Request.Form.Count > 0 Then
 	highestRights="user"
-	SQL1="SELECT rights FROM Users WHERE userID="& userID
-	SET RS1= connSWPPP.execute(SQL1)
-	highestRights=TRIM(RS1("rights"))
+	SQLU="SELECT rights FROM Users WHERE userID="& userID
+	SET RSU= connSWPPP.execute(SQLU)
+	highestRights=TRIM(RSU("rights"))
 	Function strQuoteReplace(strValue)
 		strQuoteReplace = Replace(strValue, "'", "''")
 	End Function
@@ -64,12 +64,12 @@ If Request.Form.Count > 0 Then
 	END IF
 
 	connSWPPP.execute(SQLDELETE)
-'-----	rightsValue="000000000" '-- user,action,erosion,email,CC,BCC,inspector,director,admin -----------------
-		If Request("admin")="on" then rightsValue= "000000001" else rightsValue="000000000" End If
+'-----	rightsValue="00000000000" '-- user,action,erosion,email,CC,BCC,vscr,ldscr,inspector,director,admin -----------------
+		If Request("admin")="on" then rightsValue= "00000000001" else rightsValue="00000000000" End If
 ' ----------------------- Inspector, Director, User, Action, Email in Projects User  -------- 
 		For Each Item in Request.Form
             If Item <> "userGroup" Then
-			    Select Case Left(Item,3)
+			    Select Case Left(Item,3) 'loop through and replace the appropriate character with 1 for certain rights, mid function returns substring
 				    Case "use"
 					    rights="user"
 					    rightsValue= "1"& MID(rightsValue,2)
@@ -88,9 +88,16 @@ If Request.Form.Count > 0 Then
 				    Case "bcc"
 					    rights="bcc"
 					    rightsValue= MID(rightsValue,1,5) &"1"& MID(rightsValue,7)
-				    Case "ins"
-					    rights="inspector"
+				    Case "vsc"
+					    rights="vscr"
 					    rightsValue=MID(rightsValue,1,6) &"1"& MID(rightsValue,8)
+					 Case "lds"
+					    rights="ldscr"
+					    rightsValue=MID(rightsValue,1,7) &"1"& MID(rightsValue,9)
+					 Case "ins"
+					    rights="inspector"
+					    rightsValue=MID(rightsValue,1,8) &"1"& MID(rightsValue,10)
+					 
     '					SQLa="SELECT projectName FROM Projects WHERE projectID="& Request(Item)
     '					SET RSa=connSWPPP.execute(SQLa)
     '					IF NOT(RSa.BOF AND RSa.EOF) THEN 
@@ -98,29 +105,29 @@ If Request.Form.Count > 0 Then
     '					ELSE 
     '					    projName="error" 
     '					END IF
-					    SQL1="SELECT * FROM Commissions WHERE userID="& userID &" AND projectID ='"& Request(Item) &"'"
-					    SET RS1=connSWPPP.execute(SQL1)
-					    IF RS1.EOF THEN
+					    SQLP="SELECT * FROM Commissions WHERE userID="& userID &" AND projectID ='"& Request(Item) &"'"
+					    SET RSP=connSWPPP.execute(SQLP)
+					    IF RSP.EOF THEN
 						    phase1=20
 						    phase2=10
 						    phase3=5
 						    phase4=0
 						    phase5=30
 					    ELSE
-						    phase1=RS1("phase1")
-						    phase2=RS1("phase2")
-						    phase3=RS1("phase3")
-						    phase4=RS1("phase4")
-						    phase5=RS1("phase5")
+						    phase1=RSP("phase1")
+						    phase2=RSP("phase2")
+						    phase3=RSP("phase3")
+						    phase4=RSP("phase4")
+						    phase5=RSP("phase5")
 					    END IF
-					    RS1.Close
-					    SET RS1=nothing
+					    RSP.Close
+					    SET RSP=nothing
     '					RSa.close
     '					SET RSa=nothing
 					    SQL0=SQL0 &" EXEC sp_UpdateCommissions "& userID &", '"& projName &"', "& phase1 &", "& phase2 &", "& phase3 &", "& phase4 &", "& phase5
 				    Case "dir"
 					    rights="director"
-					    rightsValue=MID(rightsValue,1,7) &"1"& MID(rightsValue,9)
+					    rightsValue=MID(rightsValue,1,9) &"1"& MID(rightsValue,11)
 			    End Select
 			    If rights<>"" then
                     exeCmd = "sp_InsertPU "& userID &", "& Request(Item) &", '"& rights &"'"
@@ -136,9 +143,11 @@ If Request.Form.Count > 0 Then
 					CASE 1	highestRights="user"
 					CASE 2	highestRights="action"
 					CASE 3	highestRights="erosion"
-					CASE 7	highestRights="inspector"
-					CASE 8	highestRights="director"
-					CASE 9	highestRights="admin"
+					CASE 4   highestRights="vscr"
+					CASE 8   highestRights="ldvscr"
+					CASE 9	highestRights="inspector"
+					CASE 10	highestRights="director"
+					CASE 11	highestRights="admin"
 					CASE ELSE highestRights=highestRights
 				END SELECT
 			END IF
@@ -258,10 +267,8 @@ End If
 <% If Session("validAdmin") then 'only admin may set rights for other admin, directors and inspectors %>		
 		<tr><td align="right">email:</td>
 			<td><input type="text" name="email" size="30" maxlength="50" value="<%= email %>"></td></tr>
-		<tr><td align="right">phone:</td>
-			<td><input type="text" name="phone" size="15" maxlength="15" value="<%= phone %>"></td></tr>
 		<tr><td align="right">password:</td>
-			<td><input type="password" name="pswrd" size="8" maxlength="8"
+			<td><input type="password" name="pswrd" size="15" maxlength="15"
 				value="<%= pswrd %>">&nbsp;&nbsp;<input type="button" value="View" 
 					onClick="alert('Password: ' + form.pswrd.value)";></td></tr>
 		<tr><td align="right">signature file:</td>
@@ -280,6 +287,8 @@ Set objFolder = Nothing
 Set gifDirectory = Nothing %>
 				</select>&nbsp;&nbsp;<input type="button" value="Upload Signature File" 
 					onClick="location='upSigEditUser.asp?userID=<%= userID %>'; return false";></td></tr>
+		<tr><td align="right">phone:</td>
+			<td><input type="text" name="phone" size="15" maxlength="15" value="<%= phone %>"></td></tr>
 		<tr><td align="right">View Images:</td>
 			<td><input type="radio" name="noImages" value="0"<% IF noImages=0 THEN %> checked<% END IF%>>Yes
 				<input type="radio" name="noImages" value="1"<% IF noImages=1 THEN %> checked<% END IF%>>No</td></tr>
@@ -367,15 +376,16 @@ Set gifDirectory = Nothing %>
 <%	End If
  	If Session("validAdmin") then 'only admin may set rights for other admin, directors and inspectors %>
 			<th>director</th>
-			<th>current director</th>
-			<th>inspector</th></tr>	
+			<th>inspector</th>
+			<th>VSCR</th>
+			<th>LDSCR</th></tr>	
 <% end if 'Session("validAdmin")
 SQL1 = "SELECT p.*, u.userID, u.firstName, u.lastName, u.rights as rights1, pu.rights as rights2" &_
 	" FROM Projects as p LEFT JOIN ProjectsUsers as pu ON p.projectID=pu.projectID LEFT JOIN Users as u" &_
 	" ON pu.userID=u.userID"
 	IF Session("validDirector") AND NOT(Session("validAdmin")) THEN 
 		SQL1=SQL1 & " WHERE p.phaseNum=1 AND p.projectID IN (SELECT projectID FROM ProjectsUsers" &_
-		" AND userID=" & listUserID &" AND rights='director')"
+		" WHERE userID=" & listUserID &" AND rights='director')"
 	ELSE
 		SQL1=SQL1 & " WHERE p.phaseNum=1"
 	END IF
@@ -391,6 +401,8 @@ insChecked=False
 dirChecked=False
 actChecked=False
 eroChecked=False
+vscrChecked=False
+ldscrChecked=False
 recEmailChecked=False
 recCCChecked=False
 recBCCChecked=False
@@ -410,6 +422,8 @@ DO WHILE NOT RS1.EOF
 			CASE "bcc"		    recBCCChecked=True
 			CASE "action"		actChecked=True
 			CASE "erosion"		eroChecked=True
+			CASE "vscr"       vscrChecked=True
+			CASE "ldscr"      ldscrChecked=True
 			CASE "director"	
 				dirName= RS1("firstName") &" "& RS1("lastName") 
 				dirChecked=True
@@ -453,11 +467,15 @@ DO WHILE NOT RS1.EOF
 		<td align=center><input type="checkbox" name="dir<%= compCount %>" value="<%= dispProjID %>"
 			<% If dirChecked then %>checked<% End If %>
 			<% IF NOT(dirChecked) AND NOT(dirName="None") THEN%>disabled<%END IF%>></td>
-<!--- ----------------------------------------- Director Name ---------------------------------- --->
-		<td><%= dirName %></td>
 <!--- ----------------------------------------- Inspector -------------------------------------- --->
 		<td align=center><input type="checkbox" name="ins<%= compCount %>" value="<%= dispProjID %>"
-			<% If insChecked then %>checked<% End If %>></td></tr>	
+			<% If insChecked then %>checked<% End If %>></td>
+<!--- ----------------------------------------- VSCR -------------------------------------- --->
+		<td align=center><input type="checkbox" name="vsc<%= compCount %>" value="<%= dispProjID %>"
+			<% If vscrChecked then %>checked<% End If %>></td>
+<!--- ----------------------------------------- LDVSCR -------------------------------------- --->
+		<td align=center><input type="checkbox" name="lds<%= compCount %>" value="<%= dispProjID %>"
+			<% If ldvscrChecked then %>checked<% End If %>></td></tr>	
 <% end if 'Session("validAdmin") 
 '---- 	Reset the loop Variables --------------------------------------------------------------------
 		IF NOT RS1.EOF THEN
@@ -467,6 +485,8 @@ DO WHILE NOT RS1.EOF
 			insChecked=False
 			actChecked=False
 			eroChecked=False
+			vscrChecked=False
+			ldscrChecked=False
 			recEmailChecked=False
 			recCCChecked=False
 			recBCCChecked=False

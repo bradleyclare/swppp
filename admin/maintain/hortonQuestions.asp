@@ -47,10 +47,15 @@ If Request.Form.Count > 0 Then
             Do While Not RS0.EOF
                 cnt = cnt + 1
                 default_val = Trim(RS0("default_answer"))
+                current_val = TRIM(Request("A:" & cnt))
                 If cnt = 4 or cnt = 10 or cnt >= 12 Then
-                    answerSQL = answerSQL & "Q" & cnt & " = '" & default_val & "'"    
+                    If current_val <> "na" Then
+                        answerSQL = answerSQL & "Q" & cnt & " = '" & default_val & "'"
+                    Else
+                        answerSQL = answerSQL & "Q" & cnt & " = '" & current_val & "'"
+                    End If
                 Else
-                    answerSQL = answerSQL & "Q" & cnt & " = '" & TRIM(Request("A:" & cnt)) & "'"
+                    answerSQL = answerSQL & "Q" & cnt & " = '" & current_val & "'"
                 End If
                 If cnt < numQuestions Then
                     answerSQL = answerSQL & ", "
@@ -58,7 +63,7 @@ If Request.Form.Count > 0 Then
                 RS0.MoveNext
             Loop 'RSO
             answerSQL = answerSQL & " WHERE inspecID = " & inspecID
-            'Response.Write(answerSQL)
+            Response.Write(answerSQL)
             connSWPPP.Execute(answerSQL)
             
             'load current items in report and look for categories
@@ -90,6 +95,12 @@ If Request.Form.Count > 0 Then
                 dust = rsCoord("dust")
                 riprap = rsCoord("riprap")
                 outfall = rsCoord("outfall")
+                intop = rsCoord("intop")
+		        swalk = rsCoord("swalk")
+		        mormix = rsCoord("mormix")
+                ada = rsCoord("ada")
+		        dway = rsCoord("dway")
+		        flume = rsCoord("flume")
                 if repeat then
                     repeat_item_found = True
                 end if
@@ -111,7 +122,7 @@ If Request.Form.Count > 0 Then
                     answerSQL = "UPDATE HortonAnswers SET Q16 = 'no' WHERE inspecID = " & inspecID 
                     connSWPPP.Execute(answerSQL)
                 end if
-                if street then
+                if street or intop or swalk or ada or dway or flume then
                     bmp_issue_found = true
                     answerSQL = "UPDATE HortonAnswers SET Q17 = 'no' WHERE inspecID = " & inspecID 
                     connSWPPP.Execute(answerSQL)
@@ -131,7 +142,7 @@ If Request.Form.Count > 0 Then
                     answerSQL = "UPDATE HortonAnswers SET Q20 = 'no' WHERE inspecID = " & inspecID 
                     connSWPPP.Execute(answerSQL)
                 end if
-                if wo then
+                if wo or mormix then
                     bmp_issue_found = true
                     answerSQL = "UPDATE HortonAnswers SET Q21 = 'no' WHERE inspecID = " & inspecID  
                     connSWPPP.Execute(answerSQL)
@@ -290,7 +301,11 @@ Set RSA = connSWPPP.execute(answerSQLSELECT)
     RS0.Close
     SET RS0=nothing %>
     <tr><td></td>
-    <td><input name="sync_btn" type="submit" style="font-size: 15px;" value="Sync"/></td>
+    <td>
+    <% If Not RSA.EOF Then %>
+    <input name="sync_btn" type="submit" style="font-size: 15px;" value="Sync"/>
+    <% End If %>
+    </td>
     <td><input name="submit_btn" type="submit" style="font-size: 15px;" value="Submit"/></td>
     </tr>
     </table>

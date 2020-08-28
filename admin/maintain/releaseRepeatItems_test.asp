@@ -89,6 +89,12 @@ Else
         dust = rsCoord("dust")
         riprap = rsCoord("riprap")
         outfall = rsCoord("outfall")
+        intop = rsCoord("intop")
+		swalk = rsCoord("swalk")
+		mormix = rsCoord("mormix")
+        ada = rsCoord("ada")
+		dway = rsCoord("dway")
+		flume = rsCoord("flume")
         scoring_class = "black"
         If applyScoring Then
             If assignDate = "" Then
@@ -153,6 +159,24 @@ Else
         End If
         If outfall = True Then
         	correctiveMods = "(outfall) " & correctiveMods
+        End If
+        If intop = True Then
+        	correctiveMods = "(inlet top) " & correctiveMods
+        End If
+        If swalk = True Then
+        	correctiveMods = "(sidewalk) " & correctiveMods
+        End If
+        If mormix = True Then
+        	correctiveMods = "(mortar mix) " & correctiveMods
+        End If
+        If ada = True Then
+        	correctiveMods = "(ADA ramp) " & correctiveMods
+        End If
+        If dway = True Then
+        	correctiveMods = "(driveway) " & correctiveMods
+        End If
+        If flume = True Then
+        	correctiveMods = "(flume) " & correctiveMods
         End If
         If infoOnly = True or NLN = True Then
             do_nothing = 1 

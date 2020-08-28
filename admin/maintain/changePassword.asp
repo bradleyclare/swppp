@@ -68,11 +68,11 @@ End If ' Request.Form.Count>0
 	<tr><td align="right"><br><font color="#FFFFFF">Email: </font></td>
 		<td><br><input type="text" name="email" size="30" maxlength="50"></td></tr>
 	<tr><td align="right"><font color="#FFFFFF">Current Password: </font></td>
-		<td><input type="password" name="current_pswrd" size="8" maxlength="8"></td></tr>
+		<td><input type="password" name="current_pswrd" size="15" maxlength="15"></td></tr>
 	<tr><td align="right"><font color="#FFFFFF">New Password: </font></td>
-		<td><input type="password" name="new_pswrd" size="8" maxlength="8"></td></tr>
+		<td><input type="password" name="new_pswrd" size="15" maxlength="15"></td></tr>
 	<tr><td align="right"><font color="#FFFFFF">New Password Repeat: </font></td>
-		<td><input type="password" name="new_pswrd2" size="8" maxlength="8"></td></tr>
+		<td><input type="password" name="new_pswrd2" size="15" maxlength="15"></td></tr>
 	<tr><td colspan="2" align="center"><br><input type="submit" value="Submit"><br><br></td></tr>
 	</table></div>
 	<script language="javascript"><!--

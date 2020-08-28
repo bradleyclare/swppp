@@ -23,12 +23,12 @@ next
 %><!-- #include file="../connSWPPP.asp" --><%
 SQL0= SQL0 &" INSERT INTO Inspections (inspecDate, projectname, projectphase, projectaddr, projectcity, projectstate, projectzip, projectcounty, onsitecontact,  " &_
 	" officephone, emergencyphone, companyid, reporttype, inches, bmpsinplace, sediment, userid, compaddr, compaddr2, compcity, compstate, compzip, compphone,  " &_
-	" compcontact, contactphone, contactfax, contactemail, projectid, compname, narrative, released, includeItems, compliance, totalItems, completedItems, sentRepeatItemReport, openItemAlert, groupName, systemic, systemicNote, horton, hortonApproved)  " &_
+	" compcontact, contactphone, contactfax, contactemail, projectid, compname, narrative, released, includeItems, compliance, totalItems, completedItems, sentRepeatItemReport, openItemAlert, groupName, systemic, systemicNote, horton, hortonSignV, hortonSignLD)  " &_
     " SELECT inspecDate='"& Date() &"', p.projectName, p.projectPhase, projectAddr, projectCity, projectState,  " &_
 	" projectZip, projectCounty, onsiteContact, officePhone, emergencyPhone, companyID,  " &_
 	" reportType = case when i.reportType = 'Initial' Then 'Weekly' Else i.reportType end, inches=-1, bmpsInPlace=-1, sediment=-1, userID,  " &_
 	" compAddr, compAddr2, compCity, compState, compZip, compPhone, compContact, contactPhone, contactFax, contactEmail, p.projectID, compName, narrative, released=0, " &_
-	" includeItems=1, compliance, totalItems, completedItems=0, sentRepeatItemReport=0, openItemAlert, groupName, systemic, systemicNote, horton, hortonApproved" &_
+	" includeItems=1, compliance, totalItems, completedItems=0, sentRepeatItemReport=0, openItemAlert, groupName, systemic, systemicNote, horton, hortonSignV, hortonSignLD" &_
     " FROM Inspections i  " &_
 	" inner join #tmp t on i.inspecID = t.inspectID and i.projectid = t.projectid" &_
 	" inner join Projects p on t.projectid = p.projectid;  " &_
@@ -38,23 +38,28 @@ SQL0= SQL0 &" INSERT INTO Inspections (inspecDate, projectname, projectphase, pr
     " INSERT INTO OptionalImages SELECT oi.oImageName, oi.oImageDesc, oi.oImageFileName, oi.oitID, inspecID= t.newInspecID" &_
 	" , oi.oOrder FROM OptionalImages oi inner join #tmp t on oi.inspecID = t.inspectID ;" &_
 	" INSERT INTO Coordinates SELECT inspecID= t.newInspecID, c.coordinates, c.existingBMP, c.correctiveMods, c.orderby, c.assignDate, c.completeDate, status=0, repeat=0, c.useAddress, c.address, c.locationName, c.infoOnly, c.LD, c.NLN, c.parentID," &_
-	" c.pond, c.sedloss, c.sedlossw, c.ce, c.street, c.sfeb, c.rockdam, c.ip, c.wo, c.veg, c.stock, c.toilet, c.trash, c.dewater, c.dust, c.riprap, c.outfall" &_
+	" c.pond, c.sedloss, c.sedlossw, c.ce, c.street, c.sfeb, c.rockdam, c.ip, c.wo, c.veg, c.stock, c.toilet, c.trash, c.dewater, c.dust, c.riprap, c.outfall, c.intop, c.swalk, c.mormix, c.ada, c.dway, c.flume" &_
 	" FROM Coordinates c inner join #tmp t on c.inspecID = t.inspectID;"
 'Response.Write(SQL0)
 'response.End
 connSWPPP.execute(SQL0)
 
 'get new inspecID
-SQL = "SELECT TOP 1 * FROM Inspections"
+SQL = "SELECT TOP 1 * FROM Inspections ORDER BY inspecID DESC"
 Set rsInspec = connSWPPP.execute(SQL)
 newInspecID = rsInspec("inspecID")
 
-if rsInspec("horton") then
+SQL_OLD = "SELECT * FROM Inspections WHERE inspecID="& inspecID
+Set rsInspec_old = connSWPPP.execute(SQL_OLD)
+
+'Response.Write("inspecID:" & inspecID & ", newInspecID:" & newInspecID & ", horton:" & rsInspec_old("horton"))
+if rsInspec_old("horton") then
 	'get previous horton answers
 	answerSQLSELECT = "SELECT * FROM HortonAnswers WHERE inspecID = " & inspecID
+	'Response.Write(answerSQLSELECT)
 	Set RSA = connSWPPP.execute(answerSQLSELECT)
 	numQuestions = 26
-	If RSA.EOF Then
+	If Not RSA.EOF Then
 		answerSQL = "INSERT INTO HortonAnswers (inspecID, " 
 		For i = 1 To numQuestions
 			answerSQL = answerSQL & "Q" & i
@@ -64,12 +69,13 @@ if rsInspec("horton") then
 		Next
 		answerSQL = answerSQL & ") VALUES (" & newInspecID & ", "
 		For i = 1 To numQuestions
-			answerSQL = answerSQL & "'" & RSA("A:" & i) & "'"
+			answerSQL = answerSQL & "'" & RSA("Q" & i) & "'"
 			If i < numQuestions Then
 				answerSQL = answerSQL & ", "
 			End If
 		Next
 		answerSQL = answerSQL & ")"
+		'Response.Write(answerSQL)
 		connSWPPP.Execute(answerSQL)
 	End If
 end if

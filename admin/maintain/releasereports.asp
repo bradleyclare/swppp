@@ -218,6 +218,12 @@ Else
 			dust = rsCoord("dust")
         	riprap = rsCoord("riprap")
         	outfall = rsCoord("outfall")
+			intop = rsCoord("intop")
+			swalk = rsCoord("swalk")
+			mormix = rsCoord("mormix")
+			ada = rsCoord("ada")
+		   dway = rsCoord("dway")
+		   flume = rsCoord("flume")
 			scoring_class = "black"
 			'Response.Write("ID: " & coID & ", Coord: " & coordinates & ", LocName: " & locationName & ", address: " & address & ", Mods: " & correctiveMods & "<br/>") 
 			IF applyScoring THEN
@@ -281,10 +287,28 @@ Else
 			End If
 			If riprap = True Then
 	        	correctiveMods = "(riprap) " & correctiveMods
-	        End If
-	        If outfall = True Then
+	      End If
+	      If outfall = True Then
 	        	correctiveMods = "(outfall) " & correctiveMods
-	        End If
+	      End If
+			If intop = True Then
+        		correctiveMods = "(inlet top) " & correctiveMods
+         End If
+         If swalk = True Then
+        		correctiveMods = "(sidewalk) " & correctiveMods
+         End If
+         If mormix = True Then
+        		correctiveMods = "(mortar mix) " & correctiveMods
+         End If
+			If ada = True Then
+				correctiveMods = "(ADA ramp) " & correctiveMods
+			End If
+			If dway = True Then
+				correctiveMods = "(driveway) " & correctiveMods
+			End If
+			If flume = True Then
+				correctiveMods = "(flume) " & correctiveMods
+			End If
             If NLN = True Then
                 'do nothing
             ElseIf infoOnly = True Then
@@ -352,7 +376,7 @@ If rsInspec("horton") Then
 	projectID = rsInspec("projectID")
 	projectName = Trim(rsInspec("projectName"))
 	projectPhase = Trim(rsInspec("projectPhase"))
-	strBody=strBody &"<br><div align='center'><a href='http://swppp.com/views/inspections.asp?projID=" & projectID & "&projName=" & projectName & "&projPhase=" & projectPhase & "'>acknowledge  reports</a></div>"
+	strBody=strBody &"<br><div align='center'><a href='http://swppp.com/views/inspections.asp?projID=" & projectID & "&projName=" & projectName & "&projPhase=" & projectPhase & "'>acknowledge  report</a></div>"
 End If
 strBody=strBody &"<br><div align='center'><a href='http://www.swppp.com'>link to: www.swppp.com</a></div></Body>"
 

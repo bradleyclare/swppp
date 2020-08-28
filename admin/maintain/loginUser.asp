@@ -76,7 +76,7 @@ End If ' Request.Form.Count>0
 	<tr><td align="right"><br><font color="#FFFFFF">Email: </font></td>
 		<td><br><input type="text" name="email" size="30" maxlength="50"></td></tr>
 	<tr><td align="right"><font color="#FFFFFF">Password: </font></td>
-		<td><input type="password" name="pswrd" size="8" maxlength="8"></td></tr>
+		<td><input type="password" name="pswrd" size="15" maxlength="15"></td></tr>
 	<tr><td colspan="2" align="center"><br><font color="#FFFFFF"><a href="lostPassword.asp" style="color:#FFFFFF; font-weight:600;">have you lost your password?</a>
 			</font><br><br></td></tr>
 	<tr><td colspan="2" align="center"><br><font color="#FFFFFF"><a href="changePassword.asp" style="color:#FFFFFF; font-weight:600;">change your password</a>

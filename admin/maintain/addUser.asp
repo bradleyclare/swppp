@@ -169,7 +169,7 @@ End If %>
 		<tr><td align="right">Email:</td>
 			<td><input type="text" name="email" size="30" maxlength="50"></td></tr>
 		<tr><td align="right">Password:</td>
-			<td><input type="password" name="pswrd" size="8" maxlength="8"></td></tr>
+			<td><input type="password" name="pswrd" size="15" maxlength="15"></td></tr>
 		<tr><td align="right">View Images:</td>
 			<td><input type="radio" name="noImages" value="0"<% IF noImages=0 THEN %> checked<% END IF%>>Yes
 				<input type="radio" name="noImages" value="1"<% IF noImages=1 THEN %> checked<% END IF%>>No</td></tr>

@@ -44,7 +44,8 @@
 	    	<a href="../maintain/remSigFiles.asp" class="admin">Signatures</a><br><br>
 		<% end if %>
 		<% If Session("validAdmin") then %>
-		<a href="../maintain/setActiveProjects.asp" class="admin">Active Reports</a><br><br>
+		<a href="../maintain/setActiveProjects.asp" class="admin">Active Reports</a><br>
+		<a href="../maintain/cleanupScoring.asp" class="admin">Cleanup Scoring</a><br>
 		<!--<a href="../maintain/archive.asp" class="admin">Archive Reports</a><br><br>-->
 		<% End IF %>
 		<a href="../" class="admin">Admin Home</a><br><br>

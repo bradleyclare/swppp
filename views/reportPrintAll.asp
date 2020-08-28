@@ -30,7 +30,7 @@ Else
 	'	" WHERE pu.userID = " & Session("userID") &_
 	'	" AND i.projectID=p.projectID ORDER BY inspecDate ASC"	
 End If
-Response.Write(SQL1)
+'Response.Write(SQL1)
 SET RS1 = connSWPPP.Execute(SQL1) %>
 <html><head>
 <title>Print All Reports <%= Date %></title>
@@ -231,6 +231,12 @@ Else
 			dust = rsCoord("dust")
         	riprap = rsCoord("riprap")
         	outfall = rsCoord("outfall")
+			intop = rsCoord("intop")
+			swalk = rsCoord("swalk")
+			mormix = rsCoord("mormix")
+			ada = rsCoord("ada")
+		   dway = rsCoord("dway")
+		   flume = rsCoord("flume")
 			scoring_class = "black"
 			'Response.Write("ID: " & coID & ", Coord: " & coordinates & ", LocName: " & locationName & ", address: " & address & ", Mods: " & correctiveMods & "<br/>") 
 			IF applyScoring THEN
@@ -294,10 +300,28 @@ Else
 			End If
 			If riprap = True Then
 	        	correctiveMods = "(riprap) " & correctiveMods
-	        End If
-	        If outfall = True Then
+	      End If
+	      If outfall = True Then
 	        	correctiveMods = "(outfall) " & correctiveMods
-	        End If
+	      End If
+			If intop = True Then
+        		correctiveMods = "(inlet top) " & correctiveMods
+         End If
+         If swalk = True Then
+        		correctiveMods = "(sidewalk) " & correctiveMods
+         End If
+         If mormix = True Then
+        		correctiveMods = "(mortar mix) " & correctiveMods
+         End If
+			If ada = True Then
+				correctiveMods = "(ADA ramp) " & correctiveMods
+			End If
+			If dway = True Then
+				correctiveMods = "(driveway) " & correctiveMods
+			End If
+			If flume = True Then
+				correctiveMods = "(flume) " & correctiveMods
+			End If
             If NLN = True Then
                 'do nothing
             ElseIf infoOnly = True Then %>

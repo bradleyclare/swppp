@@ -12,3 +12,6 @@ obj
 Properties
 *.MDF
 swppp_backup
+*.jpg
+*.gif
+*.png

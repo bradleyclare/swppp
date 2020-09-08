@@ -30,7 +30,7 @@ inspecSQLSELECT = "SELECT inspecDate, Inspections.projectID, Inspections.project
 "projectZip, projectCounty, onsiteContact, officePhone, emergencyPhone, compName, " &_
 "compAddr, compAddr2, compCity, compState, compZip, compPhone, compContact, contactPhone, contactFax, " &_
 "contactEmail, reportType, inches, bmpsInPlace, sediment, " &_
-"narrative, firstName, lastName, signature, qualifications, includeItems, compliance, totalItems, completedItems, horton" &_
+"narrative, firstName, lastName, signature, qualifications, includeItems, compliance, totalItems, completedItems, horton, hortonSignV, hortonSignLD, vscr, ldscr" &_
 " FROM Inspections, Projects, Users" &_
 " WHERE inspecID = " & inspecID &_
 " AND Inspections.projectID = Projects.projectID" &_
@@ -96,6 +96,22 @@ END IF
 IF rsInspec("sediment")>-1 THEN
 	strBody=strBody &"<td align='right'><b>Sediment Loss or Pollution?</b></td><td>"&  sediment &"</td>"
 END IF
+strBody=strBody &"</tr>"
+strBody=strBody &"<tr>"
+If rsInspec("hortonSignV") And rsInspec("vscr") <> 0 Then
+	rightsSELECT = "SELECT userID, firstName, lastName, phone FROM Users WHERE userID=" & rsInspec("vscr")
+	Set connRights = connSWPPP.execute(rightsSELECT)
+   If Not connRights.EOF Then
+	   strBody=strBody &"<td align='right'><b>VSCR:</b></td><td>" & Trim(connRights("firstName")) & " " & Trim(connRights("lastName")) & ": " & Trim(connRights("phone")) & "</td>"
+	End If
+End If
+If rsInspec("hortonSignLD") And rsInspec("ldscr") <> 0 Then
+	rightsSELECT = "SELECT userID, firstName, lastName, phone FROM Users WHERE userID=" & rsInspec("ldscr")
+	Set connRights = connSWPPP.execute(rightsSELECT)
+   If Not connRights.EOF Then
+	   strBody=strBody &"<td align='right'><b>LDSCR:</b></td><td>" & Trim(connRights("firstName")) & " " & Trim(connRights("lastName")) & ": " & Trim(connRights("phone")) & "</td>"
+	End If
+End If
 strBody=strBody &"</tr>"
 strBody=strBody &"</table>"
 signature = Trim(rsInspec("signature"))

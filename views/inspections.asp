@@ -4,7 +4,7 @@ If _
 	Not Session("validAdmin") And _
 	Not Session("validDirector") And _
 	Not Session("validInspector") And _
-    Not Session("validErosion") And _
+   Not Session("validErosion") And _
 	Not Session("validUser") _
 Then
 	Session("adminReturnTo") = Request.ServerVariables("path_info") & _
@@ -55,13 +55,13 @@ If Request.Form.Count > 0 Then
 End If
 
 If Session("validAdmin") Then
-	inspectInfoSQLSELECT = "SELECT DISTINCT inspecID, inspecDate, totalItems, completedItems, includeItems, compliance, released, horton, hortonSignV, hortonSignLD, p.projectName, p.projectPhase, ImageCount = (Select Count(ImageID) From Images Where inspecID = i.inspecID)" & _
+	inspectInfoSQLSELECT = "SELECT DISTINCT inspecID, inspecDate, totalItems, completedItems, includeItems, compliance, released, horton, hortonSignV, hortonSignLD, vscr, ldscr, p.projectName, p.projectPhase, ImageCount = (Select Count(ImageID) From Images Where inspecID = i.inspecID)" & _
 		" FROM Projects as p, Inspections as i" & _
 		" WHERE i.projectID=p.projectID" &_
 		" AND i.projectID="& projectID &_
 		" ORDER BY inspecDate DESC"
 Else
-	inspectInfoSQLSELECT = "SELECT DISTINCT inspecID, inspecDate, totalItems, completedItems, includeItems, compliance, released, horton, hortonSignV, hortonSignLD, p.projectName, p.projectPhase, ImageCount = (Select Count(ImageID) From Images Where inspecID = i.inspecID)" & _
+	inspectInfoSQLSELECT = "SELECT DISTINCT inspecID, inspecDate, totalItems, completedItems, includeItems, compliance, released, horton, hortonSignV, hortonSignLD, vscr, ldscr, p.projectName, p.projectPhase, ImageCount = (Select Count(ImageID) From Images Where inspecID = i.inspecID)" & _
 		" FROM Projects as p, ProjectsUsers as pu, Inspections as i" & _
 		" WHERE pu.userID = " & Session("userID") &_
 		" AND i.projectID=p.projectID" &_
@@ -120,10 +120,10 @@ If Session("seeScoring") Then %>
 	<th>Report Score</th><th>Items</th>
 <% End If 
 If hortonFlag Then
-	If hortonSignV and Session("validAdmin") or Session("validDirector") Then %>	
+	If hortonSignV and Session("validAdmin") or Session("validDirector") or Session("validVSCR") Then %>	
 			<th>VSCR Sign</th><th>VSCR</th><th>VSCR Date</th>
 	<% End If
-   If hortonSignLD and Session("validAdmin") or Session("validDirector") Then %>	
+   If hortonSignLD and Session("validAdmin") or Session("validDirector") or Session("validLDSCR") Then %>	
 			<th>LDSCR Sign</th><th>LDSCR</th><th>LDSCR Date</th>
 	<% End If
 End If %>
@@ -137,12 +137,13 @@ If rsInspectInfo.EOF Then
 		"data entered at this time.</i></b>")
 Else
 	inspecID = 0
-	Do While Not rsInspectInfo.EOF 
+	Do While Not rsInspectInfo.EOF
+	   'Response.Write(inspecID & "<br/>") 
 		If inspecID = 0 Then
 			firstInspecID     = rsInspectInfo("inspecID")
 		End If
 		If rsInspectInfo("released") Then
-		    	
+		   'Response.Write("released<br/>")
          inspecID = rsInspectInfo("inspecID")
          includeItems = rsInspectInfo("includeItems")
 			totalItems     = rsInspectInfo("totalItems")
@@ -171,7 +172,7 @@ Else
 			<% End If 
 			If hortonFlag Then 
 				'check for approval status 
-				If hortonSignV and Session("validAdmin") or Session("validDirector") Then
+				If hortonSignV and Session("validAdmin") or Session("validDirector") or Session("validVSCR") Then
 					SQLA="SELECT * FROM HortonApprovals WHERE LD=0 and inspecID="& inspecID
 					SET RSA=connSWPPP.execute(SQLA)
 					If RSA.EOF Then 
@@ -195,7 +196,7 @@ Else
 					<td align="center"><%=hortonApprovalUser%></td>
 					<td align="center"><%=hortonApprovalDate%></td>
 				<% End If
-				If hortonSignLD and Session("validAdmin") or Session("validDirector") Then
+				If hortonSignLD and Session("validAdmin") or Session("validDirector") or Session("validLDSCR") Then
 					SQLA="SELECT * FROM HortonApprovals WHERE LD=1 and inspecID="& inspecID
 					SET RSA=connSWPPP.execute(SQLA)
 					If RSA.EOF Then 

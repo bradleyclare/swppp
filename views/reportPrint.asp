@@ -1,11 +1,11 @@
 <%@ Language="VBScript" %>
 <!-- #include file="../admin/connSWPPP.asp" --><%
 inspecID = Request("inspecID")
-inspecSQLSELECT = "SELECT inspecDate, Inspections.projectName, Inspections.projectPhase, projectAddr, projectCity, projectState, " & _
+inspecSQLSELECT = "SELECT inspecDate, Inspections.projectID, Inspections.projectName, Inspections.projectPhase, projectAddr, projectCity, projectState, " & _
 	"projectZip, projectCounty, onsiteContact, officePhone, emergencyPhone, compName, " & _
 	"compAddr, compAddr2, compCity, compState, compZip, compPhone, compContact, contactPhone, " & _
 	"contactFax, contactEmail, reportType, inches, bmpsInPlace, " & _
-	"sediment, narrative, firstName, lastName, signature, qualifications, includeItems, compliance, totalItems, completedItems, horton" & _
+	"sediment, narrative, firstName, lastName, signature, qualifications, includeItems, compliance, totalItems, completedItems, horton, hortonSignV, hortonSignLD, vscr, ldscr" & _
 	" FROM Inspections, Projects, Users" & _
 	" WHERE inspecID = " & inspecID & _
 	" AND Inspections.projectID = Projects.projectID" & _
@@ -125,10 +125,26 @@ If rsInspec("sediment") ="1" Then sediment = "Yes" End If
 IF rsInspec("sediment")>-1 THEN %>
 		<td align="right"><b>Sediment Loss or Pollution?</b></td>
 		<td><% = sediment %></td>
-<% 	END IF %>
-	</tr>
-</table><%
-signature = Trim(rsInspec("signature"))
+<% END IF %>
+</tr>
+<tr>
+<% If rsInspec("hortonSignV") And rsInspec("vscr") <> 0 Then
+	rightsSELECT = "SELECT userID, firstName, lastName, phone FROM Users WHERE userID=" & rsInspec("vscr")
+	Set connRights = connSWPPP.execute(rightsSELECT)
+	If Not connRights.EOF Then %>
+	   <td align="right"><b>VSCR:</b></td><td> <% =Trim(connRights("firstName")) %> <% =Trim(connRights("lastName")) %>: <% =Trim(connRights("phone")) %> </td>
+	<% End If
+End If %>
+<% If rsInspec("hortonSignLD") And rsInspec("ldscr") <> 0 Then
+	rightsSELECT = "SELECT userID, firstName, lastName, phone FROM Users WHERE userID=" & rsInspec("ldscr")
+	Set connRights = connSWPPP.execute(rightsSELECT)
+   If Not connRights.EOF Then %>
+	   <td align="right"><b>LDSCR:</b></td><td> <% =Trim(connRights("firstName")) %> <% =Trim(connRights("lastName")) %>: <% =Trim(connRights("phone")) %> </td>
+	<% End If
+End If %>
+</tr>
+</table>
+<% signature = Trim(rsInspec("signature"))
 
 coordSQLSELECT = "SELECT * FROM Coordinates WHERE inspecID=" & inspecID & " ORDER BY orderby"	
 'Response.Write(coordSQLSELECT)

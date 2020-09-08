@@ -22,6 +22,10 @@ If Request.Form.Count > 0 Then
 	userID = Session("userID")
 	inspector = TRIM(strQuoteReplace(Request("inspector")))	
 	If inspector <> "" Then userID = inspector End If
+	vscr = TRIM(strQuoteReplace(Request("vscr")))
+	if vscr = "" Then vscr = 0
+	ldscr = TRIM(strQuoteReplace(Request("ldscr")))
+	if ldscr = "" Then ldscr = 0	
 	bmps=Request("bmpsInPlace")
 	sediment=Request("sediment")
 	upProjPhase= strQuoteReplace(Request("projectPhase"))
@@ -79,6 +83,8 @@ If Request.Form.Count > 0 Then
 	   ", horton = " & hortonQuestions & _
 		", hortonSignV = " & hortonSignV & _
 		", hortonSignLD = " & hortonSignLD & _
+		", vscr = " & vscr & _
+		", ldscr = " & ldscr & _
 		" WHERE inspecID = " & inspecID
       'response.Write(inspectSQLUPDATE)
 	   connSWPPP.Execute(inspectSQLUPDATE)
@@ -252,7 +258,7 @@ End If
 		", projectZip, projectCounty, onsiteContact, officePhone, emergencyPhone, i.projectID, compName" & _
 		", compAddr, compAddr2, compCity, compState, compZip, compPhone, compContact, contactPhone, contactFax" & _
 		", contactEmail, reportType, inches, bmpsInPlace, sediment, userID, includeItems, compliance, totalItems" & _
-		", completedItems, openItemAlert, systemic, systemicNote, horton, hortonSignV, hortonSignLD, p.collectionName" & _
+		", completedItems, openItemAlert, systemic, systemicNote, horton, hortonSignV, hortonSignLD, vscr, ldscr, p.collectionName" & _
 		" FROM Inspections as i, Projects as p" & _
 		" WHERE i.projectID = p.projectID AND inspecID = " & inspecID
 '--Response.Write(inspecSQLSELECT & "<br>")
@@ -630,6 +636,20 @@ baseDir = "D:\Inetpub\wwwroot\SWPPP\"%>
 		}
 	 }
 
+	 function checkbox(id, state) {
+		//display confirm dialog
+      var chbx_id = id;
+		if (state) {
+			//change state and submit form
+			chbx_id.checked = true;
+			document.getElementById("theForm").submit();
+		} else {
+			//change state and submit form
+			chbx_id.checked = false;
+			document.getElementById("theForm").submit();
+		}
+	 }
+
 </script>
 </head>
 <body>
@@ -701,15 +721,41 @@ If Session("validAdmin") Then
 		<input type="button" value="View Questions" onClick="hortonQuestions('<%= inspecID%>')">
 		V Sign?
 		<% If rsReport("hortonSignV") = True Then %>
-		   <input id="horton-checkbox-sign-V" type="checkbox" name="hortonV" checked/>
+		   <input id="horton-checkbox-sign-V" type="checkbox" name="hortonV" onChange="checkbox(this.id, 0)" checked/>
+			<select name="vscr">
+				<% 'show listbox of available approvers 
+				rightsSELECT = "SELECT DISTINCT u.userID, firstName, lastName" & _
+					" FROM Users as u, ProjectsUsers as pu" & _
+					" WHERE u.userID = pu.userID AND pu.projectID = " & rsReport("projectID") & _
+					" AND pu.rights='vscr' ORDER BY lastName"
+				Set connRights = connSWPPP.execute(rightsSELECT) %>
+				<option value="0">None</option>
+				<% Do While Not connRights.EOF %>
+					<option value="<%= connRights("userID") %>" <% If rsReport("vscr")=connRights("userID") Then %>selected<% End If %>><%= Trim(connRights("firstName")) & "&nbsp;" & Trim(connRights("lastName")) %></option>
+				<%	connRights.moveNext
+				Loop %>
+			</select>
 		<% Else %>
-		   <input id="horton-checkbox-sign-V" type="checkbox" name="hortonV" />
+		   <input id="horton-checkbox-sign-V" type="checkbox" name="hortonV" onChange="checkbox(this.id, 1)" />
 	   <% End If %>
 		LD Sign?
 		<% If rsReport("hortonSignLD") = True Then %>
-		   <input id="horton-checkbox-sign-LD" type="checkbox" name="hortonLD" checked/>
+		   <input id="horton-checkbox-sign-LD" type="checkbox" name="hortonLD" onChange="checkbox(this.id, 0)" checked/>
+			<select name="ldscr">
+				<% 'show listbox of available approvers 
+				rightsSELECT = "SELECT DISTINCT u.userID, firstName, lastName" & _
+					" FROM Users as u, ProjectsUsers as pu" & _
+					" WHERE u.userID = pu.userID AND pu.projectID = " & rsReport("projectID") & _
+					" AND pu.rights='ldscr' ORDER BY lastName"
+				Set connRights = connSWPPP.execute(rightsSELECT) %>
+				<option value="0">None</option>
+				<% Do While Not connRights.EOF %>
+					<option value="<%= connRights("userID") %>" <% If rsReport("ldscr")=connRights("userID") Then %>selected<% End If %>><%= Trim(connRights("firstName")) & "&nbsp;" & Trim(connRights("lastName")) %></option>
+				<%	connRights.moveNext
+				Loop %>
+			</select>
 		<% Else %>
-		   <input id="horton-checkbox-sign-LD" type="checkbox" name="hortonLD" />
+		   <input id="horton-checkbox-sign-LD" type="checkbox" name="hortonLD" onChange="checkbox(this.id, 1)" />
 	   <% End If %>
 	<% Else %>
 		<input id="horton-checkbox" type="checkbox" name="horton" onChange="horton_checkbox(1)" />

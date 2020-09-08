@@ -66,6 +66,7 @@ If Request.Form.Count > 0 Then
 	connSWPPP.execute(SQLDELETE)
 '-----	rightsValue="00000000000" '-- user,action,erosion,email,CC,BCC,vscr,ldscr,inspector,director,admin -----------------
 		If Request("admin")="on" then rightsValue= "00000000001" else rightsValue="00000000000" End If
+'response.write(rights & "<br/>")
 ' ----------------------- Inspector, Director, User, Action, Email in Projects User  -------- 
 		For Each Item in Request.Form
             If Item <> "userGroup" Then
@@ -137,7 +138,8 @@ If Request.Form.Count > 0 Then
 			    rights=""
             End If
 		Next
-		FOR n = 1 to 9 step 1
+		'response.write(rights & "<br/>")
+		FOR n = 1 to 11 step 1
 			IF (MID(rightsValue,n,1)="1") THEN 
 				SELECT CASE n
 					CASE 1	highestRights="user"
@@ -375,10 +377,10 @@ Set gifDirectory = Nothing %>
 			<th>erosion</>
 <%	End If
  	If Session("validAdmin") then 'only admin may set rights for other admin, directors and inspectors %>
-			<th>director</th>
-			<th>inspector</th>
 			<th>VSCR</th>
-			<th>LDSCR</th></tr>	
+			<th>LDSCR</th>
+			<th>director</th>
+			<th>inspector</th></tr>	
 <% end if 'Session("validAdmin")
 SQL1 = "SELECT p.*, u.userID, u.firstName, u.lastName, u.rights as rights1, pu.rights as rights2" &_
 	" FROM Projects as p LEFT JOIN ProjectsUsers as pu ON p.projectID=pu.projectID LEFT JOIN Users as u" &_
@@ -463,19 +465,19 @@ DO WHILE NOT RS1.EOF
 			<% If eroChecked then %>checked<% End If %>></td>
 <% 	End If
 	If Session("validAdmin") then 'only admin may set rights for other admin, directors and inspectors %>		
+<!--- ----------------------------------------- VSCR -------------------------------------- --->
+		<td align=center><input type="checkbox" name="vsc<%= compCount %>" value="<%= dispProjID %>"
+			<% If vscrChecked then %>checked<% End If %>></td>
+<!--- ----------------------------------------- LDVSCR -------------------------------------- --->
+		<td align=center><input type="checkbox" name="lds<%= compCount %>" value="<%= dispProjID %>"
+			<% If ldvscrChecked then %>checked<% End If %>></td>
 <!--- ----------------------------------------- Director --------------------------------------- --->
 		<td align=center><input type="checkbox" name="dir<%= compCount %>" value="<%= dispProjID %>"
 			<% If dirChecked then %>checked<% End If %>
 			<% IF NOT(dirChecked) AND NOT(dirName="None") THEN%>disabled<%END IF%>></td>
 <!--- ----------------------------------------- Inspector -------------------------------------- --->
 		<td align=center><input type="checkbox" name="ins<%= compCount %>" value="<%= dispProjID %>"
-			<% If insChecked then %>checked<% End If %>></td>
-<!--- ----------------------------------------- VSCR -------------------------------------- --->
-		<td align=center><input type="checkbox" name="vsc<%= compCount %>" value="<%= dispProjID %>"
-			<% If vscrChecked then %>checked<% End If %>></td>
-<!--- ----------------------------------------- LDVSCR -------------------------------------- --->
-		<td align=center><input type="checkbox" name="lds<%= compCount %>" value="<%= dispProjID %>"
-			<% If ldvscrChecked then %>checked<% End If %>></td></tr>	
+			<% If insChecked then %>checked<% End If %>></td></tr>	
 <% end if 'Session("validAdmin") 
 '---- 	Reset the loop Variables --------------------------------------------------------------------
 		IF NOT RS1.EOF THEN

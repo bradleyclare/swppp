@@ -1,11 +1,13 @@
 <%
 Session.Timeout=120 'session timeout
-Session("userID")= ""
-Session("validAdmin")= "False"
-Session("validDirector")= "False"
-Session("validInspector")= "False"
-Session("validUser")= "False"
-Session("validErosion")= "False"
+Session("userID")         = ""
+Session("validAdmin")     = "False"
+Session("validDirector")  = "False"
+Session("validInspector") = "False"
+Session("validUser")      = "False"
+Session("validErosion")   = "False"
+Session("validVSCR")      = "False"
+Session("validLDSCR")     = "False"
 Session("seeScoring")= "True"
 If Request.Form.Count > 0 Then
 	userSQLSELECT = "SELECT * FROM Users WHERE email = '" & Request("email") & "'"
@@ -21,6 +23,7 @@ If Request.Form.Count > 0 Then
 			Session("userID")=connEmail("userID")
 			Session("firstName")=connEmail("firstName")
 			Session("lastName")=connEmail("lastName")
+			
 			IF connEmail("noImages")=1 THEN Session("noImages")="True" ELSE Session("noImages")="False" END IF
 			If Trim(connEmail("rights"))="admin" Then Session("validAdmin")=True End If
 			If Trim(connEmail("rights"))="director" Then Session("validDirector")=True End If
@@ -28,18 +31,33 @@ If Request.Form.Count > 0 Then
 			If Trim(connEmail("rights"))="user" Then Session("validUser")=True End If
 			If Trim(connEmail("rights"))="action" Then Session("validUser")=True End If
 			If Trim(connEmail("rights"))="erosion" Then Session("validErosion")=True End If
-            Session("seeScoring") = connEmail("seeScoring")
+			If Trim(connEmail("rights"))="vscr" Then Session("validVSCR")=True End If
+			If Trim(connEmail("rights"))="ldscr" Then Session("validLDSCR")=True End If
+			Session("seeScoring") = connEmail("seeScoring")
+			
 			SQL0="SELECT COUNT(*) FROM ProjectsUsers WHERE rights='user' AND userID="& Session("userID")
 			SET RS0=connSWPPP.execute(SQL0)
 			IF RS0(0)>0 THEN Session("validUser")=True END IF
+
 			SQL0="SELECT COUNT(*) FROM ProjectsUsers WHERE rights='inspector' AND userID="& Session("userID")
 			SET RS0=connSWPPP.execute(SQL0)
 			IF RS0(0)>0 THEN Session("validInspector")=True END IF
+			
+			SQL0="SELECT COUNT(*) FROM ProjectsUsers WHERE rights='vscr' AND userID="& Session("userID")
+			SET RS0=connSWPPP.execute(SQL0)
+			IF RS0(0)>0 THEN Session("validVSCR")=True END IF
+			
+			SQL0="SELECT COUNT(*) FROM ProjectsUsers WHERE rights='ldscr' AND userID="& Session("userID")
+			SET RS0=connSWPPP.execute(SQL0)
+			IF RS0(0)>0 THEN Session("validLDSCR")=True END IF
+			
+
 			IF NOT(Session("validAdmin")) THEN
 				IF Session("adminReturnTo")="" THEN Session("adminReturnTo") = "../../" END IF
 			ELSE
 				IF Session("adminReturnTo")="" THEN Session("adminReturnTo") = "../" END IF
 			END IF
+			
 			connSWPPP.Close
 			Set connSWPPP = Nothing
 			'Response.Write(Session("adminReturnTo"))

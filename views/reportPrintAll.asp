@@ -46,11 +46,11 @@ cnt=0
 DO WHILE NOT RS1.EOF
 
 inspecID = RS1("inspecID")
-SQL2 = "SELECT inspecDate, Inspections.projectName, Inspections.projectPhase, projectAddr, projectCity, projectState, " & _
+SQL2 = "SELECT inspecDate, Inspections.projectID, Inspections.projectName, Inspections.projectPhase, projectAddr, projectCity, projectState, " & _
 	"projectZip, projectCounty, onsiteContact, officePhone, emergencyPhone, compName, " & _
 	"compAddr, compAddr2, compCity, compState, compZip, compPhone, compContact, contactPhone, " & _
 	"contactFax, contactEmail, reportType, inches, bmpsInPlace, " & _
-	"sediment, narrative, firstName, lastName, signature, qualifications, includeItems, compliance, totalItems, completedItems, horton" & _
+	"sediment, narrative, firstName, lastName, signature, qualifications, includeItems, compliance, totalItems, completedItems, horton, hortonSignV, hortonSignLD, vscr, ldscr" & _
 	" FROM Inspections, Projects, Users" & _
 	" WHERE inspecID = " & inspecID & _
 	" AND Inspections.projectID = Projects.projectID" & _
@@ -103,7 +103,23 @@ IF IsNull(qualifications) THEN qualifications="" END IF %>
 		<td align="right"><b>Sediment Loss or Pollution?</b></td>
 		<td><% = sediment %></td>
 <% 	END IF %>
-	</tr>
+</tr>
+<tr>
+<% If RS2("hortonSignV") And RS2("vscr") <> 0 Then
+	rightsSELECT = "SELECT userID, firstName, lastName, phone FROM Users WHERE userID=" & RS2("vscr")
+	Set connRights = connSWPPP.execute(rightsSELECT)
+   If Not connRights.EOF Then %>
+	   <td align="right"><b>VSCR:</b></td><td> <% =Trim(connRights("firstName")) %> <% =Trim(connRights("lastName")) %>: <% =Trim(connRights("phone")) %> </td>
+	<% End If
+End If %>
+<% If RS2("hortonSignLD") And RS2("ldscr") <> 0 Then
+	rightsSELECT = "SELECT userID, firstName, lastName, phone FROM Users WHERE userID=" & RS2("ldscr")
+	Set connRights = connSWPPP.execute(rightsSELECT)
+   If Not connRights.EOF Then %>
+	   <td align="right"><b>LDSCR:</b></td><td> <% =Trim(connRights("firstName")) %> <% =Trim(connRights("lastName")) %>: <% =Trim(connRights("phone")) %> </td>
+	<% End If
+End If %>
+</tr>
 </table>
 <% coordSQLSELECT = "SELECT * FROM Coordinates WHERE inspecID=" & inspecID & " ORDER BY orderby"	
 'Response.Write(coordSQLSELECT)

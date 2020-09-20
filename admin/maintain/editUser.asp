@@ -132,7 +132,7 @@ If Request.Form.Count > 0 Then
 			    End Select
 			    If rights<>"" then
                     exeCmd = "sp_InsertPU "& userID &", "& Request(Item) &", '"& rights &"'"
-                    'Response.Write(exeCmd)
+                    'Response.Write(exeCmd & "<br/>")
 				    connSWPPP.Execute(exeCmd)
 			    end if 'item=inspector, director or user
 			    rights=""
@@ -470,7 +470,7 @@ DO WHILE NOT RS1.EOF
 			<% If vscrChecked then %>checked<% End If %>></td>
 <!--- ----------------------------------------- LDVSCR -------------------------------------- --->
 		<td align=center><input type="checkbox" name="lds<%= compCount %>" value="<%= dispProjID %>"
-			<% If ldvscrChecked then %>checked<% End If %>></td>
+			<% If ldscrChecked then %>checked<% End If %>></td>
 <!--- ----------------------------------------- Director --------------------------------------- --->
 		<td align=center><input type="checkbox" name="dir<%= compCount %>" value="<%= dispProjID %>"
 			<% If dirChecked then %>checked<% End If %>

@@ -65,12 +65,21 @@ IF Request.Form.Count > 0 THEN %>
                     " on pu.projectID=p.projectID" &_
                     " WHERE pu.userID = " & userID &_
                     " ORDER BY p.collectionName, p.projectName, p.projectPhase"
-
                 'Response.Write(SQLSELECT & "<br>")
                 Set connProjUsers = connSWPPP.Execute(SQLSELECT)
 
+                SQL1 = "SELECT inspecID FROM Inspections WHERE projectID = " & connProjUsers("projectID") & " AND horton = 1"
+                'Response.Write(SQL1)
+                Set RS1 = connSWPPP.Execute(SQL1)
+
+                show_horton = False
                 strBody=strBody & "<table>"
-                strBody=strBody & "<tr><th>project name</th><th>group name</th><th>over 1 day</th><th>over 5 days</th><th class='red'>over 7 days</th><th class='red'>over 10 days</th><th class='red'>over 14 days</th><th class='red'>repeats</th><th>notes</th><th>alert</th></tr>"
+                If RS1.EOF Then
+                    strBody=strBody & "<tr><th>project name</th><th>group name</th><th>over 1 day</th><th>over 5 days</th><th class='red'>over 7 days</th><th class='red'>over 10 days</th><th class='red'>over 14 days</th><th class='red'>repeats</th><th>notes</th><th>alert</th></tr>"
+                Else
+                    show_horton = True
+                    strBody=strBody & "<tr><th>project name</th><th>group name</th><th>over 1 day</th><th>over 5 days</th><th class='red'>over 7 days</th><th class='red'>over 10 days</th><th class='red'>over 14 days</th><th class='red'>repeats</th><th>notes</th><th>alert</th><th>VSCR to sign off</th><th>LDSCR to sign off</th></tr>"
+                End If
 
                 'tally up the open items for each project
                 'Loop through all projects the user has connection with
@@ -89,7 +98,7 @@ IF Request.Form.Count > 0 THEN %>
                     endDate=DateAdd("m",1,startDate)
                     endDate=DateAdd("d",-1,endDate)
                     SQL0 = "SELECT inspecID, inspecDate, reportType," & _
-	                    " projectID, projectName, projectPhase, released, includeItems, compliance, totalItems, completedItems, systemic" & _
+	                    " projectID, projectName, projectPhase, released, includeItems, compliance, totalItems, completedItems, systemic, horton, hortonSignV, hortonSignLD, vscr, ldscr" & _
 	                    " FROM Inspections" & _
 	                    " WHERE projectID = " & projID &_
                         " AND includeItems = 1" &_
@@ -134,8 +143,38 @@ IF Request.Form.Count > 0 THEN %>
                             inspecDate = RS0("inspecDate")
                             totalItems = RS0("totalItems")
                             completedItems = RS0("completedItems")
+                            horton = RS0("horton")
+                            hortonSignV = RS0("hortonSignV")
+                            hortonSignLD = RS0("hortonSignLD")
+                            vscr = RS0("vscr")
+                            ldscr = RS0("ldscr")
+                            reportAge = datediff("d",inspecDate,currentDate) 
                             If debug_msg=True Then
                                 Response.Write(projName & ": " & projPhase & ": " & inspecDate & ", total: " & totalItems & ", completed: " & completedItems &"<br/>")
+                            End If
+
+                            If horton Then
+                                'look for approvals for this report
+                                SQLA="SELECT * FROM HortonApprovals WHERE inspecID="& inspecID
+					            SET RSA=connSWPPP.execute(SQLA)
+                                vscr_approved = False
+                                vscr_approved_date = Null
+                                ldscr_approved = False
+                                ldscr_approved_date = Null
+                                Do While Not RSA.EOF
+                                    if RSA("LD") Then
+                                        ldscr_approved = True
+                                        ldscr_approved_date = RSA("date")
+                                    Else
+                                        vscr_approved = True
+                                        vscr_approved_date = RSA("date")
+                                    End If
+                                    RSA.MoveNext
+                                Loop
+                                If debug_msg=True Then
+                                    Response.Write("HORTON : hortonSignV: " & hortonSignV & ", vscr: " & vscr & ", hortonSignLD: " & hortonSignLD & ", ldscr: " & ldscr &"<br/>")
+                                    Response.Write("HORTON APPROVALS : vscr: " & vscr_approved & ", date: " & vscr_approved_date & ", ldscr: " & ldscr_approved & ", date: " & ldscr_approved_date &"<br/>")
+                                End If
                             End If
 
                             if completedItems < totalItems then
@@ -149,13 +188,13 @@ IF Request.Form.Count > 0 THEN %>
                                Set rsCoord = connSWPPP.execute(coordSQLSELECT)
 
                                If rsCoord.EOF Then
-		                           'no nothing
+		                           'do nothing
 	                            Else
                                    Do While Not rsCoord.EOF
                                        iterCnt = iterCnt + 1
                                        coordCnt = coordCnt + 1
                                        coID = rsCoord("coID")
-			                              assignDate = rsCoord("assignDate") 
+			                           assignDate = rsCoord("assignDate") 
                                        status = rsCoord("status")
                                        repeat = rsCoord("repeat")
                                        NLN = rsCoord("NLN")
@@ -301,7 +340,33 @@ IF Request.Form.Count > 0 THEN %>
                         if displaySystemic Then
                             strBody=strBody & "<a href='http://swppp.com/views/viewSystemicNote.asp?pID=" & projID &"'> A </a>"
                         End If
-
+                        If show_horton Then
+                            link = "http://swppp.com/views/inspections.asp?projID=" & projID & "&projName="& projName &"&projPhase=" & projPhase
+                            strBody=strBody & "</td><td>"
+                            if hortonSignV Then
+                                If vscr_approved Then
+                                    strBody=strBody & " "
+                                ElseIf reportAge > 1 Then
+                                    strBody=strBody & "<a href='"& link &"' target='_blank'>" & reportAge & " days over</a>" 
+                                Else
+                                    strBody=strBody & "<a href='"& link &"' target='_blank'>sign off</a>" 
+                                End If
+                            Else
+                                strBody=strBody & " "
+                            End If    
+                            strBody=strBody & "</td><td>"
+                            if hortonSignLD Then
+                                If ldscr_approved Then
+                                    strBody=strBody & " "
+                                ElseIf reportAge > 1 Then
+                                    strBody=strBody & "<a href='"& link &"' target='_blank'>" & reportAge & " days over</a>" 
+                                Else
+                                    strBody=strBody & "<a href='"& link &"' target='_blank'>sign off</a>" 
+                                End If
+                            Else
+                                strBody=strBody & " "
+                            End If
+                        End If
                         strBody=strBody & "</td></tr>"
                         If debug_msg=True Then
                            Response.Write("coordCnt1: " & coordCnt1 & ", coordCnt5: " & coordCnt5 & ", coordCnt7: " & coordCnt7 & ", coordCnt10: " & coordCnt10 & ", coordCnt14: " & coordCnt14 & ", repeatCnt: " & repeatCnt &", iterCnt: " & iterCnt &", sendEmail: " & send_email & "<br/>")   
@@ -314,7 +379,7 @@ IF Request.Form.Count > 0 THEN %>
                 strBody=strBody & "</table>" 
                 link = "http://swppp.com/views/viewCommentsUser.asp?userID=" & userID
                 strBody=strBody & "<h3><a href='"& link &"' target='_blank'>view all notes</a></h3>" 
-                
+
                 'send email
                 If testing Then
                     send_email = false

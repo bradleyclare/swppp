@@ -104,27 +104,27 @@ if NOT(RS1.EOF) THEN hortonSignLD=True END IF %>
 <table width="100%"><tr><td>
 <h1><font color="#003399"><% = projectName %>&nbsp;<%= projectPhase %></font></h1>
 <table>
-<tr><td><button onClick="window.open('reportPrintAll.asp?projID=<%= projectID%>&projName=<%= projectName%>&projPhase=<%= projectPhase %>','','width=800, height=600, location=no, menubar=no, status=no, toolbar=no, scrollbars=yes, resizable=yes')">Print All Reports</button></td>
+<tr><td><button onClick="window.open('reportPrintAll.asp?projID=<%= projectID%>&projName=<%= projectName%>&projPhase=<%= projectPhase %>','','width=800, height=600, location=no, menubar=no, status=no, toolbar=no, scrollbars=yes, resizable=yes')">print all reports</button></td>
 <td>
 <% If hortonFlag Then %>
-<input type="submit" value="Acknowledge Reports" name="approve_reports"></input>
+<input type="submit" value="sign off on reports" name="approve_reports"></input>
 <% End If %>
 </td></tr>
 </table>
 <br />
 <table>
 
-<tr><th>Report Date</th><th>Report</th><th>Site Map</th>
+<tr><th>report date</th><th>report</th><th>site map</th>
 <%  'set proper header for user rights and permissions
 If Session("seeScoring") Then %>
-	<th>Report Score</th><th>Items</th>
+	<th>report score</th><th>items</th>
 <% End If 
 If hortonFlag Then
 	If hortonSignV and Session("validAdmin") or Session("validDirector") or Session("validVSCR") Then %>	
-			<th>VSCR Sign</th><th>VSCR</th><th>VSCR Date</th>
+			<th>VSCR sign off</th><th>VSCR</th><th>VSCR date</th>
 	<% End If
    If hortonSignLD and Session("validAdmin") or Session("validDirector") or Session("validLDSCR") Then %>	
-			<th>LDSCR Sign</th><th>LDSCR</th><th>LDSCR Date</th>
+			<th>LDSCR sign off</th><th>LDSCR</th><th>LDSCR date</th>
 	<% End If
 End If %>
 </tr>
@@ -143,11 +143,14 @@ Else
 			firstInspecID     = rsInspectInfo("inspecID")
 		End If
 		If rsInspectInfo("released") Then
-		   'Response.Write("released<br/>")
          inspecID = rsInspectInfo("inspecID")
          includeItems = rsInspectInfo("includeItems")
 			totalItems     = rsInspectInfo("totalItems")
 			completedItems = rsInspectInfo("completedItems")
+			hortonFlag = rsInspectInfo("horton")
+			hortonSignV = rsInspectInfo("hortonSignV")
+			hortonSignLD = rsInspectInfo("hortonSignLD")
+			'Response.Write("inspecID: " & inspecID & ", vscr: " & hortonSignV & ", ldscr: " & hortonSignLD & "<br/>")
 			If includeItems Then
             includeItemsFlag = True
          End If
@@ -172,7 +175,7 @@ Else
 			<% End If 
 			If hortonFlag Then 
 				'check for approval status 
-				If hortonSignV and Session("validAdmin") or Session("validDirector") or Session("validVSCR") Then
+				If hortonSignV and (Session("validAdmin") or Session("validDirector") or Session("validVSCR")) Then
 					SQLA="SELECT * FROM HortonApprovals WHERE LD=0 and inspecID="& inspecID
 					SET RSA=connSWPPP.execute(SQLA)
 					If RSA.EOF Then 
@@ -196,7 +199,7 @@ Else
 					<td align="center"><%=hortonApprovalUser%></td>
 					<td align="center"><%=hortonApprovalDate%></td>
 				<% End If
-				If hortonSignLD and Session("validAdmin") or Session("validDirector") or Session("validLDSCR") Then
+				If hortonSignLD and (Session("validAdmin") or Session("validDirector") or Session("validLDSCR")) Then
 					SQLA="SELECT * FROM HortonApprovals WHERE LD=1 and inspecID="& inspecID
 					SET RSA=connSWPPP.execute(SQLA)
 					If RSA.EOF Then 

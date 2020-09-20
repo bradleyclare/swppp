@@ -392,7 +392,7 @@ If rsInspec("horton") Then
 	projectID = rsInspec("projectID")
 	projectName = Trim(rsInspec("projectName"))
 	projectPhase = Trim(rsInspec("projectPhase"))
-	strBody=strBody &"<br><div align='center'><a href='http://swppp.com/views/inspections.asp?projID=" & projectID & "&projName=" & projectName & "&projPhase=" & projectPhase & "'>acknowledge  report</a></div>"
+	strBody=strBody &"<br><div align='center'><a href='http://swppp.com/views/inspections.asp?projID=" & projectID & "&projName=" & projectName & "&projPhase=" & projectPhase & "'>sign off on report</a></div>"
 End If
 strBody=strBody &"<br><div align='center'><a href='http://www.swppp.com'>link to: www.swppp.com</a></div></Body>"
 

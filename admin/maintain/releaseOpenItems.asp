@@ -103,8 +103,9 @@ IF Request.Form.Count > 0 THEN %>
 	                    " WHERE projectID = " & projID &_
                         " AND includeItems = 1" &_
                         " AND compliance = 0" &_
-                        " AND openItemAlert = 1" &_
-                        " AND completedItems < totalItems"
+                        " AND openItemAlert = 1 " &_
+                        " AND (completedItems < totalItems" &_
+                        " OR hortonSignV = 1 OR hortonSignLD = 1)"
                     'Response.Write(SQL0)
                     Set RS0 = connSWPPP.Execute(SQL0)
 
@@ -125,6 +126,10 @@ IF Request.Form.Count > 0 THEN %>
                     displayProj = False
                     displayComments = False
                     displaySystemic = False
+                    vscr_needs_approval = False
+                    maxAgeVSCR = 0
+                    ldscr_needs_approval = False
+                    maxAgeLDSCR = 0
                                        
                     If RS0.EOF Then
                         If debug_msg=True Then
@@ -171,6 +176,18 @@ IF Request.Form.Count > 0 THEN %>
                                     End If
                                     RSA.MoveNext
                                 Loop
+                                If hortonSignV and Not vscr_approved Then
+                                    vscr_needs_approval = True
+                                    If reportAge > maxAgeVSCR Then
+                                        maxAgeVSCR = reportAge
+                                    End If
+                                End If
+                                If hortonSignLD and Not ldscr_approved Then
+                                    ldscr_needs_approval = True
+                                    If reportAge > maxAgeLDSCR Then
+                                        maxAgeLDSCR = reportAge
+                                    End If
+                                End If
                                 If debug_msg=True Then
                                     Response.Write("HORTON : hortonSignV: " & hortonSignV & ", vscr: " & vscr & ", hortonSignLD: " & hortonSignLD & ", ldscr: " & ldscr &"<br/>")
                                     Response.Write("HORTON APPROVALS : vscr: " & vscr_approved & ", date: " & vscr_approved_date & ", ldscr: " & ldscr_approved & ", date: " & ldscr_approved_date &"<br/>")
@@ -344,10 +361,10 @@ IF Request.Form.Count > 0 THEN %>
                             link = "http://swppp.com/views/inspections.asp?projID=" & projID & "&projName="& projName &"&projPhase=" & projPhase
                             strBody=strBody & "</td><td>"
                             if hortonSignV Then
-                                If vscr_approved Then
+                                If Not vscr_needs_approval Then
                                     strBody=strBody & " "
-                                ElseIf reportAge > 1 Then
-                                    strBody=strBody & "<a href='"& link &"' target='_blank'>" & reportAge & " days over</a>" 
+                                ElseIf maxAgeVSCR > 2 Then
+                                    strBody=strBody & "<a href='"& link &"' target='_blank'>" & maxAgeVSCR & " days over</a>" 
                                 Else
                                     strBody=strBody & "<a href='"& link &"' target='_blank'>sign off</a>" 
                                 End If
@@ -356,10 +373,10 @@ IF Request.Form.Count > 0 THEN %>
                             End If    
                             strBody=strBody & "</td><td>"
                             if hortonSignLD Then
-                                If ldscr_approved Then
+                                If Not ldscr_needs_approval Then
                                     strBody=strBody & " "
-                                ElseIf reportAge > 1 Then
-                                    strBody=strBody & "<a href='"& link &"' target='_blank'>" & reportAge & " days over</a>" 
+                                ElseIf maxAgeLDSCR > 2 Then
+                                    strBody=strBody & "<a href='"& link &"' target='_blank'>" & maxAgeLDSCR & " days over</a>" 
                                 Else
                                     strBody=strBody & "<a href='"& link &"' target='_blank'>sign off</a>" 
                                 End If

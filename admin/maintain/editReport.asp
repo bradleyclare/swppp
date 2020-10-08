@@ -718,7 +718,13 @@ If Session("validAdmin") Then
 	<td bgcolor="#999999">Yes?
 	<% If rsReport("horton") = True Then %>
 		<input id="horton-checkbox" type="checkbox" name="horton" onChange="horton_checkbox(0)" checked/> 
-		<input type="button" value="View Questions" onClick="hortonQuestions('<%= inspecID%>')">
+		<% SQLA = "SELECT * FROM HortonAnswers WHERE inspecID = " & inspecID
+		Set RSA = connSWPPP.execute(SQLA)
+    	If RSA.EOF Then %>
+			<input type="button" value="View Questions" style="background-color: #f44336;" onClick="hortonQuestions('<%= inspecID%>')">
+		<% Else %>
+			<input type="button" value="View Questions" onClick="hortonQuestions('<%= inspecID%>')">
+		<% End If %>
 		V Sign?
 		<% If rsReport("hortonSignV") = True Then %>
 		   <input id="horton-checkbox-sign-V" type="checkbox" name="hortonV" onChange="checkbox(this.id, 0)" checked/>
@@ -765,7 +771,6 @@ If Session("validAdmin") Then
 
 <!------------------------------------- Coordinates --------------------------- --->
 <hr/>
-<h2>Action Items</h2>
 <% totalItems = rsReport("totalItems")
 completedItems = rsReport("completedItems")
 if totalItems <> "" and totalItems <> 0 Then
@@ -774,6 +779,10 @@ Else
 	score = "N/A"
 End If%>
 <table width="100%">
+<tr>
+<td colspan="2" align="center"><input name="submit_coord_btn_top" type="submit" style="font-size: 20px;" value="Submit"/></td>
+<td colspan="3" align="center"><h2>Action Items</h2></td>
+</tr>
 <tr width="13%"><td>Total Items: <%=totalItems%></td><td width="13%">Completed Items: <%=completedItems%></td><td width="13%">Report Score:<%=score%></td><td width="13%">Site is in Compliance
 <% If rsReport("compliance") = True Then %>
 	<input id="compliance-checkbox" type="checkbox" name="compliance" checked/>
@@ -1176,7 +1185,7 @@ End If %>
 'End If ' END No Results Found
 rsCoord.Close
 Set rsCoord = Nothing %>
-<% for m = n to n+4 step 1 %>
+<% for m = n to n+9 step 1 %>
 	<input type="hidden" name="coord:coID:<%= m %>" value="0" />
 	<input type="hidden" name="coord:del:<%= m %>" value="0" />
 	<input type="hidden" name="coord:completeDate:<%= m %>" value="" />

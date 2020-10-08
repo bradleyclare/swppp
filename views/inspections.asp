@@ -19,10 +19,10 @@ projectPhase = Request("projPhase")
 If Request.Form.Count > 0 Then
 	SQLI="SELECT inspecID FROM Inspections WHERE horton=1 AND projectID="& projectID
 	SET RSI=connSWPPP.execute(SQLI)
+	currentDate = date()
 	Do While Not RSI.EOF
 		inspecID = RSI("inspecID")
 		userID = Session("userID")
-		currentDate = date()
 		if Request("approval_V:" & inspecID ) = "on" Then
 			'log the report approval in the database, check if it exists
 			SQLHA="SELECT * FROM HortonApprovals WHERE LD=0 and inspecID="& inspecID
@@ -90,7 +90,9 @@ if NOT(RS1.EOF) THEN hortonSignV=True END IF
 SQL1="SELECT inspecID FROM Inspections WHERE hortonSignLD=1 AND projectID="& projectID
 SET RS1=connSWPPP.execute(SQL1)
 hortonSignLD=False
-if NOT(RS1.EOF) THEN hortonSignLD=True END IF %>
+if NOT(RS1.EOF) THEN hortonSignLD=True END IF
+'Response.Write("projectID: " & projectID & ", vscr: " & hortonSignV & ", ldscr: " & hortonSignLD & "<br/>")
+ %>
 
 <html>
 <head>
@@ -120,10 +122,10 @@ If Session("seeScoring") Then %>
 	<th>report score</th><th>items</th>
 <% End If 
 If hortonFlag Then
-	If hortonSignV and Session("validAdmin") or Session("validDirector") or Session("validVSCR") Then %>	
+	If hortonSignV and (Session("validAdmin") or Session("validDirector") or Session("validVSCR")) Then %>	
 			<th>VSCR sign off</th><th>VSCR</th><th>VSCR date</th>
 	<% End If
-   If hortonSignLD and Session("validAdmin") or Session("validDirector") or Session("validLDSCR") Then %>	
+   If hortonSignLD and (Session("validAdmin") or Session("validDirector") or Session("validLDSCR")) Then %>	
 			<th>LDSCR sign off</th><th>LDSCR</th><th>LDSCR date</th>
 	<% End If
 End If %>

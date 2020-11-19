@@ -224,8 +224,8 @@ tr.highlighted {
 </head>
 
 <%
-SQL0 = "SELECT inspecID, inspecDate, reportType," & _
-    " projectID, projectName, projectPhase, released, includeItems, compliance, totalItems, completedItems" & _
+SQL0 = "SELECT inspecID, inspecDate, reportType, projectID, projectName, projectPhase, released, " & _
+    " includeItems, compliance, totalItems, completedItems, horton" & _
     " FROM Inspections" & _
     " WHERE projectID = " & projID &_
     " AND includeItems = 1" &_ 
@@ -234,6 +234,7 @@ SQL0 = "SELECT inspecID, inspecDate, reportType," & _
     " AND openItemAlert = 1" 
 'Response.Write(SQL0)
 Set RS0 = connSWPPP.Execute(SQL0)
+horton_flag = false
 %>
 
 <body bgcolor="#ffffff" marginwidth="30" leftmargin="30" marginheight="15" topmargin="15">
@@ -295,6 +296,9 @@ Set RS0 = connSWPPP.Execute(SQL0)
           inspecDate = RS0("inspecDate")
           totalItems = RS0("totalItems")
           completedItems = RS0("completedItems")
+          IF RS0("horton") Then
+             horton_flag = true
+          End If
           'If siteMapInspecID = 0 Then
 	          siteMapInspecID = inspecID
 	       'End If
@@ -398,8 +402,12 @@ Set RS0 = connSWPPP.Execute(SQL0)
         'Response.Write(SQL3)
         SET RS3=connSWPPP.execute(SQL3)
         IF NOT(RS3.EOF) THEN 
-            sitemap_link = "http://www.swpppinspections.com/images/sitemap/"& TRIM(RS3("oImageFileName"))%>
-	        <a href='<%=sitemap_link%>'>link for Site Map</a><br />
+            sitemap_link = "http://www.swppp.com/images/sitemap/"& TRIM(RS3("oImageFileName"))%>
+	        <a href="<%=sitemap_link%>">link for Site Map</a><br />
+        <% END IF
+        IF horton_flag THEN
+            inspections_link = "http://swppp.com/views/inspections.asp?projID=" & projID & "&projName=" & projectName & "&projPhase=" & projectPhase %>
+            <a href="<%=inspections_link%>">approve reports</a><br/>
         <% END IF
     END IF 
     if show_debug then

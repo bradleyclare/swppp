@@ -98,7 +98,7 @@ end function
 
 <html>
 <head>
-	<title>SWPPP :: Users :: Login</title>
+	<title>SWPPP :: Users :: login</title>
 	<link rel="stylesheet" href="../../global.css" type="text/css">
 </head>
 
@@ -114,14 +114,14 @@ end function
 <% 	End If %>
 
 <table bgcolor="#006699">
-<tr><td colspan="2" align="center"><br><h1><font color="#FFffff">Lost Password</font></h1>
+<tr><td colspan="2" align="center"><br><h1><font color="#FFffff">lost password</font></h1>
 		<font color="#FFffff">Please enter your email address and<br>a new password will be emailed to you.
 		</font><br><br></td></tr>
 	<tr><td colspan="2" bgcolor="#ff3333"><img src="../../images/dot.gif" width="1" height="1"
 			border="0" alt=""></td></tr>
-	<tr><td align="right"><font color="#FFffff"><br>Email: </td>
+	<tr><td align="right"><font color="#FFffff"><br>email: </td>
 		<td><br><input type="text" name="email" size="30" maxlength="50">&nbsp;&nbsp;</td></tr>
-	<tr><td colspan="2" align="center"><br><input type="submit" value="Get Password"><br><br></td></tr>
+	<tr><td colspan="2" align="center"><br><input type="submit" value="get password"><br><br></td></tr>
 	</table></div>
 	<script language="javascript"><!--
 		document.forms[0].elements[0].focus();

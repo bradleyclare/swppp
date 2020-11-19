@@ -16,7 +16,7 @@ End If
 
 %> <!-- #include file="../connSWPPP.asp" --> <%
 SQLSELECT = "SELECT userID, firstName, lastName, rights" &_
-	" FROM Users" &_
+	" FROM Users WHERE active=1" &_
 	" ORDER BY " & recordOrd
 'Response.Write(SQLSELECT & "<br>")
 Set connUsers = connSWPPP.Execute(SQLSELECT)

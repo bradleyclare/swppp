@@ -46,6 +46,7 @@
 		<% If Session("validAdmin") then %>
 		<a href="maintain/setActiveProjects.asp" class="admin">Active Reports</a><br>
 		<a href="maintain/cleanupScoring.asp" class="admin">Cleanup Scoring</a><br>
+		<a href="maintain/testscripts/changeInvoiceMemo.asp" class="admin">Cleanup Invoice Memos</a><br>
 		<!--<a href="maintain/archive.asp" class="admin">Archive Reports</a><br><br>-->
 		<% End IF %>
 		<a href="../" class="admin">Public Home</a><br><br>

@@ -38,7 +38,7 @@ End If ' Request.Form.Count>0
 
 <html>
 <head>
-	<title>SWPPP INSPECTIONS :: Admin :: Change Password</title>
+	<title>SWPPP INSPECTIONS :: Admin :: change password</title>
 	<link rel="stylesheet" href="../../global.css" type="text/css">
 </head>
 <body>
@@ -61,19 +61,19 @@ End If ' Request.Form.Count>0
 		<font color="#FF0000">Your password has been changed. <a href='../../default.asp'>Click here to return to the home page.</a></font><br><br>
 <% 	End If %>
 <table bgcolor="#006699">
-<tr><td colspan="2" align="center"><br><h1><font color="#FFffff">Change Password</font></h1>
+<tr><td colspan="2" align="center"><br><h1><font color="#FFffff">change password</font></h1>
 		</td></tr>
 	<tr><td colspan="2" bgcolor="#ff3333"><img src="../../images/dot.gif" width="1" height="1"
 			border="0" alt=""></td></tr>
-	<tr><td align="right"><br><font color="#FFFFFF">Email: </font></td>
+	<tr><td align="right"><br><font color="#FFFFFF">email: </font></td>
 		<td><br><input type="text" name="email" size="30" maxlength="50"></td></tr>
-	<tr><td align="right"><font color="#FFFFFF">Current Password: </font></td>
+	<tr><td align="right"><font color="#FFFFFF">current password: </font></td>
 		<td><input type="password" name="current_pswrd" size="15" maxlength="15"></td></tr>
-	<tr><td align="right"><font color="#FFFFFF">New Password: </font></td>
+	<tr><td align="right"><font color="#FFFFFF">new password: </font></td>
 		<td><input type="password" name="new_pswrd" size="15" maxlength="15"></td></tr>
-	<tr><td align="right"><font color="#FFFFFF">New Password Repeat: </font></td>
+	<tr><td align="right"><font color="#FFFFFF">new password repeat: </font></td>
 		<td><input type="password" name="new_pswrd2" size="15" maxlength="15"></td></tr>
-	<tr><td colspan="2" align="center"><br><input type="submit" value="Submit"><br><br></td></tr>
+	<tr><td colspan="2" align="center"><br><input type="submit" value="submit"><br><br></td></tr>
 	</table></div>
 	<script language="javascript"><!--
 		document.forms[0].elements[0].focus();

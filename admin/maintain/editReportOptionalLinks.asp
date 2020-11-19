@@ -125,7 +125,7 @@ function swapOption(t1, t2, slideDir) {
 
 <!-- #include file="../adminHeader2.inc" -->
 <h1>Optional Project Links</h1>
-<h2>Edit Optional Links to Report for <% = Trim(rsReport("projectName")) %></h2>	
+<h2>Edit Optional Links to Report for <% = Trim(rsReport("projectName")) %>&nbsp<% = Trim(rsReport("projectPhase")) %></h2>	
 <form id="theForm" method="post" action="<% = Request.ServerVariables("script_name") %>" onsubmit="return isReady(this)";>
 	<input type="hidden" name="inspecID" value="<% = inspecID %>"/>
 	<input type="hidden" name="projectID" value="<% = rsReport("projectID") %>"/>

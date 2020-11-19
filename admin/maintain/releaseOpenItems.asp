@@ -91,9 +91,6 @@ IF Request.Form.Count > 0 THEN %>
                     groupName = ""
                     groupNameRaw = connProjUsers("collectionName")
                     'Response.Write(groupNameRaw)
-                    If debug_msg=True Then
-                        Response.Write("ProjID: " & projID & "<br/>")
-                    End If
                     startDate=CDATE(Month(Date) &"/1/"& Year(Date)) 
                     endDate=DateAdd("m",1,startDate)
                     endDate=DateAdd("d",-1,endDate)
@@ -102,7 +99,7 @@ IF Request.Form.Count > 0 THEN %>
 	                    " FROM Inspections" & _
 	                    " WHERE projectID = " & projID &_
                         " AND includeItems = 1" &_
-                        " AND compliance = 0" &_
+                        " AND released = 1" &_
                         " AND openItemAlert = 1 " &_
                         " AND (completedItems < totalItems" &_
                         " OR hortonSignV = 1 OR hortonSignLD = 1)"
@@ -155,7 +152,11 @@ IF Request.Form.Count > 0 THEN %>
                             ldscr = RS0("ldscr")
                             reportAge = datediff("d",inspecDate,currentDate) 
                             If debug_msg=True Then
-                                Response.Write(projName & ": " & projPhase & ": " & inspecDate & ", total: " & totalItems & ", completed: " & completedItems &"<br/>")
+                                If completedItems < totalItems Then
+                                    Response.Write("<h3>ProjID: " & projID & " : "  & projName & " : " & projPhase & " : " & inspecDate & ", total: " & totalItems & ", completed: " & completedItems &"</h3>")
+                                Else
+                                    Response.Write("<h3>ProjID: " & projID & " : "  & projName & " : " & projPhase & " : " & inspecDate & " - No Open Items</h3>")
+                                End If
                             End If
 
                             If horton Then
@@ -189,8 +190,12 @@ IF Request.Form.Count > 0 THEN %>
                                     End If
                                 End If
                                 If debug_msg=True Then
-                                    Response.Write("HORTON : hortonSignV: " & hortonSignV & ", vscr: " & vscr & ", hortonSignLD: " & hortonSignLD & ", ldscr: " & ldscr &"<br/>")
-                                    Response.Write("HORTON APPROVALS : vscr: " & vscr_approved & ", date: " & vscr_approved_date & ", ldscr: " & ldscr_approved & ", date: " & ldscr_approved_date &"<br/>")
+                                    If hortonSignV and not vscr_approved Then
+                                        Response.Write("HORTON VSCR: hortonSignV: " & hortonSignV & ", approved: " & vscr_approved & ", date: " & vscr_approved_date & "<br/>")
+                                    End If
+                                    If hortonSignLD and not ldscr_approved Then
+                                        Response.Write("HORTON LDSCR: hortonSignLD: " & hortonSignLD & ", approved: " & ldscr_approved & ", date: " & ldscr_approved_date & "<br/>")
+                                    End If
                                 End If
                             End If
 
@@ -298,7 +303,7 @@ IF Request.Form.Count > 0 THEN %>
                     If debug_msg=True Then
                         Response.Write("inspecCnt: " & inspecCnt & ", coordCnt: " & coordCnt & ", displayProj: " & displayProj & "<br/>")
                     End If 
-                    If inspecCnt > 0 and coordCnt > 0 and displayProj = True Then
+                    If (inspecCnt > 0 and coordCnt > 0 and displayProj = True) or vscr_needs_approval or ldscr_needs_approval Then
                         reportLink = "http://swppp.com/views/openActionItems.asp?pID=" & projID
                         strBody=strBody & VBCrLf & "<tr><td><a href='" & reportLink & "' target='_blank'>" & projName &" "& projPhase &"</td><td>"& groupName &"</td><td>"
                         If coordCnt1 > 0 Then

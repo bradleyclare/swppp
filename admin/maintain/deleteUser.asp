@@ -24,9 +24,9 @@ If Request.Form.Count > 0 Then
 		' Response.Write(coordSQLINSERT & "<br><br>")
 		connSWPPP.Execute(SQLDELETE)
 		
-		SQLDELETE = "DELETE FROM Users WHERE userID=" & Request("IDuser")
+		SQLUPDATE = "UPDATE Users SET active=0 WHERE userID=" & Request("IDuser")
 		' Response.Write(coordSQLINSERT & "<br><br>")
-		connSWPPP.Execute(SQLDELETE)
+		connSWPPP.Execute(SQLUPDATE)
 		
 		connSWPPP.Close
 		Set connSWPPP = Nothing

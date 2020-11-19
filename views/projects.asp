@@ -59,7 +59,7 @@ connSWPPP.Close
 Set connSWPPP = Nothing %>
     </table></td>
 		<td valign="top">
-            <table align="left">
+         <table align="left">
 			<tr><td>&nbsp;</td></tr>
 			<tr>
 				<TD align=center style="border: thin solid #9AB5D1;"
@@ -67,14 +67,21 @@ Set connSWPPP = Nothing %>
 				onMouseOut="this.style.backgroundColor='transparent'; this.style.cursor='normal'">
 				<font color="black" style="font:normal normal bolder 12px;">
 				<a href="monthlyReportsSum.asp" target="_blank">
-				Monthly Summary of<br />Inspection Reports</a></font></TD></tr>
+				monthly summary of<br />inspection reports</a></font></TD></tr>
 			<tr>
 				<td align=center style="border: thin solid #9AB5D1;"
 				onMouseOver="this.style.backgroundColor='#9AB5D1'; this.style.cursor='hand'"
 				onMouseOut="this.style.backgroundColor='transparent'; this.style.cursor='normal'">
 				<font color="black" style="font:normal normal bolder 12px;">
 				<a href="reportPrintAllRecent.asp" target="_blank">
-				Print the Most Recent<br />Inspection Report<br />for Each Project</a></font></td></tr>
+				print the most recent<br />inspection report<br />for each project</a></font></td></tr>
+			<tr>
+				<td align=center style="border: thin solid #9AB5D1;"
+				onMouseOver="this.style.backgroundColor='#9AB5D1'; this.style.cursor='hand'"
+				onMouseOut="this.style.backgroundColor='transparent'; this.style.cursor='normal'">
+				<font color="black" style="font:normal normal bolder 12px;">
+				<a href="../admin/maintain/changePassword.asp" target="_blank">
+				change password</a></font></td></tr>
             </table>
 	    </td></tr>
     </Table>

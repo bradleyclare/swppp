@@ -16,10 +16,11 @@ projectName = Request("projName")
 projectPhase = Request("projPhase")
 %><!-- #include file="../admin/connSWPPP.asp" --><%
 
+currentDate = date()
+'Response.Write(currentDate)
 If Request.Form.Count > 0 Then
 	SQLI="SELECT inspecID FROM Inspections WHERE horton=1 AND projectID="& projectID
 	SET RSI=connSWPPP.execute(SQLI)
-	currentDate = date()
 	Do While Not RSI.EOF
 		inspecID = RSI("inspecID")
 		userID = Session("userID")
@@ -29,27 +30,39 @@ If Request.Form.Count > 0 Then
 			SET RSHA=connSWPPP.execute(SQLHA)
 			If RSHA.EOF Then
 				'add new entry
-				SQLHU = "INSERT into HortonApprovals (inspecID, userID, date, LD) VALUES (" & inspecID & ", " & userID & ", '" & currentDate & "', 0)"
+				SQLHU = "INSERT into HortonApprovals (inspecID, userID, date, LD) VALUES (" & inspecID & ", " & userID & ", '" & date() & "', 0)"
 			Else
 				'update the entry
 				SQLHU = "UPDATE HortonApprovals set userID=" & userID & ", date=" & currentDate & " WHERE inspecID=" & inspecID
 			End If
 			'Response.Write(SQLHU)
 			connSWPPP.Execute(SQLHU)
+			'check the date
+			SET RSC=connSWPPP.execute("SELECT TOP 1 * FROM HortonApprovals ORDER BY id DESC")
+			If RSC("date") = "1/1/1900" Then
+				SQLHU = "UPDATE HortonApprovals set date='" & date() & "' WHERE id=" & RSC("id")
+				connSWPPP.Execute(SQLHU)
+			End If
 		ElseIf Request("approval_LD:" & inspecID ) = "on" Then
 			'log the report approval in the database, check if it exists
 			SQLHA="SELECT * FROM HortonApprovals WHERE LD=1 and inspecID="& inspecID
 			SET RSHA=connSWPPP.execute(SQLHA)
 			If RSHA.EOF Then
 				'add new entry
-				SQLHU = "INSERT into HortonApprovals (inspecID, userID, date, LD) VALUES (" & inspecID & ", " & userID & ", '" & currentDate & "', 1)"
+				SQLHU = "INSERT into HortonApprovals (inspecID, userID, date, LD) VALUES (" & inspecID & ", " & userID & ", '" & date() & "', 1)"
 			Else
 				'update the entry
 				SQLHU = "UPDATE HortonApprovals set userID=" & userID & ", date=" & currentDate & " WHERE inspecID=" & inspecID
 			End If
 			'Response.Write(SQLHU)
 			connSWPPP.Execute(SQLHU)
-		End If
+			'check the date
+			SET RSC=connSWPPP.execute("SELECT TOP 1 * FROM HortonApprovals ORDER BY id DESC")
+			If RSC("date") = "1/1/1900" Then
+				SQLHU = "UPDATE HortonApprovals set date='" & date() & "' WHERE id=" & RSC("id")
+				connSWPPP.Execute(SQLHU)
+			End If
+		End If		
 		RSI.MoveNext
 	Loop
 End If

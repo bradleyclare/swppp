@@ -27,7 +27,7 @@ SQLSELECT = "SELECT DISTINCT u.userID, firstName, lastName, pu.rights" &_
 	" FROM Users as u JOIN ProjectsUsers as pu" &_
 	" ON u.userID=pu.userID JOIN Projects as p" &_
 	" ON pu.projectId=p.projectID" &_
-	" WHERE u.userID = pu.userID AND pu.rights IN ('director', 'user')"  &_
+	" WHERE active=1 AND u.userID = pu.userID AND pu.rights IN ('director', 'user')"  &_
 	" AND u.rights!='admin' AND p.projectID IN (" 
 Do while not connComp.eof
 	if not subsequent then 'first time

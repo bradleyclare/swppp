@@ -131,63 +131,63 @@ If Request.Form.Count > 0 Then
                     completedItems = completedItems - 1
                 End If
                 infoOnly = 1 
-            End If
-            LD = 0
-            if Request("coord:LD:"& CStr(n)) = "on" then LD = 1 End If
-            NLN = 0
-            if Request("coord:NLN:"& CStr(n)) = "on" then NLN = 1 End If
-				pond = 0
-            if Request("coord:pond:"& CStr(n)) = "on" then pond = 1 End If
-				sedloss = 0
-            if Request("coord:sedloss:"& CStr(n)) = "on" then sedloss = 1 End If
-				sedlossw = 0
-            if Request("coord:sedlossw:"& CStr(n)) = "on" then sedlossw = 1 End If
-				ce = 0
-            if Request("coord:ce:"& CStr(n)) = "on" then ce = 1 End If
-				street = 0
-            if Request("coord:street:"& CStr(n)) = "on" then street = 1 End If
-				sfeb = 0
-            if Request("coord:sfeb:"& CStr(n)) = "on" then sfeb = 1 End If
-				rockdam = 0
-            if Request("coord:rockdam:"& CStr(n)) = "on" then rockdam = 1 End If
-				ip = 0
-            if Request("coord:ip:"& CStr(n)) = "on" then ip = 1 End If
-				wo = 0
-            if Request("coord:wo:"& CStr(n)) = "on" then wo = 1 End If
-				veg = 0
-            if Request("coord:veg:"& CStr(n)) = "on" then veg = 1 End If
-				stock = 0
-            if Request("coord:stock:"& CStr(n)) = "on" then stock = 1 End If
-				toilet = 0
-            if Request("coord:toilet:"& CStr(n)) = "on" then toilet = 1 End If
-				trash = 0
-            if Request("coord:trash:"& CStr(n)) = "on" then trash = 1 End If
-				dewater = 0
-            if Request("coord:dewater:"& CStr(n)) = "on" then dewater = 1 End If
-				dust = 0
-            if Request("coord:dust:"& CStr(n)) = "on" then dust = 1 End If
-				riprap = 0
-            if Request("coord:riprap:"& CStr(n)) = "on" then riprap = 1 End If
-				outfall = 0
-            if Request("coord:outfall:"& CStr(n)) = "on" then outfall = 1 End If
-				intop = 0
-            if Request("coord:intop:"& CStr(n)) = "on" then intop = 1 End If
-				swalk = 0
-            if Request("coord:swalk:"& CStr(n)) = "on" then swalk = 1 End If
-				mormix = 0
-            if Request("coord:mormix:"& CStr(n)) = "on" then mormix = 1 End If
-				ada = 0
-            if Request("coord:ada:"& CStr(n)) = "on" then ada = 1 End If
-				dway = 0
-            if Request("coord:dway:"& CStr(n)) = "on" then dway = 1 End If
-				flume = 0
-            if Request("coord:flume:"& CStr(n)) = "on" then flume = 1 End If
+         End If
+         LD = 0
+         if Request("coord:LD:"& CStr(n)) = "on" then LD = 1 End If
+         NLN = 0
+         if Request("coord:NLN:"& CStr(n)) = "on" then NLN = 1 End If
+			pond = 0
+         if Request("coord:pond:"& CStr(n)) = "on" then pond = 1 End If
+			sedloss = 0
+         if Request("coord:sedloss:"& CStr(n)) = "on" then sedloss = 1 End If
+			sedlossw = 0
+         if Request("coord:sedlossw:"& CStr(n)) = "on" then sedlossw = 1 End If
+			ce = 0
+         if Request("coord:ce:"& CStr(n)) = "on" then ce = 1 End If
+			street = 0
+         if Request("coord:street:"& CStr(n)) = "on" then street = 1 End If
+			sfeb = 0
+         if Request("coord:sfeb:"& CStr(n)) = "on" then sfeb = 1 End If
+			rockdam = 0
+         if Request("coord:rockdam:"& CStr(n)) = "on" then rockdam = 1 End If
+			ip = 0
+         if Request("coord:ip:"& CStr(n)) = "on" then ip = 1 End If
+			wo = 0
+         if Request("coord:wo:"& CStr(n)) = "on" then wo = 1 End If
+			veg = 0
+         if Request("coord:veg:"& CStr(n)) = "on" then veg = 1 End If
+			stock = 0
+         if Request("coord:stock:"& CStr(n)) = "on" then stock = 1 End If
+			toilet = 0
+         if Request("coord:toilet:"& CStr(n)) = "on" then toilet = 1 End If
+			trash = 0
+         if Request("coord:trash:"& CStr(n)) = "on" then trash = 1 End If
+			dewater = 0
+         if Request("coord:dewater:"& CStr(n)) = "on" then dewater = 1 End If
+			dust = 0
+         if Request("coord:dust:"& CStr(n)) = "on" then dust = 1 End If
+			riprap = 0
+         if Request("coord:riprap:"& CStr(n)) = "on" then riprap = 1 End If
+			outfall = 0
+         if Request("coord:outfall:"& CStr(n)) = "on" then outfall = 1 End If
+			intop = 0
+         if Request("coord:intop:"& CStr(n)) = "on" then intop = 1 End If
+			swalk = 0
+         if Request("coord:swalk:"& CStr(n)) = "on" then swalk = 1 End If
+			mormix = 0
+         if Request("coord:mormix:"& CStr(n)) = "on" then mormix = 1 End If
+			ada = 0
+         if Request("coord:ada:"& CStr(n)) = "on" then ada = 1 End If
+			dway = 0
+         if Request("coord:dway:"& CStr(n)) = "on" then dway = 1 End If
+			flume = 0
+         if Request("coord:flume:"& CStr(n)) = "on" then flume = 1 End If
 			AssignDate = inspecDate
-            if Repeat = 1 Then
+         if Repeat = 1 Then
 		    	AssignDate = Request("coord:assignDate:"& CStr(n))
 			End If
 			OrderBy = 0
-            if IsNumeric(Request("coord:orderby:"& CStr(n))) then OrderBy = Request("coord:orderby:"& CStr(n)) End If
+         if IsNumeric(Request("coord:orderby:"& CStr(n))) then OrderBy = Request("coord:orderby:"& CStr(n)) End If
 			'SQLc = SQLc &"/*<br/>*/Exec spAEDCoordinate "& Request("coord:coID:"& CStr(n)) &", "& DelCoord &", "& inspecID &", '"& Replace(Request("coord:coord:"& CStr(n)),"--","�") &"', '"& Replace(Request("coord:mods:"& CStr(n)),"--","�") &"', "& OrderBy &";"
 			SQLc = SQLc &"/*<br/>*/Exec spAEDCoordinate "& _ 
 			Request("coord:coID:"& CStr(n)) &", "& _ 

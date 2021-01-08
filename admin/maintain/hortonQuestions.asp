@@ -17,8 +17,8 @@ answerSQLSELECT = "SELECT * FROM HortonAnswers WHERE inspecID = " & inspecID
 Set RSA = connSWPPP.execute(answerSQLSELECT)
 
 'get questions
-SQL0 = "SELECT * FROM HortonQuestions ORDER BY orderby"
-'Response.Write(SQL0)
+SQL0 = "SELECT * FROM HortonQuestions WHERE orderby > 30 AND orderby < 57 ORDER BY orderby"
+Response.Write(SQL0)
 Set RS0 = connSWPPP.Execute(SQL0)
 
 numQuestions = 26

@@ -103,8 +103,8 @@ signature = Trim(rsInspec("signature"))
 coordSQLSELECT = "SELECT * FROM Coordinates WHERE inspecID=" & inspecID & " ORDER BY orderby"	
 'Response.Write(coordSQLSELECT)
 Set rsCoord = connSWPPP.execute(coordSQLSELECT)
+inspecDate = Cdate(Trim(rsInspec("inspecDate")))
 If rsInspec("projectState") = "OK" Then
-	   inspecDate = Cdate(Trim(rsInspec("inspecDate")))
       MsgDateStart = #11/07/2017#
       If DateDiff("d", inspecDate, MsgDateStart) < 1 Then
          strBody=strBody &"<div style='font-size: 8px'><p><center><i>A qualified inspector familiar with the OPDES Permit OKR10 and the SWPPP should inspect all areas of the site that have been cleared," &_
@@ -138,7 +138,12 @@ End If
 'print dr horton questions if desired
 If rsInspec("horton") Then
 	'get questions
-	SQLQ = "SELECT * FROM HortonQuestions ORDER BY orderby"
+	QuestionDateStart = #12/10/2020#
+   If DateDiff("d", QuestionDateStart, inspecDate) < 1 Then
+		SQLQ = "SELECT * FROM HortonQuestions WHERE orderby < 27 ORDER BY orderby"
+	Else
+		SQLQ = "SELECT * FROM HortonQuestions WHERE orderby > 30 AND orderby < 57 ORDER BY orderby"
+	End If
 	Set RSQ = connSWPPP.Execute(SQLQ)
 	strBody=strBody &"<hr noshade size='1' align='center' >"
 	If RSQ.EOF Then

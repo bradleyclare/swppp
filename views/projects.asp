@@ -82,8 +82,7 @@ Set connSWPPP = Nothing %>
 				<font color="black" style="font:normal normal bolder 12px;">
 				<a href="../admin/maintain/changePassword.asp" target="_blank">
 				change password</a></font></td></tr>
-            </table>
-	    </td></tr>
+			</table></td></tr>
     </Table>
 </div>
 </body>

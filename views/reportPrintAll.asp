@@ -126,7 +126,8 @@ End If %>
 Set rsCoord = connSWPPP.execute(coordSQLSELECT)%>
 <table border="0" cellpadding="3" width="100%" cellspacing="0">
 <tr><td align="center"><div style="font-size: 8px"><center>
-<% If RS2("projectState") = "OK" Then
+<% inspecDate = Trim(RS2("inspecDate"))
+If RS2("projectState") = "OK" Then
       inspecDate = Trim(RS2("inspecDate"))
       MsgDateStart = "11/07/2017"
       If DateDiff("d", inspecDate, MsgDateStart) < 1 Then %>
@@ -163,7 +164,12 @@ Set rsCoord = connSWPPP.execute(coordSQLSELECT)%>
 <% 'print dr horton questions if desired
 If RS2("horton") Then
 	'get questions
-	SQLQ = "SELECT * FROM HortonQuestions ORDER BY orderby"
+	QuestionDateStart = #12/10/2020#
+   If DateDiff("d", QuestionDateStart, inspecDate) < 1 Then
+		SQLQ = "SELECT * FROM HortonQuestions WHERE orderby < 27 ORDER BY orderby"
+	Else
+		SQLQ = "SELECT * FROM HortonQuestions WHERE orderby > 30 AND orderby < 57 ORDER BY orderby"
+	End If
 	Set RSQ = connSWPPP.Execute(SQLQ) %>
 	<hr noshade size="1" align="center" >
 	<% If RSQ.EOF Then %>

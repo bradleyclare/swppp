@@ -93,7 +93,11 @@ projectPhase= Trim(rsInspectInfo("projectPhase"))
 SQL1="SELECT inspecID FROM Inspections WHERE horton=1 AND projectID="& projectID
 SET RS1=connSWPPP.execute(SQL1)
 hortonFlag=False
-if NOT(RS1.EOF) THEN hortonFlag=True END IF
+completePast="completed"
+if NOT(RS1.EOF) THEN 
+	hortonFlag=True 
+	completePast="closed"
+END IF
 
 SQL1="SELECT inspecID FROM Inspections WHERE hortonSignV=1 AND projectID="& projectID
 SET RS1=connSWPPP.execute(SQL1)
@@ -104,6 +108,16 @@ SQL1="SELECT inspecID FROM Inspections WHERE hortonSignLD=1 AND projectID="& pro
 SET RS1=connSWPPP.execute(SQL1)
 hortonSignLD=False
 if NOT(RS1.EOF) THEN hortonSignLD=True END IF
+
+SQL1="SELECT * FROM ProjectsUsers WHERE userID="& Session("userID") & " AND projectID="& projectID &" AND rights='vscr'"
+SET RS1=connSWPPP.execute(SQL1)
+hortonUserV=False
+if NOT(RS1.EOF) THEN hortonUserV=True END IF
+
+SQL1="SELECT * FROM ProjectsUsers WHERE userID="& Session("userID") & " AND projectID="& projectID &" AND rights='ldscr'"
+SET RS1=connSWPPP.execute(SQL1)
+hortonUserLD=False
+if NOT(RS1.EOF) THEN hortonUserLD=True END IF
 'Response.Write("projectID: " & projectID & ", vscr: " & hortonSignV & ", ldscr: " & hortonSignLD & "<br/>")
  %>
 
@@ -121,7 +135,7 @@ if NOT(RS1.EOF) THEN hortonSignLD=True END IF
 <table>
 <tr><td><button onClick="window.open('reportPrintAll.asp?projID=<%= projectID%>&projName=<%= projectName%>&projPhase=<%= projectPhase %>','','width=800, height=600, location=no, menubar=no, status=no, toolbar=no, scrollbars=yes, resizable=yes')">print all reports</button></td>
 <td>
-<% If hortonFlag Then %>
+<% If hortonFlag AND (hortonUserV or hortonUserLD or Session("validAdmin") or Session("validDirector")) Then %>
 <input type="submit" value="sign off on reports" name="approve_reports"></input>
 <% End If %>
 </td></tr>
@@ -135,10 +149,10 @@ If Session("seeScoring") Then %>
 	<th>report score</th><th>items</th>
 <% End If 
 If hortonFlag Then
-	If hortonSignV and (Session("validAdmin") or Session("validDirector") or Session("validVSCR")) Then %>	
+	If hortonSignV and (Session("validAdmin") or Session("validDirector") or hortonUserV) Then %>	
 			<th>VSCR sign off</th><th>VSCR</th><th>VSCR date</th>
 	<% End If
-   If hortonSignLD and (Session("validAdmin") or Session("validDirector") or Session("validLDSCR")) Then %>	
+   If hortonSignLD and (Session("validAdmin") or Session("validDirector") or hortonUserLD) Then %>	
 			<th>LDSCR sign off</th><th>LDSCR</th><th>LDSCR date</th>
 	<% End If
 End If %>
@@ -182,15 +196,15 @@ Else
 			End If
 			%>
 			<tr><td align="right"><% = Trim(rsInspectInfo("inspecDate")) %></td>
-            <td align="center"><a href="reportPrint.asp?inspecID=<% = inspecID %>" target="_blank">Report</a></td>
-            <td align="center"><a href="viewSitemap.asp?inspecID=<% = inspecID %>" target="_blank">Site Map</a></td>
+            <td align="center"><a href="reportPrint.asp?inspecID=<% = inspecID %>" target="_blank">report</a></td>
+            <td align="center"><a href="viewSitemap.asp?inspecID=<% = inspecID %>" target="_blank">site map</a></td>
 			<% If Session("seeScoring") Then %>
 				<td align="center"><%=percentage%></td>
             <td align="center"><%=stats%></td>
 			<% End If 
 			If hortonFlag Then 
 				'check for approval status 
-				If hortonSignV and (Session("validAdmin") or Session("validDirector") or Session("validVSCR")) Then
+				If hortonSignV and (Session("validAdmin") or Session("validDirector") or hortonUserV) Then
 					SQLA="SELECT * FROM HortonApprovals WHERE LD=0 and inspecID="& inspecID
 					SET RSA=connSWPPP.execute(SQLA)
 					If RSA.EOF Then 
@@ -201,7 +215,12 @@ Else
 						hortonStatus = True
 						SQLU="SELECT firstName, lastName FROM Users WHERE userID="& RSA("userID")
 						SET RSU=connSWPPP.execute(SQLU)
-						hortonApprovalUser = RSU("firstName") & " " & RSU("lastName")
+						'Response.Write("userID:" & RSA("userID"))
+						If not RSU.EOF Then
+							hortonApprovalUser = RSU("firstName") & " " & RSU("lastName")
+						Else
+							hortonApprovalUser = "Unknown"
+						End If
 						hortonApprovalDate = RSA("date")
 					End If %>
 					<td align="center">
@@ -214,7 +233,7 @@ Else
 					<td align="center"><%=hortonApprovalUser%></td>
 					<td align="center"><%=hortonApprovalDate%></td>
 				<% End If
-				If hortonSignLD and (Session("validAdmin") or Session("validDirector") or Session("validLDSCR")) Then
+				If hortonSignLD and (Session("validAdmin") or Session("validDirector") or hortonUserLD) Then
 					SQLA="SELECT * FROM HortonApprovals WHERE LD=1 and inspecID="& inspecID
 					SET RSA=connSWPPP.execute(SQLA)
 					If RSA.EOF Then 
@@ -225,7 +244,11 @@ Else
 						hortonStatus = True
 						SQLU="SELECT firstName, lastName FROM Users WHERE userID="& RSA("userID")
 						SET RSU=connSWPPP.execute(SQLU)
-						hortonApprovalUser = RSU("firstName") & " " & RSU("lastName")
+						If not RSU.EOF Then
+							hortonApprovalUser = RSU("firstName") & " " & RSU("lastName")
+						Else
+							hortonApprovalUser = "Unknown"
+						End If
 						hortonApprovalDate = RSA("date")
 					End If %>
 					<td align="center">
@@ -261,27 +284,27 @@ Set rsInspectInfo = Nothing %>
 </table>
 </td>   
 <td width="175" valign="top">
-<h5>Project Management</h5>
+<h5>project management</h5>
 <ul>
-<!--<li><a href="addOperatorForm.asp?pID=<%= projectID%>" target="_blank">Add Operator Form</a></li>
-<li><a href="operatorForm.asp?pID=<%= projectID%>" target="_blank">View Operator Form</a></li>-->
+<!--<li><a href="addOperatorForm.asp?pID=<%= projectID%>" target="_blank">add operator Form</a></li>
+<li><a href="operatorForm.asp?pID=<%= projectID%>" target="_blank">view operator form</a></li>-->
 <% If Session("validAdmin") Then %>
-    <li><a href="addActionReport.asp?pID=<%= projectID%>" target="_blank">Add Actions Taken</a></li>
-    <li><a href="actionReport.asp?pID=<%= projectID%>" target="_blank">View Actions Taken</a></li>
-    <li><a href="openActionItems.asp?pID=<%= projectID%>" target="_blank">Open Items</a></li>
-    <li><a href="completedActionItems.asp?pID=<%= projectID%>" target="_blank">Completed Items</a></li>
+    <li><a href="addActionReport.asp?pID=<%= projectID%>" target="_blank">add actions taken</a></li>
+    <li><a href="actionReport.asp?pID=<%= projectID%>" target="_blank">view actions taken</a></li>
+    <li><a href="openActionItems.asp?pID=<%= projectID%>" target="_blank">open items</a></li>
+    <li><a href="completedActionItems.asp?pID=<%= projectID%>" target="_blank"><%=completePast%> items</a></li>
 <% Else %>
-   <li><a href="viewComments.asp?pID=<%=projectID %>" target="_blank">View Item Notes</a></li>
+   <li><a href="viewComments.asp?pID=<%=projectID %>" target="_blank">view item notes</a></li>
     <% If includeItemsFlag Then
         If Session("seeScoring") Then %>
-            <li><a href="openActionItems.asp?pID=<%= projectID%>" target="_blank">Open Items</a></li>
+            <li><a href="openActionItems.asp?pID=<%= projectID%>" target="_blank">open items</a></li>
         <% End If %>
-        <li><a href="completedActionItems.asp?pID=<%= projectID%>" target="_blank">Completed Items</a></li>
+        <li><a href="completedActionItems.asp?pID=<%= projectID%>" target="_blank"><%=completePast%> items</a></li>
     <% End If
 End If %>
 </ul>
 <% If Not Session("validErosion") Then %>
-<h5>Project Documents</h5>
+<h5>project documents</h5>
 <% End If %>
 <ul>
    <% SQL2="SELECT * FROM OptionalImagesTypes WHERE oitSortByVal>=-1 ORDER BY oitSortByVal asc"

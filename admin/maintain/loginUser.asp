@@ -19,7 +19,7 @@ If Request.Form.Count > 0 Then
 	Else
 		If Trim(Request("pswrd")) <> Trim(connEmail("pswrd")) Then
 			badPassword = True
-		Else If connEmail("active") == 0 Then
+		ElseIf connEmail("active") = 0 Then
 			inactiveUser = True
 		Else
 			Session("userID")=connEmail("userID")
@@ -27,14 +27,36 @@ If Request.Form.Count > 0 Then
 			Session("lastName")=connEmail("lastName")
 			
 			IF connEmail("noImages")=1 THEN Session("noImages")="True" ELSE Session("noImages")="False" END IF
-			If Trim(connEmail("rights"))="admin" Then Session("validAdmin")=True End If
-			If Trim(connEmail("rights"))="director" Then Session("validDirector")=True End If
-			If Trim(connEmail("rights"))="inspector" Then Session("validInspector")=True End If
-			If Trim(connEmail("rights"))="user" Then Session("validUser")=True End If
-			If Trim(connEmail("rights"))="action" Then Session("validUser")=True End If
-			If Trim(connEmail("rights"))="erosion" Then Session("validErosion")=True End If
-			If Trim(connEmail("rights"))="vscr" Then Session("validVSCR")=True End If
-			If Trim(connEmail("rights"))="ldscr" Then Session("validLDSCR")=True End If
+			If Trim(connEmail("rights"))="admin" Then 
+				Session("validAdmin")=True 
+			End If
+			If Trim(connEmail("rights"))="director" Then 
+				Session("validDirector")=True 
+			End If
+			If Trim(connEmail("rights"))="inspector" Then 
+				Session("validInspector")=True 
+			End If
+			If Trim(connEmail("rights"))="user" Then 
+				Session("validUser")=True 
+			End If
+			If Trim(connEmail("rights"))="action" Then 
+				Session("validUser")=True 
+			End If
+			If Trim(connEmail("rights"))="email" Then 
+				Session("validUser")=True 
+			End If
+			If Trim(connEmail("rights"))="erosion" Then 
+				Session("validErosion")=True 
+				Session("validUser")=True
+			End If
+			If Trim(connEmail("rights"))="vscr" Then 
+				Session("validVSCR")=True
+				Session("validUser")=True 
+			End If
+			If Trim(connEmail("rights"))="ldscr" Then 
+				Session("validLDSCR")=True
+				Session("validUser")=True 
+			End If
 			Session("seeScoring") = connEmail("seeScoring")
 			
 			SQL0="SELECT COUNT(*) FROM ProjectsUsers WHERE rights='user' AND userID="& Session("userID")

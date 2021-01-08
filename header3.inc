@@ -7,13 +7,13 @@
 	<TABLE width=100%>
 		<TR>
 			<TD>&nbsp;</TD>
-			<TD><a href="static/about.asp" class="head">About Us</a></TD>
+			<TD><a href="static/about.asp" class="head">about us</a></TD>
 			<TD>&nbsp; | &nbsp;</TD>
-			<TD><a href="static/contact.asp" class="head">Contact Us</a></TD>
+			<TD><a href="static/contact.asp" class="head">contact us</a></TD>
 			<TD>&nbsp; | &nbsp;</TD>
-			<TD><a href="views/projects.asp" class="head">Log In</a></TD>
+			<TD><a href="views/projects.asp" class="head">log in</a></TD>
 			<TD>&nbsp; | &nbsp;</TD>
-			<TD><a href="admin/default.asp" class="head">Admin</a></TD>
+			<TD><a href="admin/default.asp" class="head">admin</a></TD>
 			<TD>&nbsp;</TD>
 		</TR>
 	</TABLE>

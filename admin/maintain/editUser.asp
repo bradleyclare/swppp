@@ -77,19 +77,19 @@ If Request.Form.Count > 0 Then
 				    Case "act"
 					    rights="action"
 					    rightsValue=MID(rightsValue,1,1) &"1"& MID(rightsValue,3)
-				    Case "ero"
-					    rights="erosion"
-					    rightsValue=MID(rightsValue,1,2) &"1"& MID(rightsValue,4)
 				    Case "emr"
 					    rights="email"
-					    rightsValue= MID(rightsValue,1,3) &"1"& MID(rightsValue,5)
+					    rightsValue=MID(rightsValue,1,2) &"1"& MID(rightsValue,4)
 				    Case "ecc"
 					    rights="ecc"
-					    rightsValue= MID(rightsValue,1,4) &"1"& MID(rightsValue,6)
+					    rightsValue= MID(rightsValue,1,3) &"1"& MID(rightsValue,5)
 				    Case "bcc"
 					    rights="bcc"
+					    rightsValue= MID(rightsValue,1,4) &"1"& MID(rightsValue,6)
+				    Case "ero"
+					    rights="erosion"
 					    rightsValue= MID(rightsValue,1,5) &"1"& MID(rightsValue,7)
-				    Case "vsc"
+					 Case "vsc"
 					    rights="vscr"
 					    rightsValue=MID(rightsValue,1,6) &"1"& MID(rightsValue,8)
 					 Case "lds"
@@ -138,15 +138,19 @@ If Request.Form.Count > 0 Then
 			    rights=""
             End If
 		Next
-		'response.write(rights & "<br/>")
+		response.write("Rights Value:" & rightsValue & "<br/>")
+		highestRights="user"
 		FOR n = 1 to 11 step 1
 			IF (MID(rightsValue,n,1)="1") THEN 
 				SELECT CASE n
 					CASE 1	highestRights="user"
 					CASE 2	highestRights="action"
-					CASE 3	highestRights="erosion"
-					CASE 4   highestRights="vscr"
-					CASE 8   highestRights="ldvscr"
+					CASE 3	highestRights="email"
+					CASE 4   highestRights="email"
+					CASE 5   highestRights="email"
+					CASE 6   highestRights="erosion"
+					CASE 7   highestRights="vscr"
+					CASE 8   highestRights="ldscr"
 					CASE 9	highestRights="inspector"
 					CASE 10	highestRights="director"
 					CASE 11	highestRights="admin"
@@ -154,6 +158,7 @@ If Request.Form.Count > 0 Then
 				END SELECT
 			END IF
 		NEXT 
+		response.write("Highest Rights:" & highestRights & "</br>")
 		IF highestRights <>"" THEN
 			connSWPPP.execute("UPDATE Users SET rights='"& highestRights &"' WHERE userID="& userID)
 		End If

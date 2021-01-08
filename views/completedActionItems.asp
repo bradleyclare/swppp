@@ -24,7 +24,7 @@ If Request.Form.Count > 0 Then
 	update = 0
    endDate=Request("endDate")
    startDate=Request("startDate")
-   if Request.Form("print_btn") = "Print Report" then
+   if Request.Form("print_btn") = "print report" then
       Response.Redirect("completedItemPrint.asp?pID=" & projectID & "&startDate=" & startDate & "&endDate=" & endDate)
    End If
 	for n = 0 to 999 step 1
@@ -82,7 +82,19 @@ End If
 
 SQL2="SELECT projectName, projectPhase FROM Projects WHERE projectID="& projectID
 'response.Write(SQL2)
-SET RS2=connSWPPP.execute(SQL2) %>
+SET RS2=connSWPPP.execute(SQL2) 
+
+SQLH="SELECT inspecID FROM Inspections WHERE horton=1 AND projectID="& projectID
+SET RSH=connSWPPP.execute(SQLH)
+hortonFlag=False
+completePast="completed"
+completeAction="complete"
+if NOT(RSH.EOF) THEN 
+    hortonFlag=True 
+    completePast="closed"
+    completeAction="close"
+END IF
+%>
 
 <html>
 <head>
@@ -143,31 +155,30 @@ Set rsInspectInfo = connSWPPP.Execute(inspectInfoSQLSELECT)
 <body bgcolor="#ffffff" marginwidth="30" leftmargin="30" marginheight="15" topmargin="15">
 <center>
 <img src="../images/color_logo_report.jpg" width="300"><br><br>
-<font size="+1"><b>Completed Items for<br> <%= RS2("projectName") %>&nbsp;<%= RS2("projectPhase")%></b></font>
+<font size="+1"><b><%=completePast%> items for<br> <%= RS2("projectName") %>&nbsp;<%= RS2("projectPhase")%></b></font>
 <br /><br />
 <form id="theForm" method="post" action="<%=Request.ServerVariables("script_name")&"?pID="&projectID%>" onsubmit="return isReady(this)";>
-<a href="openActionItems.asp?pID=<%=projectID%>&inspecID=<%=inspecID%>">see Open Items</a>
+<a href="openActionItems.asp?pID=<%=projectID%>&inspecID=<%=inspecID%>">see open items</a>
 <br /><br />
 Start Date (MM/DD/YYYY): <input name="startDate" type="text" value="<%=startDate%>" size="8" />  
 End Date (MM/DD/YYYY): <input name="endDate" type="text" value="<%=endDate%>" size="8" />  
 <br /><br />
-<input type="submit" name="print_btn" value="Print Report" />
+<input type="submit" name="print_btn" value="print report" />
 <br /><br />
 </center>
 
 <table cellpadding="2" cellspacing="0" border="0" width="100%">
 	<tr>
         <% If Session("validAdmin") Then %>
-            <th width="5%" align="left">Complete</th>
+            <th width="5%" align="left"><%=completePast%></th>
             <th width="5%" align="left">NLN</th>
         <% End If %>
-        <th width="5%" align="left">Repeat</th>
         <th width="5%" align="left">ID</th>
-        <th width="10%" align="left">Completion Date</th>  
-        <th width="5%" align="left">Report Date</th>
-        <th width="15%" align="left">Location</th>
-        <th align="left">Action Item</th>
-        <th width="2.5%" align="left">View Note</th>
+        <th width="10%" align="left"><%=completeAction%> date</th>  
+        <th width="5%" align="left">report date</th>
+        <th width="15%" align="left">location</th>
+        <th align="left">action item</th>
+        <th width="2.5%" align="left">view note</th>
     </tr>
 <% If rsInspectInfo.EOF Then
 	Response.Write("<tr><td colspan='4' align='center'><i style='font-size: 15px'>There are no inspection reports found.</i></td></tr>")
@@ -225,7 +236,7 @@ Else
               Else
                  'find the completion note
                  Do While Not rsComm.EOF
-                    If rsComm("comment") = "This item was marked complete" or rsComm("comment") = "This item was marked NLN" Then
+                    If rsComm("comment") = "This item was marked complete" or rsComm("comment") = "This item was marked NLN" or rsComm("comment") = "This item was marked done" Then
                        completer = rsComm("firstName") & " " & rsComm("lastName")
                        completeDate = rsComm("date")
                     Else
@@ -252,11 +263,6 @@ Else
                     <td align="left"><input type="checkbox" name="coord:complete:<%= n %>" <%=status_str %> /></td>
                     <td align="left"><input type="checkbox" name="coord:nln:<%= n %>" <%=nln_str %> /></td>
                  <% End If %>
-                 <td align="left">
-                 <% If repeat = True Then %>
-			           R
-		           <% End If %>
-                 </td>
 		           <td align="left"><%= coID %></td>
 		           <td align="left"><%= completeDate %>: <%= completer %></td>
 		           <td><%= inspecDate %></td>
@@ -288,13 +294,13 @@ End If%>
 </table>
 <center>
 <% If Session("validAdmin") Then  %>
-    <input type="submit" value="Submit"/><br/><br/>
+    <input type="submit" value="submit"/><br/><br/>
 <% End If %>
 <% SQL3="SELECT oImageFileName FROM OptionalImages WHERE oitID=12 AND inspecID="& siteMapInspecID
 SET RS3=connSWPPP.execute(SQL3)
 IF NOT(RS3.EOF) THEN 
     sitemap_link = "http://www.swpppinspections.com/images/sitemap/"& TRIM(RS3("oImageFileName"))%>
-	<a href='<%=sitemap_link%>'>link for Site Map</a>
+	<a href='<%=sitemap_link%>'>link for site map</a>
 <% End If %>
 </center>
 </form>

@@ -12,13 +12,24 @@ Then
 	Response.Redirect("../admin/maintain/loginUser.asp")
 End If
 
-projID = Trim(Request("pID"))
+projectID = Trim(Request("pID"))
 
 %><!-- #include file="../admin/connSWPPP.asp" --><%
 
 Server.ScriptTimeout=1500
 
 currentDate = date()
+
+SQLH="SELECT inspecID FROM Inspections WHERE horton=1 AND projectID="& projectID
+SET RSH=connSWPPP.execute(SQLH)
+hortonFlag=False
+completePast="completed"
+completeAction="complete"
+if NOT(RSH.EOF) THEN 
+    hortonFlag=True 
+    completePast="closed"
+    completeAction="close"
+END IF
 
 If Request.Form.Count > 0 Then
 	update = 1
@@ -32,7 +43,7 @@ If Request.Form.Count > 0 Then
 		inspecID = Request("coord:inspecID:"& commentNum)
         'Response.Write(coID & " - " & userID & " - " & currentDate & " - " & comment)
         SQL3="INSERT INTO CoordinatesComments (coID, comment, userID, date, inspecID, projectID)" &_
-        " VALUES ( "& coID & ", '" & comment & "', " & userID & ", '"& currentDate & "', "& inspecID & ", "& projID & ")"   
+        " VALUES ( "& coID & ", '" & comment & "', " & userID & ", '"& currentDate & "', "& inspecID & ", "& projectID & ")"   
         'response.Write(SQL3)
         Set RS3=connSWPPP.execute(SQL3)
     End If
@@ -44,43 +55,58 @@ If Request.Form.Count > 0 Then
 			    exit for
 		    end if
             if Request("coord:complete:"& CStr(n)) = "on" then 
+                'if this is a horton project the following things will happen when an item is marked complete, 
+                '1-erosion user - marking the item complete will just add comment to say the item is complete but it won't close the item
+                '2-other user - marking item complete will close the item like normal
                 coID = Request("coord:coID:"& CStr(n))
-			    SQLc = "UPDATE Coordinates "& _
-			    "SET status=1, completeDate='" & Request("coord:date:"& CStr(n))& "' " & _ 
-			    "WHERE coID = " & coID & ";"
-			    'Response.Write(SQLc)
-			    connSWPPP.execute(SQLc)
-
-                'update completed item count
                 inspecID = Request("coord:inspecID:"& CStr(n))
-			    SQL1 = "SELECT completedItems, totalItems from Inspections WHERE inspecID = " & inspecID
-                Set RS1 = connSWPPP.Execute(SQL1)
-                if not RS1.EOF Then
-                    compItems = RS1("completedItems")
-                    totItems = RS1("totalItems")
-                    newItems = compItems + 1
-                    If newItems > totItems Then
-                        completedItems = totItems
-                    Else
-                        completedItems = newItems
-                    End If
+                If hortonFlag and Session("validErosion") Then
+                    'add comment to keep track of the status change of the item
+                    userID  = Session("userID")
+                    comment = "This item was marked done"
+                    'Response.Write(coID & " - " & userID & " - " & currentDate & " - " & comment)
+                    SQL3="INSERT INTO CoordinatesComments (coID, comment, userID, date, inspecID, projectID)" &_
+                    " VALUES ( "& coID & ", '" & comment & "', " & userID & ", '"& currentDate & "', "& inspecID & ", "& projectID & ")"    
+                    'response.Write(SQL3)
+                    Set RS3=connSWPPP.execute(SQL3)
                 Else
-                    completedItems = 1
-                End If
-                inspectSQLUPDATE2 = "UPDATE Inspections SET" & _
-			    " completedItems = " & completedItems & _
-			    " WHERE inspecID = " & inspecID
-		        'response.Write(inspectSQLUPDATE2)
-		        connSWPPP.Execute(inspectSQLUPDATE2)
+                    'update status to closed
+                    SQLc = "UPDATE Coordinates "& _
+                    "SET status=1, completeDate='" & Request("coord:date:"& CStr(n))& "' " & _ 
+                    "WHERE coID = " & coID & ";"
+                    'Response.Write(SQLc)
+                    connSWPPP.execute(SQLc)
 
-                'add comment to keep track of the status change of the item
-                userID  = Session("userID")
-                comment = "This item was marked complete"
-                'Response.Write(coID & " - " & userID & " - " & currentDate & " - " & comment)
-                SQL3="INSERT INTO CoordinatesComments (coID, comment, userID, date, inspecID, projectID)" &_
-				" VALUES ( "& coID & ", '" & comment & "', " & userID & ", '"& currentDate & "', "& inspecID & ", "& projID & ")"    
-                'response.Write(SQL3)
-                Set RS3=connSWPPP.execute(SQL3)
+                    'update completed item count
+                    SQL1 = "SELECT completedItems, totalItems from Inspections WHERE inspecID = " & inspecID
+                    Set RS1 = connSWPPP.Execute(SQL1)
+                    if not RS1.EOF Then
+                        compItems = RS1("completedItems")
+                        totItems = RS1("totalItems")
+                        newItems = compItems + 1
+                        If newItems > totItems Then
+                            completedItems = totItems
+                        Else
+                            completedItems = newItems
+                        End If
+                    Else
+                        completedItems = 1
+                    End If
+                    inspectSQLUPDATE2 = "UPDATE Inspections SET" & _
+                    " completedItems = " & completedItems & _
+                    " WHERE inspecID = " & inspecID
+                    'response.Write(inspectSQLUPDATE2)
+                    connSWPPP.Execute(inspectSQLUPDATE2)
+
+                    'add comment to keep track of the status change of the item
+                    userID  = Session("userID")
+                    comment = "This item was marked complete"
+                    'Response.Write(coID & " - " & userID & " - " & currentDate & " - " & comment)
+                    SQL3="INSERT INTO CoordinatesComments (coID, comment, userID, date, inspecID, projectID)" &_
+                    " VALUES ( "& coID & ", '" & comment & "', " & userID & ", '"& currentDate & "', "& inspecID & ", "& projectID & ")"    
+                    'response.Write(SQL3)
+                    Set RS3=connSWPPP.execute(SQL3)
+                End If
 		    End If
             If Request("coord:NLN:"& CStr(n)) = "on" Then
                 coID = Request("coord:coID:"& CStr(n))
@@ -117,7 +143,7 @@ If Request.Form.Count > 0 Then
                 comment = "This item was marked NLN"
                 'Response.Write(coID & " - " & userID & " - " & currentDate & " - " & comment)
                 SQL3="INSERT INTO CoordinatesComments (coID, comment, userID, date, inspecID, projectID)" &_
-				" VALUES ( "& coID & ", '" & comment & "', " & userID & ", '"& currentDate & "', "& inspecID & ", "& projID & ")"  
+				" VALUES ( "& coID & ", '" & comment & "', " & userID & ", '"& currentDate & "', "& inspecID & ", "& projectID & ")"  
                 'response.Write(SQL3)
                 Set RS3=connSWPPP.execute(SQL3)
             End If 
@@ -125,9 +151,10 @@ If Request.Form.Count > 0 Then
     'End If
 End If
 
-SQL2="SELECT projectName, projectPhase FROM Projects WHERE projectID="& projID
+SQL2="SELECT projectName, projectPhase FROM Projects WHERE projectID="& projectID
 'response.Write(SQL2)
-Set RS2=connSWPPP.execute(SQL2) %>
+Set RS2=connSWPPP.execute(SQL2) 
+%>
 
 <html>
 <head>
@@ -227,18 +254,17 @@ tr.highlighted {
 SQL0 = "SELECT inspecID, inspecDate, reportType, projectID, projectName, projectPhase, released, " & _
     " includeItems, compliance, totalItems, completedItems, horton" & _
     " FROM Inspections" & _
-    " WHERE projectID = " & projID &_
+    " WHERE projectID = " & projectID &_
     " AND includeItems = 1" &_ 
     " AND released = 1" &_
     " AND compliance = 0" &_
     " AND openItemAlert = 1" 
 'Response.Write(SQL0)
 Set RS0 = connSWPPP.Execute(SQL0)
-horton_flag = false
 %>
 
 <body bgcolor="#ffffff" marginwidth="30" leftmargin="30" marginheight="15" topmargin="15">
-<form id="theForm" method="post" action="<%=Request.ServerVariables("script_name")&"?pID="&projID%>" onsubmit="return isReady(this)";>
+<form id="theForm" method="post" action="<%=Request.ServerVariables("script_name")&"?pID="&projectID%>" onsubmit="return isReady(this)";>
     <input type="hidden" name="commentIDNum" value="-1" />
     <div class="commentPopup hide" name="commentPopup">
     <h3>Enter Note:</h3>
@@ -249,32 +275,37 @@ horton_flag = false
     </div>
     <center>
     <img src="../images/color_logo_report.jpg" width="300"><br><br>
-    <font size="+1"><b>Open Items for<br/> (<%=projID %>) <%= RS2("projectName") %>&nbsp;<%= RS2("projectPhase")%></b></font>
+    <font size="+1"><b>open items for<br/> (<%=projectID %>) <%= RS2("projectName") %>&nbsp;<%= RS2("projectPhase")%></b></font>
     <br /><br />
     <table><tr>
-    <td><input type="button" value="Check all Items" onclick="check_all_items(this)" /></td>
-    <td><input type="button" value="Un-Check all Items" onclick="uncheck_all_items(this)" /></td>
-    <td><input type="text" name="commonDate" class="datepicker" value="<%= currentDate %>" /></td>
-    <td><input type="button" value="Apply Date to All" onclick="apply_date_to_all(this)" /></td>
+    <td><input type="button" value="check all Items" onclick="check_all_items(this)" /></td>
+    <% If hortonFlag=False Then %>
+        <td><input type="button" value="un-check all Items" onclick="uncheck_all_items(this)" /></td>
+        <td><input type="text" name="commonDate" class="datepicker" value="<%= currentDate %>" /></td>
+        <td><input type="button" value="apply date to all" onclick="apply_date_to_all(this)" /></td>
+    <% End If %>
     </tr></table>
     <br/>
-    <a href="completedActionItems.asp?pID=<%=projID%>&inspecID=<%=inspecID%>">see Completed Items</a>
+    <a href="completedActionItems.asp?pID=<%=projectID%>&inspecID=<%=inspecID%>">see <%=completePast%> items</a>
     <br/><br/>
     </center>
     <table cellpadding="2" cellspacing="0" border="0" width="100%">
-	    <tr><th width="5%" align="left">Complete</th>
-            <% If Session("validAdmin") or Session("validDirector") Then %>
-            <th width="5%" align="left">NLN</th>
+	    <tr><th width="5%" align="left"><%=completeAction%></th>
+            <% If hortonFlag Then %>
+                <th width="5%" align="left">item status</th>
             <% End If %>
-            <th width="5%" align="left">Repeat</th>
+            <% If Session("validAdmin") or Session("validDirector") Then %>
+                <th width="5%" align="left">NLN</th>
+            <% End If %>
+            <th width="5%" align="left">repeat</th>
             <th width="5%" align="left">ID</th>
-            <th width="10%" align="left">Completion Date</th>
-            <th width="5%" align="left">Age</th>
-            <th width="5%" align="left">Report Date</th>
-            <th width="20%" align="left">Location</th>
-            <th align="left">Action Item</th>
-            <th width="2.5%" align="left">Add Note</th>
-            <th width="2.5%" align="left">View Note</th>
+            <th width="10%" align="left"><%=completeAction%> date</th>
+            <th width="5%" align="left">age</th>
+            <th width="5%" align="left">report date</th>
+            <th width="20%" align="left">location</th>
+            <th align="left">action item</th>
+            <th width="2.5%" align="left">add note</th>
+            <th width="2.5%" align="left">view note</th>
 	    </tr>
     <% siteMapInspecID = 0
     show_debug = false
@@ -296,9 +327,6 @@ horton_flag = false
           inspecDate = RS0("inspecDate")
           totalItems = RS0("totalItems")
           completedItems = RS0("completedItems")
-          IF RS0("horton") Then
-             horton_flag = true
-          End If
           'If siteMapInspecID = 0 Then
 	          siteMapInspecID = inspecID
 	       'End If
@@ -318,21 +346,21 @@ horton_flag = false
                 'no nothing
             Else
 		        Do While Not rsCoord.EOF	
-					  coordCnt = coordCnt + 1
-		           coID = rsCoord("coID")
-	              correctiveMods = Trim(rsCoord("correctiveMods"))
-	              orderby = rsCoord("orderby")
-	              coordinates = Trim(rsCoord("coordinates"))
-	              assignDate = rsCoord("assignDate") 
-	              completeDate = rsCoord("completeDate")
-                 repeat = rsCoord("repeat")
-	              useAddress = rsCoord("useAddress")
-	              address = TRIM(rsCoord("address"))
-	              locationName = TRIM(rsCoord("locationName"))
-	              infoOnly = rsCoord("infoOnly")
-	              LD = rsCoord("LD")
-                 NLN = rsCoord("NLN")
-	              parentID = rsCoord("parentID")
+				    coordCnt = coordCnt + 1
+		            coID = rsCoord("coID")
+	                correctiveMods = Trim(rsCoord("correctiveMods"))
+	                orderby = rsCoord("orderby")
+	                coordinates = Trim(rsCoord("coordinates"))
+	                assignDate = rsCoord("assignDate") 
+	                completeDate = rsCoord("completeDate")
+                    repeat = rsCoord("repeat")
+	                useAddress = rsCoord("useAddress")
+	                address = TRIM(rsCoord("address"))
+	                locationName = TRIM(rsCoord("locationName"))
+	                infoOnly = rsCoord("infoOnly")
+	                LD = rsCoord("LD")
+                    NLN = rsCoord("NLN")
+	                parentID = rsCoord("parentID")
 	              If assignDate = "" Then
 	                 age = 0
 	              Else
@@ -345,43 +373,77 @@ horton_flag = false
 			        If infoOnly = True or NLN = True Then
 	                 do_nothing = 1 
 	              Elseif status = false Then 
-	                 commSQLSELECT = "SELECT comment, userID, date" &_
+	                commSQLSELECT = "SELECT comment, userID, date" &_
 		               " FROM CoordinatesComments WHERE coID=" & coID	
-	                 Set rsComm = connSWPPP.execute(commSQLSELECT) %>
-			           <input type="hidden" name="coord:coID:<%= n %>" value="<%= coID %>" />
-	                 <input type="hidden" name="coord:inspecID:<%= n %>" value="<%= inspecID %>" />
-			           <tr>
-			           <td align="left"><input type="checkbox" name="coord:complete:<%= n %>" /></td>
-			           <% If Session("validAdmin") or Session("validDirector") Then %>
+	                Set rsComm = connSWPPP.execute(commSQLSELECT) %>
+			        <input type="hidden" name="coord:coID:<%= n %>" value="<%= coID %>" />
+	                <input type="hidden" name="coord:inspecID:<%= n %>" value="<%= inspecID %>" />
+			        <tr>
+			        <% If hortonFlag Then 
+                        commSQLSELECT = "SELECT c.comment, c.userID, c.date, u.firstName, u.lastName" &_
+                            " FROM CoordinatesComments as c, Users as u WHERE c.userID = u.userID" &_
+                        " AND coID=" & coID	
+                        'Response.Write(commSQLSELECT)
+                        Set rsComm2 = connSWPPP.execute(commSQLSELECT)
+                        done = ""
+                        completer = ""
+                        completeDate = ""
+                        If not rsComm2.EOF Then
+                            'find the completion note
+                            Do While Not rsComm2.EOF
+                                If rsComm2("comment") = "This item was marked done" Then
+                                    done = "done"
+                                    completer = rsComm2("firstName") & " " & rsComm2("lastName")
+                                    completeDate = rsComm2("date")
+                                End If
+                                rsComm2.MoveNext
+                            LOOP 
+                        End If %>
+                    <% End If %>
+                    <% If hortonFlag and Session("validErosion") and completer <> "" Then %>
+                        <td align="left"><input type="checkbox" name="coord:complete:<%= n %>" disabled /></td>
+                    <% Else %>
+                        <td align="left"><input type="checkbox" name="coord:complete:<%= n %>" /></td>
+                    <% End If %>
+                    <% If hortonFlag Then %>
+                        <td><%=done%></br><%=completer%></br><%=completeDate%></td>
+                    <% End If %>
+                    <% If Session("validAdmin") or Session("validDirector") Then %>
 	                    <td align="left"><input type="checkbox" name="coord:NLN:<%= n %>" /></td>
-	                 <% End If %>
-	                 <td align="left">
-	                 <% If repeat = True Then %>
-				           R
-			           <% End If %>
-	                 </td>
-			           <td align="left"><%= coID %></td>
-			           <td align="left"><input class="datepicker" type="text" name="coord:date:<%= n %>" value="<%= currentDate %>"/></td>
-			           <td><%= age %> days</td>
-			           <td><%= inspecDate %></td>
-	                 <td>
-			           <% if (useAddress) = False Then %>
+	                <% End If %>
+	                <td align="left">
+	                <% If repeat = True Then %>
+				        R
+			        <% End If %>
+	                </td>
+			        <td align="left"><%= coID %></td>
+			        <% If hortonFlag and Not Session("validAdmin") Then %>
+                        <td align="left"><input type="text" name="coord:date:<%= n %>" value="<%= currentDate %>" disabled /></td>
+			        <% Else %>
+                        <td align="left"><input class="datepicker" type="text" name="coord:date:<%= n %>" value="<%= currentDate %>"/></td>
+                    <% End If %>
+                    <td><%= age %> days</td>
+			        <td><%= inspecDate %></td>
+	                <td>
+			            <% if (useAddress) = False Then %>
 				           <%=coordinates%>
 			           <% Else %>
 				           <%=locationName%> (<%=address%>)
 			           <% End If %>
-			           </td>
-			           <td><%= correctiveMods %></td>
-	                 <td><input type="button" name="coord:note:<%= n %>" value="A" onclick="displayCommentWindow(this)"/></td>
-	                 <% If rsComm.EOF Then %>
+			        </td>
+			        <td><%= correctiveMods %></td>
+	                <td><input type="button" name="coord:note:<%= n %>" value="A" onclick="displayCommentWindow(this)"/></td>
+	                <% If rsComm.EOF Then %>
+                        <td></td>
+                    <% ElseIf rsComm("comment") = "This item was marked done" Then %>
 	                    <td></td>
-	                 <% Else %>
+	                <% Else %>
 	                    <td><button type="button"><a href="viewOpenItemComments.asp?coID=<%=coID%>" target="_blank">V</a></button></td>
-	                 <% End If %>
-			           </tr>
-	                 <tr><td colspan="10"></td></tr>
-			        <% n = n + 1
-	              End If
+	                <% End If %>
+                    </tr>
+                    <tr><td colspan="10"></td></tr>
+                    <% n = n + 1
+                    End If
 			        rsCoord.MoveNext 
 	 	        LOOP 'loop coordinates 
             End If
@@ -396,18 +458,18 @@ horton_flag = false
     <% If coordCnt = 0 Then %>
         <h3>There are no open items at this time</h3>
     <% End If %>
-    <input type="submit" value="Submit" /><br /><br />
+    <input type="submit" value="submit" /><br /><br />
     <% If siteMapInspecID > 0 Then
         SQL3="SELECT oImageFileName FROM OptionalImages WHERE oitID=12 AND inspecID="& siteMapInspecID
         'Response.Write(SQL3)
         SET RS3=connSWPPP.execute(SQL3)
         IF NOT(RS3.EOF) THEN 
             sitemap_link = "http://www.swppp.com/images/sitemap/"& TRIM(RS3("oImageFileName"))%>
-	        <a href="<%=sitemap_link%>">link for Site Map</a><br />
+	        <a href="<%=sitemap_link%>">link for site map</a><br />
         <% END IF
-        IF horton_flag THEN
-            inspections_link = "http://swppp.com/views/inspections.asp?projID=" & projID & "&projName=" & projectName & "&projPhase=" & projectPhase %>
-            <a href="<%=inspections_link%>">approve reports</a><br/>
+        IF hortonFlag THEN
+            inspections_link = "http://swppp.com/views/inspections.asp?projID=" & projectID & "&projName=" & projectName & "&projPhase=" & projectPhase %>
+            <a href="<%=inspections_link%>">sign off on reports</a><br/>
         <% END IF
     END IF 
     if show_debug then

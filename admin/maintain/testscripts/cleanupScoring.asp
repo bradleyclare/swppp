@@ -1,9 +1,15 @@
-<%Response.Buffer = False%>
-<%
+<%Response.Buffer = False
+
+If Not Session("validAdmin") Then
+	Session("adminReturnTo") = Request.ServerVariables("path_info") & _
+		"?" & Request.ServerVariables("query_string")
+	Response.Redirect("../loginUser.asp")
+End If 
+
 'Response.Write(Response.Buffer)
 ' Send Menu Email
 ' smp 3/5/03 layout
-If Not Session("validInspector") and not Session("validAdmin") then Response.Redirect("../default.asp") End If
+
 %><!-- #INCLUDE FILE="../connSWPPP.asp" --><%
 
 Server.ScriptTimeout=1500
@@ -52,9 +58,11 @@ Set RS0 = connSWPPP.Execute(SQL0)%>
             inspecID = RS0("inspecID")
             inspecDate = RS0("inspecDate")
             totalItems = RS0("totalItems")
-            completedItems = RS0("completedItems")%>
-                    
-            <%'open items on report tally up the open item dates 
+            completedItems = RS0("completedItems")
+            
+            Response.Write(projName & " " & projPhase & "</br>")
+
+            'open items on report tally up the open item dates 
             coordSQLSELECT = "SELECT coID, status, repeat, infoOnly, LD, parentID FROM Coordinates" &_
 	            " WHERE inspecID=" & inspecID &_
                 " AND infoOnly=0" &_

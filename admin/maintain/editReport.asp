@@ -104,7 +104,7 @@ If Request.Form.Count > 0 Then
 			ElseIf IsNumeric(Request("coord:orderby:"& CStr(n))) then
 				totalItems = totalItems + 1
                 If compliance Then
-                    message = "Site is in Compliance checked with modifications defined! Either uncheck Site is in Compliance or remove the modifications and resubmit."
+                    message = "Site is in Compliance checked with actions defined! Either uncheck Site is in Compliance or remove the actions and resubmit."
                     Response.Write("<script language=""javascript"">alert(""" + message + """);</script>")
                 End If
 			End If
@@ -267,7 +267,7 @@ End If
 baseDir = "D:\Inetpub\wwwroot\SWPPP\"%>
 <html>
 <head>
-	<title>SWPPP INSPECTIONS : Edit Inspection Report</title>
+	<title>SWPPP INSPECTIONS : edit inspection report</title>
 	<link rel="stylesheet" type="text/css" href="../../global.css">
 	<STYLE>
 	    select.long {
@@ -654,7 +654,7 @@ baseDir = "D:\Inetpub\wwwroot\SWPPP\"%>
 </head>
 <body>
 <!-- #include file="../adminHeader2.inc" -->
-<h1>Edit Inspection Report</h1>
+<h1>edit inspection report</h1>
 <form id="theForm" method="post" action="<%=Request.ServerVariables("script_name")%>?inspecID=<%=inspecID%>" onsubmit="return isReady(this)";>
 	<input type="hidden" name="inspecID" value="<%=inspecID %>" />
 	<input type="hidden" name="projectID" value="<%=rsReport("projectID") %>" />
@@ -668,17 +668,17 @@ baseDir = "D:\Inetpub\wwwroot\SWPPP\"%>
    <textarea name="systemic_note" cols="65" rows="3"><%=Trim(rsReport("systemicNote"))%></textarea>
 </div>
 <table width="90%">
-<tr><th width="30%" align="center">Report Date</th><th width="30%" align="center">Project Name</th><th width="30%" align="center">Customer Name</th></tr>
+<tr><th width="30%" align="center">report date</th><th width="30%" align="center">project name</th><th width="30%" align="center">customer name</th></tr>
 <tr><td align="center"><% = Trim(rsReport("inspecDate")) %></td><td align="center"><% = Trim(rsReport("projectName")) %>&nbsp<% = Trim(rsReport("projectPhase")) %></td><td align="center"><% = Trim(rsReport("compName")) %></td></tr>
 <tr>
-<td align="center"><a href="deleteReport.asp?inspecID=<%=inspecID %>"><button type="button">Delete Report</button></a></td>
-<td align="center"><a href="releasereports_test.asp?inspecID=<%=inspecID%>&projID=<%=rsReport("projectID")%>"><button type="button">View Email Report</button></a></td>
-<td align="center"><a href="manage_addresses.asp?inspecID=<%=inspecID%>"><button type="button">Upload Address Information</button></a></td>
+<td align="center"><a href="deleteReport.asp?inspecID=<%=inspecID %>"><button type="button">delete report</button></a></td>
+<td align="center"><a href="releasereports_test.asp?inspecID=<%=inspecID%>&projID=<%=rsReport("projectID")%>"><button type="button">view email report</button></a></td>
+<td align="center"><a href="manage_addresses.asp?inspecID=<%=inspecID%>"><button type="button">upload address information</button></a></td>
 </tr></table>
 <br/>
 <hr>
 <table width="90%" border="0" cellpadding="2" cellspacing="0">
-	<tr><td align="right" bgcolor="#eeeeee"><b>Type of Report:</b></td>
+	<tr><td align="right" bgcolor="#eeeeee"><b>type of report:</b></td>
 			<td bgcolor="#999999"><select name="reportType">
 <% 	SQL2="SELECT * FROM ReportTypes where priority > 0 ORDER BY priority DESC, reportTypeID ASC"
 	SET RS2=connSWPPP.execute(SQL2)
@@ -687,7 +687,7 @@ baseDir = "D:\Inetpub\wwwroot\SWPPP\"%>
 <% 	RS2.MoveNext
 	LOOP %>	</select></td>
 		</tr>
-	<TR><TD align="right" bgcolor="#eeeeee"><b>Narrative:</b></td>
+	<TR><TD align="right" bgcolor="#eeeeee"><b>narrative:</b></td>
 	<td bgcolor="#999999">
 	<INPUT type="button" value="Edit Narrative" onClick="editNarrative('<%= inspecID%>');"></TD></TR>
 	<%	'admin can change inspector name
@@ -698,7 +698,7 @@ If Session("validAdmin") Then
 		" ORDER BY lastName"
 	Set connUser = connSWPPP.execute(insSQLSELECT) %>
 		<tr> 
-			<td align="right" bgcolor="#eeeeee"><strong>Inspector:</strong></td>
+			<td align="right" bgcolor="#eeeeee"><strong>inspector:</strong></td>
 			<td bgcolor="#999999"><select name="inspector">
 				<% Do While Not connUser.EOF %><option value="<%= connUser("userID") %>" <% If rsReport("userID")=connUser("userID") Then %>selected<% End If %>><%= Trim(connUser("firstName")) & "&nbsp;" & Trim(connUser("lastName")) %></option> <%= rsReport("userID") %>*
 <%					connUser.moveNext
@@ -710,11 +710,11 @@ If Session("validAdmin") Then
 	SQLa="SELECT * FROM Users WHERE userID="& rsReport("userID") 
 	Set connUser= connSWPPP.execute(SQLa) %>
 		<tr> 
-			<td align="right" bgcolor="#eeeeee"><strong>Inspector:</strong></td>
+			<td align="right" bgcolor="#eeeeee"><strong>inspector:</strong></td>
 			<td bgcolor="#999999"><%= Trim(connUser("firstName"))%> <%=Trim(connUser("lastName"))%>
 				<INPUT type="hidden" name="inspector" value="<%= rsReport("userID")%>"></td></tr>
 <%	End If %>
-	<tr><td align="right" bgcolor="#eeeeee"><b>Apply DR Horton Questions:</b></td>
+	<tr><td align="right" bgcolor="#eeeeee"><b>apply DR Horton questions:</b></td>
 	<td bgcolor="#999999">Yes?
 	<% If rsReport("horton") = True Then %>
 		<input id="horton-checkbox" type="checkbox" name="horton" onChange="horton_checkbox(0)" checked/> 
@@ -780,28 +780,28 @@ Else
 End If%>
 <table width="100%">
 <tr>
-<td colspan="2" align="center"><input name="submit_coord_btn_top" type="submit" style="font-size: 20px;" value="Submit"/></td>
-<td colspan="3" align="center"><h2>Action Items</h2></td>
+<td colspan="2" align="center"><input name="submit_coord_btn_top" type="submit" style="font-size: 20px;" value="submit"/></td>
+<td colspan="3" align="center"><h2>action items</h2></td>
 </tr>
-<tr width="13%"><td>Total Items: <%=totalItems%></td><td width="13%">Completed Items: <%=completedItems%></td><td width="13%">Report Score:<%=score%></td><td width="13%">Site is in Compliance
+<tr width="13%"><td>total items: <%=totalItems%></td><td width="13%">completed items: <%=completedItems%></td><td width="13%">report score:<%=score%></td><td width="13%">site is in compliance
 <% If rsReport("compliance") = True Then %>
 	<input id="compliance-checkbox" type="checkbox" name="compliance" checked/>
 <% Else %>
 	<input id="compliance-checkbox" type="checkbox" name="compliance" />
 <% End If %>
-</td><td width="13%" align="left">Apply Scoring to Report
+</td><td width="13%" align="left">apply scoring to report
 <% If rsReport("includeItems") = True Then %>
 	<input id='includeItems-checkbox' type="checkbox" name="includeItems" checked/>
 <% Else %>
 	<input id='includeItems-checkbox' type="checkbox" name="includeItems" />
 <% End If %>
-</td><td width="13%" align="left">Open Item Alert
+</td><td width="13%" align="left">open item alert
 <% If rsReport("openItemAlert") = True Then %>
 	<input id='openItemAlert-checkbox' type="checkbox" name="openItemAlert" checked/>
 <% Else %>
 	<input id='openItemAlert-checkbox' type="checkbox" name="openItemAlert" />
 <% End If %>
-</td><td width="13%" align="left">Alert
+</td><td width="13%" align="left">alert
 <% If rsReport("systemic") = True Then %>
 	<input id='systemic-checkbox' type="checkbox" name="systemic" checked/>
 <% Else %>
@@ -819,7 +819,7 @@ locationName1 = ""
 addressName1 = ""
 %>
 <div class="addressOptionsPopup hide" name="addressOptionsPopup">
-<h3>Select Coordinates Here:</h3>
+<h3>Select coordinates here:</h3>
 <input type="hidden" name="currentAddressNum" value="1" />
 <input type="hidden" name="commonItemsNum" value="1" />
 <select name="locationOptions" onchange="setAddress(this)">
@@ -861,7 +861,7 @@ itemSQLSELECT = "SELECT itemID, itemName FROM CommonItems ORDER BY itemName"
 Set rsItems = connSWPPP.execute(itemSQLSELECT) 
 %>
 <div class="commonItemsPopup hide" name="commonItemsPopup">
-<h3>Select Common Item:</h3>
+<h3>select common item:</h3>
 <input type="hidden" name="commonItemNum" value="1" />
 <select name="commonItemOptions" onchange="setCommonItem(this)">
 <option value=""></option>
@@ -942,9 +942,9 @@ End If %>
 	<input type="hidden" name="coord:completeDate:<%= n %>" value="" />
    <input type="hidden" name="coord:NLN:<%= n %>" value="<%=NLN %>"/>
    <input type="hidden" name="coord:parentID:<%= n %>" value="<%=parentID %>" />
-	<tr><td>ID#</td>
+	<tr><td>id#</td>
 	<td><%= coID %></td>
-	<td>Address<input type="checkbox" name="coord:useAddress:<%= n %>" onclick="useAddressLookup(this)" 
+	<td>address<input type="checkbox" name="coord:useAddress:<%= n %>" onclick="useAddressLookup(this)" 
 	<% if (useAddress) = True Then %>
 		 checked
 	<% End If %>
@@ -962,27 +962,27 @@ End If %>
 	<% End If %>
 	readonly /></td>    
     </tr>
-	<tr><td>Order</td>
+	<tr><td>order</td>
 	<td><input type="text" name="coord:orderby:<%= n %>" size="10" value="<% = orderby %>" /></td>
-	<td>Location Info:</td>
+	<td>location info:</td>
 	<td colspan="6"><input name="coord:coord:<%= n %>" type="text" value="<%= coordinates %>" size="100%"  
 	<% if (useAddress) = True Then %>
 		class="hide"
 	<% End If %>
 	></td></tr>
-	<tr><td>Delete<input type="checkbox" name="coord:del:<%= n %>" /></td>
+	<tr><td>delete<input type="checkbox" name="coord:del:<%= n %>" /></td>
 	<td>Repeat
 	<% If repeat = True Then %>
 		<input type="checkbox" name="coord:repeat:<%= n %>" checked/>
 	<% Else %>
 		<input type="checkbox" name="coord:repeat:<%= n %>" />
 	<% End If %>
-	</td><td>Modifications:</td>
+	</td><td>action:</td>
 	<td rowspan="3" colspan="6"><textarea name="coord:mods:<%= n %>" cols="100%" rows="5"><%= correctiveMods %></textarea></td></tr>
-	<tr><td>AssignDate</td>
+	<tr><td>assignDate</td>
 	<td><input class=datepicker type="text" name="coord:assignDate:<%= n %>" size="10" value="<%= assignDate %>" /></td>
-	<td><input type="button" onclick="displayCommonItemSelect(this)" name="coord:item:<%=n%>" value="Common Item" /></td></tr>
-    <tr><td>Info Only
+	<td><input type="button" onclick="displayCommonItemSelect(this)" name="coord:item:<%=n%>" value="common item" /></td></tr>
+    <tr><td>note
 	<% If infoOnly = True Then %>
 		<input type="checkbox" name="coord:infoOnly:<%= n %>" checked/>
 	<% Else %>
@@ -995,7 +995,7 @@ End If %>
 		<input type="checkbox" name="coord:LD:<%= n %>" />
 	<% End If %>
     </td>
-    <td> Status
+    <td> status
     <% If status = True Then %>
         <input type="checkbox" name="coord:status:<%=n %>" checked />
     <% Else %>
@@ -1193,26 +1193,26 @@ Set rsCoord = Nothing %>
 	<input type="hidden" name="coord:repeat:<%= m %>" value="0" />
    <input type="hidden" name="coord:NLN:<%= m %>" value="0" />
    <input type="hidden" name="coord:parentID:<%= m %>" value="0" />
-	<tr><td>ID#</td>
+	<tr><td>id#</td>
 	<td>0</td>
-	<td colspan="3">Address<input type="checkbox" name="coord:useAddress:<%= m %>" onclick="useAddressLookup(this)"/></td>
+	<td colspan="3">address<input type="checkbox" name="coord:useAddress:<%= m %>" onclick="useAddressLookup(this)"/></td>
 	<td>
    <input type="text" name="coord:locationName:<%= m %>" onclick="displayAddressSelect(this)" value="<%=locationName1 %>" class="hide" /></td>
 	<td colspan="3">
 	<%temp = addressName1 %>
    <input type="text" name="coord:addressName:<%= m %>" value="<%=temp%>" class="hide" readonly /></td></tr>
-	<tr><td>Order</td>
+	<tr><td>order</td>
 	<td><input type="text" name="coord:orderby:<%= m %>" size="10" value="" /></td>
-	<td>Location:</td>
+	<td>location:</td>
 	<td colspan="6"><input name="coord:coord:<%= m %>" type="text" value="" size="100%" ></td></tr>
 	<tr><td></td>
 	<td></td>
-	<td>Mods:</td>
+	<td>action:</td>
 	<td rowspan="3" colspan="6"><textarea name="coord:mods:<%= m %>" cols="100%" rows="5"></textarea></td></tr>
-	<tr><td>AssignDate</td>
+	<tr><td>assignDate</td>
 	<td><input class=datepicker type="text" name="coord:assignDate:<%= m %>" size="10" value="" disabled /></td>
-	<td><input type="button" onclick="displayCommonItemSelect(this)" name="coord:item:<%=m%>" value="Common Item" /></td></tr>
-	<tr><td>Info Only <input type="checkbox" name="coord:infoOnly:<%= m %>" /></td>
+	<td><input type="button" onclick="displayCommonItemSelect(this)" name="coord:item:<%=m%>" value="common item" /></td></tr>
+	<tr><td>note <input type="checkbox" name="coord:infoOnly:<%= m %>" /></td>
         <td>LD <input type="checkbox" name="coord:LD:<%= m %>" /></td></tr>
 	<%	IF rsReport("horton") = True THEN %>
 	<tr>

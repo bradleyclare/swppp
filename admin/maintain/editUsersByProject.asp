@@ -39,6 +39,10 @@ If Request.Form.Count > 0 Then
 				rights="ecc"
 			Case "bcc"
 				rights="bcc"
+			Case "vsc"
+				rights="vscr"
+			Case "lds"
+				rights="ldscr"
 			Case "ins"
 				rights="inspector"
 			Case "dir"
@@ -75,13 +79,15 @@ Set RS1=connSWPPP.execute(SQL1) %>
       <% If (Session("validDirector") or Session("validAdmin")) then '- directors can create action managers %>	
 			<th>action</th>	
 			<th>erosion</th>
+			<th>vscr</th>
+			<th>ldscr</th>
       <% End If
       If Session("validAdmin") then %>
 			<th>director</th>
 			<th>inspector</th>	
       <% End If 'Session("validAdmin") %>
       </tr>
-      <% SQLSELECT = "SELECT userID, firstName, lastName FROM Users ORDER BY firstName, lastName"
+      <% SQLSELECT = "SELECT userID, firstName, lastName FROM Users WHERE active=1 ORDER BY firstName, lastName"
       'response.Write(SQLSELECT)
       Set rsUser = connSWPPP.Execute(SQLSELECT)
       
@@ -102,6 +108,8 @@ Set RS1=connSWPPP.execute(SQL1) %>
          actChecked=False
          eroChecked=False
          dirChecked=False
+			vscrChecked=False
+			ldscrChecked=False
          Do While Not RS2.EOF
             SELECT CASE TRIM(RS2("rights"))
 			      CASE "user"			userChecked=True
@@ -111,7 +119,9 @@ Set RS1=connSWPPP.execute(SQL1) %>
 			      CASE "bcc"		   recBCCChecked=True
 			      CASE "action"		actChecked=True
 			      CASE "erosion"		eroChecked=True
-			      CASE "director"	
+			      CASE "vscr"       vscrChecked=True
+					CASE "ldscr"      ldscrChecked=True
+					CASE "director"	
 				      dirName= firstName &" "& lastName 
 				      dirChecked=True
 		      END SELECT
@@ -140,6 +150,12 @@ Set RS1=connSWPPP.execute(SQL1) %>
 			   <td><input type="checkbox" name="ero:<%= userID %>"
 			   <% If eroChecked then %>checked class="checked"  <% End If %>
 			   >er</td>
+				<td><input type="checkbox" name="vsc:<%= userID %>"
+			   <% If vscrChecked then %>checked class="checked"  <% End If %>
+			   >vscr</td>
+				<td><input type="checkbox" name="lds:<%= userID %>"
+			   <% If ldscrChecked then %>checked class="checked"  <% End If %>
+			   >ldscr</td>
          <%	End If
          If Session("validAdmin") then 'only admin may set rights for other admin, directors and inspectors %>
 			   <td><input type="checkbox" name="dir:<%= userID %>"

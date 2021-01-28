@@ -1,4 +1,10 @@
 <% Response.buffer = false
+If Not Session("validAdmin") Then
+	Session("adminReturnTo") = Request.ServerVariables("path_info") & _
+		"?" & Request.ServerVariables("query_string")
+	Response.Redirect("../loginUser.asp")
+End If 
+
 %> <!-- #INCLUDE FILE="../../connSWPPP.asp" --> <%
 '	Response.Write(SQLSELECT & "<br>")
 SQL0="SELECT * FROM Projects"
@@ -28,9 +34,10 @@ End If ' no projects found
 <html>
 <head>
 	<title>SWPPP :: Change Invoice Memo</title>
-	<link rel="stylesheet" href="../../global.css" type="text/css">
+	<link rel="stylesheet" href="../../../global.css" type="text/css">
 </head>
 <body> 
+<!-- #INCLUDE FILE="../../adminHeader3.inc" -->  
 Done.
 </body>
 </html>

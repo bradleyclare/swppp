@@ -1,10 +1,16 @@
-<%Response.Buffer = False%>
-<%
+<%Response.Buffer = False
+
+If Not Session("validAdmin") Then
+	Session("adminReturnTo") = Request.ServerVariables("path_info") & _
+		"?" & Request.ServerVariables("query_string")
+	Response.Redirect("../loginUser.asp")
+End If 
+
 'Response.Write(Response.Buffer)
 ' Send Menu Email
 ' smp 3/5/03 layout
-If Not Session("validInspector") and not Session("validAdmin") then Response.Redirect("../default.asp") End If
-%><!-- #INCLUDE FILE="../connSWPPP.asp" --><%
+
+%><!-- #INCLUDE FILE="../../connSWPPP.asp" --><%
 
 Server.ScriptTimeout=1500
 
@@ -15,10 +21,10 @@ Server.ScriptTimeout=1500
 <HTML>
 <HEAD>
 	<TITLE>SWPPP INSPECTIONS :: Admin :: Cleanup Comments</TITLE>
-	<LINK REL=stylesheet HREF="../../global.css" type="text/css">
+	<LINK REL=stylesheet HREF="../../../global.css" type="text/css">
 </HEAD>
 <BODY vLink=#d1a430 aLink=#000000 link=#b83a43 bgColor=#ffffff leftMargin=0 topMargin=0 marginwidth="5" marginheight="5">
-<!-- #INCLUDE FILE="../adminHeader2.inc" -->  
+<!-- #INCLUDE FILE="../../adminHeader3.inc" -->  
 <%
 'get all comments
 commSQLSELECT = "SELECT commentID, comment, userID, date, coID" &_

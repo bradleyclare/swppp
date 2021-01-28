@@ -40,7 +40,7 @@ IF Request.Form.Count > 0 THEN %>
                 currentDate = date()
                 strBody=""
                 userID = Request(Item)
-                SQLSELECT = "SELECT firstName, lastName, email FROM Users WHERE userID = " & userID & " ORDER BY email"
+                SQLSELECT = "SELECT firstName, lastName, email FROM Users WHERE userID = " & userID & " and active=1 ORDER BY email"
                 'Response.Write(SQLSELECT & "<br>")
                 Set connUsers = connSWPPP.Execute(SQLSELECT) %>
                 <br />

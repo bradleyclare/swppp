@@ -33,6 +33,7 @@ recCount = 0
 <!-- #include file="../adminHeader2.inc" -->
 <table width="100%" border="0">
 	<tr><td><br><h1>View Users</h1></td></tr></table>
+	<a href="activateUsers.asp"><input type="button" value="activate users"/></a>
 <table width="100%" border="0">
 	<tr><th><b>Count</b></th>
 		<th><a href="<% = Request.ServerVariables("script_name") %>?orderBy=firstName"> 

@@ -58,6 +58,8 @@ SET RS0=connSWPPP.execute(SQL0) %>
 	<td><img align=bottom src='..\..\images\U.jpg' height="12"> - User</td>
 	<td><img align=bottom src='..\..\images\AM.gif' height="12"> - Action MGR</td>
 	<td><img align=bottom src='..\..\images\E.gif' height="12"> - Erosion</td>
+	<td><img align=bottom src='..\..\images\vscr.gif' height="12"> - VSCR</td>
+	<td><img align=bottom src='..\..\images\ldscr.gif' height="12"> - LDSCR</td>
 </table>
 <br><br>
 <table width="100%" border="0">
@@ -82,7 +84,7 @@ SET RS0=connSWPPP.execute(SQL0) %>
 			    " FROM Users as u, ProjectsUsers as pu, Projects as p" &_
 			    " WHERE pu.projectID="& RS0("projectID") &" AND pu.userID=u.userID " 
 			IF Session("validDirector") AND NOT(session("validAdmin")) THEN		
-		        SQL1 = SQL1 & " AND pu.rights IN('email','director','user','action','erosion','ecc') and u.userID not in (Select userID From Users Where rights in ('admin','inspector'))"
+		        SQL1 = SQL1 & " AND pu.rights IN('email','director','user','action','erosion','ecc','vscr','ldscr') and u.userID not in (Select userID From Users Where rights in ('admin','inspector'))"
 			END IF
 		    SQL1 = SQL1 & " ORDER BY firstName, lastName, pu.rights desc"
 		    SET RS1=connSWPPP.execute(SQL1) %>
@@ -108,6 +110,8 @@ SET RS0=connSWPPP.execute(SQL0) %>
 				    CASE "email"		%>&nbsp;<img align="bottom" src="..\..\images\email2.jpg"><%
 				    CASE "ecc"		    %>&nbsp;<img align="bottom" src="..\..\images\CC.gif"><%
 				    CASE "bcc"		    %>&nbsp;<img align="bottom" src="..\..\images\BCC.gif"><%
+					 CASE "vscr"		    %>&nbsp;<img align="bottom" src="..\..\images\vscr.gif"><%
+					 CASE "ldscr"		    %>&nbsp;<img align="bottom" src="..\..\images\ldscr.gif"><%
 				END SELECT 
 	        RS1.moveNext
 	        LOOP %></TBODY></td></tr>

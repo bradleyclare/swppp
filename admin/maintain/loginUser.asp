@@ -103,7 +103,7 @@ End If ' Request.Form.Count>0
 <form action="<%= Request.ServerVariables("SCRIPT_NAME") %>" method="post">
 <div align="center"><br><br>
 <% If noMatch Then %>
-		<font color="#FF0000">Your email cannot be found in our admin list. Please
+		<font color="#FF0000">Your email cannot be found in our list. Please
 		resubmit.</font><br><br>
 <% End If
 	If badPassword Then %>

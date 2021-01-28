@@ -57,6 +57,7 @@ End If
   </script>
 </head>
 <body>
+<!-- #INCLUDE FILE="../../adminHeader3.inc" -->  
 <form action="<%= Request.ServerVariables("script_name") %>" method="post">
 <input type="submit" value="Update Users">
 <input type="button" value="check all Items" onclick="check_all_items(this)" />

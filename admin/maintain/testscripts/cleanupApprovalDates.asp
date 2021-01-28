@@ -1,18 +1,18 @@
 <%
-If Not Session("validAdmin") And Not Session("validInspector") Then
+If Not Session("validAdmin") Then
 	Session("adminReturnTo") = Request.ServerVariables("path_info") & _
 		"?" & Request.ServerVariables("query_string")
-	Response.Redirect("loginUser.asp")
+	Response.Redirect("../loginUser.asp")
 End If 
 %>
-<!-- #include file="../connSWPPP.asp" -->
+<!-- #include file="../../connSWPPP.asp" -->
 <html>
 <head>
 	<title>SWPPP INSPECTIONS : Clean Up Approval Dates</title>
-	<link rel="stylesheet" type="text/css" href="../../global.css">
+	<link rel="stylesheet" type="text/css" href="../../../global.css">
 </head>
 <body>
-<!-- #include file="../adminHeader2.inc" -->
+<!-- #include file="../../adminHeader3.inc" -->
 <h1>Clean Up Approval Dates</h1>
 <% approvalSQLSELECT = "SELECT * FROM HortonApprovals"
 'Response.Write(approvalSQLSELECT)

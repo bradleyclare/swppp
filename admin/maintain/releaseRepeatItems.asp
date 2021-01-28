@@ -275,7 +275,7 @@ IF Request.Form.Count > 0 THEN %>
                     
                     userSQLSELECT = "SELECT userID, pswrd, rights, firstName, lastName, noImages, seeScoring, repeatItemAlerts" &_
 		                " FROM Users" & _
-		                " WHERE seeScoring = 1 AND repeatItemAlerts = 1 AND email = '" & email & "'"
+		                " WHERE active=1 AND seeScoring = 1 AND repeatItemAlerts = 1 AND email = '" & email & "'"
 	                ' Response.Write(userSQLSELECT & "<br>")
 	                Set connEmail = connSWPPP.execute(userSQLSELECT)
                     

@@ -370,7 +370,7 @@ Else
 			End If
             If NLN = True Then
                 'do nothing
-            ElseIf infoOnly = True Then %>
+            ElseIf infoOnly = True and (useAddress=False and coordinates="") or (useAddress=True and locationName="" and address="") Then %>
                 <tr valign='top'><td width='20%' align='right'><b>note:</b></td><td width='80%' align='left' class = '<%=scoring_class%>'><%=correctiveMods%></td></tr>
             <% Else
 		        IF useAddress THEN %>
@@ -381,8 +381,12 @@ Else
 		        <% END IF
 		        IF TRIM(rsCoord("existingBMP"))<>"-1" THEN %>
 			        <tr valign='top'><td width='20%' align='right'><b>existing BMP:</b></td><td width='80%' align='left' class = '<%=scoring_class%>'><%=existingBMP%><br></td></tr>
-		        <% END IF %>
-		        <tr valign='top'><td width='20%' align='right'><b>action needed:</b></td><td width='80%' align='left' class = '<%=scoring_class%>'><%=correctiveMods%></td></tr>
+		        <% END IF 
+				  item_title = "action needed"
+				  If infoOnly = True Then
+						item_title = "note"
+				  End If %>
+		        <tr valign='top'><td width='20%' align='right'><b><%=item_title%>:</b></td><td width='80%' align='left' class = '<%=scoring_class%>'><%=correctiveMods%></td></tr>
 		        <% IF applyScoring and repeat THEN %>
 			        <tr valign='top'><td width='20%' align='right'><b>item age:</b></td><td width='80%' align='left' class = '<%=scoring_class%>'><%=age%><br></td></tr>
 		        <% END IF

@@ -1,15 +1,15 @@
 <%
-If Not Session("validAdmin") And Not Session("validInspector") Then
+If Not Session("validAdmin") Then
 	Session("adminReturnTo") = Request.ServerVariables("path_info") & _
 		"?" & Request.ServerVariables("query_string")
-	Response.Redirect("loginUser.asp")
+	Response.Redirect("../loginUser.asp")
 End If 
 inspecID = Session("inpecID")
 IF Request("inspecID")<>"" THEN 
 	inspecID = Request("inspecID") 
 	Session("inspecID")=inspecID
 END IF %>
-<!-- #include file="../connSWPPP.asp" -->
+<!-- #include file="../../connSWPPP.asp" -->
 <% If Request.Form.Count > 0 Then
 	If Request("clean-up") = "Clean Up Records" Then
 		totalItems = 0
@@ -33,10 +33,10 @@ End If
 <html>
 <head>
 	<title>SWPPP INSPECTIONS : Clean Up Addresses</title>
-	<link rel="stylesheet" type="text/css" href="../../global.css">
+	<link rel="stylesheet" type="text/css" href="../../../global.css">
 </head>
 <body>
-<!-- #include file="../adminHeader2.inc" -->
+<!-- #include file="../../adminHeader3.inc" -->
 <h1>Clean Up Addresses</h1>
 <% addressSQLSELECT = "SELECT addressID, locationName, address FROM Addresses ORDER BY locationName"
 'Response.Write(addressSQLSELECT)

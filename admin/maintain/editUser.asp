@@ -332,7 +332,7 @@ Set gifDirectory = Nothing %>
     <tr><td align="right">User Group:</td>
         <td><select name="userGroup"
            <% If not Session("validAdmin") then %>
-           disabled 
+           readonly 
            <% End If %>
            ><option value="0 - No Group">0 - No Group</option>
         <% SQLSELECT = "SELECT userGroupID, userGroupName FROM UserGroups"
@@ -463,7 +463,7 @@ DO WHILE NOT RS1.EOF
 <%  End If
  	If (Session("validDirector") OR Session("validAdmin")) then '- directors can create action managers %>		
 <!--- ----------------------------------------- Action ----------------------------------------- --->
-		<td align=center><input type="checkbox" name="act<%= compCount %>" value="<%= dispProjID %>" disabled 
+		<td align=center><input type="checkbox" name="act<%= compCount %>" value="<%= dispProjID %>" readonly 
 			<% If actChecked then %>checked<% End If %>></td>		
 <!--- ----------------------------------------- Erosion ----------------------------------------- --->
 		<td align=center><input type="checkbox" name="ero<%= compCount %>" value="<%= dispProjID %>"
@@ -479,7 +479,7 @@ DO WHILE NOT RS1.EOF
 <!--- ----------------------------------------- Director --------------------------------------- --->
 		<td align=center><input type="checkbox" name="dir<%= compCount %>" value="<%= dispProjID %>"
 			<% If dirChecked then %>checked<% End If %>
-			<% IF NOT(dirChecked) AND NOT(dirName="None") THEN%>disabled<%END IF%>></td>
+			<% IF NOT(dirChecked) AND NOT(dirName="None") THEN%>readonly<%END IF%>></td>
 <!--- ----------------------------------------- Inspector -------------------------------------- --->
 		<td align=center><input type="checkbox" name="ins<%= compCount %>" value="<%= dispProjID %>"
 			<% If insChecked then %>checked<% End If %>></td></tr>	

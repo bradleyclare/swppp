@@ -2,7 +2,7 @@
 If Not Session("validAdmin") Then
 	Session("adminReturnTo") = Request.ServerVariables("path_info") & _
 		"?" & Request.ServerVariables("query_string")
-	Response.Redirect("../loginUser.asp")
+	Response.Redirect("../../loginUser.asp")
 End If 
 inspecID = Session("inpecID")
 IF Request("inspecID")<>"" THEN 

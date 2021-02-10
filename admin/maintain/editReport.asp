@@ -29,8 +29,14 @@ If Request.Form.Count > 0 Then
 	bmps=Request("bmpsInPlace")
 	sediment=Request("sediment")
 	upProjPhase= strQuoteReplace(Request("projectPhase"))
+	
+	inspecDate = strQuoteReplace(Request("inspecDate"))
+	If inspecDate = "1/1/1900" Then
+	   Response.Write("Fixing bad date. Line 35.\n")
+		inspecDate = date()
+	End If
 	inspectSQLUPDATE = "UPDATE Inspections SET" & _
-		" inspecDate = '" & strQuoteReplace(Request("inspecDate")) & "'" & _
+		" inspecDate = '" & inspecDate & "'" & _
 		", projectName = '" & strQuoteReplace(Request("projectName")) & "'" 
 		IF LEN(TRIM(upProjPhase))=0 THEN 
 			inspectSQLUPDATE=inspectSQLUPDATE &", projectPhase=null" 
@@ -92,6 +98,10 @@ If Request.Form.Count > 0 Then
 		totalItems = 0
 		completedItems = 0
       inspecDate = strQuoteReplace(Request("inspecDate"))
+		If inspecDate = "1/1/1900" Then
+		   Response.Write("Fixing bad date. Line 102.\n")
+			inspecDate = date()
+		End If
 		for n = 1 to 999 step 1
 'Response.Write("coord:coID:" & CStr(n)&":"& Request("coord:coID:" & CStr(n)) &"<br/>")
 		    if Trim(Request("coord:coID:" & CStr(n))) = "" then
@@ -669,7 +679,14 @@ baseDir = "D:\Inetpub\wwwroot\SWPPP\"%>
 </div>
 <table width="90%">
 <tr><th width="30%" align="center">report date</th><th width="30%" align="center">project name</th><th width="30%" align="center">customer name</th></tr>
-<tr><td align="center"><% = Trim(rsReport("inspecDate")) %></td><td align="center"><% = Trim(rsReport("projectName")) %>&nbsp<% = Trim(rsReport("projectPhase")) %></td><td align="center"><% = Trim(rsReport("compName")) %></td></tr>
+
+<% inspecDate = Trim(rsReport("inspecDate"))
+If inspecDate = "1/1/1900" Then
+	Response.Write("Fixing bad date. Line 685.\n")
+	inspecDate = date()
+End If %>
+
+<tr><td align="center"><% = inspecDate %></td><td align="center"><% = Trim(rsReport("projectName")) %>&nbsp<% = Trim(rsReport("projectPhase")) %></td><td align="center"><% = Trim(rsReport("compName")) %></td></tr>
 <tr>
 <td align="center"><a href="deleteReport.asp?inspecID=<%=inspecID %>"><button type="button">delete report</button></a></td>
 <td align="center"><a href="releasereports_test.asp?inspecID=<%=inspecID%>&projID=<%=rsReport("projectID")%>"><button type="button">view email report</button></a></td>
@@ -980,7 +997,7 @@ End If %>
 	</td><td>action:</td>
 	<td rowspan="3" colspan="6"><textarea name="coord:mods:<%= n %>" cols="100%" rows="5"><%= correctiveMods %></textarea></td></tr>
 	<tr><td>assignDate</td>
-	<td><input class=datepicker type="text" name="coord:assignDate:<%= n %>" size="10" value="<%= assignDate %>" /></td>
+	<td><input <% If Session("validAdmin") Then %> class=datepicker <% End If %> type="text" name="coord:assignDate:<%= n %>" size="10" value="<%= assignDate %>" <% If not Session("validAdmin") Then %> readonly <% End If %>/></td>
 	<td><input type="button" onclick="displayCommonItemSelect(this)" name="coord:item:<%=n%>" value="common item" /></td></tr>
     <tr><td>note
 	<% If infoOnly = True Then %>
@@ -1210,7 +1227,7 @@ Set rsCoord = Nothing %>
 	<td>action:</td>
 	<td rowspan="3" colspan="6"><textarea name="coord:mods:<%= m %>" cols="100%" rows="5"></textarea></td></tr>
 	<tr><td>assignDate</td>
-	<td><input class=datepicker type="text" name="coord:assignDate:<%= m %>" size="10" value="" disabled /></td>
+	<td><input <% If Session("validAdmin") Then %> class=datepicker <% End If %> type="text" name="coord:assignDate:<%= m %>" size="10" value="" readonly /></td>
 	<td><input type="button" onclick="displayCommonItemSelect(this)" name="coord:item:<%=m%>" value="common item" /></td></tr>
 	<tr><td>note <input type="checkbox" name="coord:infoOnly:<%= m %>" /></td>
         <td>LD <input type="checkbox" name="coord:LD:<%= m %>" /></td></tr>
@@ -1261,7 +1278,7 @@ Set rsAddress = Nothing %>
 		<tr><td width="35%" bgcolor="#eeeeee"><img src="../../images/dot.gif" width="5" height="5"></td>
 			<td width="55%" bgcolor="#999999"><img src="../../images/dot.gif" width="5" height="5"></td>
 		</tr><tr><td align="right" bgcolor="#eeeeee"><b>Date:</b></td>
-			<td bgcolor="#999999"> <input type="text" name="inspecDate" size="10" value="<% = Trim(rsReport("inspecDate")) %>"> <small>&nbsp;(mm / dd / yyyy)</small></td>
+			<td bgcolor="#999999"> <input type="text" name="inspecDate" size="10" value="<% = inspecDate %>" <% If not Session("validAdmin") Then %> readonly <% End If %>> <small>&nbsp;(mm / dd / yyyy)</small></td>
 		</tr>
 		<!-- project name -->
 		<tr><td align="right" bgcolor="#eeeeee"><b>Project Name | Phase:</b></td>

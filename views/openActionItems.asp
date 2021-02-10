@@ -401,7 +401,7 @@ Set RS0 = connSWPPP.Execute(SQL0)
                         End If %>
                     <% End If %>
                     <% If hortonFlag and Session("validErosion") and completer <> "" Then %>
-                        <td align="left"><input type="checkbox" name="coord:complete:<%= n %>" disabled /></td>
+                        <td align="left"><input type="checkbox" name="coord:complete:<%= n %>" readonly /></td>
                     <% Else %>
                         <td align="left"><input type="checkbox" name="coord:complete:<%= n %>" /></td>
                     <% End If %>
@@ -418,7 +418,7 @@ Set RS0 = connSWPPP.Execute(SQL0)
 	                </td>
 			        <td align="left"><%= coID %></td>
 			        <% If hortonFlag and Not Session("validAdmin") Then %>
-                        <td align="left"><input type="text" name="coord:date:<%= n %>" value="<%= currentDate %>" disabled /></td>
+                        <td align="left"><input type="text" name="coord:date:<%= n %>" value="<%= currentDate %>" readonly /></td>
 			        <% Else %>
                         <td align="left"><input class="datepicker" type="text" name="coord:date:<%= n %>" value="<%= currentDate %>"/></td>
                     <% End If %>

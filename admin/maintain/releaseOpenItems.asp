@@ -68,18 +68,18 @@ IF Request.Form.Count > 0 THEN %>
                 'Response.Write(SQLSELECT & "<br>")
                 Set connProjUsers = connSWPPP.Execute(SQLSELECT)
 
-                SQL1 = "SELECT inspecID FROM Inspections WHERE projectID = " & connProjUsers("projectID") & " AND horton = 1"
+                'SQL1 = "SELECT inspecID FROM Inspections WHERE projectID = " & connProjUsers("projectID") & " AND horton = 1"
                 'Response.Write(SQL1)
-                Set RS1 = connSWPPP.Execute(SQL1)
+                'Set RS1 = connSWPPP.Execute(SQL1)
 
-                show_horton = False
+                'show_horton = False
                 strBody=strBody & "<table>"
-                If RS1.EOF Then
-                    strBody=strBody & "<tr><th>project name</th><th>group name</th><th>over 1 day</th><th>over 5 days</th><th class='red'>over 7 days</th><th class='red'>over 10 days</th><th class='red'>over 14 days</th><th class='red'>repeats</th><th>notes</th><th>alert</th></tr>"
-                Else
+                'If RS1.EOF Then
+                '    strBody=strBody & "<tr><th>project name</th><th>group name</th><th>over 1 day</th><th>over 5 days</th><th class='red'>over 7 days</th><th class='red'>over 10 days</th><th class='red'>over 14 days</th><th class='red'>repeats</th><th>notes</th><th>alert</th></tr>"
+                'Else
                     show_horton = True
                     strBody=strBody & "<tr><th>project name</th><th>group name</th><th>over 1 day</th><th>over 5 days</th><th class='red'>over 7 days</th><th class='red'>over 10 days</th><th class='red'>over 14 days</th><th class='red'>repeats</th><th>notes</th><th>alert</th><th>VSCR to sign off</th><th>LDSCR to sign off</th></tr>"
-                End If
+                'End If
 
                 'tally up the open items for each project
                 'Loop through all projects the user has connection with

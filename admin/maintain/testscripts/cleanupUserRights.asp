@@ -2,7 +2,7 @@
 <%
 If Not Session("validAdmin") Then
 	Session("adminReturnTo") = Request.ServerVariables("path_info")
-	Response.Redirect("../loginUser.asp")
+	Response.Redirect("../../loginUser.asp")
 End If
 %> 
 <!-- #include file="../../connSWPPP.asp" --> 

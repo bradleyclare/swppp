@@ -69,7 +69,11 @@ if rsInspec_old("horton") then
 		Next
 		answerSQL = answerSQL & ") VALUES (" & newInspecID & ", "
 		For i = 1 To numQuestions
-			answerSQL = answerSQL & "'" & RSA("Q" & i) & "'"
+		   if i=3 Then
+            answerSQL = answerSQL & "'yes'"
+			Else
+				answerSQL = answerSQL & "'" & RSA("Q" & i) & "'"
+			End If
 			If i < numQuestions Then
 				answerSQL = answerSQL & ", "
 			End If
@@ -79,6 +83,10 @@ if rsInspec_old("horton") then
 		connSWPPP.Execute(answerSQL)
 	End If
 end if
+
+'for the near term always set question 3/33 to yes
+'updateSQL = "UPDATE HortonAnswers SET Q3='yes' where inspecID=" & newInspecID
+'connSWPPP.Execute(answerSQL)
 
 'reset completed and repeat states
 'coordSQLSELECT = "SELECT coID FROM Coordinates WHERE inspecID=" & inspecID 

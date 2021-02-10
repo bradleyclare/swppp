@@ -105,7 +105,7 @@ Set rsAddress = connSWPPP.execute(addressSQLSELECT) %>
 	<td><input type="submit" name="delete" value="Delete All Records"/></td>
 	<td><input type="file" name="add" id="choose_file" value=""/></td>
 	<td><input type="submit" name="save" value="Save Records to Database"/></td>
-	<td><a href="clean_up_addresses.asp?inspecID=<%=inspecID%>"><button type="button">Clean Up Addresses</button></a></td>
+	<td><a href="testscripts/cleanupAddresses.asp?inspecID=<%=inspecID%>"><button type="button">Clean Up Addresses</button></a></td>
 	</tr></table>
 	
 	<div class="fl half">

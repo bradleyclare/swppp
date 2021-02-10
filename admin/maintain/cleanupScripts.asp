@@ -1,7 +1,7 @@
 <%
 If Not Session("validAdmin") Then
 	Session("adminReturnTo") = Request.ServerVariables("path_info")
-	Response.Redirect("maintain/loginUser.asp")
+	Response.Redirect("loginUser.asp")
 End If
 %>
 

@@ -149,13 +149,20 @@ If Session("seeScoring") Then %>
 	<th>report score</th><th>items</th>
 <% End If 
 If hortonFlag Then
-	If hortonSignV and (Session("validAdmin") or Session("validDirector") or hortonUserV) Then %>	
-			<th>VSCR sign off</th><th>VSCR</th><th>VSCR date</th>
-	<% End If
-   If hortonSignLD and (Session("validAdmin") or Session("validDirector") or hortonUserLD) Then %>	
-			<th>LDSCR sign off</th><th>LDSCR</th><th>LDSCR date</th>
-	<% End If
-End If %>
+	If hortonSignV Then  
+		If (Session("validAdmin") or Session("validDirector") or hortonUserV) Then %>	
+			<th>VSCR sign off</th>
+		<% End If %>
+		<th>VSCR</th><th>VSCR date</th>
+	<% End If %>
+	
+   <% If hortonSignLD Then
+		If (Session("validAdmin") or Session("validDirector") or hortonUserLD) Then %>	
+			<th>LDSCR sign off</th>
+		<% End If %>
+		<th>LDSCR</th><th>LDSCR date</th>
+	<% End If %>
+<% End If %>
 </tr>
 
 <% includeItemsFlag = False
@@ -204,7 +211,7 @@ Else
 			<% End If 
 			If hortonFlag Then 
 				'check for approval status 
-				If hortonSignV and (Session("validAdmin") or Session("validDirector") or hortonUserV) Then
+				If hortonSignV Then
 					SQLA="SELECT * FROM HortonApprovals WHERE LD=0 and inspecID="& inspecID
 					SET RSA=connSWPPP.execute(SQLA)
 					If RSA.EOF Then 
@@ -222,18 +229,20 @@ Else
 							hortonApprovalUser = "Unknown"
 						End If
 						hortonApprovalDate = RSA("date")
-					End If %>
-					<td align="center">
-					<% If hortonStatus Then %>
-						x
-					<% Else %>
-						<input type="checkbox" name="approval_V:<%=inspecID%>"></input>
+					End If 
+					If (Session("validAdmin") or Session("validDirector") or hortonUserV) Then %>
+						<td align="center">
+						<% If hortonStatus Then %>
+							x
+						<% Else %>
+							<input type="checkbox" name="approval_V:<%=inspecID%>"></input>
+						<% End If %>
+						</td>
 					<% End If %>
-					</td>
 					<td align="center"><%=hortonApprovalUser%></td>
 					<td align="center"><%=hortonApprovalDate%></td>
 				<% End If
-				If hortonSignLD and (Session("validAdmin") or Session("validDirector") or hortonUserLD) Then
+				If hortonSignLD Then
 					SQLA="SELECT * FROM HortonApprovals WHERE LD=1 and inspecID="& inspecID
 					SET RSA=connSWPPP.execute(SQLA)
 					If RSA.EOF Then 
@@ -250,14 +259,16 @@ Else
 							hortonApprovalUser = "Unknown"
 						End If
 						hortonApprovalDate = RSA("date")
-					End If %>
-					<td align="center">
-					<% If hortonStatus Then %>
-						x
-					<% Else %>
-						<input type="checkbox" name="approval_LD:<%=inspecID%>"></input>
+					End If 
+					If (Session("validAdmin") or Session("validDirector") or hortonUserLD) Then %>
+						<td align="center">
+						<% If hortonStatus Then %>
+							x
+						<% Else %>
+							<input type="checkbox" name="approval_LD:<%=inspecID%>"></input>
+						<% End If %>
+						</td>
 					<% End If %>
-					</td>
 					<td align="center"><%=hortonApprovalUser%></td>
 					<td align="center"><%=hortonApprovalDate%></td>
 				<% End If

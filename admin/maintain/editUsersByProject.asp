@@ -144,7 +144,7 @@ Set RS1=connSWPPP.execute(SQL1) %>
 			   <% If recBCCChecked then %>checked class="checked"  <% End If %>
 			   >b</td>
          <% If (Session("validDirector") or Session("validAdmin")) then '- directors can create action managers %>	
-			   <td><input type="checkbox" name="act:<%= userID %>" disabled 
+			   <td><input type="checkbox" name="act:<%= userID %>" readonly 
 			   <% If actChecked then %>checked class="checked"  <% End If %>
 			   >a</td>	
 			   <td><input type="checkbox" name="ero:<%= userID %>"

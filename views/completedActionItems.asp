@@ -169,9 +169,10 @@ End Date (MM/DD/YYYY): <input name="endDate" type="text" value="<%=endDate%>" si
 
 <table cellpadding="2" cellspacing="0" border="0" width="100%">
 	<tr>
-        <% If Session("validAdmin") Then %>
+        <% If Session("validAdmin") or Session("validDirector") Then %>
             <th width="5%" align="left"><%=completePast%></th>
-            <th width="5%" align="left">NLN</th>
+            <th width="2.5%" align="left">NLN</th>
+            <th width="2.5%" align="left">view done</th>
         <% End If %>
         <th width="5%" align="left">ID</th>
         <th width="10%" align="left"><%=completeAction%> date</th>  
@@ -180,12 +181,14 @@ End Date (MM/DD/YYYY): <input name="endDate" type="text" value="<%=endDate%>" si
         <th align="left">action item</th>
         <th width="2.5%" align="left">view note</th>
     </tr>
-<% If rsInspectInfo.EOF Then
-	Response.Write("<tr><td colspan='4' align='center'><i style='font-size: 15px'>There are no inspection reports found.</i></td></tr>")
+<% num_reports = 0
+If rsInspectInfo.EOF Then
+    Response.Write("<tr><td colspan='4' align='center'><i style='font-size: 15px'>There are no inspection reports found.</i></td></tr>")
 Else
     n = 0
     siteMapInspecID = 0
-	Do While Not rsInspectInfo.EOF   
+	Do While Not rsInspectInfo.EOF
+        num_reports = num_reports + 1   
         inspecID = rsInspectInfo("inspecID")
         inspecDate = Trim(rsInspectInfo("inspecDate"))
         includeItems = rsInspectInfo("includeItems")
@@ -231,16 +234,22 @@ Else
               Set rsComm = connSWPPP.execute(commSQLSELECT)
               completer = ""
               show_note = false
+              show_done = false
               If rsComm.EOF Then
                  show_note = false
+                 show_done = false
               Else
                  'find the completion note
                  Do While Not rsComm.EOF
-                    If rsComm("comment") = "This item was marked complete" or rsComm("comment") = "This item was marked NLN" or rsComm("comment") = "This item was marked done" Then
-                       completer = rsComm("firstName") & " " & rsComm("lastName")
-                       completeDate = rsComm("date")
+                    If rsComm("comment") = "This item was marked complete" Then
+                        completer = rsComm("firstName") & " " & rsComm("lastName")
+                        completeDate = rsComm("date")
+                    Elseif rsComm("comment") = "This item was marked NLN" Then
+                        show_note = false
+                    Elseif rsComm("comment") = "This item was marked done" Then
+                        show_done = true
                     Else
-                       show_note = true
+                        show_note = true
                     End If
                     rsComm.MoveNext
                  LOOP 
@@ -259,9 +268,14 @@ Else
                  If NLN = True Then
                     nln_str = "checked"
                  End If
-                 If Session("validAdmin") Then %> 
+                 If Session("validAdmin") or Session("validDirector") Then %> 
                     <td align="left"><input type="checkbox" name="coord:complete:<%= n %>" <%=status_str %> /></td>
                     <td align="left"><input type="checkbox" name="coord:nln:<%= n %>" <%=nln_str %> /></td>
+                    <% If show_done Then %>
+                        <td><button type="button"><a href="viewOpenItemComments.asp?coID=<%=coID%>" target="_blank">V</a></button></td>
+                    <% Else %>
+                        <td></td>
+                    <% End If %>
                  <% End If %>
 		           <td align="left"><%= coID %></td>
 		           <td align="left"><%= completeDate %>: <%= completer %></td>
@@ -296,12 +310,14 @@ End If%>
 <% If Session("validAdmin") Then  %>
     <input type="submit" value="submit"/><br/><br/>
 <% End If %>
-<% SQL3="SELECT oImageFileName FROM OptionalImages WHERE oitID=12 AND inspecID="& siteMapInspecID
-SET RS3=connSWPPP.execute(SQL3)
-IF NOT(RS3.EOF) THEN 
-    sitemap_link = "http://www.swpppinspections.com/images/sitemap/"& TRIM(RS3("oImageFileName"))%>
-	<a href='<%=sitemap_link%>'>link for site map</a>
-<% End If %>
+<% If num_reports > 0 Then
+    SQL3="SELECT oImageFileName FROM OptionalImages WHERE oitID=12 AND inspecID="& siteMapInspecID
+    SET RS3=connSWPPP.execute(SQL3)
+    IF NOT(RS3.EOF) THEN 
+        sitemap_link = "http://www.swpppinspections.com/images/sitemap/"& TRIM(RS3("oImageFileName"))%>
+	    <a href='<%=sitemap_link%>'>link for site map</a>
+    <% End If 
+End If %>
 </center>
 </form>
 <br><br>

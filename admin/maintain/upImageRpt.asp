@@ -42,7 +42,7 @@ SET RS1=connSWPPP.execute(SQL1)
 				to the report administration<br>for file association and immediate editing.</td></tr>
 		<tr><td colspan="2">&nbsp;</td></tr>
 		<tr><td width="25%" align="right" nowrap>Local File Name:</td>
-			<td width="75%"><input name="attach1" type="file" size="50"></td></tr>
+			<td width="75%"><input name="attach1" type="file" size="100"></td></tr>
 		<tr><td height="44" align="left">&nbsp;</td>
 			<td height="44" valign="bottom"> <input type="submit" value="Start Upload"></td></tr>
 	</form>

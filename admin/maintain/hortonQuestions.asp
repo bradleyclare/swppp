@@ -17,13 +17,58 @@ answerSQLSELECT = "SELECT * FROM HortonAnswers WHERE inspecID = " & inspecID
 Set RSA = connSWPPP.execute(answerSQLSELECT)
 
 'get questions
-SQL0 = "SELECT * FROM HortonQuestions WHERE orderby > 30 AND orderby < 57 ORDER BY orderby"
-Response.Write(SQL0)
+SQL0 = "SELECT * FROM HortonQuestions WHERE orderby > 60 AND orderby < 87 ORDER BY orderby"
+'Response.Write(SQL0)
 Set RS0 = connSWPPP.Execute(SQL0)
 
 numQuestions = 26
 If Request.Form.Count > 0 Then
-    if Request.Form("sync_btn") = "Sync" then
+    If Request.Form("na_btn") = "Set all to NA" Then
+        'insert or update answers to database
+        If RSA.EOF Then
+            answerSQL = "INSERT INTO HortonAnswers (inspecID, " 
+            For i = 1 To numQuestions
+                answerSQL = answerSQL & "Q" & i
+                If i < numQuestions Then
+                    answerSQL = answerSQL & ", "
+                End If
+            Next
+            answerSQL = answerSQL & ") VALUES (" & inspecID & ", "
+            For i = 1 To numQuestions
+                answerSQL = answerSQL & "'na'"
+                If i < numQuestions Then
+                    answerSQL = answerSQL & ", "
+                End If
+            Next
+            answerSQL = answerSQL & ")"
+        Else
+            answerSQL = "UPDATE HortonAnswers SET "
+            For i = 1 To numQuestions
+                answerSQL = answerSQL & "Q" & i & " = 'na'"
+                If i < numQuestions Then
+                    answerSQL = answerSQL & ", "
+                End If
+            Next
+            answerSQL = answerSQL & " WHERE inspecID = " & inspecID
+        End If
+        'response.Write(answerSQL)
+        connSWPPP.Execute(answerSQL)
+    ElseIf Request.Form("default_btn") = "Set all to Defaults" Then
+        answerSQL = "UPDATE HortonAnswers SET "
+        cnt = 0
+        Do While Not RS0.EOF
+            cnt = cnt + 1
+            default_val = Trim(RS0("default_answer"))
+            answerSQL = answerSQL & "Q" & cnt & " = '" & default_val & "'"
+            If cnt < numQuestions Then
+                answerSQL = answerSQL & ", "
+            End If
+            RS0.MoveNext
+        Loop 'RSO
+        answerSQL = answerSQL & " WHERE inspecID = " & inspecID
+        'Response.Write(answerSQL)
+        connSWPPP.Execute(answerSQL)
+    ElseIf Request.Form("sync_btn") = "Sync" then
         If RSA.EOF Then
             answerSQL = "INSERT INTO HortonAnswers (inspecID, " 
             For i = 1 To numQuestions
@@ -63,7 +108,7 @@ If Request.Form.Count > 0 Then
                 RS0.MoveNext
             Loop 'RSO
             answerSQL = answerSQL & " WHERE inspecID = " & inspecID
-            Response.Write(answerSQL)
+            'Response.Write(answerSQL)
             connSWPPP.Execute(answerSQL)
             
             'load current items in report and look for categories
@@ -300,7 +345,10 @@ Set RSA = connSWPPP.execute(answerSQLSELECT)
     Loop 'RSO
     RS0.Close
     SET RS0=nothing %>
-    <tr><td></td>
+    <tr><td>
+    <input name="na_btn" type="submit" style="font-size: 15px;" value="Set all to NA"/>
+    <input name="default_btn" type="submit" style="font-size: 15px;" value="Set all to Defaults"/>
+    </td>
     <td>
     <% If Not RSA.EOF Then %>
     <input name="sync_btn" type="submit" style="font-size: 15px;" value="Sync"/>

@@ -265,7 +265,7 @@ If Request.Form.Count > 0 Then
     End If
 End If
 	inspecSQLSELECT = "SELECT inspecDate, i.projectName, i.projectPhase, projectAddr, projectCity, projectState" & _
-		", projectZip, projectCounty, onsiteContact, officePhone, emergencyPhone, i.projectID, compName" & _
+		", projectZip, projectCounty, onsiteContact, officePhone, emergencyPhone, i.projectID, compName, released" & _
 		", compAddr, compAddr2, compCity, compState, compZip, compPhone, compContact, contactPhone, contactFax" & _
 		", contactEmail, reportType, inches, bmpsInPlace, sediment, userID, includeItems, compliance, totalItems" & _
 		", completedItems, openItemAlert, systemic, systemicNote, horton, hortonSignV, hortonSignLD, vscr, ldscr, p.collectionName" & _
@@ -684,16 +684,27 @@ baseDir = "D:\Inetpub\wwwroot\SWPPP\"%>
 If inspecDate = "1/1/1900" Then
 	Response.Write("Fixing bad date. Line 685.\n")
 	inspecDate = date()
-End If %>
+End If 
+allowUpdate = True
+if Session("validInspector") and not Session("validAdmin") and rsReport("released") Then
+	allowUpdate = False
+End If
+%>
 
 <tr><td align="center"><% = inspecDate %></td><td align="center"><% = Trim(rsReport("projectName")) %>&nbsp<% = Trim(rsReport("projectPhase")) %></td><td align="center"><% = Trim(rsReport("compName")) %></td></tr>
 <tr>
+<% If allowUpdate Then %>
 <td align="center"><a href="deleteReport.asp?inspecID=<%=inspecID %>"><button type="button">delete report</button></a></td>
 <td align="center"><a href="releasereports_test.asp?inspecID=<%=inspecID%>&projID=<%=rsReport("projectID")%>"><button type="button">view email report</button></a></td>
+<% If Session("validAdmin") then %>
 <td align="center"><a href="manage_addresses.asp?inspecID=<%=inspecID%>"><button type="button">upload address information</button></a></td>
-</tr></table>
+<% End If %>
+</tr>
+<% End If %>
+</table>
 <br/>
 <hr>
+<% If allowUpdate Then %>
 <table width="90%" border="0" cellpadding="2" cellspacing="0">
 	<tr><td align="right" bgcolor="#eeeeee"><b>type of report:</b></td>
 			<td bgcolor="#999999"><select name="reportType">
@@ -704,9 +715,6 @@ End If %>
 <% 	RS2.MoveNext
 	LOOP %>	</select></td>
 		</tr>
-	<TR><TD align="right" bgcolor="#eeeeee"><b>narrative:</b></td>
-	<td bgcolor="#999999">
-	<INPUT type="button" value="Edit Narrative" onClick="editNarrative('<%= inspecID%>');"></TD></TR>
 	<%	'admin can change inspector name
 If Session("validAdmin") Then
 	insSQLSELECT = "SELECT DISTINCT u.userID, firstName, lastName" & _
@@ -785,6 +793,7 @@ If Session("validAdmin") Then
 	<% End If %>
 	</td></tr>
 </table>
+<% End If %>
 
 <!------------------------------------- Coordinates --------------------------- --->
 <hr/>
@@ -797,9 +806,12 @@ Else
 End If%>
 <table width="100%">
 <tr>
+<% If allowUpdate Then %>
 <td colspan="2" align="center"><input name="submit_coord_btn_top" type="submit" style="font-size: 20px;" value="submit"/></td>
+<% End If %>
 <td colspan="3" align="center"><h2>action items</h2></td>
 </tr>
+<% If allowUpdate Then %>
 <tr width="13%"><td>total items: <%=totalItems%></td><td width="13%">completed items: <%=completedItems%></td><td width="13%">report score:<%=score%></td><td width="13%">site is in compliance
 <% If rsReport("compliance") = True Then %>
 	<input id="compliance-checkbox" type="checkbox" name="compliance" checked/>
@@ -824,7 +836,9 @@ End If%>
 <% Else %>
 	<input id='systemic-checkbox' type="checkbox" name="systemic" />
 <% End If %>
-</td></tr></table><br/>
+</td></tr>
+<% End If %>
+</table><br/>
 <% coordSQLSELECT = "SELECT * FROM Coordinates WHERE inspecID=" & inspecID & " ORDER BY orderby"	
 'Response.Write(coordSQLSELECT)
 Set rsCoord = connSWPPP.execute(coordSQLSELECT)
@@ -1264,9 +1278,11 @@ Set rsCoord = Nothing %>
 <% 	END IF %>
 	<tr><td colspan="9"><hr align="center" width="100%" size="1"></td></tr>
 <% next %>
+	<% If allowUpdate Then %>
 	<tr><td colspan="5" align="center"><br>
 	<input name="submit_coord_btn" type="submit" style="font-size: 20px;" value="Submit"/>
 	<br><br></td></tr>
+	<% End If %>
 </table>
 <% rsAddress.Close 
 Set rsAddress = Nothing %>
@@ -1282,38 +1298,52 @@ Set rsAddress = Nothing %>
 		</tr>
 		<!-- project name -->
 		<tr><td align="right" bgcolor="#eeeeee"><b>Project Name | Phase:</b></td>
-			<td bgcolor="#999999"><input type="text" name="projectName" size="50" value="<% = Trim(rsReport("projectName")) %>"/>
-			<input type="text" name="projectPhase" size="20" value="<% = Trim(rsReport("projectPhase")) %>"/></td>
+			<td bgcolor="#999999"><input type="text" name="projectName" size="50" value="<% = Trim(rsReport("projectName")) %>" <% If not Session("validAdmin") Then %> readonly <% End If %>/>
+			<input type="text" name="projectPhase" size="20" value="<% = Trim(rsReport("projectPhase")) %>" <%If not Session("validAdmin") Then%> readonly <%End If%>/></td>
 		</tr>
         <tr><td align="right" bgcolor="#eeeeee"><b>Project Group:</b></td>
 			<td bgcolor="#999999"><%=Trim(rsReport("collectionName"))%></td>
 		</tr>
 		<!-- project location -->
 		<tr><td align="right" bgcolor="#eeeeee"><b>Project Location:</b></td>
-			<td bgcolor="#999999"><input type="text" name="projectAddr" size="50" value="<% = Trim(rsReport("projectAddr")) %>"> </td>
+			<td bgcolor="#999999"><input type="text" name="projectAddr" size="50" value="<% = Trim(rsReport("projectAddr")) %>" <%If not Session("validAdmin") Then%> readonly <%End If%>> </td>
 		</tr><tr><td align="right" bgcolor="#eeeeee"><b>City, State, Zip:</b></td>
-			<td bgcolor="#999999"><input type="text" name="projectCity" size="20" value="<% = Trim(rsReport("projectCity")) %>"> &nbsp; 
-            <select name="projectState">
-<% 	SQL0="SELECT * FROM States ORDER BY priority DESC, stateName ASC"
-	SET RS0=connSWPPP.execute(SQL0)
-	IF IsNull(TRIM(rsReport("projectState"))) THEN rsReport("projectState")="TX" END IF
-	DO WHILE NOT RS0.EOF %>	<option value="<%= RS0("stateAbbr")%>"<% 
-		If Trim(rsReport("projectState")) = RS0("stateAbbr") Then %> selected<% 
-		End If %>><%= Trim(RS0("stateAbbr"))%></option>
-<%	RS0.MoveNext
-	LOOP %>	</select> &nbsp; <input type="text" name="projectZip" size="5" value="<% = Trim(rsReport("projectZip")) %>"> </td>
+			<td bgcolor="#999999"><input type="text" name="projectCity" size="20" value="<% = Trim(rsReport("projectCity")) %>" <%If not Session("validAdmin") Then%> readonly <%End If%>> &nbsp; 
+      
+		<%If not Session("validAdmin") Then%>
+		<input type="hidden" name="projectState" value="<% =Trim(rsReport("projectState"))%>">
+		<%End If%>
+		<select name="projectState" <%If not Session("validAdmin") Then%> disabled <%End If%>>
+		<% SQL0="SELECT * FROM States ORDER BY priority DESC, stateName ASC"
+		SET RS0=connSWPPP.execute(SQL0)
+		IF IsNull(TRIM(rsReport("projectState"))) THEN rsReport("projectState")="TX" END IF
+		DO WHILE NOT RS0.EOF %>	
+			<option value="<%= RS0("stateAbbr")%>"
+			<% If Trim(rsReport("projectState")) = RS0("stateAbbr") Then %> selected<% End If %>><%= Trim(RS0("stateAbbr"))%></option>
+			<%	RS0.MoveNext
+		LOOP %>	
+		</select> &nbsp;
+
+		<input type="text" name="projectZip" size="5" value="<% = Trim(rsReport("projectZip")) %>" <%If not Session("validAdmin") Then%> readonly <%End If%>> </td>
 		</tr>
 		<!-- onsite contact -->
 		<tr><td align="right" bgcolor="#eeeeee"><b>County:</b></td>
-			<td bgcolor="#999999"><select name="projectCounty">
-                <option value=""></option>
-<% 	SQL1="SELECT * FROM Counties ORDER BY priority DESC, countyName ASC"
-	SET RS1=connSWPPP.execute(SQL1)
-	DO WHILE NOT RS1.EOF %><option value="<%= Trim(RS1("countyName"))%>"<% 
-	If Trim(rsReport("projectCounty")) = TRIM(RS1("countyName")) Then %> selected<% 
-	End If %>><%= Trim(RS1("countyName"))%></option>
-<%	RS1.MoveNext
-	LOOP %>	</select></td>
+		<td bgcolor="#999999">
+
+		<%If not Session("validAdmin") Then%>
+		<input type="hidden" name="projectCounty" value="<% =Trim(rsReport("projectCounty"))%>">
+		<%End If%>	
+		<select name="projectCounty" <%If not Session("validAdmin") Then%> disabled <%End If%>>
+      <option value=""></option>
+		<% SQL1="SELECT * FROM Counties ORDER BY priority DESC, countyName ASC"
+		SET RS1=connSWPPP.execute(SQL1)
+		DO WHILE NOT RS1.EOF %>
+			<option value="<%= Trim(RS1("countyName"))%>"<% 
+			If Trim(rsReport("projectCounty")) = TRIM(RS1("countyName")) Then %> selected<% End If %>><%= Trim(RS1("countyName"))%></option>
+			<%	RS1.MoveNext
+		LOOP %>	
+		</select></td>
+		
 		</tr><tr><td align="right" bgcolor="#eeeeee"><b>On-Site Contact:</b></td>
 			<td bgcolor="#999999"><input type="text" name="onsiteContact" size="50" value="<% = Trim(rsReport("onsiteContact")) %>"></td>
 		</tr>
@@ -1328,53 +1358,60 @@ Set rsAddress = Nothing %>
 			<td bgcolor="#999999"><img src="../../images/dot.gif" width="5" height="5"></td>
 		</tr>
 </table>
-		
+
 <h2>Company Information</h2>
 <table width="90%" border="0" cellpadding="2" cellspacing="0">
 		<tr><td width="35%" bgcolor="#eeeeee"><img src="../../images/dot.gif" width="5" height="5"></td>
 			<td width="55%" bgcolor="#999999"><img src="../../images/dot.gif" width="5" height="5"></td>
 		</tr><tr><td align="right" bgcolor="#eeeeee"><b>Company Name:</b></td>
-			<td bgcolor="#999999"><input type="text" name="compName" size="50" value="<% = Trim(rsReport("compName")) %>"></td>
+			<td bgcolor="#999999"><input type="text" name="compName" size="50" value="<% = Trim(rsReport("compName")) %>" <%If not Session("validAdmin") Then%> readonly <%End If%>></td>
 		</tr>
 		<!-- Address -->
 		<tr><td align="right" bgcolor="#eeeeee"><b>Address 1:</b></td>
-			<td bgcolor="#999999"><input name="compAddr" type="text" size="50" value="<% = Trim(rsReport("compAddr")) %>"></td>
+			<td bgcolor="#999999"><input name="compAddr" type="text" size="50" value="<% = Trim(rsReport("compAddr")) %>" <%If not Session("validAdmin") Then%> readonly <%End If%>></td>
 		</tr><tr><td align="right" bgcolor="#eeeeee"><b>Address 2:</b></td>
-			<td bgcolor="#999999"><input name="compAddr2" type="text" size="50" value="<% = Trim(rsReport("compAddr2")) %>"></td>
+			<td bgcolor="#999999"><input name="compAddr2" type="text" size="50" value="<% = Trim(rsReport("compAddr2")) %>" <%If not Session("validAdmin") Then%> readonly <%End If%>></td>
 		</tr><tr><td align="right" bgcolor="#eeeeee"><b>City:</b></td>
-			<td bgcolor="#999999"><input name="compCity" type="text" size="20" value="<% = Trim(rsReport("compCity")) %>"></td>
+			<td bgcolor="#999999"><input name="compCity" type="text" size="20" value="<% = Trim(rsReport("compCity")) %>" <%If not Session("validAdmin") Then%> readonly <%End If%>></td>
 		</tr><tr><td align="right" bgcolor="#eeeeee"><b>State:</b></td>
-			<td bgcolor="#999999"><select name="compState">
-<% 	SQL0="SELECT * FROM States ORDER BY priority DESC, stateName ASC"
-	SET RS0=connSWPPP.execute(SQL0)
-	IF IsNull(TRIM(rsReport("compState"))) THEN rsReport("compState")="TX" END IF
-	DO WHILE NOT RS0.EOF %><option value="<%= Trim(RS0("stateAbbr"))%>"<% 
-	If Trim(rsReport("compState")) = RS0("stateAbbr") Then %> selected<% 
-	End If %>><%= Trim(RS0("stateAbbr"))%></option>
-<%	RS0.MoveNext
-	LOOP %>	</select></td>
+			<td bgcolor="#999999">
+
+		<%If not Session("validAdmin") Then%>
+		<input type="hidden" name="compState" value="<% =Trim(rsReport("compState"))%>">
+		<%End If%>		
+		<select name="compState" <%If not Session("validAdmin") Then%> disabled <%End If%>>
+		<% SQL0="SELECT * FROM States ORDER BY priority DESC, stateName ASC"
+		SET RS0=connSWPPP.execute(SQL0)
+		IF IsNull(TRIM(rsReport("compState"))) THEN rsReport("compState")="TX" END IF
+		DO WHILE NOT RS0.EOF %>
+			<option value="<%= Trim(RS0("stateAbbr"))%>"<% 
+			If Trim(rsReport("compState")) = RS0("stateAbbr") Then %> selected<% End If %>><%= Trim(RS0("stateAbbr"))%></option>
+			<%	RS0.MoveNext
+		LOOP %>	
+		</select></td>
+		
 		</tr><tr><td align="right" bgcolor="#eeeeee"><b>Zip:</b></td>
-			<td bgcolor="#999999"><input name="compZip" type="text" size="5" value="<% = Trim(rsReport("compZip")) %>"></td>
+			<td bgcolor="#999999"><input name="compZip" type="text" size="5" value="<% = Trim(rsReport("compZip")) %>" <%If not Session("validAdmin") Then%> readonly <%End If%>></td>
 		</tr>
 		<!-- main telephone number -->
 		<tr><td align="right" bgcolor="#eeeeee"><b>Company Phone:</b></td>
-			<td bgcolor="#999999"><input name="compPhone" type="text" size="20" value="<% = Trim(rsReport("compPhone")) %>"></td>
+			<td bgcolor="#999999"><input name="compPhone" type="text" size="20" value="<% = Trim(rsReport("compPhone")) %>" <%If not Session("validAdmin") Then%> readonly <%End If%>></td>
 		</tr>
 		<!-- contact -->
 		<tr><td align="right" bgcolor="#eeeeee"><b>Contact:</b></td>
-			<td bgcolor="#999999"><input type="text" name="compContact" size="50" value="<% = Trim(rsReport("compContact")) %>"></td>
+			<td bgcolor="#999999"><input type="text" name="compContact" size="50" value="<% = Trim(rsReport("compContact")) %>" <%If not Session("validAdmin") Then%> readonly <%End If%>></td>
 		</tr>
 		<!-- phone -->
 		<tr><td align="right" bgcolor="#eeeeee"><b>Contact Phone:</b></td>
-			<td bgcolor="#999999"><input name="contactPhone" type="text" size="20" value="<% = Trim(rsReport("contactPhone")) %>"></td>
+			<td bgcolor="#999999"><input name="contactPhone" type="text" size="20" value="<% = Trim(rsReport("contactPhone")) %>" <%If not Session("validAdmin") Then%> readonly <%End If%>></td>
 		</tr>
 		<!-- fax -->
 		<tr><td align="right" bgcolor="#eeeeee"><b>Contact Fax:</b></td>
-			<td bgcolor="#999999"><input name="contactFax" type="text" size="20" value="<% = Trim(rsReport("contactFax")) %>"></td>
+			<td bgcolor="#999999"><input name="contactFax" type="text" size="20" value="<% = Trim(rsReport("contactFax")) %>" <%If not Session("validAdmin") Then%> readonly <%End If%>></td>
 		</tr>
 		<!-- e-mail -->
 		<tr><td align="right" bgcolor="#eeeeee"><b>Contact E-Mail:</b></td>
-			<td bgcolor="#999999"><input type="text" name="contactEmail" size="50" value="<% = Trim(rsReport("contactEmail")) %>"></td>
+			<td bgcolor="#999999"><input type="text" name="contactEmail" size="50" value="<% = Trim(rsReport("contactEmail")) %>" <%If not Session("validAdmin") Then%> readonly <%End If%>></td>
 		</tr><tr><td bgcolor="#eeeeee"><img src="../../images/dot.gif" width="5" height="5"></td>
 			<td bgcolor="#999999"><img src="../../images/dot.gif" width="5" height="5"></td>
 		</tr><tr><td colspan="2"><img src="../../images/dot.gif" width="5" height="5"></td>
@@ -1410,14 +1447,16 @@ Set rsAddress = Nothing %>
 
 <!-- ------------- Optional Links ----------------------------------------------------- -->
 
+<% If allowUpdate Then %>
 <hr/>
 <center><input name="submit_optional_btn" type="submit" style="font-size: 20px;" value="Modify Optional Links"/></center>
 <hr/>
 <center><input name="submit_view_reports_btn" type="submit" style="font-size: 20px;" value="View Reports"/></center>
+<% End If %>
 
 <!------------------------------------- Images ---------------------------------------->
 
-<% IF NOT(Session("noImages")) THEN %>
+<% IF False and NOT(Session("noImages")) THEN %>
 	<hr/>
 	<h2>Images</h2>
 <table width="90%" border="0" align="center" cellpadding="2" cellspacing="0"><%

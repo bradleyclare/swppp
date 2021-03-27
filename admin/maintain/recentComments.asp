@@ -1,6 +1,6 @@
 <%@ Language="VBScript" %>
 <%
-If Not Session("validAdmin") and not Session("validDirector") Then
+If Not Session("validAdmin") Then
 	Session("adminReturnTo") = Request.ServerVariables("path_info")
 	Response.Redirect("loginUser.asp")
 End If
@@ -25,10 +25,9 @@ Else
 End If
 
 'Response.Write(startDate & " - " & endDate)
-commSQLSELECT = "SELECT comment, userID, date, coID" &_
-    " FROM CoordinatesComments" &_
+commSQLSELECT = "SELECT * FROM CoordinatesComments" &_
     " WHERE date BETWEEN '"& startDate &"' AND '"& endDate &"'" &_
-    " ORDER BY date DESC"
+    " ORDER BY date DESC, coID"
 'Response.Write(commSQLSELECT)
 Set rsComm = connSWPPP.execute(commSQLSELECT) %>
 
@@ -40,26 +39,26 @@ Set rsComm = connSWPPP.execute(commSQLSELECT) %>
 </head>
 <!-- #include file="../adminHeader2.inc" -->
 
-<h1>Recent Notes</h1>
+<h1>recent notes</h1>
 <% If rsComm.EOF Then %>
     <h3>No notes from those dates</h3>
 <% Else %>
     <form id="theForm" method="post" action="<%=Request.ServerVariables("script_name")%>?inspecID=<%=inspecID%>" onsubmit="return isReady(this)";>
-        Start Date (MM/DD/YYYY): <input name="startDate" type="text" value="<%=startDate%>" size="8" />  
-        End Date (MM/DD/YYYY): <input name="endDate" type="text" value="<%=endDate%>" size="8" />  
-        <input name="submit_coord_btn" type="submit" style="font-size: 20px;" value="Submit"/>
+        start date (MM/DD/YYYY): <input name="startDate" type="text" value="<%=startDate%>" size="8" />  
+        end date (MM/DD/YYYY): <input name="endDate" type="text" value="<%=endDate%>" size="8" />  
+        <input name="submit_coord_btn" type="submit" style="font-size: 20px;" value="submit"/>
     </form>
     <table>
         <tr>
-            <th width="5%">Date</th>
-            <th width="20%">Note</th>
-            <th width="10%">User</th>
-            <th width="15%">Project Name</th>
-            <th width="20%">Item</th>
-            <th width="15%">Location</th>
-            <th width="5%">Inspec Date</th>
-            <th width="5%">Inspector</th>
-            <th width="5%">Delete</th>
+            <th width="5%">date</th>
+            <th width="20%">note</th>
+            <th width="10%">user</th>
+            <th width="15%">project name</th>
+            <th width="20%">item</th>
+            <th width="15%">location</th>
+            <th width="5%">inspec date</th>
+            <th width="5%">inspector</th>
+            <th width="5%">delete</th>
         </tr>
     <% DO WHILE NOT rsComm.EOF 
         coID = rsComm("coID")
@@ -138,8 +137,6 @@ SET rsCoord=nothing
 rsComm.Close
 SET rsComm=nothing
 connSWPPP.Close
-Set connSWPPP = Nothing
-%>
-</table>
+Set connSWPPP = Nothing %>
 </body>
 </html>

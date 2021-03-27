@@ -67,7 +67,7 @@ If Request.Form.Count > 0 Then
 '-----	rightsValue="00000000000" '-- user,action,erosion,email,CC,BCC,vscr,ldscr,inspector,director,admin -----------------
 		If Request("admin")="on" then rightsValue= "00000000001" else rightsValue="00000000000" End If
 'response.write(rights & "<br/>")
-' ----------------------- Inspector, Director, User, Action, Email in Projects User  -------- 
+' ----------------------- Inspector, Director, User, Email in Projects User  -------- 
 		For Each Item in Request.Form
             If Item <> "userGroup" Then
 			    Select Case Left(Item,3) 'loop through and replace the appropriate character with 1 for certain rights, mid function returns substring
@@ -138,7 +138,7 @@ If Request.Form.Count > 0 Then
 			    rights=""
             End If
 		Next
-		response.write("Rights Value:" & rightsValue & "<br/>")
+		'response.write("Rights Value:" & rightsValue & "<br/>")
 		highestRights="user"
 		FOR n = 1 to 11 step 1
 			IF (MID(rightsValue,n,1)="1") THEN 
@@ -158,7 +158,7 @@ If Request.Form.Count > 0 Then
 				END SELECT
 			END IF
 		NEXT 
-		response.write("Highest Rights:" & highestRights & "</br>")
+		'response.write("Highest Rights:" & highestRights & "</br>")
 		IF highestRights <>"" THEN
 			connSWPPP.execute("UPDATE Users SET rights='"& highestRights &"' WHERE userID="& userID)
 		End If
@@ -271,6 +271,8 @@ End If
 		<tr><td align="right">last name:</td>
 			<td><input type="text" name="lastName" size="20" maxlength="20" 
 				value="<%= lastName %>"></td></tr>
+		<tr><td align="right">phone:</td>
+			<td><input type="text" name="phone" size="15" maxlength="15" value="<%= phone %>"></td></tr>
 <% If Session("validAdmin") then 'only admin may set rights for other admin, directors and inspectors %>		
 		<tr><td align="right">email:</td>
 			<td><input type="text" name="email" size="30" maxlength="50" value="<%= email %>"></td></tr>
@@ -292,44 +294,35 @@ For Each gifFile In gifDirectory
 <% Next
 Set objFolder = Nothing
 Set gifDirectory = Nothing %>
-				</select>&nbsp;&nbsp;<input type="button" value="Upload Signature File" 
+				</select>&nbsp;&nbsp;<input type="button" value="upload signature file" 
 					onClick="location='upSigEditUser.asp?userID=<%= userID %>'; return false";></td></tr>
-		<tr><td align="right">phone:</td>
-			<td><input type="text" name="phone" size="15" maxlength="15" value="<%= phone %>"></td></tr>
-		<tr><td align="right">View Images:</td>
+		<tr><td align="right">view images:</td>
 			<td><input type="radio" name="noImages" value="0"<% IF noImages=0 THEN %> checked<% END IF%>>Yes
 				<input type="radio" name="noImages" value="1"<% IF noImages=1 THEN %> checked<% END IF%>>No</td></tr>
-		<tr><td align="right">See Scoring:</td>
+		<tr><td align="right">see scoring:</td>
             <td><input type="checkbox" name="seeScoring" 
             <% If (seeScoring) = True Then %>
                 checked
             <% End if %>
             /></td>
 		</tr>
-        <tr><td align="right">Receive Open Item Alerts:</td>
+        <tr><td align="right">receive open item alerts:</td>
             <td><input type="checkbox" name="openItemAlerts" 
             <% If (openItemAlerts) = True Then %>
                 checked
             <% End if %>
             /></td>
 		</tr>
-        <tr><td align="right">Receive Repeat Item Alerts:</td>
+        <tr><td align="right">receive repeat item alerts:</td>
             <td><input type="checkbox" name="repeatItemAlerts" 
             <% If (repeatItemAlerts) = True Then %>
                 checked
             <% End if %>
             /></td>
 		</tr>
-        <tr><td align="right" valign=top>Qualifications:</td>
+        <tr><td align="right" valign=top>qualifications:</td>
 			<td><TEXTAREA cols="50" rows="3" name="qualifications"><%= REPLACE(qualifications,"#@#","'") %></TEXTAREA></td></tr>
-<% ELSE %>
-	<INPUT type="hidden" name="email" value="<%= email %>">
-	<INPUT type="hidden" name="pswrd" value="<%= pswrd %>">
-	<INPUT type="hidden" name="signature" value="<%= signature %>">
-	<INPUT type="hidden" name="noImages" value="<%= noImages %>">
-	<INPUT type="hidden" name="qualifications" value="<%= REPLACE(qualifications,"#@#","'") %>">
-<% END IF %>
-    <tr><td align="right">User Group:</td>
+		<tr><td align="right">User Group:</td>
         <td><select name="userGroup"
            <% If not Session("validAdmin") then %>
            readonly 
@@ -347,6 +340,14 @@ Set gifDirectory = Nothing %>
             <% connGroups.MoveNext 
         LOOP %>
      </select></td></tr>
+<% ELSE %>
+	<INPUT type="hidden" name="email" value="<%= email %>">
+	<INPUT type="hidden" name="pswrd" value="<%= pswrd %>">
+	<INPUT type="hidden" name="signature" value="<%= signature %>">
+	<INPUT type="hidden" name="noImages" value="<%= noImages %>">
+	<INPUT type="hidden" name="qualifications" value="<%= REPLACE(qualifications,"#@#","'") %>">
+	<INPUT type="hidden" name="userGroup" value="<%=userGroupID%> - whatever">
+<% END IF %>
     <tr><td><input type="submit" value="Update User"></td></tr>
 </table>
 <br /><br />
@@ -377,13 +378,12 @@ Set gifDirectory = Nothing %>
 <% 	If Session("validAdmin") then 'only admin may set rights for other admin, directors and inspectors %>
             <th>bcc</th>
 <%  end if 'Session("validAdmin">) %>			
-<% 	If (Session("validDirector") OR Session("validAdmin")) then '- directors can create action managers %>	
-			<th>action</th>	
+<% 	If (Session("validDirector") OR Session("validAdmin")) then '- directors can create action managers %>		
 			<th>erosion</>
-<%	End If
- 	If Session("validAdmin") then 'only admin may set rights for other admin, directors and inspectors %>
 			<th>VSCR</th>
 			<th>LDSCR</th>
+<%	End If
+ 	If Session("validAdmin") then 'only admin may set rights for other admin, directors and inspectors %>
 			<th>director</th>
 			<th>inspector</th></tr>	
 <% end if 'Session("validAdmin")
@@ -423,10 +423,10 @@ DO WHILE NOT RS1.EOF
 '--Response.Write(RS1("userID") &":"& userID &":"& RS1("rights2") &":"& RS1("emailReport") &"<br>")
 		SELECT CASE TRIM(RS1("rights2"))
 			CASE "user"			userChecked=True
-			CASE "inspector"	insChecked=True
-			CASE "email"		recEmailChecked=True
+			CASE "email" 		recEmailChecked=True 
 			CASE "ecc"		    recCCChecked=True
 			CASE "bcc"		    recBCCChecked=True
+			CASE "inspector"	insChecked=True
 			CASE "action"		actChecked=True
 			CASE "erosion"		eroChecked=True
 			CASE "vscr"       vscrChecked=True
@@ -462,20 +462,17 @@ DO WHILE NOT RS1.EOF
 			onClick="if (!(document.forms[0].use<%=compCount%>.checked) && !(document.forms[0].admin.checked)) { (document.forms[0].emr<%=compCount%>.checked=false); }"></td>
 <%  End If
  	If (Session("validDirector") OR Session("validAdmin")) then '- directors can create action managers %>		
-<!--- ----------------------------------------- Action ----------------------------------------- --->
-		<td align=center><input type="checkbox" name="act<%= compCount %>" value="<%= dispProjID %>" readonly 
-			<% If actChecked then %>checked<% End If %>></td>		
 <!--- ----------------------------------------- Erosion ----------------------------------------- --->
 		<td align=center><input type="checkbox" name="ero<%= compCount %>" value="<%= dispProjID %>"
 			<% If eroChecked then %>checked<% End If %>></td>
-<% 	End If
-	If Session("validAdmin") then 'only admin may set rights for other admin, directors and inspectors %>		
 <!--- ----------------------------------------- VSCR -------------------------------------- --->
 		<td align=center><input type="checkbox" name="vsc<%= compCount %>" value="<%= dispProjID %>"
 			<% If vscrChecked then %>checked<% End If %>></td>
 <!--- ----------------------------------------- LDVSCR -------------------------------------- --->
 		<td align=center><input type="checkbox" name="lds<%= compCount %>" value="<%= dispProjID %>"
 			<% If ldscrChecked then %>checked<% End If %>></td>
+<% 	End If
+	If Session("validAdmin") then 'only admin may set rights for other admin, directors and inspectors %>		
 <!--- ----------------------------------------- Director --------------------------------------- --->
 		<td align=center><input type="checkbox" name="dir<%= compCount %>" value="<%= dispProjID %>"
 			<% If dirChecked then %>checked<% End If %>

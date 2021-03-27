@@ -33,12 +33,13 @@ If Request.Form.Count > 0 Then
         if Request("seeScoring") = "on" then seeScoring = 1 Else seeScoring = 0 End If
         if Request("openItemAlerts") = "on" then openItemAlerts = 1 Else openItemAlerts = 0 End If
         if Request("repeatItemAlerts") = "on" then repeatItemAlerts = 1 Else repeatItemAlerts = 0 End If
-		userSQLINSERT = "INSERT INTO Users (firstName, lastName, email" & _
+		userSQLINSERT = "INSERT INTO Users (firstName, lastName, email, phone" & _
 			", pswrd, dateEntered, signature, noImages, rights, qualifications, seeScoring, openItemAlerts, repeatItemAlerts" & _
 			") VALUES (" & _
 			"'" & titleCase(Request("firstName")) & "'" & _
 			", '" & titleCase(Request("lastName")) & "'" & _
 			", '" & strQuoteReplace(Request("email")) & "'" & _
+			", '" & strQuoteReplace(Request("phone")) & "'" & _
 			", '" & strQuoteReplace(Request("pswrd")) & "'" & _
 			", '" & date & "'" & _
 			", '" & Request("signature") & "'" & _
@@ -60,73 +61,87 @@ If Request.Form.Count > 0 Then
 		Set connUser = Nothing
 '-----	rightsValue="0000000" '-- user,action,erosion,email,inspector,director,admin -----------------
 		If Request("admin")="on" then rightsValue= "000000001" else rightsValue="000000000" End If
-' ----------------------- Inspector, Director, User, Action, Email in Projects User  -------- 
+' ----------------------- Inspector, Director, User, Email in Projects User  -------- 
 		For Each Item in Request.Form
 			Select Case Left(Item,3)
-				Case "use"
-					rights="user"
-					rightsValue= "1"& MID(rightsValue,2)
-				Case "act"
-					rights="action"
-					rightsValue=MID(rightsValue,1,1) &"1"& MID(rightsValue,3)
-				Case "ero"
-					rights="erosion"
-					rightsValue=MID(rightsValue,1,2) &"1"& MID(rightsValue,4)
-				Case "emr"
-					rights="email"
-					rightsValue= MID(rightsValue,1,3) &"1"& MID(rightsValue,5)
-				Case "ecc"
-					rights="ecc"
-					rightsValue= MID(rightsValue,1,4) &"1"& MID(rightsValue,6)
-				Case "bcc"
-					rights="bcc"
-					rightsValue= MID(rightsValue,1,5) &"1"& MID(rightsValue,7)
-				Case "ins"
-					rights="inspector"
-					rightsValue=MID(rightsValue,1,6) &"1"& MID(rightsValue,8)
+				    Case "use"
+					    rights="user"
+					    rightsValue= "1"& MID(rightsValue,2)
+				    Case "act"
+					    rights="action"
+					    rightsValue=MID(rightsValue,1,1) &"1"& MID(rightsValue,3)
+				    Case "emr"
+					    rights="email"
+					    rightsValue=MID(rightsValue,1,2) &"1"& MID(rightsValue,4)
+				    Case "ecc"
+					    rights="ecc"
+					    rightsValue= MID(rightsValue,1,3) &"1"& MID(rightsValue,5)
+				    Case "bcc"
+					    rights="bcc"
+					    rightsValue= MID(rightsValue,1,4) &"1"& MID(rightsValue,6)
+				    Case "ero"
+					    rights="erosion"
+					    rightsValue= MID(rightsValue,1,5) &"1"& MID(rightsValue,7)
+					 Case "vsc"
+					    rights="vscr"
+					    rightsValue=MID(rightsValue,1,6) &"1"& MID(rightsValue,8)
+					 Case "lds"
+					    rights="ldscr"
+					    rightsValue=MID(rightsValue,1,7) &"1"& MID(rightsValue,9)
+					 Case "ins"
+					    rights="inspector"
+					    rightsValue=MID(rightsValue,1,8) &"1"& MID(rightsValue,10)
 		    		If Request("admin")="on" then rightsValue= "000000001" else rightsValue="000000000" End If
 					rightsValue=MID(rightsValue,1,4) &"1"& MID(rightsValue,6)
-					SQL1="SELECT * FROM Commissions WHERE userID="& userID &" AND projectID="& Request(Item) 
-					SET RS1=connSWPPP.execute(SQL1)
-					IF RS1.EOF THEN
+					SQLP="SELECT * FROM Commissions WHERE userID="& userID &" AND projectID="& Request(Item) 
+					SET RSP=connSWPPP.execute(SQLP)
+					IF RSP.EOF THEN
 						phase1=20
 						phase2=10
 						phase3=5
 						phase4=0
 						phase5=30
 					ELSE
-						phase1=RS1("phase1")
-						phase2=RS1("phase2")
-						phase3=RS1("phase3")
-						phase4=RS1("phase4")
-						phase5=RS1("phase5")
+						phase1=RSP("phase1")
+						phase2=RSP("phase2")
+						phase3=RSP("phase3")
+						phase4=RSP("phase4")
+						phase5=RSP("phase5")
 					END IF
-					RS1.Close
-					SET RS1=nothing
+					RSP.Close
+					SET RSP=nothing
 					SQL0=SQL0 &" EXEC sp_UpdateCommissions "& userID &", '"& projName &"', "& phase1 &", "& phase2 &", "& phase3 &", "& phase4 &", "& phase5
 				Case "dir"
 					rights="director"
-					rightsValue=MID(rightsValue,1,7) &"1"& MID(rightsValue,9)
+					rightsValue=MID(rightsValue,1,9) &"1"& MID(rightsValue,11)
 			End Select
 			If rights<>"" then
 				connSWPPP.Execute("sp_InsertPU "& userID &", "& Request(Item) &", '"& rights &"'")
 			end if 'item=inspector, director, user or email
 			rights=""
 		Next
-		FOR n = 1 to 7 step 1
+		'response.write("Rights Value:" & rightsValue & "<br/>")
+		highestRights="user"
+		FOR n = 1 to 11 step 1
 			IF (MID(rightsValue,n,1)="1") THEN 
 				SELECT CASE n
 					CASE 1	highestRights="user"
 					CASE 2	highestRights="action"
-					CASE 3	highestRights="erosion"
-					CASE 5	highestRights="inspector"
-					CASE 6	highestRights="director"
-					CASE 7	highestRights="admin"
+					CASE 3	highestRights="email"
+					CASE 4   highestRights="email"
+					CASE 5   highestRights="email"
+					CASE 6   highestRights="erosion"
+					CASE 7   highestRights="vscr"
+					CASE 8   highestRights="ldscr"
+					CASE 9	highestRights="inspector"
+					CASE 10	highestRights="director"
+					CASE 11	highestRights="admin"
 					CASE ELSE highestRights=highestRights
 				END SELECT
 			END IF
-		NEXT  
-		IF highestRights <>"" THEN	
+		NEXT 
+		'response.write("Highest Rights:" & highestRights & "</br>")
+		IF highestRights <>"" THEN
 			connSWPPP.execute("UPDATE Users SET rights='"& highestRights &"' WHERE userID="& userID)
 		End If
 '--		Clean UP Commissions Table -------------------------------------------------------
@@ -162,28 +177,33 @@ End If %>
 <table width="100%" border="0">
 	<form action="<% = Request.ServerVariables("script_name") %>" method="post" 
 		onSubmit="return isReady(this)";>
-		<tr><td width="35%" align="right">First Name:</td>
-			<td width="65%"><input type="text" name="firstName" size="20" maxlength="20"></td></tr>
-		<tr><td align="right">Last Name:</td>
-			<td><input type="text" name="lastName" size="20" maxlength="20"></td></tr>
-		<tr><td align="right">Email:</td>
+		<tr><td width="35%" align="right">first name:</td>
+			<td width="65%"><input type="text" name="firstName" size="20" maxlength="20">
+			</td></tr>
+		<tr><td align="right">last name:</td>
+			<td><input type="text" name="lastName" size="20" maxlength="20">
+			</td></tr>
+		<tr><td align="right">phone:</td>
+			<td><input type="text" name="phone" size="15" maxlength="15">
+			</td></tr>
+		<tr><td align="right">email:</td>
 			<td><input type="text" name="email" size="30" maxlength="50"></td></tr>
-		<tr><td align="right">Password:</td>
+		<tr><td align="right">password:</td>
 			<td><input type="password" name="pswrd" size="15" maxlength="15"></td></tr>
-		<tr><td align="right">View Images:</td>
+		<tr><td align="right">view images:</td>
 			<td><input type="radio" name="noImages" value="0"<% IF noImages=0 THEN %> checked<% END IF%>>Yes
 				<input type="radio" name="noImages" value="1"<% IF noImages=1 THEN %> checked<% END IF%>>No</td></tr>
-        <tr><td align="right">See Scoring:</td>
+        <tr><td align="right">see scoring:</td>
             <td><input type="checkbox" name="seeScoring" checked /></td>
 		</tr>
-        <tr><td align="right">Receive Open Item Alerts:</td>
+        <tr><td align="right">receive open item alerts:</td>
             <td><input type="checkbox" name="openItemAlerts" checked /></td>
 		</tr>
-        <tr><td align="right">Receive Repeat Item Alerts:</td>
+        <tr><td align="right">receive repeat item alerts:</td>
             <td><input type="checkbox" name="repeatItemAlerts" checked /></td>
 		</tr>
 <% If Session("validAdmin") then '-- only admin may set inspectors signature files and qualifications %>
-		<tr><td align="right">Signature File:</td>
+		<tr><td align="right">signature file:</td>
 			<td><select name="signature">
 <% ' get gif directory
 Set folderServerObj = Server.CreateObject("Scripting.FileSystemObject")
@@ -198,9 +218,9 @@ For Each gifFile In gifDirectory
 <% Next
 Set objFolder = Nothing
 Set gifDirectory = Nothing %>
-				</select>&nbsp;&nbsp;<input type="button" value="Upload Signature File" 
+				</select>&nbsp;&nbsp;<input type="button" value="upload signature file" 
 				onClick="location='upSigAddUser.asp'; return false";></td></tr>
-		<tr><td align="right" valign=top>Qualifications:</td>
+		<tr><td align="right" valign=top>qualifications:</td>
 			<td><TEXTAREA cols="50" rows="3" name="qualifications"></TEXTAREA></td></tr>
 <% END IF '-- Valid ADMIN. %>
 <!--- ----------------------------------------- Rights --------------------------------------- --->
@@ -210,21 +230,22 @@ Set gifDirectory = Nothing %>
 		<tr><td align="right">Admin:</td>
 			<td align=center><input type="checkbox" name="admin"><br></td></tr>
 <%	END IF %>
-		<tr><th>Project Name</th>
-			<th>User</th>
-			<th>Email Reports</th>
-			<th>CC</th>
+		<tr><th>project name</th>
+			<th>user</th>
+			<th>email to</th>
+			<th>cc</th>
 <% 	If Session("validAdmin") then 'only admin may set rights for other admin, directors and inspectors %>
-            <th>BCC</th>
+            <th>bcc</th>
 <%  end if 'Session("validAdmin">) %>			
-<% 	If (Session("validDirector") OR Session("validAdmin")) then '- directors can create action managers %>	
-			<th>Action</th>		
-			<th>Erosion</th>	
+<% 	If (Session("validDirector") OR Session("validAdmin")) then '- directors can create action managers %>		
+			<th>erosion</>
+			<th>VSCR</th>
+			<th>LDSCR</th>	
 <%	End If
  	If Session("validAdmin") then 'only admin may set rights for other admin, directors and inspectors %>	
-			<th>Director</th>
+			<th>director</th>
 			<th>Current Director</th>
-			<th>Inspector</th></tr>
+			<th>inspector</th></tr>	
 <%	end if 'Session("validAdmin") 
 SQL1 = "SELECT p.*, u.userID, u.firstName, u.lastName, u.rights as rights1, pu.rights as rights2" &_
 	" FROM Projects as p JOIN ProjectsUsers as pu ON p.projectID=pu.projectID LEFT JOIN Users as u" &_
@@ -243,6 +264,8 @@ insChecked=False
 dirChecked=False
 actChecked=False
 eroChecked=False
+vscrChecked=False
+ldscrChecked=False
 recEmailChecked=False
 recCCChecked=False
 recBCCChecked=False
@@ -261,6 +284,8 @@ DO WHILE NOT RS1.EOF
 			CASE "inspector"	insChecked=True
 			CASE "action"		actChecked=True
 			CASE "erosion"		eroChecked=True
+			CASE "vscr"       vscrChecked=True
+			CASE "ldscr"      ldscrChecked=True
 			CASE "director"	
 				dirName= RS1("firstName") &" "& RS1("lastName") 
 				IF TRIM(dirName)="" THEN dirName="None" END IF
@@ -294,12 +319,15 @@ DO WHILE NOT RS1.EOF
 			onClick="if (!(document.forms[0].use<%=compCount%>.checked) && !(document.forms[0].admin.checked)) { (document.forms[0].emr<%=compCount%>.checked=false); }"></td>
 <%  End If
  	If (Session("validDirector") OR Session("validAdmin")) then '- directors can create action managers %>		
-<!--- ----------------------------------------- Action ----------------------------------------- --->
-		<td align=center><input type="checkbox" name="act<%= compCount %>" value="<%= dispProjID %>" disabled
-			<% If actChecked then %>checked<% End If %>></td>	
 <!--- ----------------------------------------- Erosion ----------------------------------------- --->
 		<td align=center><input type="checkbox" name="ero<%= compCount %>" value="<%= dispProjID %>"
 			<% If eroChecked then %>checked<% End If %>></td>
+<!--- ----------------------------------------- VSCR -------------------------------------- --->
+		<td align=center><input type="checkbox" name="vsc<%= compCount %>" value="<%= dispProjID %>"
+			<% If vscrChecked then %>checked<% End If %>></td>
+<!--- ----------------------------------------- LDVSCR -------------------------------------- --->
+		<td align=center><input type="checkbox" name="lds<%= compCount %>" value="<%= dispProjID %>"
+			<% If ldscrChecked then %>checked<% End If %>></td>
 <% 	End If
 	If Session("validAdmin") then 'only admin may set rights for other admin, directors and inspectors %>		
 <!--- ----------------------------------------- Director --------------------------------------- --->
@@ -320,6 +348,8 @@ DO WHILE NOT RS1.EOF
 			insChecked=False
 			actChecked=False
 			eroChecked=False
+			vscrChecked=False
+			ldscrChecked=False
 			recEmailChecked=False
 			recCCChecked=False
 			recBCCChecked=False

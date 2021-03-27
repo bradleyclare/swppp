@@ -1,5 +1,5 @@
 <%@ Language="VBScript" %>
-<%
+<% Response.buffer = false
 If _
 	Not Session("validAdmin") And _
 	Not Session("validDirector") And _
@@ -165,10 +165,13 @@ If RS2("projectState") = "OK" Then
 If RS2("horton") Then
 	'get questions
 	QuestionDateStart = #12/10/2020#
+	QuestionDateStart2 = #2/5/2021#
    If DateDiff("d", QuestionDateStart, inspecDate) < 1 Then
 		SQLQ = "SELECT * FROM HortonQuestions WHERE orderby < 27 ORDER BY orderby"
-	Else
+	ElseIf DateDiff("d", QuestionDateStart2, inspecDate) < 1 Then
 		SQLQ = "SELECT * FROM HortonQuestions WHERE orderby > 30 AND orderby < 57 ORDER BY orderby"
+	Else
+		SQLQ = "SELECT * FROM HortonQuestions WHERE orderby > 60 AND orderby < 87 ORDER BY orderby"
 	End If
 	Set RSQ = connSWPPP.Execute(SQLQ) %>
 	<hr noshade size="1" align="center" >

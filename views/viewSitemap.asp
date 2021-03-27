@@ -36,4 +36,4 @@ DO WHILE NOT(RSa.EOF)
 	end if
 	RSa.MoveNext
 LOOP 
-Response.Write("No sitemap was found for this project.  If you beleive this is an error please report it to SWPPP.com.<br/>")%>           
+Response.Write("No site map was found for this project.  Please report to swppp.com.<br/>")%>           

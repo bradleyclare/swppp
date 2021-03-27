@@ -80,8 +80,12 @@ Set connSWPPP = Nothing %>
 				onMouseOver="this.style.backgroundColor='#9AB5D1'; this.style.cursor='hand'"
 				onMouseOut="this.style.backgroundColor='transparent'; this.style.cursor='normal'">
 				<font color="black" style="font:normal normal bolder 12px;">
-				<a href="../admin/maintain/changePassword.asp" target="_blank">
-				change password</a></font></td></tr>
+				<% If Session("validAdmin") Then %>
+					<a href="../admin/maintain/recentComments.asp" target="_blank">
+				<% Else %>
+					<a href="../admin/maintain/recentCommentsUser.asp" target="_blank">
+				<% End If %>
+				notes</a></font></td></tr>
 			</table></td></tr>
     </Table>
 </div>

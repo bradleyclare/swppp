@@ -10,46 +10,49 @@
 	<td height="600" width=125 valign="top" align="right" bgcolor="#CCCCCC" nowrap><br>
 		
 		<% If Session("validAdmin") or Session("validInspector") then %>
-			<a href="../maintain/viewReports.asp" class="admin">View Reports</a><br>
-			<a href="../maintain/addReport.asp" class="admin">Add Report</a><br><br>
-			<a href="../maintain/releaseReports.asp" class="admin">Release Reports</a><br>
-      <a href="../maintain/releaseRepeatItems.asp" class="admin">Repeat Item Alert</a><br>
-      <a href="../maintain/releaseOpenItems.asp" class="admin">Open Item Alert</a><br>
-      <a href="../maintain/recentComments.asp" class="admin">View Notes</a><br>
-      <a href="../maintain/manageGroups.asp" class="admin">Manage Groups</a><br>
-	  <a href="../maintain/manageUserGroups.asp" class="admin">Manage User Groups</a><br>
-      <a href="../maintain/manageCommonItems.asp" class="admin">Manage Items</a><br><br>
+			<a href="../maintain/viewReports.asp" class="admin">reports</a><br>
+			<a href="../maintain/addReport.asp" class="admin">add report</a><br><br>
+			<a href="../maintain/releaseReports.asp" class="admin">send reports</a><br>
+      		<a href="../maintain/releaseRepeatItems.asp" class="admin">repeat item alert</a><br>
+      	<% End If %>
+		<% If Session("validAdmin") then %>
+			<a href="../maintain/releaseOpenItems.asp" class="admin">open item alert</a><br><br>
+		<% else %>
+			<br>
+		<% end if %>
+		<% If Session("validAdmin") or Session("validInspector") then %>
+      		<a href="../maintain/recentComments.asp" class="admin">notes</a><br><br>
 		<% End If %>
 		<% If Session("validAdmin") then %>
-	      	<a href="../maintain/viewUsersAdmin.asp" class="admin">View Users</a><br>
+	    	<a href="../maintain/viewUsersAdmin.asp" class="admin">users</a><br>
 		<% end if %>
 		<% If Session("validDirector") then %>
-	      	<a href="../maintain/viewUsersDir.asp" class="admin">View Users</a><br>
+	      	<a href="../maintain/viewUsersDir.asp" class="admin">users</a><br>
 		<% end if %>
 			
 		<% If Session("validAdmin") or Session("validDirector") then %>
-			<a href="../maintain/addUser.asp" class="admin">Add User</a><br>
-			<a href="../maintain/reportUsersByProject.asp" class="admin">Users by Project</a><br>
-         <a href="../maintain/reportProjectsByUser.asp" class="admin">Projects by User</a><br><br>
+			<a href="../maintain/addUser.asp" class="admin">add user</a><br>
+			<a href="../maintain/reportUsersByProject.asp" class="admin">users by project</a><br>
+         	<a href="../maintain/reportProjectsByUser.asp" class="admin">projects by user</a><br><br>
 		<% end if %>
-		<% If Session("validAdmin") then 
-	testStr="dwims@swpppinspections.com:jwright@swpppinspections.com"
-	If InStr(testStr,Session("email"))>0 Then %>
-			<a href="../maintain/viewProjects.asp" class="admin">View Projects</a><br><br>
-<%	End If %>
-			<a href="../maintain/adminAbout.asp" class="admin">Modify About Us</a><br>
-	    	<a href="../maintain/adminContact.asp" class="admin">Modify Contact Us</a><br><br>
-	    	Remove Files<br>
-	    	<a href="../maintain/remImgFiles.asp" class="admin">Images</a><br>
-	    	<a href="../maintain/remSigFiles.asp" class="admin">Signatures</a><br><br>
+		<% If Session("validAdmin") then %> 
+			<a href="../maintain/manageGroups.asp" class="admin">customers</a><br>
+	  		<a href="../maintain/manageUserGroups.asp" class="admin">user groups</a><br>
+      		<a href="../maintain/manageCommonItems.asp" class="admin">items</a><br><br>
+			<% testStr="dwims@swpppinspections.com:jwright@swpppinspections.com"
+			If InStr(testStr,Session("email"))>0 Then %>
+				<a href="../maintain/viewProjects.asp" class="admin">projects</a><br><br>
+			<%	End If %>
+			<a href="../maintain/adminAbout.asp" class="admin">modify about Us</a><br>
+	    	<a href="../maintain/adminContact.asp" class="admin">modify contact Us</a><br><br>
 		<% end if %>
 		<% If Session("validAdmin") then %>
-		<a href="../maintain/setActiveProjects.asp" class="admin">Active Reports</a><br>
-		<a href="../maintain/cleanupScripts.asp" class="admin">Cleanup Scripts</a><br>
-		<!--<a href="../maintain/archive.asp" class="admin">Archive Reports</a><br><br>-->
+			<a href="../maintain/setActiveProjects.asp" class="admin">active reports</a><br>
+			<a href="../maintain/cleanupScripts.asp" class="admin">cleanup scripts</a><br>
+			<!--<a href="../maintain/archive.asp" class="admin">archive reports</a><br><br>-->
 		<% End IF %>
-		<a href="../" class="admin">Admin Home</a><br><br>
-		<a href="../../" class="admin">Public Home</a><br><br>
-    <a href="../../logout.asp" class="admin">Logout</a><br/><br/>
+		<a href="../" class="admin">admin home</a><br><br>
+		<a href="../../" class="admin">public home</a><br><br>
+    <a href="../../logout.asp" class="admin">logout</a><br/><br/>
 </td>
 <!-- End Navigation --><td colspan="2" valign="top" width="90%"><br>

@@ -110,6 +110,14 @@ End If %>
             userID      = rsComm("userID")
             comment     = Trim(rsComm("comment"))
             commentDate = rsComm("date") 
+
+            If comment = "This item was marked complete" Then
+                comment = "This item was closed."
+            Elseif commnet = "This item was marked NLN" Then
+                comment = "This item was marked NLN."
+            Elseif comment = "This item was marked done" Then
+                comment = "This item was marked done."
+            End If
             
             SQLSELECT = "SELECT firstName, lastName FROM Users WHERE userID = " & userID
             'Response.Write(SQLSELECT & "<br>")

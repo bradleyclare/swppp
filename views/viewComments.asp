@@ -64,8 +64,7 @@ Set RS2=connSWPPP.execute(SQL2) %>
         
             if includeItems Then
                 dbg_str = dbg_str & "InspecID: " & inspecID & "<br/>"
-                coordSQLSELECT = "SELECT coID, coordinates, existingBMP, correctiveMods, orderby, assignDate, completeDate, status, repeat, useAddress, address, locationName, infoOnly, LD, NLN" &_
-	                " FROM Coordinates WHERE inspecID=" & inspecID & " ORDER BY orderby"	
+                coordSQLSELECT = "SELECT * FROM Coordinates WHERE inspecID=" & inspecID & " ORDER BY orderby"	
                 Set rsCoord = connSWPPP.execute(coordSQLSELECT)
                 start_n = n
 	            Do While Not rsCoord.EOF	
@@ -85,8 +84,12 @@ Set RS2=connSWPPP.execute(SQL2) %>
 		            locationName = TRIM(rsCoord("locationName"))
                     infoOnly = rsCoord("infoOnly")
                     LD = rsCoord("LD")
+                    OSC = rsCoord("osc")
                     If LD = True Then
                         correctiveMods = "(LD) " & correctiveMods
+                    End If 
+                    If OSC = True Then
+                        correctiveMods = "(OSC) " & correctiveMods
                     End If 
                     NLN = rsCoord("NLN")
 		            If infoOnly = True or NLN = True or status = True Then

@@ -189,8 +189,52 @@ If rsInspec("horton") Then
 					answer = "n/a"
 				End If
 				strBody=strBody &"<tr bgcolor="& altColors &"><td style='font-size:"& size &"; font-weight:"& weight &"'>"& cnt & " : " & Trim(RSQ("question")) &"</td>" & _ 
-				"<td style='font-size:"& size &"; font-weight:"& weight &"'>"& answer &"</td></tr>"
+					"<td style='font-size:"& size &"; font-weight:"& weight &"'>"& answer &"</td></tr>"
+
 				If altColors = "#e5e6e8" Then altColors = "#ffffff" Else altColors = "#e5e6e8" End If
+
+				If cnt = 12 then
+					pondSQL="SELECT * FROM HortonLocations WHERE inspecID="& inspecID &" AND isOutfall=0"
+					'response.Write(pondSQL)
+					Set RSpond=connSWPPP.execute(pondSQL)
+					
+					Do While Not RSpond.EOF
+						locationName = Trim(RSpond("locationName")) 
+						size = "90%"
+						weight = "bold"
+						answer = Trim(RSpond("answer"))
+						If answer = "yes" Then
+							size = "70%"
+							weight = "normal"
+						End If
+						strBody=strBody &"<tr bgcolor="& altColors &"><td style='font-size:"& size &"; font-weight:"& weight &"'> - "& locationName &"</td>" & _ 
+							"<td style='font-size:"& size &"; font-weight:"& weight &"'>"& answer &"</td></tr>"
+						If altColors = "#e5e6e8" Then altColors = "#ffffff" Else altColors = "#e5e6e8" End If
+						RSpond.MoveNext
+            	Loop
+				end if
+
+				if cnt = 13 then
+					outfallSQL="SELECT * FROM HortonLocations WHERE inspecID="& inspecID &" AND isOutfall=1"
+					'response.Write(outfallSQL)
+					Set RSoutfall=connSWPPP.execute(outfallSQL)
+
+					Do While Not RSoutfall.EOF
+						locationName = Trim(RSoutfall("locationName")) 
+						size = "90%"
+						weight = "bold"
+						answer = Trim(RSoutfall("answer"))
+						If answer = "yes" Then
+							size = "70%"
+							weight = "normal"
+						End If
+						strBody=strBody &"<tr bgcolor="& altColors &"><td style='font-size:"& size &"; font-weight:"& weight &"'> - "& locationName &"</td>" & _ 
+							"<td style='font-size:"& size &"; font-weight:"& weight &"'>"& answer &"</td></tr>"
+						If altColors = "#e5e6e8" Then altColors = "#ffffff" Else altColors = "#e5e6e8" End If
+						RSoutfall.MoveNext
+            	Loop
+				end if
+
 				RSQ.MoveNext
 			Loop 'RSO
 			strBody=strBody &"</table>" 
@@ -248,6 +292,7 @@ Else
 			ada = rsCoord("ada")
 		   dway = rsCoord("dway")
 		   flume = rsCoord("flume")
+			OSC = rsCoord("osc")
 			scoring_class = "black"
 			'Response.Write("ID: " & coID & ", Coord: " & coordinates & ", LocName: " & locationName & ", address: " & address & ", Mods: " & correctiveMods & "<br/>") 
 			IF applyScoring THEN
@@ -263,6 +308,9 @@ Else
             If LD = True Then
                 correctiveMods = "(LD) " & correctiveMods
                 scoring_class = "ld"
+            End If
+				If OSC = True Then
+                correctiveMods = "(OSC) " & correctiveMods
             End If
 			If pond = True Then
                 correctiveMods = "(pond) " & correctiveMods
@@ -475,12 +523,11 @@ projectID=projID(0)
 '	Response.End
 ELSE
 If Session("userID") = 1370 Then
-	SQL0 = "SELECT i.projectName, i.projectPhase, i.inspecDate, i.inspecID, pu.projectID, i.ReportType, i.released" &_
+	SQL0 = "SELECT DISTINCT i.projectName, i.projectPhase, i.inspecDate, i.inspecID, pu.projectID, i.ReportType, i.released, i.horton" &_
 		" FROM ProjectsUsers pu JOIN Inspections i ON pu.projectID=i.projectID" &_
-		" WHERE pu.rights='inspector' AND i.released=0" &_
-	    " ORDER BY i.projectName, i.projectPhase, i.inspecDate DESC"
+		" WHERE pu.rights='inspector' AND i.released=0 ORDER BY i.projectName, i.projectPhase, i.inspecDate DESC"
 Else
-	SQL0 = "SELECT i.projectName, i.projectPhase, i.inspecDate, i.inspecID, pu.projectID, i.ReportType, i.released" &_
+	SQL0 = "SELECT DISTINCT i.projectName, i.projectPhase, i.inspecDate, i.inspecID, pu.projectID, i.ReportType, i.released, i.horton" &_
 		" FROM ProjectsUsers pu JOIN Inspections i ON pu.projectID=i.projectID" &_
 		" WHERE pu.rights='inspector' AND i.released=0 AND i.userID=pu.userID AND pu.userID="& Session("userID")
 	If Session("userID") = 42 Then
@@ -507,13 +554,29 @@ RS0.Open SQL0, connSWPPP
 <FORM action="<%= Request.ServerVariables("SCRIPT_NAME") %>" method="post">
 <div align="center">
 <table border="0" cellpadding=1 cellspacing=1>
-	<tr><th>Project Name|Phase</th><th>Report Date</th><th>Report Type</th><th>send email</th></tr>
-<% 	DO WHILE NOT RS0.EOF %>
-	<tr><td align="left"><%= RS0("projectName")%>&nbsp;<%= RS0("projectPhase") %></td>
-		<td align="left"><%= RS0("inspecDate") %></td>
-		<td align="left"><%= RS0("ReportType") %></td>
-		<td align="center"><INPUT type="checkbox" name="<%= RS0("projectID")%>:<%= RS0("inspecID")%>" value="<%= RS0("inspecID")%>"></td></tr>
-<% 		RS0.MoveNext
+	<tr><th>Project Name|Phase</th><th>Report Date</th><th>Report Type</th><th>questions defined</th><th>send email</th></tr>
+	<% DO WHILE NOT RS0.EOF 
+			inspecID  = RS0("inspecID")
+			projectID = RS0("projectID")
+			horton    = RS0("horton")
+			'Response.Write("inspecID:" & inspecID & ", horton:" & horton & "</br>")
+			SQLA = "SELECT * FROM HortonAnswers WHERE inspecID = " & inspecID
+			Set RSA = connSWPPP.execute(SQLA)
+			if NOT horton Then
+				question = ""
+			elseif horton AND RSA.EOF Then
+				question = "no"
+				fc = "red"
+			else
+				question = "yes"
+				fc = "black"
+			end if %>
+			<tr><td align="left"><%= RS0("projectName")%>&nbsp;<%= RS0("projectPhase") %></td>
+			<td align="left"><%= RS0("inspecDate") %></td>
+			<td align="left"><%= RS0("ReportType") %></td>
+			<td align="center" style="color:<%=fc%>"><%=question%></td>
+			<td align="center"><INPUT type="checkbox" name="<%=projectID%>:<%=inspecID%>" value="<%=inspecID%>"></td></tr>
+			<% RS0.MoveNext
 	LOOP
 RS0.Close
 SET RS0=nothing %>

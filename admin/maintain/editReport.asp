@@ -192,6 +192,8 @@ If Request.Form.Count > 0 Then
          if Request("coord:dway:"& CStr(n)) = "on" then dway = 1 End If
 			flume = 0
          if Request("coord:flume:"& CStr(n)) = "on" then flume = 1 End If
+			osc = 0
+			if Request("coord:osc:"& CStr(n)) = "on" then osc = 1 End If
 			AssignDate = inspecDate
          if Repeat = 1 Then
 		    	AssignDate = Request("coord:assignDate:"& CStr(n))
@@ -239,7 +241,8 @@ If Request.Form.Count > 0 Then
 			mormix &", " & _
 			ada &", " & _
 			dway &", " & _
-			flume &";"
+			flume &", " & _
+			osc &";"
 		next	
     'Response.Write(SQLc)
         if Len(SQLc) > 0 then connSWPPP.execute(SQLc) end if
@@ -963,6 +966,7 @@ End If %>
 		ada = rsCoord("ada")
 		dway = rsCoord("dway")
 		flume = rsCoord("flume")
+		osc = rsCoord("osc")
         if isNull(parentID) or parentID = "" then 'initialize the parentID if never set
             parentID = coID
         end if
@@ -1019,13 +1023,20 @@ End If %>
 	<% Else %>
 		<input type="checkbox" name="coord:infoOnly:<%= n %>" />
 	<% End If %>
-    </td><td>LD
+    </td><td>
+	 OSC
+	 <% If osc = True Then %>
+			<input type="checkbox" name="coord:osc:<%=n %>" checked />
+		<% Else %>
+			<input type="checkbox" name="coord:osc:<%=n %>" />
+		<% End If %>
+	 LD
 	<% If LD = True Then %>
 		<input type="checkbox" name="coord:LD:<%= n %>" checked/>
 	<% Else %>
 		<input type="checkbox" name="coord:LD:<%= n %>" />
 	<% End If %>
-    </td>
+   </td>
     <td> status
     <% If status = True Then %>
         <input type="checkbox" name="coord:status:<%=n %>" checked />
@@ -1244,7 +1255,7 @@ Set rsCoord = Nothing %>
 	<td><input <% If Session("validAdmin") Then %> class=datepicker <% End If %> type="text" name="coord:assignDate:<%= m %>" size="10" value="" readonly /></td>
 	<td><input type="button" onclick="displayCommonItemSelect(this)" name="coord:item:<%=m%>" value="common item" /></td></tr>
 	<tr><td>note <input type="checkbox" name="coord:infoOnly:<%= m %>" /></td>
-        <td>LD <input type="checkbox" name="coord:LD:<%= m %>" /></td></tr>
+        <td>OSC <input type="checkbox" name="coord:osc:<%= m %>" /> LD <input type="checkbox" name="coord:LD:<%= m %>" /></td></tr>
 	<%	IF rsReport("horton") = True THEN %>
 	<tr>
 		<td colspan="9">

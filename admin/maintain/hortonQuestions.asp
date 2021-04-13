@@ -68,6 +68,83 @@ If Request.Form.Count > 0 Then
         answerSQL = answerSQL & " WHERE inspecID = " & inspecID
         'Response.Write(answerSQL)
         connSWPPP.Execute(answerSQL)
+    ElseIf Request.Form("previous_btn") = "Set to Previous Report" Then
+        'determine previous report id
+        inspecSQLSELECT = "SELECT projectID FROM Inspections WHERE inspecID = " & inspecID
+        'Response.Write(inspecSQLSELECT)
+        Set RSI = connSWPPP.execute(inspecSQLSELECT)
+        If Not RSI.EOF Then
+            projectID = RSI("projectID")
+            inspecSQLSELECT = "SELECT inspecID, inspecDate FROM Inspections WHERE projectID = " & projectID & " ORDER BY inspecDate DESC"
+            'Response.Write(inspecSQLSELECT)
+            Set RSII = connSWPPP.execute(inspecSQLSELECT)
+            found_current = 0
+            prevInspecID = 0
+            Do While Not RSII.EOF
+                ID = RSII("inspecID")
+                'Response.Write("inspecID:" & ID & "</br>")
+                If found_current Then
+                    prevInspecID = ID
+                    Response.Write("prevInspecID:" & ID & "</br>")
+                    Exit Do
+                End If
+                If Trim(ID) = Trim(inspecID) Then
+                    found_current = 1
+                    'Response.Write("found_current:" & ID & "=" & inspecID & "</br>")
+                End If
+                RSII.MoveNext
+            Loop
+
+            If prevInspecID > 0 Then
+                'get previous horton answers
+                answerSQLSELECT = "SELECT * FROM HortonAnswers WHERE inspecID = " & prevInspecID
+                'Response.Write(answerSQLSELECT)
+                Set RSA = connSWPPP.execute(answerSQLSELECT)
+                numQuestions = 26
+                If Not RSA.EOF Then
+                    answerSQL = "INSERT INTO HortonAnswers (inspecID, " 
+                    For i = 1 To numQuestions
+                        answerSQL = answerSQL & "Q" & i
+                        If i < numQuestions Then
+                            answerSQL = answerSQL & ", "
+                        End If
+                    Next
+                    answerSQL = answerSQL & ") VALUES (" & inspecID & ", "
+                    For i = 1 To numQuestions
+                    if i=3 Then
+                        answerSQL = answerSQL & "'yes'"
+                        Else
+                            answerSQL = answerSQL & "'" & RSA("Q" & i) & "'"
+                        End If
+                        If i < numQuestions Then
+                            answerSQL = answerSQL & ", "
+                        End If
+                    Next
+                    answerSQL = answerSQL & ")"
+                    'Response.Write(answerSQL)
+                    connSWPPP.Execute(answerSQL)
+                End If
+
+                locationSQLSELECT = "SELECT * FROM HortonLocations WHERE inspecID = " & prevInspecID
+                'Response.Write(locationSQLSELECT)
+                Set RSL = connSWPPP.execute(locationSQLSELECT)
+                If Not RSL.EOF Then
+                    startSQL = "INSERT INTO HortonLocations (inspecID, locationName, isOutfall, answer) VALUES"
+                    Do While Not RSL.EOF 
+                        outfallFlag = 0
+                        if RSL("isOutfall") Then
+                            outfallFlag = 1
+                        End If
+                        insertSQL = startSQL &" ("& inspecID &", '"& Trim(RSL("locationName")) &"', "& outfallFlag &", '"& Trim(RSL("answer")) &"')"
+                        'Response.Write(insertSQL & "</br>")
+                        connSWPPP.Execute(insertSQL)
+                        RSL.MoveNext
+                    Loop
+                End If
+            Else
+                Response.Write("Could not sync answers to previous report becasue no previous report found.")
+            End If 'prevInspecID
+        End If 'end inspections
     ElseIf Request.Form("sync_btn") = "Sync" then
         If RSA.EOF Then
             answerSQL = "INSERT INTO HortonAnswers (inspecID, " 
@@ -273,6 +350,46 @@ If Request.Form.Count > 0 Then
         End If
         'response.Write(answerSQL)
         connSWPPP.Execute(answerSQL)
+
+        'find and update location answers
+        maxNumLocations = 20
+        finalAnswer = "yes"
+        For i = 1 To maxNumLocations
+            'response.Write("pond:"& i &"</br>")
+            if Trim(Request("pondLocA:" & CStr(i))) = "" then
+		        exit for
+		    end if
+            if Trim(Request("pondLocA:" & CStr(i))) = "no" then
+                finalAnswer = "no"
+            end if
+            answerSQL = "UPDATE HortonLocations SET answer = '"& TRIM(Request("pondLocA:" & CStr(i))) &"' WHERE inspecID = "& inspecID &" AND locationID = "&  TRIM(Request("pondLocID:" & CStr(i)))
+            'response.Write(answerSQL)
+            connSWPPP.Execute(answerSQL)
+        Next
+        If i > 1 Then 'update the overall answer if any locations were defined
+            answerSQL = "UPDATE HortonAnswers SET Q12 = '"& finalAnswer &"' WHERE inspecID ="& inspecID
+            'response.Write(answerSQL)
+            connSWPPP.Execute(answerSQL)
+        End If
+
+        finalAnswer = "yes"
+        For i = 1 To maxNumLocations
+            'response.Write("outfall:"& i &"</br>")
+            if Trim(Request("outfallLocA:" & CStr(i))) = "" then
+		        exit for
+		    end if
+            if Trim(Request("outfallLocA:" & CStr(i))) = "no" then
+                finalAnswer = "no"
+            end if
+            answerSQL = "UPDATE HortonLocations SET answer = '"& TRIM(Request("outfallLocA:" & CStr(i))) &"' WHERE inspecID = "& inspecID &" AND locationID = "&  TRIM(Request("outfallLocID:" & CStr(i)))
+            'response.Write(answerSQL)
+            connSWPPP.Execute(answerSQL)
+        Next
+        If i > 1 Then 'update the overall answer if any locations were defined
+            answerSQL = "UPDATE HortonAnswers SET Q13 = '"& finalAnswer &"' WHERE inspecID ="& inspecID
+            'response.Write(answerSQL)
+            connSWPPP.Execute(answerSQL)
+        End If
     End If
 End If
 
@@ -280,6 +397,13 @@ End If
 answerSQLSELECT = "SELECT * FROM HortonAnswers WHERE inspecID = " & inspecID
 Set RSA = connSWPPP.execute(answerSQLSELECT)
 
+pondSQL="SELECT * FROM HortonLocations WHERE inspecID="& inspecID &" AND isOutfall=0"
+'response.Write(pondSQL)
+Set RSpond=connSWPPP.execute(pondSQL)
+
+outfallSQL="SELECT * FROM HortonLocations WHERE inspecID="& inspecID &" AND isOutfall=1"
+'response.Write(outfallSQL)
+Set RSoutfall=connSWPPP.execute(outfallSQL)
 %>
 
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
@@ -329,18 +453,112 @@ Set RSA = connSWPPP.execute(answerSQLSELECT)
         <tr bgcolor="<%= altColors %>">
         <td><% =cnt %> : <% =question %></td>
         <td>
-        <select name="A:<%=cnt%>" <% If default_val = selected_val or selected_val = "na" Then %> style="background-color:<%=green%>;" <% Else %> style="background-color:<%=red%>;"<% End If %>>
-        <option value="yes" <% If selected_val = "yes" Then %> selected <% End If %>>yes</option>
-        <option value="no" <% If selected_val = "no" Then %> selected <% End If %>>no</option>
-        <% if (include_na) = True Then %>
-            <option value="na" <% If selected_val = "na" Then %> selected <% End If %>>n/a</option>
-	    <% End if %>
-        </select>
+
+        <% show_dropdown = 1
+        If cnt = 12 Then %>
+            <a href="defineHortonLocations.asp?inspecID=<%=inspecID%>"><input type="button" value="define locations"/></a>
+            <% If Not RSpond.EOF Then
+                show_dropdown = 0
+            End If 
+        ElseIf cnt = 13 Then %>
+            <a href="defineHortonLocations.asp?inspecID=<%=inspecID%>&outfall=1"><input type="button" value="define locations"/></a>
+            <% If Not RSoutfall.EOF Then
+                show_dropdown = 0
+            End If
+        End If
+        If show_dropdown Then %>
+            <select name="A:<%=cnt%>" <% If default_val = selected_val or selected_val = "na" Then %> style="background-color:<%=green%>;" <% Else %> style="background-color:<%=red%>;"<% End If %>>
+            <option value="yes" <% If selected_val = "yes" Then %> selected <% End If %>>yes</option>
+            <option value="no" <% If selected_val = "no" Then %> selected <% End If %>>no</option>
+            <% if (include_na) = True Then %>
+                <option value="na" <% If selected_val = "na" Then %> selected <% End If %>>n/a</option>
+	        <% End if %>
+            </select>
+        <% End If %>
+        
         </td>
         <td><% = category %></td>
         <td><% = chkbx_txt %></td>
         </tr>
-        <% If altColors = "#e5e6e8" Then altColors = "#ffffff" Else altColors = "#e5e6e8" End If
+        
+        <% 'for question 12 and 13 show the defined location questions 
+        If cnt = 12 Then
+            pondCnt = 0
+            anyNo = 0
+            default_val = "yes"
+            Do While Not RSpond.EOF
+                pondCnt = pondCnt + 1
+                locationID = RSpond("locationID")
+                locationName = Trim(RSpond("locationName")) 
+                selected_val = Trim(RSpond("answer")) %>
+                <tr bgcolor="<%= altColors %>">
+                <td>&nbsp-&nbsp<% =locationName %></td>
+                <td>
+                <input type="hidden" name="pondLocID:<%=pondCnt%>" value="<%=locationID%>"/>
+                <select name="pondLocA:<%=pondCnt%>" <% If default_val = selected_val or selected_val = "na" Then %> style="background-color:<%=green%>;" <% Else %> style="background-color:<%=red%>;"<% End If %>>
+                <option value="yes" <% If selected_val = "yes" Then %> selected <% End If %>>yes</option>
+                <option value="no" <% If selected_val = "no" Then %> selected <% End If %>>no</option>
+                <option value="na" <% If selected_val = "na" Then %> selected <% End If %>>n/a</option>
+                <% If selected_val = "no" Then
+                    anyNo = 1
+                End If %>
+                </select>
+                </td>
+                <td></td>
+                <td></td>
+                </tr>
+                <% If altColors = "#e5e6e8" Then altColors = "#ffffff" Else altColors = "#e5e6e8" End If
+                RSpond.MoveNext
+            Loop
+            'set overall answer based on the location answers
+            If pondCnt > 0 Then
+                If anyNo Then %>
+                    <input type="hidden" name="A:<%=cnt%>" value="no"/>
+                <% Else %>
+                    <input type="hidden" name="A:<%=cnt%>" value="yes"/>
+                <% End If
+            End If
+        End If
+
+        If cnt = 13 Then
+            outfallCnt = 0
+            anyNo = 0
+            default_val = "yes"
+            Do While Not RSoutfall.EOF
+                outfallCnt = outfallCnt + 1
+                locationID = RSoutfall("locationID")
+                locationName = Trim(RSoutfall("locationName")) 
+                selected_val = Trim(RSoutfall("answer")) %>
+                <tr bgcolor="<%= altColors %>">
+                <td>&nbsp-&nbsp<% =locationName %></td>
+                <td>
+                <input type="hidden" name="outfallLocID:<%=outfallCnt%>" value="<%=locationID%>"/>
+                <select name="outfallLocA:<%=outfallCnt%>" <% If default_val = selected_val or selected_val = "na" Then %> style="background-color:<%=green%>;" <% Else %> style="background-color:<%=red%>;"<% End If %>>
+                <option value="yes" <% If selected_val = "yes" Then %> selected <% End If %>>yes</option>
+                <option value="no" <% If selected_val = "no" Then %> selected <% End If %>>no</option>
+                <option value="na" <% If selected_val = "na" Then %> selected <% End If %>>n/a</option>
+                <% If selected_val = "no" Then
+                    anyNo = 1
+                End If %>
+                </select>
+                </td>
+                <td></td>
+                <td></td>
+                </tr>
+                <% If altColors = "#e5e6e8" Then altColors = "#ffffff" Else altColors = "#e5e6e8" End If
+                RSoutfall.MoveNext
+            Loop
+            'set overall answer based on the location answers
+            If outfallCnt > 0 Then
+                If anyNo Then %>
+                    <input type="hidden" name="A:<%=cnt%>" value="no"/>
+                <% Else %>
+                    <input type="hidden" name="A:<%=cnt%>" value="yes"/>
+                <% End If
+            End If
+        End If
+
+        If altColors = "#e5e6e8" Then altColors = "#ffffff" Else altColors = "#e5e6e8" End If
         RS0.MoveNext
     Loop 'RSO
     RS0.Close
@@ -348,6 +566,7 @@ Set RSA = connSWPPP.execute(answerSQLSELECT)
     <tr><td>
     <input name="na_btn" type="submit" style="font-size: 15px;" value="Set all to NA"/>
     <input name="default_btn" type="submit" style="font-size: 15px;" value="Set all to Defaults"/>
+    <input name="previous_btn" type="submit" style="font-size: 15px;" value="Set to Previous Report"/>
     </td>
     <td>
     <% If Not RSA.EOF Then %>

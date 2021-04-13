@@ -80,8 +80,7 @@ Set rsComm = connSWPPP.execute(commSQLSELECT) %>
                 'Response.Write(connUsers("firstName") & " " & connUsers("lastName") & "<br>")
                 
                 'get item information
-                coordSQLSELECT = "SELECT coID, inspecID, coordinates, existingBMP, correctiveMods, orderby, assignDate, completeDate, status, repeat, useAddress, address, locationName, LD" &_
-                    " FROM Coordinates WHERE coID=" & coID & " AND status=0 AND NLN=0"
+                coordSQLSELECT = "SELECT * FROM Coordinates WHERE coID=" & coID & " AND status=0 AND NLN=0"
                 'Response.Write(coordSQLSELECT)
                 Set rsCoord = connSWPPP.execute(coordSQLSELECT)
         
@@ -95,9 +94,13 @@ Set rsComm = connSWPPP.execute(commSQLSELECT) %>
                     locationName = TRIM(rsCoord("locationName")) 
                     inspecID = rsCoord("inspecID")
                     LD = rsCoord("LD")
-                    
+                    OSC = rsCoord("osc")
+
                     If LD = True Then
                         correctiveMods = "(LD) " & correctiveMods
+                    End If 
+                    If OSC = True Then
+                        correctiveMods = "(OSC) " & correctiveMods
                     End If 
                 
                     'get report name

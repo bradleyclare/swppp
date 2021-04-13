@@ -95,6 +95,7 @@ Else
         ada = rsCoord("ada")
 		dway = rsCoord("dway")
 		flume = rsCoord("flume")
+        OSC = rsCoord("osc")
         scoring_class = "black"
         If applyScoring Then
             If assignDate = "" Then
@@ -108,6 +109,9 @@ Else
         If LD = True Then
             correctiveMods = "(LD) " & correctiveMods
            scoring_class = "ld"
+        End If
+        If OSC = True Then
+            correctiveMods = "(OSC) " & correctiveMods
         End If
 		If pond = True Then
             correctiveMods = "(pond) " & correctiveMods

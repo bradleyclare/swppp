@@ -83,7 +83,7 @@ userID = Request("userID")
                         inspecDate = Trim(rsInspectInfo("inspecDate"))
 
                         coordSQLSELECT = "SELECT c.coID, c.coordinates, c.existingBMP, c.correctiveMods, c.orderby, c.assignDate, c.completeDate, c.status," &_
-                            " c.repeat, c.useAddress, c.address, c.locationName, c.infoOnly, c.LD, c.NLN, cc.comment, cc.userID, cc.date" &_ 
+                            " c.repeat, c.useAddress, c.address, c.locationName, c.infoOnly, c.LD, c.NLN, c.osc, cc.comment, cc.userID, cc.date" &_ 
                             " FROM Coordinates as c" &_
                             " inner join CoordinatesComments as cc" &_
                             " on c.coID=cc.coID" &_
@@ -115,8 +115,12 @@ userID = Request("userID")
 		                    locationName = TRIM(rsCoord("locationName"))
                             infoOnly = rsCoord("infoOnly")
                             LD = rsCoord("LD")
+                            OSC = rsCoord("osc")
                             If LD = True Then
                                 correctiveMods = "(LD) " & correctiveMods
+                            End If 
+                            If OSC = True Then
+                                correctiveMods = "(OSC) " & correctiveMods
                             End If 
                             'userName = rsCoord("firstName") & " " & rsCoord("lastName") 
                             userName = "Name"%>

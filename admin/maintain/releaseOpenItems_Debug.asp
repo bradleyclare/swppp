@@ -124,7 +124,7 @@ IF Request.Form.Count > 0 THEN %>
                             dbgBody=dbgBody & inspecDate & "<br/>"
                     
                             'open items on report tally up the open item dates 
-                            coordSQLSELECT = "SELECT coID, coordinates, correctiveMods, orderby, assignDate, completeDate, status, repeat, useAddress, address, locationName, infoOnly, LD, parentID FROM Coordinates" &_
+                            coordSQLSELECT = "SELECT * FROM Coordinates" &_
 	                            " WHERE inspecID=" & inspecID &_
                                 " AND status=0" &_
                                 " AND repeat=0" &_

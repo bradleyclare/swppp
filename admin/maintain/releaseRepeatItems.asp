@@ -113,6 +113,7 @@ IF Request.Form.Count > 0 THEN %>
                     ada = rsCoord("ada")
 		            dway = rsCoord("dway")
 		            flume = rsCoord("flume")
+                    OSC = rsCoord("osc")
 			        scoring_class = "black"
 					'Response.Write("ID: " & coID & ", Coord: " & coordinates & ", LocName: " & locationName & ", address: " & address & ", Mods: " & correctiveMods & "<br/>") 
 			        If applyScoring Then
@@ -127,6 +128,9 @@ IF Request.Form.Count > 0 THEN %>
                     If LD = True Then
                        correctiveMods = "(LD) " & correctiveMods
                        scoring_class = "ld"
+                    End If
+                    If OSC = True Then
+                       correctiveMods = "(OSC) " & correctiveMods
                     End If
 					If pond = True Then
 		                correctiveMods = "(pond) " & correctiveMods

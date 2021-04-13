@@ -201,7 +201,51 @@ If RS2("horton") Then
 				End If %>
 				<tr bgcolor=<%=altColors%>><td style="font-size:<%=size%>; font-weight:<% =weight %>"><%=cnt%> : <%=Trim(RSQ("question"))%></td> 
 				<td style="font-size:<%=size%>; font-weight:<%=weight%>"><%=answer%></td></tr>
+
 				<% If altColors = "#e5e6e8" Then altColors = "#ffffff" Else altColors = "#e5e6e8" End If
+
+				If cnt = 12 then
+					pondSQL="SELECT * FROM HortonLocations WHERE inspecID="& inspecID &" AND isOutfall=0"
+					'response.Write(pondSQL)
+					Set RSpond=connSWPPP.execute(pondSQL)
+					
+					Do While Not RSpond.EOF
+						locationName = Trim(RSpond("locationName")) 
+						size = "90%"
+						weight = "bold"
+						answer = Trim(RSpond("answer"))
+						If answer = "yes" Then
+							size = "70%"
+							weight = "normal"
+						End If %>
+						<tr bgcolor=<%=altColors%>><td style="font-size:<%=size%>; font-weight:<% =weight %>">&nbsp-&nbsp<% = locationName%></td> 
+						<td style="font-size:<%=size%>; font-weight:<%=weight%>"><%=answer%></td></tr>
+						<% If altColors = "#e5e6e8" Then altColors = "#ffffff" Else altColors = "#e5e6e8" End If
+						RSpond.MoveNext
+            	Loop
+				end if
+
+				if cnt = 13 then
+					outfallSQL="SELECT * FROM HortonLocations WHERE inspecID="& inspecID &" AND isOutfall=1"
+					'response.Write(outfallSQL)
+					Set RSoutfall=connSWPPP.execute(outfallSQL)
+
+					Do While Not RSoutfall.EOF
+						locationName = Trim(RSoutfall("locationName")) 
+						size = "90%"
+						weight = "bold"
+						answer = Trim(RSoutfall("answer"))
+						If answer = "yes" Then
+							size = "70%"
+							weight = "normal"
+						End If %>
+						<tr bgcolor=<%=altColors%>><td style="font-size:<%=size%>; font-weight:<% =weight %>">&nbsp-&nbsp<% = locationName%></td> 
+						<td style="font-size:<%=size%>; font-weight:<%=weight%>"><%=answer%></td></tr>
+						<% If altColors = "#e5e6e8" Then altColors = "#ffffff" Else altColors = "#e5e6e8" End If
+						RSoutfall.MoveNext
+            	Loop
+				end if
+
 				RSQ.MoveNext
 			Loop %>
 			</table> 
@@ -262,6 +306,7 @@ Else
 			ada = rsCoord("ada")
 		   dway = rsCoord("dway")
 		   flume = rsCoord("flume")
+			OSC = rsCoord("osc")
 			scoring_class = "black"
 			'Response.Write("ID: " & coID & ", Coord: " & coordinates & ", LocName: " & locationName & ", address: " & address & ", Mods: " & correctiveMods & "<br/>") 
 			IF applyScoring THEN
@@ -277,6 +322,9 @@ Else
             If LD = True Then
                 correctiveMods = "(LD) " & correctiveMods
                 scoring_class = "ld"
+            End If
+				If OSC = True Then
+                correctiveMods = "(OSC) " & correctiveMods
             End If
 			If pond = True Then
                 correctiveMods = "(pond) " & correctiveMods

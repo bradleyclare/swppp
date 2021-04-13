@@ -334,7 +334,7 @@ Set RS0 = connSWPPP.Execute(SQL0)
           dbgBody=dbgBody & projName & ": " & projPhase & ": " & inspecDate & "<br/>"
 
         	 'open items on report tally up the open item dates 
-			 coordSQLSELECT = "SELECT coID, coordinates, correctiveMods, orderby, assignDate, completeDate, status, repeat, useAddress, address, locationName, infoOnly, LD, NLN, parentID FROM Coordinates" &_
+			 coordSQLSELECT = "SELECT * FROM Coordinates" &_
                 " WHERE inspecID=" & inspecID &_
                 " AND status=0" &_
                 " AND infoOnly=0" &_
@@ -360,26 +360,30 @@ Set RS0 = connSWPPP.Execute(SQL0)
 	                infoOnly = rsCoord("infoOnly")
 	                LD = rsCoord("LD")
                     NLN = rsCoord("NLN")
+                    OSC = rsCoord("osc")
 	                parentID = rsCoord("parentID")
-	              If assignDate = "" Then
-	                 age = 0
-	              Else
-	                 age = datediff("d",assignDate,currentDate) 
-	              End If
-					  dbgBody=dbgBody & "ID: " & coID &", Age: "& age &", LD: "& LD &", NLN: "& NLN & "<br/>"
-	              If LD = True Then
-	                 correctiveMods = "(LD) " & correctiveMods
-	              End If 
+	                If assignDate = "" Then
+	                    age = 0
+	                Else
+	                    age = datediff("d",assignDate,currentDate) 
+	                End If
+				    dbgBody=dbgBody & "ID: " & coID &", Age: "& age &", LD: "& LD &", NLN: "& NLN & "<br/>"
+	                If LD = True Then
+	                    correctiveMods = "(LD) " & correctiveMods
+	                End If
+                    If OSC = True Then
+	                    correctiveMods = "(OSC) " & correctiveMods
+	                End If 
 			        If infoOnly = True or NLN = True Then
-	                 do_nothing = 1 
-	              Elseif status = false Then 
-	                commSQLSELECT = "SELECT comment, userID, date" &_
-		               " FROM CoordinatesComments WHERE coID=" & coID	
-	                Set rsComm = connSWPPP.execute(commSQLSELECT) %>
-			        <input type="hidden" name="coord:coID:<%= n %>" value="<%= coID %>" />
-	                <input type="hidden" name="coord:inspecID:<%= n %>" value="<%= inspecID %>" />
-			        <tr>
-			        <% If hortonFlag Then 
+	                    do_nothing = 1 
+	                Elseif status = false Then 
+	                    commSQLSELECT = "SELECT comment, userID, date" &_
+		                    " FROM CoordinatesComments WHERE coID=" & coID	
+	                    Set rsComm = connSWPPP.execute(commSQLSELECT) %>
+			            <input type="hidden" name="coord:coID:<%= n %>" value="<%= coID %>" />
+	                    <input type="hidden" name="coord:inspecID:<%= n %>" value="<%= inspecID %>" />
+			            <tr>
+			            <% If hortonFlag Then 
                         commSQLSELECT = "SELECT c.comment, c.userID, c.date, u.firstName, u.lastName" &_
                             " FROM CoordinatesComments as c, Users as u WHERE c.userID = u.userID" &_
                         " AND coID=" & coID	

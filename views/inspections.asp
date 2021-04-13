@@ -130,7 +130,7 @@ if NOT(RS1.EOF) THEN hortonUserLD=True END IF
 <body bgcolor="#FFFFFF" text="#000000">
 <!-- #include file="../header2.inc" -->
 <form id="theForm" method="post" action="<%=Request.ServerVariables("script_name")%>?projID=<%=projectID%>&projName=<%=projectName%>&projPhase=<%=projectPhase%>%>" onsubmit="return isReady(this)";>
-<table width="100%"><tr><td>
+<table width="100%"><tr><td valign="top">
 <h1><font color="#003399"><% = projectName %>&nbsp;<%= projectPhase %></font></h1>
 <table>
 <tr><td><button onClick="window.open('reportPrintAll.asp?projID=<%= projectID%>&projName=<%= projectName%>&projPhase=<%= projectPhase %>','','width=800, height=600, location=no, menubar=no, status=no, toolbar=no, scrollbars=yes, resizable=yes')">print all reports</button></td>

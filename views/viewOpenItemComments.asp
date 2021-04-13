@@ -37,8 +37,7 @@ End If
 commSQLSELECT = "SELECT * FROM CoordinatesComments WHERE coID=" & coID	
 Set rsComm = connSWPPP.execute(commSQLSELECT) 
 
-coordSQLSELECT = "SELECT coordinates, correctiveMods, assignDate, completeDate, status, repeat, useAddress, address, locationName, infoOnly, LD" &_
-    " FROM Coordinates WHERE coID=" & coID
+coordSQLSELECT = "SELECT * FROM Coordinates WHERE coID=" & coID
 Set rsCoord = connSWPPP.execute(coordSQLSELECT) 
     
 currentDate = date()
@@ -55,8 +54,12 @@ useAddress = rsCoord("useAddress")
 address = TRIM(rsCoord("address"))
 locationName = TRIM(rsCoord("locationName"))
 LD = rsCoord("LD")
+OSC = rsCoord("osc")
 If LD = True Then
     correctiveMods = "(LD) " & correctiveMods
+End If
+If OSC = True Then
+    correctiveMods = "(OSC) " & correctiveMods
 End If %>
 
 <html>

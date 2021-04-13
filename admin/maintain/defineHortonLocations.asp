@@ -21,14 +21,19 @@ If Request.Form.Count > 0 Then
 		end if
         locationID = Request("locationID:"& Cstr(n))
         locationName = TRIM(strQuoteReplace(Request("locationName:"& Cstr(n))))
-        If locationName <> "" Then
+        
+        if Request("location:del:"& CStr(n)) = "on" then 
+            SQLDELETE = "DELETE FROM HortonLocations WHERE locationID="& locationID
+	        ' Response.Write(coordSQLINSERT & "<br>")
+	        connSWPPP.Execute(SQLDELETE)
+        ElseIf locationName <> "" Then
             If locationID = 0 Then
-                insertSQL = "INSERT INTO HortonLocations (inspecID, locationName, isOutfall, answer) VALUES ("& inspecID &", '"& locationName &"', "& outfallFlag &", 1)"
-                Response.Write(insertSQL &"</br>")
+                insertSQL = "INSERT INTO HortonLocations (inspecID, locationName, isOutfall, answer) VALUES ("& inspecID &", '"& locationName &"', "& outfallFlag &", 'yes')"
+                'Response.Write(insertSQL &"</br>")
                 connSWPPP.Execute(insertSQL)
             Else
                 upateSQL = "UPDATE HortonLocations SET locationName='"& locationName &"', isOutfall="& outfallFlag &" WHERE locationID="& locationID
-                Response.Write(upateSQL &"</br>")
+                'Response.Write(upateSQL &"</br>")
                 connSWPPP.Execute(upateSQL)
             End If
         End If
@@ -55,22 +60,25 @@ Set RS1=connSWPPP.execute(SQL1) %>
 <form id="theForm" method="post" action="<%=Request.ServerVariables("script_name")%>?inspecID=<%=inspecID%>&outfall=<%=outfallFlag%>" onsubmit="return isReady(this)";>
 <table style="margin-left:auto; margin-right:auto;">
     <tr><th width="5%">#</th>
-    <th width="10%">locations</th></tr>
+    <th width="10%">locations</th>
+    <th width="10%">delete</th></tr>
     <% n = 1
 	Do While Not RS1.EOF
         locationID = RS1("locationID")
         locationName = RS1("locationName") %>
         <input type="hidden" name="locationID:<%= n %>" value="<%= locationID %>" />
         <tr><td align="center"><%=n%></td>
-        <td><input type="text" size="10" name="locationName:<%= n %>" value="<%=locationName %>" /></td></tr>
+        <td><input type="text" size="10" name="locationName:<%= n %>" value="<%=locationName %>" /></td>
+        <td><input type="checkbox" name="location:del:<%= n %>" /></td></tr>
         <% RS1.MoveNext
         n = n + 1
 	Loop
 
-    for m = n to n+9 step 1 %>
+    for m = n to n+19 step 1 %>
         <input type="hidden" name="locationID:<%= m %>" value="0" />
 	    <tr><td align="center"><%=m%></td>
-        <td><input type="text" size="10" name="locationName:<%= m %>" value="" /></td></tr>
+        <td><input type="text" size="10" name="locationName:<%= m %>" value="" /></td>
+        <td></td></tr>
     <% next %>
     <tr><td colspan="2" align="center"><input name="submit_location" type="submit" style="font-size: 20px;" value="submit"/></td></tr>
     <tr></tr>

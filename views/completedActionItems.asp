@@ -194,16 +194,15 @@ Else
         includeItems = rsInspectInfo("includeItems")
         
         if includeItems Then
-            coordSQLSELECT = "SELECT coID, coordinates, existingBMP, correctiveMods, orderby, assignDate, completeDate, status, repeat, useAddress, address, locationName, infoOnly, LD, NLN" &_
-	        " FROM Coordinates WHERE inspecID=" & inspecID & " ORDER BY orderby"	
+            coordSQLSELECT = "SELECT * FROM Coordinates WHERE inspecID=" & inspecID & " ORDER BY orderby"	
             Set rsCoord = connSWPPP.execute(coordSQLSELECT)
             currentDate = date()
             start_n = n
 	        Do While Not rsCoord.EOF	
-              If n = 0 Then
-                 siteMapInspecID = inspecID
-              End If
-	           coID = rsCoord("coID")
+                If n = 0 Then
+                    siteMapInspecID = inspecID
+                End If
+	            coID = rsCoord("coID")
 		        correctiveMods = Trim(rsCoord("correctiveMods"))
 		        coordinates = Trim(rsCoord("coordinates"))
 		        assignDate = rsCoord("assignDate")
@@ -218,42 +217,46 @@ Else
 		        useAddress = rsCoord("useAddress")
 		        address = TRIM(rsCoord("address"))
 		        locationName = TRIM(rsCoord("locationName"))
-              infoOnly = rsCoord("infoOnly")
-              LD = rsCoord("LD")
-              If LD = True Then
-                 correctiveMods = "(LD) " & correctiveMods
-              End If 
-              NLN = rsCoord("NLN")
-              If NLN = True Then
-                 correctiveMods = "(NLN) " & correctiveMods
-              End If 
-              commSQLSELECT = "SELECT c.comment, c.userID, c.date, u.firstName, u.lastName" &_
-	            " FROM CoordinatesComments as c, Users as u WHERE c.userID = u.userID" &_
-               " AND coID=" & coID	
-              'Response.Write(commSQLSELECT)
-              Set rsComm = connSWPPP.execute(commSQLSELECT)
-              completer = ""
-              show_note = false
-              show_done = false
-              If rsComm.EOF Then
-                 show_note = false
-                 show_done = false
-              Else
-                 'find the completion note
-                 Do While Not rsComm.EOF
-                    If rsComm("comment") = "This item was marked complete" Then
-                        completer = rsComm("firstName") & " " & rsComm("lastName")
-                        completeDate = rsComm("date")
-                    Elseif rsComm("comment") = "This item was marked NLN" Then
-                        show_note = false
-                    Elseif rsComm("comment") = "This item was marked done" Then
-                        show_done = true
-                    Else
-                        show_note = true
-                    End If
-                    rsComm.MoveNext
-                 LOOP 
-              End If
+                infoOnly = rsCoord("infoOnly")
+                LD = rsCoord("LD")
+                OSC = rsCoord("osc")
+                If LD = True Then
+                    correctiveMods = "(LD) " & correctiveMods
+                End If
+                If OSC = True Then
+                    correctiveMods = "(OSC) " & correctiveMods
+                End If 
+                NLN = rsCoord("NLN")
+                If NLN = True Then
+                    correctiveMods = "(NLN) " & correctiveMods
+                End If 
+                commSQLSELECT = "SELECT c.comment, c.userID, c.date, u.firstName, u.lastName" &_
+	                " FROM CoordinatesComments as c, Users as u WHERE c.userID = u.userID" &_
+                    " AND coID=" & coID	
+                'Response.Write(commSQLSELECT)
+                Set rsComm = connSWPPP.execute(commSQLSELECT)
+                completer = ""
+                show_note = false
+                show_done = false
+                If rsComm.EOF Then
+                    show_note = false
+                    show_done = false
+                Else
+                    'find the completion note
+                    Do While Not rsComm.EOF
+                        If rsComm("comment") = "This item was marked complete" Then
+                            completer = rsComm("firstName") & " " & rsComm("lastName")
+                            completeDate = rsComm("date")
+                        Elseif rsComm("comment") = "This item was marked NLN" Then
+                            show_note = false
+                        Elseif rsComm("comment") = "This item was marked done" Then
+                            show_done = true
+                        Else
+                            show_note = true
+                        End If
+                        rsComm.MoveNext
+                    LOOP 
+                End If
 		        If infoOnly = True Then
                  do_nothing = 1 
               Elseif status = true or NLN = true Then %>

@@ -550,11 +550,11 @@ RS0.Open SQL0, connSWPPP
 	marginwidth="5" marginheight="5">
 
 <% If not Request("print") then %> <!-- #INCLUDE FILE="../adminHeader2.inc" --> <% end if %>
-<h1>Send Reports via Email - <%=Session("userID")%></h1>
+<!--<h1>send reports via email - <%=Session("userID")%></h1>-->
 <FORM action="<%= Request.ServerVariables("SCRIPT_NAME") %>" method="post">
 <div align="center">
 <table border="0" cellpadding=1 cellspacing=1>
-	<tr><th>Project Name|Phase</th><th>Report Date</th><th>Report Type</th><th>questions defined</th><th>send email</th></tr>
+	<tr><th>project name|phase</th><th>report date</th><th>report type</th><th>questions defined</th><th>send email</th></tr>
 	<% DO WHILE NOT RS0.EOF 
 			inspecID  = RS0("inspecID")
 			projectID = RS0("projectID")
@@ -582,9 +582,8 @@ RS0.Close
 SET RS0=nothing %>
 </table></div>
 
-<div align="center"><br><br>To Send These Reports via Email to all Users assigned<br />
-	to Receive them and release this report <br />
-    <input type="submit" value="Send Emails"></div>
+<div align="center"><br>
+    <input type="submit" value="email reports"></div>
 </FORM>
 </BODY>
 </HTML><%

@@ -494,13 +494,13 @@ ELSE
 	        marginwidth="5" marginheight="5">
 
             <% If not Request("print") then %> <!-- #INCLUDE FILE="../adminHeader2.inc" --> <% end if %>
-            <h1>Send Open Item Alerts</h1>
-            <center><h3>To be on this list users must be set to See Scoring and receive Open Item Alerts</h3></center>
+            <h1>send open item alerts</h1>
+            <center><h3>to be on this list users must be set to see scoring and receive open item alerts</h3></center>
             <FORM action="<%= Request.ServerVariables("SCRIPT_NAME") %>" method="post">
             <div align="center">
-                Select the Users Below To Send Open Item Alerts via Email<br />
-                <input type="submit" value="Send Emails"><input type="checkbox" name="testing"/>Test Mode (Do Not Send Email)<br /><br />
-                Select User Group
+                select the users below to send open item alerts via email<br />
+                <input type="submit" value="Send Emails"><input type="checkbox" name="testing"/>test mode (do not send email)<br /><br />
+                select user group
                 <select name="userGroup" onchange="selectUsers(this)">
                     <option value="0 - No Group">0 - No Group</option>
                 <% Do While Not connGroups.EOF %>
@@ -521,10 +521,10 @@ ELSE
                 Set RS0 = connSWPPP.Execute(SQL0) 
             End If  %>
             <table width="100%" border="0">
-	        <tr><th><b>Count</b></th>
-		        <th><b>First Name</b></th>
-		        <th><b>Last Name</b></th>
-		        <th><b>Send Alert</b></th></tr>
+	        <tr><th><b>count</b></th>
+		        <th><b>first name</b></th>
+		        <th><b>last name</b></th>
+		        <th><b>send alert</b></th></tr>
             <% If connUsers.EOF Then
 		        Response.Write("<tr><td colspan='5' align='center'><b><i>There " & _
 			        "are currently no users.</i></b></td></tr>")

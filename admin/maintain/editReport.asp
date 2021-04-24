@@ -16,7 +16,7 @@ If Request.Form.Count > 0 Then
 	Function strQuoteReplace(strValue)
 		strQuoteReplace = Replace(strValue, "'", "''")
 	End Function	
-	if Request.Form("submit_optional_btn") = "Modify Optional Links" then
+	if Request.Form("submit_optional_btn") = "documents" then
 		Response.Redirect("editReportOptionalLinks.asp?inspecID=" + inspecID)
 	End If
 	userID = Session("userID")
@@ -256,7 +256,7 @@ If Request.Form.Count > 0 Then
 'response.Write(inspectSQLUPDATE2)
 	connSWPPP.Execute(inspectSQLUPDATE2)
 
-    if Request.Form("submit_view_reports_btn") = "View Reports" then
+    if Request.Form("submit_view_reports_btn") = "view reports" then
 		connSWPPP.Close
 	    Set connSWPPP = Nothing
     	Response.Redirect("viewReports.asp")
@@ -667,7 +667,7 @@ baseDir = "D:\Inetpub\wwwroot\SWPPP\"%>
 </head>
 <body>
 <!-- #include file="../adminHeader2.inc" -->
-<h1>edit inspection report</h1>
+<h1>edit report</h1>
 <form id="theForm" method="post" action="<%=Request.ServerVariables("script_name")%>?inspecID=<%=inspecID%>" onsubmit="return isReady(this)";>
 	<input type="hidden" name="inspecID" value="<%=inspecID %>" />
 	<input type="hidden" name="projectID" value="<%=rsReport("projectID") %>" />
@@ -749,9 +749,9 @@ If Session("validAdmin") Then
 		<% SQLA = "SELECT * FROM HortonAnswers WHERE inspecID = " & inspecID
 		Set RSA = connSWPPP.execute(SQLA)
     	If RSA.EOF Then %>
-			<input type="button" value="View Questions" style="background-color: #f44336;" onClick="hortonQuestions('<%= inspecID%>')">
+			<input type="button" value="view questions" style="background-color: #f44336;" onClick="hortonQuestions('<%= inspecID%>')">
 		<% Else %>
-			<input type="button" value="View Questions" onClick="hortonQuestions('<%= inspecID%>')">
+			<input type="button" value="view questions" onClick="hortonQuestions('<%= inspecID%>')">
 		<% End If %>
 		V Sign?
 		<% If rsReport("hortonSignV") = True Then %>
@@ -916,8 +916,8 @@ End If %>
 <center>
     Click "Repeat" on all items that you want the assign date to stay the same. All other items will be updated to the current date on SUBMIT.
     <table><tr>
-    <td><a href="../../views/openActionItems.asp?pID=<%=rsReport("projectID")%>" target="_blank">Open Items Page</a></td>
-    <td><a href="../../views/completedActionItems.asp?pID=<%=rsReport("projectID")%>" target="_blank">Completed Items Page</a></td>
+    <td><a href="../../views/openActionItems.asp?pID=<%=rsReport("projectID")%>" target="_blank">open items page</a></td>
+    <td><a href="../../views/completedActionItems.asp?pID=<%=rsReport("projectID")%>" target="_blank">completed items page</a></td>
     </tr></table>
 </center><br/>
 <table width="100%" border="0" align="center" cellpadding="2" cellspacing="0">
@@ -1012,24 +1012,24 @@ End If %>
 	<% Else %>
 		<input type="checkbox" name="coord:repeat:<%= n %>" />
 	<% End If %>
-	</td><td>action:</td>
-	<td rowspan="3" colspan="6"><textarea name="coord:mods:<%= n %>" cols="100%" rows="5"><%= correctiveMods %></textarea></td></tr>
-	<tr><td>assignDate</td>
-	<td><input <% If Session("validAdmin") Then %> class=datepicker <% End If %> type="text" name="coord:assignDate:<%= n %>" size="10" value="<%= assignDate %>" <% If not Session("validAdmin") Then %> readonly <% End If %>/></td>
-	<td><input type="button" onclick="displayCommonItemSelect(this)" name="coord:item:<%=n%>" value="common item" /></td></tr>
-    <tr><td>note
+	</td><td>note
 	<% If infoOnly = True Then %>
 		<input type="checkbox" name="coord:infoOnly:<%= n %>" checked/>
 	<% Else %>
 		<input type="checkbox" name="coord:infoOnly:<%= n %>" />
 	<% End If %>
-    </td><td>
-	 OSC
+	</td>
+	<td rowspan="3" colspan="6"><textarea name="coord:mods:<%= n %>" cols="100%" rows="5"><%= correctiveMods %></textarea></td></tr>
+	<tr><td>assignDate</td>
+	<td><input <% If Session("validAdmin") Then %> class=datepicker <% End If %> type="text" name="coord:assignDate:<%= n %>" size="10" value="<%= assignDate %>" <% If not Session("validAdmin") Then %> readonly <% End If %>/></td>
+	<td><input type="button" onclick="displayCommonItemSelect(this)" name="coord:item:<%=n%>" value="common item" /></td></tr>
+    <tr><td>OSC
 	 <% If osc = True Then %>
 			<input type="checkbox" name="coord:osc:<%=n %>" checked />
 		<% Else %>
 			<input type="checkbox" name="coord:osc:<%=n %>" />
 		<% End If %>
+    </td><td>
 	 LD
 	<% If LD = True Then %>
 		<input type="checkbox" name="coord:LD:<%= n %>" checked/>
@@ -1249,13 +1249,13 @@ Set rsCoord = Nothing %>
 	<td colspan="6"><input name="coord:coord:<%= m %>" type="text" value="" size="100%" ></td></tr>
 	<tr><td></td>
 	<td></td>
-	<td>action:</td>
+	<td>note <input type="checkbox" name="coord:infoOnly:<%= m %>" /></td>
 	<td rowspan="3" colspan="6"><textarea name="coord:mods:<%= m %>" cols="100%" rows="5"></textarea></td></tr>
 	<tr><td>assignDate</td>
 	<td><input <% If Session("validAdmin") Then %> class=datepicker <% End If %> type="text" name="coord:assignDate:<%= m %>" size="10" value="" readonly /></td>
 	<td><input type="button" onclick="displayCommonItemSelect(this)" name="coord:item:<%=m%>" value="common item" /></td></tr>
-	<tr><td>note <input type="checkbox" name="coord:infoOnly:<%= m %>" /></td>
-        <td>OSC <input type="checkbox" name="coord:osc:<%= m %>" /> LD <input type="checkbox" name="coord:LD:<%= m %>" /></td></tr>
+	<tr><td>OSC <input type="checkbox" name="coord:osc:<%= m %>" /> </td>
+	<td>LD <input type="checkbox" name="coord:LD:<%= m %>" /></td></tr>
 	<%	IF rsReport("horton") = True THEN %>
 	<tr>
 		<td colspan="9">
@@ -1291,7 +1291,7 @@ Set rsCoord = Nothing %>
 <% next %>
 	<% If allowUpdate Then %>
 	<tr><td colspan="5" align="center"><br>
-	<input name="submit_coord_btn" type="submit" style="font-size: 20px;" value="Submit"/>
+	<input name="submit_coord_btn" type="submit" style="font-size: 20px;" value="submit"/>
 	<br><br></td></tr>
 	<% End If %>
 </table>
@@ -1458,11 +1458,13 @@ Set rsAddress = Nothing %>
 
 <!-- ------------- Optional Links ----------------------------------------------------- -->
 
+<% If Session("validAdmin") Then %>
+<hr/>
+<center><input name="submit_optional_btn" type="submit" style="font-size: 20px;" value="documents"/></center>
+<% End If %>
 <% If allowUpdate Then %>
 <hr/>
-<center><input name="submit_optional_btn" type="submit" style="font-size: 20px;" value="Modify Optional Links"/></center>
-<hr/>
-<center><input name="submit_view_reports_btn" type="submit" style="font-size: 20px;" value="View Reports"/></center>
+<center><input name="submit_view_reports_btn" type="submit" style="font-size: 20px;" value="view reports"/></center>
 <% End If %>
 
 <!------------------------------------- Images ---------------------------------------->

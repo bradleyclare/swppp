@@ -347,11 +347,11 @@ ELSE
 	        marginwidth="5" marginheight="5">
 
             <% If not Request("print") then %> <!-- #INCLUDE FILE="../adminHeader2.inc" --> <% end if %>
-            <h1>Projects with Repeat Items</h1>
+            <h1>repeat item alert</h1>
             <FORM action="<%= Request.ServerVariables("SCRIPT_NAME") %>" method="post">
             <div align="center">
             <table border="1" cellpadding=3px cellspacing=1px>
-	            <tr><th>Project Name|Phase</th><th>Inspector</th><th>Report Date</th><th>Report Type</th><th>Send Alert</th></tr>
+	            <tr><th>project name|phase</th><th>inspector</th><th>report date</th><th>report type</th><th>send alert</th></tr>
             <% 	DO WHILE NOT RS0.EOF 
                     inspecID = RS0("inspecID")
                     sentRepeatItemReport = RS0("sentRepeatItemReport")
@@ -384,10 +384,9 @@ ELSE
             SET RS0=nothing %>
             </table></div>
 
-            <div align="center"><br /><br />To Send Repeat Items via Email to all Users assigned<br />
-	            to Receive them<br />
-                <input type="checkbox" name="clearList" /> Remove From List. Do Not Send Emails<br />
-                <input type="submit" value="Send Emails"><br /></div>
+            <div align="center"><br />
+                <input type="checkbox" name="clearList" /> Remove from list. Do not send emails.<br />
+                <input type="submit" value="send emails"><br /></div>
             </FORM>
         </BODY>
     </HTML>

@@ -38,7 +38,7 @@ Set rsReports = connSWPPP.execute(reportSQLSELECT)
 <!-- #include file="../adminHeader2.inc" -->
 <table width="90%" border="0">
 	<tr> 
-		<TD align=left colspan=2><h1>View Inspection Reports</h1></TD>
+		<TD align=left colspan=2><h1>reports</h1></TD>
 		<TD align=right colspan=3>for the month of:&nbsp;<select id = "startMonth" name="startMonth" 
 			onchange="navigateMe();">
 <%	
@@ -53,11 +53,11 @@ Set rsReports = connSWPPP.execute(reportSQLSELECT)
 			</SELECT>
 		</TD>
 	</tr>
-	<tr><th><a href="<%= Request.ServerVariables("script_name") %>?orderBy=inspecDate DESC&startDate=<%=startDate%>"><b>Date</b></a></th>
-		<th><a href="<%= Request.ServerVariables("script_name") %>?orderBy=p.projectName, p.projectPhase, inspecDate DESC&startDate=<%=startDate%>"><b>Name</b></a></th>
-		<th><a href="<%= Request.ServerVariables("script_name") %>?orderBy=reportType&startDate=<%=startDate%>"><b>Type</b></a></th>
+	<tr><th><a href="<%= Request.ServerVariables("script_name") %>?orderBy=inspecDate DESC&startDate=<%=startDate%>"><b>date</b></a></th>
+		<th><a href="<%= Request.ServerVariables("script_name") %>?orderBy=p.projectName, p.projectPhase, inspecDate DESC&startDate=<%=startDate%>"><b>name</b></a></th>
+		<th><a href="<%= Request.ServerVariables("script_name") %>?orderBy=reportType&startDate=<%=startDate%>"><b>type</b></a></th>
 		<th><a href="<%= Request.ServerVariables("script_name") %>?orderBy=released, p.projectName, p.projectPhase, inspecDate DESC&startDate=<%=startDate%>"><b>released</b></a></th>
-		<th><a href="<%= Request.ServerVariables("script_name") %>?orderBy=lastName&startDate=<%=startDate%>"><b>Inspector</b></a></th></tr>
+		<th><a href="<%= Request.ServerVariables("script_name") %>?orderBy=lastName&startDate=<%=startDate%>"><b>inspector</b></a></th></tr>
 	<tr><td colspan="5"><img src="../../images/dot.gif" width="5" height="5"></td></tr>
 <%
 	If rsReports.EOF Then

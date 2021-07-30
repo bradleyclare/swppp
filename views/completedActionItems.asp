@@ -219,6 +219,7 @@ Else
 		        locationName = TRIM(rsCoord("locationName"))
                 infoOnly = rsCoord("infoOnly")
                 LD = rsCoord("LD")
+                NLN = rsCoord("NLN")
                 OSC = rsCoord("osc")
                 If LD = True Then
                     correctiveMods = "(LD) " & correctiveMods
@@ -226,7 +227,6 @@ Else
                 If OSC = True Then
                     correctiveMods = "(OSC) " & correctiveMods
                 End If 
-                NLN = rsCoord("NLN")
                 If NLN = True Then
                     correctiveMods = "(NLN) " & correctiveMods
                 End If 
@@ -257,48 +257,49 @@ Else
                         rsComm.MoveNext
                     LOOP 
                 End If
+                'Response.Write("ID: " & coID & ", Coord: " & coordinates & ", LocName: " & locationName & ", address: " & address & ", NLN: " & NLN &", Mods: " & correctiveMods & "<br/>") 
 		        If infoOnly = True Then
-                 do_nothing = 1 
-              Elseif status = true or NLN = true Then %>
-		           <tr>
-                 <input type="hidden" name="coord:coID:<%= n %>" value="<%= coID %>" />
-                 <input type="hidden" name="coord:inspecID:<%= n %>" value="<%= inspecID %>" />
-                 <% status_str = ""
-                 If status = True Then
-                   status_str = "checked"
-                 End If
-                 nln_str = ""
-                 If NLN = True Then
-                    nln_str = "checked"
-                 End If
-                 If Session("validAdmin") or Session("validDirector") Then %> 
-                    <td align="left"><input type="checkbox" name="coord:complete:<%= n %>" <%=status_str %> /></td>
-                    <td align="left"><input type="checkbox" name="coord:nln:<%= n %>" <%=nln_str %> /></td>
-                    <% If show_done Then %>
-                        <td><button type="button"><a href="viewOpenItemComments.asp?coID=<%=coID%>" target="_blank">V</a></button></td>
-                    <% Else %>
-                        <td></td>
+                    do_nothing = 1 
+                Elseif status = true or NLN = true Then %>
+		            <tr>
+                    <input type="hidden" name="coord:coID:<%= n %>" value="<%= coID %>" />
+                    <input type="hidden" name="coord:inspecID:<%= n %>" value="<%= inspecID %>" />
+                    <% status_str = ""
+                    If status = True Then
+                        status_str = "checked"
+                    End If
+                    nln_str = ""
+                    If NLN = True Then
+                        nln_str = "checked"
+                    End If
+                    If Session("validAdmin") or Session("validDirector") Then %> 
+                        <td align="left"><input type="checkbox" name="coord:complete:<%= n %>" <%=status_str %> /></td>
+                        <td align="left"><input type="checkbox" name="coord:nln:<%= n %>" <%=nln_str %> /></td>
+                        <% If show_done Then %>
+                            <td><button type="button"><a href="viewOpenItemComments.asp?coID=<%=coID%>" target="_blank">V</a></button></td>
+                        <% Else %>
+                            <td></td>
+                        <% End If %>
                     <% End If %>
-                 <% End If %>
-		           <td align="left"><%= coID %></td>
-		           <td align="left"><%= completeDate %>: <%= completer %></td>
-		           <td><%= inspecDate %></td>
-                   <td>
-		           <% if (useAddress) = False Then %>
-			           <%=coordinates%>
-		           <% Else %>
-			           <%=locationName%> (<%=address%>)
-		           <% End If %>
-		           </td>
-		           <td><%= correctiveMods %></td>
-                 <% If not show_note Then %>
-                    <td></td>
-                 <% Else %>
-                    <td><button type="button"><a href="viewOpenItemComments.asp?coID=<%=coID%>" target="_blank">V</a></button></td>
-                 <% End If %>
-		           </tr>
-		           <% n = n + 1
-              End If
+		            <td align="left"><%= coID %></td>
+		            <td align="left"><%= completeDate %>: <%= completer %></td>
+		            <td><%= inspecDate %></td>
+                    <td>
+		            <% if (useAddress) = False Then %>
+			            <%=coordinates%>
+		            <% Else %>
+			            <%=locationName%> (<%=address%>)
+		            <% End If %>
+		            </td>
+		            <td><%= correctiveMods %></td>
+                    <% If not show_note Then %>
+                        <td></td>
+                    <% Else %>
+                        <td><button type="button"><a href="viewOpenItemComments.asp?coID=<%=coID%>" target="_blank">V</a></button></td>
+                    <% End If %>
+		            </tr>
+		            <% n = n + 1
+                End If
 		        rsCoord.MoveNext
             LOOP 'loop coordinates 
             If start_n <> n Then %>

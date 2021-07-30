@@ -332,7 +332,7 @@ Else
 		   flume = rsCoord("flume")
 			OSC = rsCoord("osc")
 			scoring_class = "black"
-			'Response.Write("ID: " & coID & ", Coord: " & coordinates & ", LocName: " & locationName & ", address: " & address & ", Mods: " & correctiveMods & "<br/>") 
+			'Response.Write("ID: " & coID & ", Coord: " & coordinates & ", LocName: " & locationName & ", address: " & address & ", NLN: " & NLN &", Mods: " & correctiveMods & "<br/>") 
 			IF applyScoring THEN
 				IF assignDate = "" THEN
 					age = 0

@@ -96,7 +96,7 @@ IF Request.Form.Count > 0 THEN %>
 
                     strBody=strBody & "<table>"
                     If show_horton Then
-                        strBody=strBody & "<tr><th>project name</th><th>group name</th><th>over 1 day</th><th>over 5 days</th><th class='red'>over 7 days</th><th class='red'>over 10 days</th><th class='red'>over 14 days</th><th class='red'>repeats</th><th>notes</th><th>alert</th><th>VSCR to sign off</th><th>LDSCR to sign off</th></tr>"
+                        strBody=strBody & "<tr><th>project name</th><th>group name</th><th>over 1 day</th><th>over 5 days</th><th class='red'>over 7 days</th><th class='red'>over 10 days</th><th class='red'>over 14 days</th><th class='red'>repeats</th><th>done</th><th>notes</th><th>alert</th><th>VSCR to sign off</th><th>LDSCR to sign off</th></tr>"
                     Else
                         strBody=strBody & "<tr><th>project name</th><th>group name</th><th>over 1 day</th><th>over 5 days</th><th class='red'>over 7 days</th><th class='red'>over 10 days</th><th class='red'>over 14 days</th><th class='red'>repeats</th><th>notes</th><th>alert</th></tr>"
                     End If
@@ -140,6 +140,7 @@ IF Request.Form.Count > 0 THEN %>
                         coordCntLD14 = 0
                         repeatCnt = 0
                         repeatCntLD = 0
+                        doneCnt = 0
                         displayProj = False
                         displayComments = False
                         displaySystemic = False
@@ -248,11 +249,11 @@ IF Request.Form.Count > 0 THEN %>
                                             End If
                                         If debug_msg=True Then
                                             Response.Write("ID: " & coID &", Age: "& age &", Status: "& status &", LD: "& LD &", Repeat: "& repeat & ", Systemic: " & RS0("systemic") &"<br/>")
-                                            End If
+                                        End If
                                         
                                         If NLN = True Then
                                             'continue
-                                            ElseIf repeat = True Then
+                                        ElseIf repeat = True Then
                                             displayProj = True
                                             repeatCnt = repeatCnt + 1
                                             if LD = True Then
@@ -292,16 +293,31 @@ IF Request.Form.Count > 0 THEN %>
                                             End If
                                         End If 'end repeat
 
-                                            'check for comments
-                                            commSQLSELECT = "SELECT comment, userID, date" &_
+                                        'check for comments
+                                        commSQLSELECT = "SELECT comment, userID, date" &_
                                                 " FROM CoordinatesComments WHERE coID=" & coID	
-                                            Set rsComm = connSWPPP.execute(commSQLSELECT)       
-                                            if not rsComm.EOF Then
-                                                comment = rsComm("comment")   
-                                                if InStr(comment,"This item was marked") <> 1 Then
-                                                    displayComments = True
-                                                End If
+                                        Set rsComm = connSWPPP.execute(commSQLSELECT)       
+                                        marked_done = False
+                                        marked_complete = False
+                                        Do While not rsComm.EOF
+                                            comment = rsComm("comment")   
+                                            if InStr(comment,"This item was marked") <> 1 Then
+                                                displayComments = True
                                             End If
+                                            If comment = "This item was marked done" Then
+                                                marked_done = True
+                                            End If
+                                            If comment = "This item was marked complete" Then
+                                                marked_complete = True
+                                            End If
+                                            rsComm.MoveNext
+                                        LOOP
+                                        If marked_done and not marked_complete Then
+                                            If debug_msg=True Then
+                                                Response.Write("Item marked done but not complete.</br>")
+                                            End If
+                                            doneCnt = doneCnt + 1
+                                        End If
                                         
                                         if RS0("systemic") then
                                             displaySystemic = True
@@ -374,6 +390,13 @@ IF Request.Form.Count > 0 THEN %>
                                 End If 
                             End If
                             strBody=strBody & "</td><td>"
+                            If show_horton Then
+                                If doneCnt > 0 Then
+                                    send_email = True
+                                    strBody=strBody & doneCnt 
+                                End If
+                                strBody=strBody & "</td><td>"
+                            End If
                             if displayComments Then
                                 strBody=strBody & "<a href='http://swppp.com/views/viewComments.asp?pID=" & projID &"'> N </a>"
                             End If

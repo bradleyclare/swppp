@@ -16,6 +16,16 @@ projectName = Request("projName")
 projectPhase = Request("projPhase")
 %><!-- #include file="../admin/connSWPPP.asp" --><%
 
+SQL1="SELECT * FROM ProjectsUsers WHERE userID="& Session("userID") & " AND projectID="& projectID
+SET RS1=connSWPPP.execute(SQL1)
+projectValidUser=False
+if NOT(RS1.EOF) THEN projectValidUser=True End If
+if Session("validAdmin") THEN projectValidUser=True End If
+
+if projectValidUser=False Then
+    Response.Redirect("projects.asp")
+End If
+
 currentDate = date()
 'Response.Write(currentDate)
 If Request.Form.Count > 0 Then

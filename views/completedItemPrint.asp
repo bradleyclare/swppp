@@ -20,7 +20,19 @@ endDate = Trim(Request("endDate"))
 
 SQL2="SELECT projectName, projectPhase FROM Projects WHERE projectID="& projectID
 'response.Write(SQL2)
-SET RS2=connSWPPP.execute(SQL2) %>
+SET RS2=connSWPPP.execute(SQL2) 
+
+SQLH="SELECT inspecID FROM Inspections WHERE horton=1 AND projectID="& projectID
+SET RSH=connSWPPP.execute(SQLH)
+hortonFlag=False
+completePast="completed"
+completeAction="complete"
+if NOT(RSH.EOF) THEN 
+    hortonFlag=True 
+    completePast="closed"
+    completeAction="close"
+END IF
+%>
 
 <html>
 <head>
@@ -47,21 +59,21 @@ Set rsInspectInfo = connSWPPP.Execute(inspectInfoSQLSELECT)
 <body bgcolor="#ffffff" marginwidth="30" leftmargin="30" marginheight="15" topmargin="15">
 <center>
 <img src="../images/color_logo_report.jpg" width="300"><br><br>
-<font size="+1"><b>Completed Items for<br> <%= RS2("projectName") %>&nbsp;<%= RS2("projectPhase")%></b></font>
+<font size="+1"><b><%=completePast%> items for<br> <%= RS2("projectName") %>&nbsp;<%= RS2("projectPhase")%></b></font>
 <br /><br />
 </center>
 
 <table cellpadding="2" cellspacing="0" border="0" width="100%">
 	<tr>
-        <% If Session("validAdmin") Then %>
-            <th width="5%" align="left">Complete</th>
-            <th width="5%" align="left">NLN</th>
+        <% If Session("validAdmin") or Session("validDirector") Then %>
+            <th width="5%" align="left"><%=completePast%></th>
+            <th width="2.5%" align="left">NLN</th>
         <% End If %>
         <th width="5%" align="left">ID</th>
-        <th width="10%" align="left">Completion Date</th>  
-        <th width="5%" align="left">Report Date</th>
-        <th width="15%" align="left">Location</th>
-        <th align="left">Action Item</th>
+        <th width="10%" align="left"><%=completeAction%> date</th>  
+        <th width="5%" align="left">report date</th>
+        <th width="15%" align="left">location</th>
+        <th align="left">action item</th>
     </tr>
 <% If rsInspectInfo.EOF Then
 	Response.Write("<tr><td colspan='4' align='center'><i style='font-size: 15px'>There are no inspection reports found.</i></td></tr>")

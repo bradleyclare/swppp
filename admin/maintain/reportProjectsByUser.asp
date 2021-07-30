@@ -46,6 +46,7 @@ SQLSELECT = "SELECT DISTINCT u.userID, firstName, lastName, pu.rights" &_
 	" ON u.userID=pu.userID JOIN Projects as p" &_
 	" ON pu.projectId=p.projectID" &_
 	" WHERE u.userID = pu.userID AND pu.rights IN ('director', 'user')"  &_
+	" AND lastName LIKE '" & group &"%'" &_
 	" AND u.rights!='admin' AND p.projectID IN (" & proj_list & ") ORDER BY lastName"
 
 'Response.Write(SQLSELECT & "<br>")

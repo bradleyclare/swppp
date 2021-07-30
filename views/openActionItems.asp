@@ -13,8 +13,19 @@ Then
 End If
 
 projectID = Trim(Request("pID"))
+locdir = Trim(Request("loc"))
 
 %><!-- #include file="../admin/connSWPPP.asp" --><%
+
+SQL1="SELECT * FROM ProjectsUsers WHERE userID="& Session("userID") & " AND projectID="& projectID
+SET RS1=connSWPPP.execute(SQL1)
+projectValidUser=False
+if NOT(RS1.EOF) THEN projectValidUser=True End If
+if Session("validAdmin") THEN projectValidUser=True End If
+
+if projectValidUser=False Then
+    Response.Redirect("projects.asp")
+End If
 
 Server.ScriptTimeout=1500
 
@@ -279,7 +290,7 @@ Set RS0 = connSWPPP.Execute(SQL0)
     <br /><br />
     <table><tr>
     <td><input type="button" value="check all Items" onclick="check_all_items(this)" /></td>
-    <% If hortonFlag=False Then %>
+    <% If projectValidUser and hortonFlag=False Then %>
         <td><input type="button" value="un-check all Items" onclick="uncheck_all_items(this)" /></td>
         <td><input type="text" name="commonDate" class="datepicker" value="<%= currentDate %>" /></td>
         <td><input type="button" value="apply date to all" onclick="apply_date_to_all(this)" /></td>
@@ -291,7 +302,7 @@ Set RS0 = connSWPPP.Execute(SQL0)
     </center>
     <table cellpadding="2" cellspacing="0" border="0" width="100%">
 	    <tr><th width="5%" align="left"><%=completeAction%></th>
-            <% If hortonFlag Then %>
+            <% If projectValidUser and hortonFlag Then %>
                 <th width="5%" align="left">item status</th>
             <% End If %>
             <% If Session("validAdmin") or Session("validDirector") Then %>
@@ -302,7 +313,11 @@ Set RS0 = connSWPPP.Execute(SQL0)
             <th width="10%" align="left"><%=completeAction%> date</th>
             <th width="5%" align="left">age</th>
             <th width="5%" align="left">report date</th>
-            <th width="20%" align="left">location</th>
+            <% If locdir = "asc" then %>
+            <th width="20%" align="left"><a href="openActionItems.asp?pID=<%=projectID%>&loc=desc">location</a></th>
+            <% Else %>
+            <th width="20%" align="left"><a href="openActionItems.asp?pID=<%=projectID%>&loc=asc">location</a></th>
+            <% End If %>
             <th align="left">action item</th>
             <th width="2.5%" align="left">add note</th>
             <th width="2.5%" align="left">view note</th>
@@ -334,11 +349,25 @@ Set RS0 = connSWPPP.Execute(SQL0)
           dbgBody=dbgBody & projName & ": " & projPhase & ": " & inspecDate & "<br/>"
 
         	 'open items on report tally up the open item dates 
-			 coordSQLSELECT = "SELECT * FROM Coordinates" &_
+			 If locdir = "desc" Then
+                coordSQLSELECT = "SELECT * FROM Coordinates" &_
                 " WHERE inspecID=" & inspecID &_
                 " AND status=0" &_
                 " AND infoOnly=0" &_
-                " ORDER BY orderby"	
+                " ORDER BY locationName DESC"
+            Elseif locdir = "asc" Then
+                coordSQLSELECT = "SELECT * FROM Coordinates" &_
+                " WHERE inspecID=" & inspecID &_
+                " AND status=0" &_
+                " AND infoOnly=0" &_
+                " ORDER BY locationName ASC"
+            Else
+                coordSQLSELECT = "SELECT * FROM Coordinates" &_
+                " WHERE inspecID=" & inspecID &_
+                " AND status=0" &_
+                " AND infoOnly=0" &_
+                " ORDER BY OrderBy"
+            End If 	
             'Response.Write(coordSQLSELECT)
             Set rsCoord = connSWPPP.execute(coordSQLSELECT)
             start_n = n
@@ -383,7 +412,7 @@ Set RS0 = connSWPPP.Execute(SQL0)
 			            <input type="hidden" name="coord:coID:<%= n %>" value="<%= coID %>" />
 	                    <input type="hidden" name="coord:inspecID:<%= n %>" value="<%= inspecID %>" />
 			            <tr>
-			            <% If hortonFlag Then 
+			            <% If projectValidUser and hortonFlag Then 
                         commSQLSELECT = "SELECT c.comment, c.userID, c.date, u.firstName, u.lastName" &_
                             " FROM CoordinatesComments as c, Users as u WHERE c.userID = u.userID" &_
                         " AND coID=" & coID	
@@ -404,12 +433,14 @@ Set RS0 = connSWPPP.Execute(SQL0)
                             LOOP 
                         End If %>
                     <% End If %>
-                    <% If hortonFlag and Session("validErosion") and completer <> "" Then %>
-                        <td align="left"><input type="checkbox" name="coord:complete:<%= n %>" readonly /></td>
+                    <% If projectValidUser=False Then %>
+                        <td align="left"><input type="checkbox" name="coord:complete:<%= n %>" disabled="disabled" /></td>
+                    <% ElseIf hortonFlag and Session("validErosion") and completer <> "" Then %>
+                        <td align="left"><input type="checkbox" name="coord:complete:<%= n %>" disabled="disabled" /></td>
                     <% Else %>
                         <td align="left"><input type="checkbox" name="coord:complete:<%= n %>" /></td>
                     <% End If %>
-                    <% If hortonFlag Then %>
+                    <% If projectValidUser and hortonFlag Then %>
                         <td><%=done%></br><%=completer%></br><%=completeDate%></td>
                     <% End If %>
                     <% If Session("validAdmin") or Session("validDirector") Then %>
@@ -421,7 +452,9 @@ Set RS0 = connSWPPP.Execute(SQL0)
 			        <% End If %>
 	                </td>
 			        <td align="left"><%= coID %></td>
-			        <% If hortonFlag and Not Session("validAdmin") Then %>
+			        <% If projectValidUser=False Then %>
+                        <td align="left"><input type="text" name="coord:date:<%= n %>" value="<%= currentDate %>" readonly /></td>
+                    <% ElseIf hortonFlag and Not Session("validAdmin") Then %>
                         <td align="left"><input type="text" name="coord:date:<%= n %>" value="<%= currentDate %>" readonly /></td>
 			        <% Else %>
                         <td align="left"><input class="datepicker" type="text" name="coord:date:<%= n %>" value="<%= currentDate %>"/></td>
@@ -471,7 +504,7 @@ Set RS0 = connSWPPP.Execute(SQL0)
             sitemap_link = "http://www.swppp.com/images/sitemap/"& TRIM(RS3("oImageFileName"))%>
 	        <a href="<%=sitemap_link%>">link for site map</a><br />
         <% END IF
-        IF hortonFlag THEN
+        IF projectValidUser and hortonFlag THEN
             inspections_link = "http://swppp.com/views/inspections.asp?projID=" & projectID & "&projName=" & projectName & "&projPhase=" & projectPhase %>
             <a href="<%=inspections_link%>">sign off on reports</a><br/>
         <% END IF

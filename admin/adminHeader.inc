@@ -14,7 +14,7 @@
 			<a href="maintain/addReport.asp" class="admin">add report</a><br><br>
 			<a href="maintain/releaseReports.asp" class="admin">email reports</a><br>
       		<a href="maintain/releaseRepeatItems.asp" class="admin">repeat item alert</a><br>
-      	<% End If %>
+      <% End If %>
 		<% If Session("validAdmin") then %>
 			<a href="maintain/releaseOpenItems.asp" class="admin">open item alert</a><br><br>
 		<% else %>

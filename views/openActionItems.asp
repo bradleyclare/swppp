@@ -36,10 +36,22 @@ SET RSH=connSWPPP.execute(SQLH)
 hortonFlag=False
 completePast="completed"
 completeAction="complete"
+completeDate = "complete"
 if NOT(RSH.EOF) THEN 
     hortonFlag=True 
     completePast="closed"
     completeAction="close"
+    completeDate="close"
+END IF
+
+SQLH="SELECT inspecID FROM Inspections WHERE forestar=1 AND projectID="& projectID
+SET RSH=connSWPPP.execute(SQLH)
+forestarFlag=False
+if NOT(RSH.EOF) THEN 
+    forestarFlag=True 
+    completePast="completed"
+    completeAction="complete"
+    completeDate="completion"
 END IF
 
 If Request.Form.Count > 0 Then
@@ -71,7 +83,7 @@ If Request.Form.Count > 0 Then
                 '2-other user - marking item complete will close the item like normal
                 coID = Request("coord:coID:"& CStr(n))
                 inspecID = Request("coord:inspecID:"& CStr(n))
-                If hortonFlag and Session("validErosion") Then
+                If (hortonFlag or forestarFlag) and Session("validErosion") Then
                     'add comment to keep track of the status change of the item
                     userID  = Session("userID")
                     comment = "This item was marked done"
@@ -290,7 +302,7 @@ Set RS0 = connSWPPP.Execute(SQL0)
     <br /><br />
     <table><tr>
     <td><input type="button" value="check all Items" onclick="check_all_items(this)" /></td>
-    <% If projectValidUser and hortonFlag=False Then %>
+    <% If projectValidUser and hortonFlag=False and forestarFlag=False Then %>
         <td><input type="button" value="un-check all Items" onclick="uncheck_all_items(this)" /></td>
         <td><input type="text" name="commonDate" class="datepicker" value="<%= currentDate %>" /></td>
         <td><input type="button" value="apply date to all" onclick="apply_date_to_all(this)" /></td>
@@ -302,7 +314,7 @@ Set RS0 = connSWPPP.Execute(SQL0)
     </center>
     <table cellpadding="2" cellspacing="0" border="0" width="100%">
 	    <tr><th width="5%" align="left"><%=completeAction%></th>
-            <% If projectValidUser and hortonFlag Then %>
+            <% If projectValidUser and (hortonFlag or forestarFlag) Then %>
                 <th width="5%" align="left">item status</th>
             <% End If %>
             <% If Session("validAdmin") or Session("validDirector") Then %>
@@ -310,7 +322,7 @@ Set RS0 = connSWPPP.Execute(SQL0)
             <% End If %>
             <th width="5%" align="left">repeat</th>
             <th width="5%" align="left">ID</th>
-            <th width="10%" align="left"><%=completeAction%> date</th>
+            <th width="10%" align="left"><%=completeDate%> date</th>
             <th width="5%" align="left">age</th>
             <th width="5%" align="left">report date</th>
             <% If locdir = "asc" then %>
@@ -412,7 +424,7 @@ Set RS0 = connSWPPP.Execute(SQL0)
 			            <input type="hidden" name="coord:coID:<%= n %>" value="<%= coID %>" />
 	                    <input type="hidden" name="coord:inspecID:<%= n %>" value="<%= inspecID %>" />
 			            <tr>
-			            <% If projectValidUser and hortonFlag Then 
+			            <% If projectValidUser and (hortonFlag or forestarFlag) Then 
                         commSQLSELECT = "SELECT c.comment, c.userID, c.date, u.firstName, u.lastName" &_
                             " FROM CoordinatesComments as c, Users as u WHERE c.userID = u.userID" &_
                         " AND coID=" & coID	
@@ -435,12 +447,12 @@ Set RS0 = connSWPPP.Execute(SQL0)
                     <% End If %>
                     <% If projectValidUser=False Then %>
                         <td align="left"><input type="checkbox" name="coord:complete:<%= n %>" disabled="disabled" /></td>
-                    <% ElseIf hortonFlag and Session("validErosion") and completer <> "" Then %>
+                    <% ElseIf (hortonFlag or forestarFlag) and Session("validErosion") and completer <> "" Then %>
                         <td align="left"><input type="checkbox" name="coord:complete:<%= n %>" disabled="disabled" /></td>
                     <% Else %>
                         <td align="left"><input type="checkbox" name="coord:complete:<%= n %>" /></td>
                     <% End If %>
-                    <% If projectValidUser and hortonFlag Then %>
+                    <% If projectValidUser and (hortonFlag or forestarFlag) Then %>
                         <td><%=done%></br><%=completer%></br><%=completeDate%></td>
                     <% End If %>
                     <% If Session("validAdmin") or Session("validDirector") Then %>
@@ -454,9 +466,9 @@ Set RS0 = connSWPPP.Execute(SQL0)
 			        <td align="left"><%= coID %></td>
 			        <% If projectValidUser=False Then %>
                         <td align="left"><input type="text" name="coord:date:<%= n %>" value="<%= currentDate %>" readonly /></td>
-                    <% ElseIf hortonFlag and Not Session("validAdmin") Then %>
+                    <% ElseIf (hortonFlag or forestarFlag) and Not Session("validAdmin") Then %>
                         <td align="left"><input type="text" name="coord:date:<%= n %>" value="<%= currentDate %>" readonly /></td>
-			        <% Else %>
+                    <% Else %>
                         <td align="left"><input class="datepicker" type="text" name="coord:date:<%= n %>" value="<%= currentDate %>"/></td>
                     <% End If %>
                     <td><%= age %> days</td>
@@ -472,6 +484,8 @@ Set RS0 = connSWPPP.Execute(SQL0)
 	                <td><input type="button" name="coord:note:<%= n %>" value="A" onclick="displayCommentWindow(this)"/></td>
 	                <% If rsComm.EOF Then %>
                         <td></td>
+                    <% ElseIf forestarFlag and rsComm("comment") = "This item was marked done" Then %>
+                        <td><button type="button"><a href="viewOpenItemComments.asp?coID=<%=coID%>" target="_blank">V</a></button></td>
                     <% ElseIf rsComm("comment") = "This item was marked done" Then %>
 	                    <td></td>
 	                <% Else %>
@@ -504,7 +518,7 @@ Set RS0 = connSWPPP.Execute(SQL0)
             sitemap_link = "http://www.swppp.com/images/sitemap/"& TRIM(RS3("oImageFileName"))%>
 	        <a href="<%=sitemap_link%>">link for site map</a><br />
         <% END IF
-        IF projectValidUser and hortonFlag THEN
+        IF projectValidUser and (hortonFlag or forestarFlag) THEN
             inspections_link = "http://swppp.com/views/inspections.asp?projID=" & projectID & "&projName=" & projectName & "&projPhase=" & projectPhase %>
             <a href="<%=inspections_link%>">sign off on reports</a><br/>
         <% END IF

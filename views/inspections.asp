@@ -29,7 +29,7 @@ End If
 currentDate = date()
 'Response.Write(currentDate)
 If Request.Form.Count > 0 Then
-	SQLI="SELECT inspecID FROM Inspections WHERE horton=1 AND projectID="& projectID
+	SQLI="SELECT inspecID FROM Inspections WHERE horton=1 or forestar=1 AND projectID="& projectID
 	SET RSI=connSWPPP.execute(SQLI)
 	Do While Not RSI.EOF
 		inspecID = RSI("inspecID")
@@ -78,13 +78,13 @@ If Request.Form.Count > 0 Then
 End If
 
 If Session("validAdmin") Then
-	inspectInfoSQLSELECT = "SELECT DISTINCT inspecID, inspecDate, totalItems, completedItems, includeItems, compliance, released, horton, hortonSignV, hortonSignLD, vscr, ldscr, p.projectName, p.projectPhase, ImageCount = (Select Count(ImageID) From Images Where inspecID = i.inspecID)" & _
+	inspectInfoSQLSELECT = "SELECT DISTINCT inspecID, inspecDate, totalItems, completedItems, includeItems, compliance, released, horton, hortonSignV, hortonSignLD, vscr, ldscr, forestar, p.projectName, p.projectPhase, ImageCount = (Select Count(ImageID) From Images Where inspecID = i.inspecID)" & _
 		" FROM Projects as p, Inspections as i" & _
 		" WHERE i.projectID=p.projectID" &_
 		" AND i.projectID="& projectID &_
 		" ORDER BY inspecDate DESC"
 Else
-	inspectInfoSQLSELECT = "SELECT DISTINCT inspecID, inspecDate, totalItems, completedItems, includeItems, compliance, released, horton, hortonSignV, hortonSignLD, vscr, ldscr, p.projectName, p.projectPhase, ImageCount = (Select Count(ImageID) From Images Where inspecID = i.inspecID)" & _
+	inspectInfoSQLSELECT = "SELECT DISTINCT inspecID, inspecDate, totalItems, completedItems, includeItems, compliance, released, horton, hortonSignV, hortonSignLD, vscr, ldscr, forestar, p.projectName, p.projectPhase, ImageCount = (Select Count(ImageID) From Images Where inspecID = i.inspecID)" & _
 		" FROM Projects as p, ProjectsUsers as pu, Inspections as i" & _
 		" WHERE pu.userID = " & Session("userID") &_
 		" AND i.projectID=p.projectID" &_
@@ -129,7 +129,16 @@ SET RS1=connSWPPP.execute(SQL1)
 hortonUserLD=False
 if NOT(RS1.EOF) THEN hortonUserLD=True END IF
 'Response.Write("projectID: " & projectID & ", vscr: " & hortonSignV & ", ldscr: " & hortonSignLD & "<br/>")
- %>
+ 
+SQL1="SELECT inspecID FROM Inspections WHERE forestar=1 AND projectID="& projectID
+SET RS1=connSWPPP.execute(SQL1)
+forestarFlag=False
+completePast="completed"
+if NOT(RS1.EOF) THEN 
+	forestarFlag=True 
+	completePast="closed"
+END IF
+%>
 
 <html>
 <head>
@@ -145,7 +154,7 @@ if NOT(RS1.EOF) THEN hortonUserLD=True END IF
 <table>
 <tr><td><button onClick="window.open('reportPrintAll.asp?projID=<%= projectID%>&projName=<%= projectName%>&projPhase=<%= projectPhase %>','','width=800, height=600, location=no, menubar=no, status=no, toolbar=no, scrollbars=yes, resizable=yes')">print all reports</button></td>
 <td>
-<% If hortonFlag AND (hortonUserV or hortonUserLD or Session("validAdmin") or Session("validDirector")) Then %>
+<% If forestarFlag OR (hortonFlag AND (hortonUserV or hortonUserLD or Session("validAdmin") or Session("validDirector"))) Then %>
 <input type="submit" value="sign off on reports" name="approve_reports"></input>
 <% End If %>
 </td></tr>
@@ -172,6 +181,12 @@ If hortonFlag Then
 		<% End If %>
 		<th>LDSCR</th><th>LDSCR date</th>
 	<% End If %>
+<% End If 
+If forestarFlag Then
+	If (Session("validAdmin") or Session("validDirector") or hortonUserLD) Then %>	
+		<th>SSCR sign off</th>
+	<% End If %>
+	<th>SSCR</th><th>SSCR date</th>
 <% End If %>
 </tr>
 
@@ -196,6 +211,7 @@ Else
 			hortonFlag = rsInspectInfo("horton")
 			hortonSignV = rsInspectInfo("hortonSignV")
 			hortonSignLD = rsInspectInfo("hortonSignLD")
+			forestarFlag = rsInspectInfo("forestar")
 			'Response.Write("inspecID: " & inspecID & ", vscr: " & hortonSignV & ", ldscr: " & hortonSignLD & "<br/>")
 			If includeItems Then
             includeItemsFlag = True
@@ -282,7 +298,38 @@ Else
 					<td align="center"><%=hortonApprovalUser%></td>
 					<td align="center"><%=hortonApprovalDate%></td>
 				<% End If
-			End If %>
+			End If
+			If forestarFlag Then 
+				'check for approval status 
+				SQLA="SELECT * FROM HortonApprovals WHERE LD=1 and inspecID="& inspecID
+				SET RSA=connSWPPP.execute(SQLA)
+				If RSA.EOF Then 
+					forestarStatus = False
+					forestarApprovalUser = ""
+					forestarApprovalDate = ""
+				Else
+					forestarStatus = True
+					SQLU="SELECT firstName, lastName FROM Users WHERE userID="& RSA("userID")
+					SET RSU=connSWPPP.execute(SQLU)
+					If not RSU.EOF Then
+						forestarApprovalUser = RSU("firstName") & " " & RSU("lastName")
+					Else
+						forestarApprovalUser = "Unknown"
+					End If
+					forestarApprovalDate = RSA("date")
+				End If 
+				If (Session("validAdmin") or Session("validDirector") or hortonUserLD) Then %>
+					<td align="center">
+					<% If forestarStatus Then %>
+						x
+					<% Else %>
+						<input type="checkbox" name="approval_LD:<%=inspecID%>"></input>
+					<% End If %>
+					</td>
+				<% End If %>
+				<td align="center"><%=forestarApprovalUser%></td>
+				<td align="center"><%=forestarApprovalDate%></td>
+			<% End If %>
 			</tr>
 			<% If Not Session("noImages") Then
 	'			imgSQLSELECT = "SELECT COUNT(imageID) FROM Images WHERE inspecID = " & rsInspectInfo("inspecID")

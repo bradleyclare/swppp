@@ -49,7 +49,7 @@ SQL2 = "SELECT inspecID, inspecDate, Inspections.projectID, Inspections.projectN
 	"projectZip, projectCounty, onsiteContact, officePhone, emergencyPhone, compName, " & _
 	"compAddr, compAddr2, compCity, compState, compZip, compPhone, compContact, contactPhone, " & _
 	"contactFax, contactEmail, reportType, inches, bmpsInPlace, " & _
-	"sediment, narrative, firstName, lastName, signature, qualifications, includeItems, compliance, totalItems, completedItems, horton, hortonSignV, hortonSignLD, vscr, ldscr" & _
+	"sediment, narrative, firstName, lastName, signature, qualifications, includeItems, compliance, totalItems, completedItems, horton, hortonSignV, hortonSignLD, vscr, ldscr, forestar" & _
 	" FROM Inspections, Projects, Users" & _
 	" WHERE inspecDate = '" & inspecDate &"' AND Inspections.projectid = "& projectID
 '--	" WHERE inspecDate = '" & inspecDate &"' AND Inspections.projectName='"&  Replace(projectName, "'", "''") &"'" 
@@ -124,6 +124,13 @@ End If %>
 	   <td align="right"><b>LDSCR:</b></td><td> <% =Trim(connRights("firstName")) %> <% =Trim(connRights("lastName")) %>: <% =Trim(connRights("phone")) %> </td>
 	<% End If
 End If %>
+<% If RS2("forestar") And RS2("ldscr") <> 0 Then
+	rightsSELECT = "SELECT userID, firstName, lastName, phone FROM Users WHERE userID=" & RS2("ldscr")
+	Set connRights = connSWPPP.execute(rightsSELECT)
+   If Not connRights.EOF Then %>
+	   <td align="right"><b>SSCR:</b></td><td> <% =Trim(connRights("firstName")) %> <% =Trim(connRights("lastName")) %>: <% =Trim(connRights("phone")) %> </td>
+	<% End If
+End If %>
 </tr>
 </table><%
 inspecID= RS2("inspecID")
@@ -166,17 +173,21 @@ If RS2("projectState") = "OK" Then
    enter and exit the site, off-site material storage areas, overburden and stockpiles of dirt, borrow areas, equipment staging areas, vehicle repair areas, and fueling areas.</i>
 <% End If %>
 </div></center></p>
-<% 'print dr horton questions if desired
-If RS2("horton") Then
+<% 'print dr horton or forestar questions if desired
+If RS2("horton") or RS2("forestar") Then
 	'get questions
-	QuestionDateStart = #12/10/2020#
-	QuestionDateStart2 = #2/5/2021#
-   If DateDiff("d", QuestionDateStart, inspecDate) < 1 Then
-		SQLQ = "SELECT * FROM HortonQuestions WHERE orderby < 27 ORDER BY orderby"
-	ElseIf DateDiff("d", QuestionDateStart2, inspecDate) < 1 Then
-		SQLQ = "SELECT * FROM HortonQuestions WHERE orderby > 30 AND orderby < 57 ORDER BY orderby"
+	If RS2("horton") Then
+		QuestionDateStart = #12/10/2020#
+		QuestionDateStart2 = #2/5/2021#
+		If DateDiff("d", QuestionDateStart, inspecDate) < 1 Then
+			SQLQ = "SELECT * FROM HortonQuestions WHERE orderby < 27 ORDER BY orderby"
+		ElseIf DateDiff("d", QuestionDateStart2, inspecDate) < 1 Then
+			SQLQ = "SELECT * FROM HortonQuestions WHERE orderby > 30 AND orderby < 57 ORDER BY orderby"
+		Else
+			SQLQ = "SELECT * FROM HortonQuestions WHERE orderby > 60 AND orderby < 87 ORDER BY orderby"
+		End If
 	Else
-		SQLQ = "SELECT * FROM HortonQuestions WHERE orderby > 60 AND orderby < 87 ORDER BY orderby"
+		SQLQ = "SELECT * FROM HortonQuestions WHERE orderby > 90 AND orderby < 101 ORDER BY orderby"
 	End If
 	Set RSQ = connSWPPP.Execute(SQLQ) %>
 	<hr noshade size="1" align="center" >
@@ -420,7 +431,7 @@ Else
 				  End If %>
 		        <tr valign='top'><td width='20%' align='right'><b><%=item_title%>:</b></td><td width='80%' align='left' class = '<%=scoring_class%>'><%=correctiveMods%></td></tr>
 		        <% IF applyScoring and repeat THEN %>
-			        <tr valign='top'><td width='20%' align='right'><b>item age:</b></td><td width='80%' align='left' class = '<%=scoring_class%>'><%=age%><br></td></tr>
+			        <tr valign='top'><td width='20%' align='right'><b>item age:</b></td><td width='80%' align='left' class = '<%=scoring_class%>'><%=age%> days<br></td></tr>
 		        <% END IF
             End If %>
 		    <tr><td colspan='2'><hr noshade size='1' align='center' width='90%'></td></tr>

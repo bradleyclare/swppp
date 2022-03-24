@@ -17,7 +17,7 @@ answerSQLSELECT = "SELECT * FROM HortonAnswers WHERE inspecID = " & inspecID
 Set RSA = connSWPPP.execute(answerSQLSELECT)
 
 'get questions
-SQL0 = "SELECT * FROM HortonQuestions WHERE orderby > 60 AND orderby < 87 ORDER BY orderby"
+SQL0 = "SELECT * FROM HortonQuestions WHERE orderby > 90 AND orderby < 101 ORDER BY orderby"
 'Response.Write(SQL0)
 Set RS0 = connSWPPP.Execute(SQL0)
 
@@ -33,7 +33,7 @@ If Not RSI.EOF Then
     projPhase = Trim(RSI("projectPhase"))
 End If
 
-numQuestions = 26
+numQuestions = 10
 If Request.Form.Count > 0 Then
     If Request.Form("na_btn") = "set to n/a" Then
         'insert or update answers to database
@@ -195,12 +195,8 @@ If Request.Form.Count > 0 Then
                 cnt = cnt + 1
                 default_val = Trim(RS0("default_answer"))
                 current_val = TRIM(Request("A:" & cnt))
-                If cnt = 4 or cnt = 10 or cnt >= 12 Then
-                    If current_val <> "na" Then
-                        answerSQL = answerSQL & "Q" & cnt & " = '" & default_val & "'"
-                    Else
-                        answerSQL = answerSQL & "Q" & cnt & " = '" & current_val & "'"
-                    End If
+                If current_val <> "na" Then
+                    answerSQL = answerSQL & "Q" & cnt & " = '" & default_val & "'"
                 Else
                     answerSQL = answerSQL & "Q" & cnt & " = '" & current_val & "'"
                 End If
@@ -251,99 +247,53 @@ If Request.Form.Count > 0 Then
                 if repeat then
                     repeat_item_found = True
                 end if
+                if ada or street or swalk then
+                    bmp_issue_found = true
+                    answerSQL = "UPDATE HortonAnswers SET Q2 = 'yes' WHERE inspecID = " & inspecID  
+                    connSWPPP.Execute(answerSQL)
+                end if
+                if sfeb or rockdam or riprap then
+                    bmp_issue_found = true
+                    answerSQL = "UPDATE HortonAnswers SET Q3 = 'no' WHERE inspecID = " & inspecID  
+                    connSWPPP.Execute(answerSQL)
+                end if
+                if ip or intop then
+                    bmp_issue_found = true
+                    answerSQL = "UPDATE HortonAnswers SET Q4 = 'no' WHERE inspecID = " & inspecID 
+                    connSWPPP.Execute(answerSQL)
+                end if
+                if mormix or toilet or trash then
+                    bmp_issue_found = true
+                    answerSQL = "UPDATE HortonAnswers SET Q5 = 'no' WHERE inspecID = " & inspecID 
+                    connSWPPP.Execute(answerSQL)
+                end if
+                if dewater or dust or wo then
+                    bmp_issue_found = true
+                    answerSQL = "UPDATE HortonAnswers SET Q6 = 'no' WHERE inspecID = " & inspecID 
+                    connSWPPP.Execute(answerSQL)
+                end if
                 if pond then
                     bmp_issue_found = true
-                    answerSQL = "UPDATE HortonAnswers SET Q12 = 'no' WHERE inspecID = " & inspecID 
+                    answerSQL = "UPDATE HortonAnswers SET Q7 = 'no' WHERE inspecID = " & inspecID 
                     connSWPPP.Execute(answerSQL)
-                end if
-                if sedloss then
-                    answerSQL = "UPDATE HortonAnswers SET Q14 = 'yes' WHERE inspecID = " & inspecID 
-                    connSWPPP.Execute(answerSQL)
-                end if
-                if sedlossw then
-                    answerSQL = "UPDATE HortonAnswers SET Q15 = 'yes' WHERE inspecID = " & inspecID 
-                    connSWPPP.Execute(answerSQL)
-                end if
-                if ce then
-                    bmp_issue_found = true
-                    answerSQL = "UPDATE HortonAnswers SET Q16 = 'no' WHERE inspecID = " & inspecID 
-                    connSWPPP.Execute(answerSQL)
-                end if
-                if street or intop or swalk or ada or dway or flume then
-                    bmp_issue_found = true
-                    answerSQL = "UPDATE HortonAnswers SET Q17 = 'no' WHERE inspecID = " & inspecID 
-                    connSWPPP.Execute(answerSQL)
-                end if
-                if sfeb then
-                    bmp_issue_found = true
-                    answerSQL = "UPDATE HortonAnswers SET Q18 = 'no' WHERE inspecID = " & inspecID 
-                    connSWPPP.Execute(answerSQL)
-                end if
-                if rockdam or riprap then
-                    bmp_issue_found = true
-                    answerSQL = "UPDATE HortonAnswers SET Q19 = 'no' WHERE inspecID = " & inspecID  
-                    connSWPPP.Execute(answerSQL)
-                end if
-                if ip then
-                    bmp_issue_found = true
-                    answerSQL = "UPDATE HortonAnswers SET Q20 = 'no' WHERE inspecID = " & inspecID 
-                    connSWPPP.Execute(answerSQL)
-                end if
-                if wo or mormix then
-                    bmp_issue_found = true
-                    answerSQL = "UPDATE HortonAnswers SET Q21 = 'no' WHERE inspecID = " & inspecID  
+                else
+                    answerSQL = "UPDATE HortonAnswers SET Q7 = 'yes' WHERE inspecID = " & inspecID 
                     connSWPPP.Execute(answerSQL)
                 end if
                 if veg then
                     bmp_issue_found = true
-                    answerSQL = "UPDATE HortonAnswers SET Q22 = 'no' WHERE inspecID = " & inspecID 
+                    answerSQL = "UPDATE HortonAnswers SET Q8 = 'no' WHERE inspecID = " & inspecID 
+                    connSWPPP.Execute(answerSQL)
+                else
+                    answerSQL = "UPDATE HortonAnswers SET Q8 = 'yes' WHERE inspecID = " & inspecID 
                     connSWPPP.Execute(answerSQL)
                 end if
-                if stock then
-                    bmp_issue_found = true
-                    answerSQL = "UPDATE HortonAnswers SET Q23 = 'no' WHERE inspecID = " & inspecID 
-                    connSWPPP.Execute(answerSQL)
-                end if
-                if toilet then
-                    bmp_issue_found = true
-                    answerSQL = "UPDATE HortonAnswers SET Q24 = 'no' WHERE inspecID = " & inspecID 
-                    connSWPPP.Execute(answerSQL)
-                end if
-                if trash then
-                    bmp_issue_found = true
-                    answerSQL = "UPDATE HortonAnswers SET Q25 = 'no' WHERE inspecID = " & inspecID 
-                    connSWPPP.Execute(answerSQL)
-                end if
-                if dewater then
-                    bmp_issue_found = true
-                    answerSQL = "UPDATE HortonAnswers SET Q26 = 'no' WHERE inspecID = " & inspecID 
-                    connSWPPP.Execute(answerSQL)
-                end if
-                if dust then
-                    bmp_issue_found = true
-                    answerSQL = "UPDATE HortonAnswers SET Q26 = 'no' WHERE inspecID = " & inspecID 
-                    connSWPPP.Execute(answerSQL)
-                end if
-                if outfall then
-                    answerSQL = "UPDATE HortonAnswers SET Q13 = 'no' WHERE inspecID = " & inspecID 
+                if ada or sedloss or selossw or street or swalk then
+                    answerSQL = "UPDATE HortonAnswers SET Q9 = 'yes' WHERE inspecID = " & inspecID 
                     connSWPPP.Execute(answerSQL)
                 end if
                 rsCoord.MoveNext
-            Loop 	
-            if repeat_item_found then
-                answerSQL = "UPDATE HortonAnswers SET Q4 = 'no' WHERE inspecID = " & inspecID  
-                connSWPPP.Execute(answerSQL)
-            Else
-                answerSQL = "UPDATE HortonAnswers SET Q4 = 'yes' WHERE inspecID = " & inspecID  
-                connSWPPP.Execute(answerSQL)
-            End if
-            if bmp_issue_found then
-                answerSQL = "UPDATE HortonAnswers SET Q10 = 'no' WHERE inspecID = " & inspecID  
-                connSWPPP.Execute(answerSQL)
-            Else
-                answerSQL = "UPDATE HortonAnswers SET Q10 = 'yes' WHERE inspecID = " & inspecID  
-                connSWPPP.Execute(answerSQL)
-            End if
+            Loop
         End If
     Else
         'insert or update answers to database
@@ -420,6 +370,7 @@ End If
 
 'get updated answer data if changed
 answerSQLSELECT = "SELECT * FROM HortonAnswers WHERE inspecID = " & inspecID
+'response.Write(answerSQLSELECT)
 Set RSA = connSWPPP.execute(answerSQLSELECT)
 
 pondSQL="SELECT * FROM HortonLocations WHERE inspecID="& inspecID &" AND isOutfall=0"
@@ -434,7 +385,7 @@ Set RSoutfall=connSWPPP.execute(outfallSQL)
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
 <HTML>
 <HEAD>
-	<TITLE>SWPPP INSPECTIONS :: Admin :: DR Horton Questions</TITLE>
+	<TITLE>SWPPP INSPECTIONS :: Admin :: Forestar Questions</TITLE>
 	<LINK REL=stylesheet HREF="../../global.css" type="text/css">
 </HEAD>
 <BODY vLink=#d1a430 aLink=#000000 link=#b83a43 bgColor=#ffffff leftMargin=0 topMargin=0 marginwidth="5" marginheight="5">
@@ -442,7 +393,7 @@ Set RSoutfall=connSWPPP.execute(outfallSQL)
 
 <% RS0.MoveFirst %>
 
-<h1>DR Horton report questions</h1>           
+<h1>Forestar report questions</h1>           
 <% If RS0.EOF Then %>
 	<p>no questions found</p>
 <% Else %>
@@ -480,20 +431,14 @@ Set RSoutfall=connSWPPP.execute(outfallSQL)
         <td>
 
         <% show_dropdown = 1
-        If cnt = 3 Then %>
-            <a href="../../views/inspections.asp?projID=<%=projID%>&projName=<%=projName%>&projPhase=<%=projPhase%>" target="_blank"><input type="button" value="see report status"/></a>
-        <% ElseIf cnt = 12 Then %>
-            <a href="defineHortonLocations.asp?inspecID=<%=inspecID%>"><input type="button" value="define locations"/></a>
-            <% If Not RSpond.EOF Then
-                show_dropdown = 0
+        If show_dropdown Then 
+            If selected_val = "na" & include_na = False Then 
+                selected_val = default_val
             End If 
-        ElseIf cnt = 13 Then %>
-            <a href="defineHortonLocations.asp?inspecID=<%=inspecID%>&outfall=1"><input type="button" value="define locations"/></a>
-            <% If Not RSoutfall.EOF Then
-                show_dropdown = 0
-            End If
-        End If
-        If show_dropdown Then %>
+            If default_val = "na" Then
+                default_val = "yes"
+            End If 
+            %>
             <select name="A:<%=cnt%>" <% If default_val = selected_val or selected_val = "na" Then %> style="background-color:<%=green%>;" <% Else %> style="background-color:<%=red%>;"<% End If %>>
             <option value="yes" <% If selected_val = "yes" Then %> selected <% End If %>>yes</option>
             <option value="no" <% If selected_val = "no" Then %> selected <% End If %>>no</option>
@@ -507,85 +452,8 @@ Set RSoutfall=connSWPPP.execute(outfallSQL)
         <td><% = category %></td>
         <td><% = chkbx_txt %></td>
         </tr>
-        
-        <% 'for question 12 and 13 show the defined location questions 
-        If cnt = 12 Then
-            pondCnt = 0
-            anyNo = 0
-            default_val = "yes"
-            Do While Not RSpond.EOF
-                pondCnt = pondCnt + 1
-                locationID = RSpond("locationID")
-                locationName = Trim(RSpond("locationName")) 
-                selected_val = Trim(RSpond("answer")) %>
-                <tr bgcolor="<%= altColors %>">
-                <td>&nbsp-&nbsp<% =locationName %></td>
-                <td>
-                <input type="hidden" name="pondLocID:<%=pondCnt%>" value="<%=locationID%>"/>
-                <select name="pondLocA:<%=pondCnt%>" <% If default_val = selected_val or selected_val = "na" Then %> style="background-color:<%=green%>;" <% Else %> style="background-color:<%=red%>;"<% End If %>>
-                <option value="yes" <% If selected_val = "yes" Then %> selected <% End If %>>yes</option>
-                <option value="no" <% If selected_val = "no" Then %> selected <% End If %>>no</option>
-                <option value="na" <% If selected_val = "na" Then %> selected <% End If %>>n/a</option>
-                <% If selected_val = "no" Then
-                    anyNo = 1
-                End If %>
-                </select>
-                </td>
-                <td></td>
-                <td></td>
-                </tr>
-                <% If altColors = "#e5e6e8" Then altColors = "#ffffff" Else altColors = "#e5e6e8" End If
-                RSpond.MoveNext
-            Loop
-            'set overall answer based on the location answers
-            If pondCnt > 0 Then
-                If anyNo Then %>
-                    <input type="hidden" name="A:<%=cnt%>" value="no"/>
-                <% Else %>
-                    <input type="hidden" name="A:<%=cnt%>" value="yes"/>
-                <% End If
-            End If
-        End If
 
-        If cnt = 13 Then
-            outfallCnt = 0
-            anyNo = 0
-            default_val = "yes"
-            Do While Not RSoutfall.EOF
-                outfallCnt = outfallCnt + 1
-                locationID = RSoutfall("locationID")
-                locationName = Trim(RSoutfall("locationName")) 
-                selected_val = Trim(RSoutfall("answer")) %>
-                <tr bgcolor="<%= altColors %>">
-                <td>&nbsp-&nbsp<% =locationName %></td>
-                <td>
-                <input type="hidden" name="outfallLocID:<%=outfallCnt%>" value="<%=locationID%>"/>
-                <select name="outfallLocA:<%=outfallCnt%>" <% If default_val = selected_val or selected_val = "na" Then %> style="background-color:<%=green%>;" <% Else %> style="background-color:<%=red%>;"<% End If %>>
-                <option value="yes" <% If selected_val = "yes" Then %> selected <% End If %>>yes</option>
-                <option value="no" <% If selected_val = "no" Then %> selected <% End If %>>no</option>
-                <option value="na" <% If selected_val = "na" Then %> selected <% End If %>>n/a</option>
-                <% If selected_val = "no" Then
-                    anyNo = 1
-                End If %>
-                </select>
-                </td>
-                <td></td>
-                <td></td>
-                </tr>
-                <% If altColors = "#e5e6e8" Then altColors = "#ffffff" Else altColors = "#e5e6e8" End If
-                RSoutfall.MoveNext
-            Loop
-            'set overall answer based on the location answers
-            If outfallCnt > 0 Then
-                If anyNo Then %>
-                    <input type="hidden" name="A:<%=cnt%>" value="no"/>
-                <% Else %>
-                    <input type="hidden" name="A:<%=cnt%>" value="yes"/>
-                <% End If
-            End If
-        End If
-
-        If altColors = "#e5e6e8" Then altColors = "#ffffff" Else altColors = "#e5e6e8" End If
+        <% If altColors = "#e5e6e8" Then altColors = "#ffffff" Else altColors = "#e5e6e8" End If
         RS0.MoveNext
     Loop 'RSO
     RS0.Close

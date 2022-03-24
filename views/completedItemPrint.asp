@@ -22,7 +22,7 @@ SQL2="SELECT projectName, projectPhase FROM Projects WHERE projectID="& projectI
 'response.Write(SQL2)
 SET RS2=connSWPPP.execute(SQL2) 
 
-SQLH="SELECT inspecID FROM Inspections WHERE horton=1 AND projectID="& projectID
+SQLH="SELECT inspecID FROM Inspections WHERE horton=1 OR forestar=1 AND projectID="& projectID
 SET RSH=connSWPPP.execute(SQLH)
 hortonFlag=False
 completePast="completed"

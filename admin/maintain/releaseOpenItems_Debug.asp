@@ -286,6 +286,7 @@ IF Request.Form.Count > 0 THEN %>
 
                     '--------this line of code is for testing the smtp server---------------------
                     Mailer.AddBCC "dwims@swppp.com", contentSubject
+                    Mailer.AddBCC "jwright@swppp.com", contentSubject
                     'Mailer.AddBCC "brad.leishman@gmail.com", contentSubject
                     '--------this line of code is for testing the smtp server---------------------
                 

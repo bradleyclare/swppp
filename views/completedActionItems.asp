@@ -89,10 +89,22 @@ SET RSH=connSWPPP.execute(SQLH)
 hortonFlag=False
 completePast="completed"
 completeAction="complete"
+completeDate = "complete"
 if NOT(RSH.EOF) THEN 
     hortonFlag=True 
     completePast="closed"
     completeAction="close"
+    completeDate="close"
+END IF
+
+SQLH="SELECT inspecID FROM Inspections WHERE forestar=1 AND projectID="& projectID
+SET RSH=connSWPPP.execute(SQLH)
+forestarFlag=False
+if NOT(RSH.EOF) THEN 
+    forestarFlag=True 
+    completePast="completed"
+    completeAction="complete"
+    completeDate="completion"
 END IF
 %>
 
@@ -175,7 +187,7 @@ End Date (MM/DD/YYYY): <input name="endDate" type="text" value="<%=endDate%>" si
             <th width="2.5%" align="left">view done</th>
         <% End If %>
         <th width="5%" align="left">ID</th>
-        <th width="10%" align="left"><%=completeAction%> date</th>  
+        <th width="10%" align="left"><%=completeDate%> date</th>  
         <th width="5%" align="left">report date</th>
         <th width="15%" align="left">location</th>
         <th align="left">action item</th>

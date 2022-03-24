@@ -15,7 +15,7 @@ inspecSQLSELECT = "SELECT inspecDate, Inspections.projectID, Inspections.project
 "projectZip, projectCounty, onsiteContact, officePhone, emergencyPhone, compName, " &_
 "compAddr, compAddr2, compCity, compState, compZip, compPhone, compContact, contactPhone, contactFax, " &_
 "contactEmail, reportType, inches, bmpsInPlace, sediment, " &_
-"narrative, firstName, lastName, signature, qualifications, includeItems, compliance, totalItems, completedItems, horton, hortonSignV, hortonSignLD, vscr, ldscr" &_
+"narrative, firstName, lastName, signature, qualifications, includeItems, compliance, totalItems, completedItems, horton, hortonSignV, hortonSignLD, vscr, ldscr, forestar" &_
 " FROM Inspections, Projects, Users" &_
 " WHERE inspecID = " & inspecID &_
 " AND Inspections.projectID = Projects.projectID" &_
@@ -97,6 +97,13 @@ If rsInspec("hortonSignLD") And rsInspec("ldscr") <> 0 Then
 	   strBody=strBody &"<td align='right'><b>LDSCR:</b></td><td>" & Trim(connRights("firstName")) & " " & Trim(connRights("lastName")) & ": " & Trim(connRights("phone")) & "</td>"
 	End If
 End If
+If rsInspec("forestar") And rsInspec("ldscr") <> 0 Then
+	rightsSELECT = "SELECT userID, firstName, lastName, phone FROM Users WHERE userID=" & rsInspec("ldscr")
+	Set connRights = connSWPPP.execute(rightsSELECT)
+   If Not connRights.EOF Then
+	   strBody=strBody &"<td align='right'><b>SSCR:</b></td><td>" & Trim(connRights("firstName")) & " " & Trim(connRights("lastName")) & ": " & Trim(connRights("phone")) & "</td>"
+	End If
+End If
 strBody=strBody &"</tr>"
 strBody=strBody &"</table>"
 signature = Trim(rsInspec("signature"))
@@ -135,17 +142,21 @@ Else
       " areas used for storage of materials that are exposed to precipitation, structural controls (all erosion and sediment controls), discharge locations, locations where vehicles" &_
       " enter and exit the site, off-site material storage areas, overburden and stockpiles of dirt, borrow areas, equipment staging areas, vehicle repair areas, and fueling areas.</i></center></p></div>"
 End If
-'print dr horton questions if desired
-If rsInspec("horton") Then
+'print dr horton or forestar questions if desired
+If rsInspec("horton") or rsInspec("forestar") Then
 	'get questions
-	QuestionDateStart = #12/10/2020#
-	QuestionDateStart2 = #2/5/2021#
-   If DateDiff("d", QuestionDateStart, inspecDate) < 1 Then
-		SQLQ = "SELECT * FROM HortonQuestions WHERE orderby < 27 ORDER BY orderby"
-	ElseIf DateDiff("d", QuestionDateStart2, inspecDate) < 1 Then
-		SQLQ = "SELECT * FROM HortonQuestions WHERE orderby > 30 AND orderby < 57 ORDER BY orderby"
-	Else
-		SQLQ = "SELECT * FROM HortonQuestions WHERE orderby > 60 AND orderby < 87 ORDER BY orderby"
+	If rsInspec("horton") Then
+		QuestionDateStart = #12/10/2020#
+		QuestionDateStart2 = #2/5/2021#
+		If DateDiff("d", QuestionDateStart, inspecDate) < 1 Then
+			SQLQ = "SELECT * FROM HortonQuestions WHERE orderby < 27 ORDER BY orderby"
+		ElseIf DateDiff("d", QuestionDateStart2, inspecDate) < 1 Then
+			SQLQ = "SELECT * FROM HortonQuestions WHERE orderby > 30 AND orderby < 57 ORDER BY orderby"
+		Else
+			SQLQ = "SELECT * FROM HortonQuestions WHERE orderby > 60 AND orderby < 87 ORDER BY orderby"
+		End If
+	Else 'forestar
+		SQLQ = "SELECT * FROM HortonQuestions WHERE orderby > 90 AND orderby < 101 ORDER BY orderby"
 	End If
 	Set RSQ = connSWPPP.Execute(SQLQ)
 	strBody=strBody &"<hr noshade size='1' align='center' >"
@@ -236,7 +247,11 @@ Else
 	If rsCoord.EOF Then
 		strBody=strBody &"<tr><td colspan='2' align='center'><i>There is no coordinate data entered at this time.</i></td></tr>"
 	Else
-		applyScoring = False 'rsInspec("includeItems")
+		If rsInspec("forestar") Then
+			applyScoring = rsInspec("includeItems")
+		Else
+			applyScoring = false
+		End IF
 		currentDate = date()
 		Do While Not rsCoord.EOF
 			coID = rsCoord("coID")
@@ -279,24 +294,26 @@ Else
 		   flume = rsCoord("flume")
 			OSC = rsCoord("osc")
 			scoring_class = "black"
-			'Response.Write("ID: " & coID & ", Coord: " & coordinates & ", LocName: " & locationName & ", address: " & address & ", Mods: " & correctiveMods & "<br/>") 
 			IF applyScoring THEN
 				IF assignDate = "" THEN
 					age = 0
 				ELSE
 					age = datediff("d",assignDate,currentDate) 
 				END IF
+				Response.Write("Age:" & age & " - " & currentDate & "</br>")
 				IF age > 7 THEN
 					scoring_class = "red"
 				END IF
 			END IF
-            If LD = True Then
-                correctiveMods = "(LD) " & correctiveMods
-                scoring_class = "ld"
-            End If
-				If OSC = True Then
-                correctiveMods = "(OSC) " & correctiveMods
-            End If
+			Response.Write("Scoring Class:" & scoring_class & "</br>")
+			'Response.Write("ID: " & coID & ", Repeat: " & repeat & ", Age: " & age & ", Coord: " & coordinates & ", LocName: " & locationName & ", address: " & address & ", Mods: " & correctiveMods & "<br/>") 
+			If LD = True Then
+            correctiveMods = "(LD) " & correctiveMods
+            scoring_class = "ld"
+         End If
+			If OSC = True Then
+            correctiveMods = "(OSC) " & correctiveMods
+         End If
 			If pond = True Then
                 correctiveMods = "(pond) " & correctiveMods
             End If
@@ -347,7 +364,7 @@ Else
 	      End If
 	      If outfall = True Then
 	        	correctiveMods = "(outfall) " & correctiveMods
-	        End If
+	      End If
 			If intop = True Then
         		correctiveMods = "(inlet top) " & correctiveMods
          End If
@@ -386,7 +403,7 @@ Else
 					End If
 			   	strBody=strBody &"<tr valign='top'><td width='20%' align='right'><b>"& item_title &":</b></td><td width='80%' align='left' class = '"& scoring_class &"'>"&  correctiveMods &"</td></tr>"
 					IF applyScoring and repeat THEN
-				    	strBody=strBody &"<tr valign='top'><td width='20%' align='right'><b>item age:</b></td><td width='80%' align='left' class = '"& scoring_class &"'>"&  age &"<br></td></tr>"
+				    	strBody=strBody &"<tr valign='top'><td width='20%' align='right'><b>item age:</b></td><td width='80%' align='left' class = '"& scoring_class &"'>"&  age &" days<br></td></tr>"
 			    	END IF
             End If
 			strBody=strBody &"<tr><td colspan='2'><hr noshade size='1' align='center' ></td></tr>" & vbCrLf	
@@ -433,7 +450,7 @@ If Not rsImages.EOF Then
 	Loop
 End If
 END IF
-If rsInspec("horton") Then
+If rsInspec("horton") or rsInspec("forestar") Then
 	projectID = rsInspec("projectID")
 	projectName = Trim(rsInspec("projectName"))
 	projectPhase = Trim(rsInspec("projectPhase"))
@@ -454,23 +471,23 @@ SET RS3=nothing
 projectID = Request("projID")
 '-- Response.Write(Item &":"& Request(Item) &"<br>")
 SQL1="SELECT DISTINCT (LTRIM(RTRIM(u.firstName)) +' '+ LTRIM(RTRIM(u.lastName))) as fullName,"&_
-	" u.email, u.noImages, i.projectName, i.projectPhase, i.inspecDate, pu.rights" &_
-	" FROM ProjectsUsers pu JOIN Users u on pu.userID=u.userID" &_
-	" JOIN Inspections i ON pu.projectID=i.projectID" &_
-	" WHERE i.inspecID="& inspecID &" AND pu.projectID="& projectID
+       " u.email, u.noImages, i.projectName, i.projectPhase, i.inspecDate, pu.rights" &_
+       " FROM ProjectsUsers pu JOIN Users u on pu.userID=u.userID" &_
+       " JOIN Inspections i ON pu.projectID=i.projectID" &_
+       " WHERE i.inspecID="& inspecID &" AND pu.projectID="& projectID
 Set RS1 = Server.CreateObject("ADODB.Recordset")
 RS1.Open SQL1, connSWPPP
 
 '--------------------- process mailing -------------------------------------------
-contentSubject= "Inspection Report for "& TRIM(RS1("projectName")) &" "& TRIM(RS1("projectPhase")) &" on "& TRIM(RS1("inspecDate"))
-Set Mailer = Server.CreateObject("Persits.MailSender")
-Mailer.FromName    = "SWPPP.COM"
-Mailer.From = "dwims@swppp.com"
-Mailer.Host = "127.0.0.1"
-Mailer.Subject    = contentSubject
-Mailer.Body = strBody & strImages & "<Body>"
+		contentSubject= "Inspection Report for "& TRIM(RS1("projectName")) &" "& TRIM(RS1("projectPhase")) &" on "& TRIM(RS1("inspecDate"))
+		Set Mailer = Server.CreateObject("Persits.MailSender")
+		Mailer.FromName    = "Don Wims"
+		Mailer.From        = "dwims@swppp.com"
+		Mailer.Host        = "127.0.0.1"
+		Mailer.Subject     = contentSubject
+		Mailer.Body        = strBody & strImages & "<Body>"
 BodyText = strBody & strImages & "<Body>"
-Mailer.isHTML     = True
+		Mailer.isHTML      = True
 Mailer.AddAddress "bradleyclare@gmail.com", "Brad Leishman" %>
 
 

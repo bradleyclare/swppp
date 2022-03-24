@@ -298,14 +298,14 @@ IF Request.Form.Count > 0 THEN %>
 		        On Error Resume Next
 				Mailer.Send
 				If Err <> 0 Then %>
-			            <div class="red">Mail send failure.- </div><%= Err.Description %> <br />
-        <%		else %>
+			            <div class="red"><%=email%>: Mail send failure.- </div><%=Err.Description%><br />
+                <% else %>
 			        <td>Emails Sent</td>
                     <% updateDB = True
                 End If
             Else %>
                 <td>No Repeat Items. No Email Sent</td>
-        <%  End If 'End send_email 
+            <% End If 'End send_email 
             'update database to show alert has been sent
             if updateDB Then
                 inspectSQLUPDATE2 = "UPDATE Inspections SET" & _

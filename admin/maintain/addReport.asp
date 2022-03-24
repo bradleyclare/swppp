@@ -23,13 +23,15 @@ next
 %><!-- #include file="../connSWPPP.asp" --><%
 SQL0= SQL0 &" INSERT INTO Inspections (inspecDate, projectname, projectphase, projectaddr, projectcity, projectstate, projectzip, projectcounty, onsitecontact,  " &_
 	" officephone, emergencyphone, companyid, reporttype, inches, bmpsinplace, sediment, userid, compaddr, compaddr2, compcity, compstate, compzip, compphone,  " &_
-	" compcontact, contactphone, contactfax, contactemail, projectid, compname, narrative, released, includeItems, compliance, totalItems, completedItems, sentRepeatItemReport, openItemAlert, groupName, systemic, systemicNote, horton, hortonSignV, hortonSignLD, vscr, ldscr)  " &_
+	" compcontact, contactphone, contactfax, contactemail, projectid, compname, narrative, released, includeItems, compliance, totalItems, completedItems, " &_ 
+	" sentRepeatItemReport, openItemAlert, groupName, systemic, systemicNote, horton, hortonSignV, hortonSignLD, vscr, ldscr, forestar)  " &_
     " SELECT inspecDate='"& Date() &"', p.projectName, p.projectPhase, projectAddr, projectCity, projectState,  " &_
 	" projectZip, projectCounty, onsiteContact, officePhone, emergencyPhone, companyID,  " &_
 	" reportType = case when i.reportType = 'Initial' Then 'Weekly' Else i.reportType end, inches=-1, bmpsInPlace=-1, sediment=-1, userID,  " &_
 	" compAddr, compAddr2, compCity, compState, compZip, compPhone, compContact, contactPhone, contactFax, contactEmail, p.projectID, compName, narrative, released=0, " &_
-	" includeItems=1, compliance, totalItems, completedItems=0, sentRepeatItemReport=0, openItemAlert, groupName, systemic, systemicNote, horton, hortonSignV, hortonSignLD, vscr, ldscr" &_
-    " FROM Inspections i  " &_
+	" includeItems=1, compliance, totalItems, completedItems=0, sentRepeatItemReport=0, openItemAlert, groupName, systemic, systemicNote, horton, hortonSignV, hortonSignLD, vscr, ldscr," &_
+	" forestar" &_
+   " FROM Inspections i " &_
 	" inner join #tmp t on i.inspecID = t.inspectID and i.projectid = t.projectid" &_
 	" inner join Projects p on t.projectid = p.projectid;  " &_
 	" Update #tmp set newInspecID = i.InspecID " &_
@@ -53,7 +55,7 @@ SQL_OLD = "SELECT * FROM Inspections WHERE inspecID="& inspecID
 Set rsInspec_old = connSWPPP.execute(SQL_OLD)
 
 'Response.Write("inspecID:" & inspecID & ", newInspecID:" & newInspecID & ", horton:" & rsInspec_old("horton"))
-if rsInspec_old("horton") then
+if rsInspec_old("horton") or rsInspec_old("forestar") then
 	'get previous horton answers
 	answerSQLSELECT = "SELECT * FROM HortonAnswers WHERE inspecID = " & inspecID
 	'Response.Write(answerSQLSELECT)

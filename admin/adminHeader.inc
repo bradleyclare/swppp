@@ -48,11 +48,11 @@
 		<% end if %>
 		
 		<% If Session("validAdmin") then %>
-			<a href="maintain/setActiveProjects.asp" class="admin">active reports</a><br>
 			<a href="maintain/cleanupScripts.asp" class="admin">cleanup scripts</a><br>
 			<!--<a href="maintain/archive.asp" class="admin">archive reports</a><br><br>-->
 		<% End IF %>
-		<a href="../" class="admin">public home</a><br><br>
+		<br/>
+		<a href="../views/projects.asp" class="admin">public</a><br><br>
     <a href="../logout.asp" class="admin">logout</a><br/><br/>
 </td>
 <!-- End Navigation --><td colspan="2" valign="top" width="90%"><br>

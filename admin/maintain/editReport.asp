@@ -57,6 +57,8 @@ If Request.Form.Count > 0 Then
 		if Request("hortonV") = "on" then hortonSignV = 1 End If
 		hortonSignLD = 0
 		if Request("hortonLD") = "on" then hortonSignLD = 1 End If
+		forestarQuestions = 0
+		if Request("forestar") = "on" then forestarQuestions = 1 End If
 		inspectSQLUPDATE=inspectSQLUPDATE &", projectAddr = '" & strQuoteReplace(Request("projectAddr")) & "'" & _
 		", projectCity = '" & strQuoteReplace(Request("projectCity")) & "'" & _
 		", projectState = '" & Request("projectState") & "'" & _
@@ -91,6 +93,7 @@ If Request.Form.Count > 0 Then
 		", hortonSignLD = " & hortonSignLD & _
 		", vscr = " & vscr & _
 		", ldscr = " & ldscr & _
+		", forestar = " & forestarQuestions & _
 		" WHERE inspecID = " & inspecID
       'response.Write(inspectSQLUPDATE)
 	   connSWPPP.Execute(inspectSQLUPDATE)
@@ -271,7 +274,8 @@ End If
 		", projectZip, projectCounty, onsiteContact, officePhone, emergencyPhone, i.projectID, compName, released" & _
 		", compAddr, compAddr2, compCity, compState, compZip, compPhone, compContact, contactPhone, contactFax" & _
 		", contactEmail, reportType, inches, bmpsInPlace, sediment, userID, includeItems, compliance, totalItems" & _
-		", completedItems, openItemAlert, systemic, systemicNote, horton, hortonSignV, hortonSignLD, vscr, ldscr, p.collectionName" & _
+		", completedItems, openItemAlert, systemic, systemicNote, horton, hortonSignV, hortonSignLD, vscr, ldscr" & _
+		", forestar, p.collectionName" & _
 		" FROM Inspections as i, Projects as p" & _
 		" WHERE i.projectID = p.projectID AND inspecID = " & inspecID
 '--Response.Write(inspecSQLSELECT & "<br>")
@@ -454,6 +458,13 @@ baseDir = "D:\Inetpub\wwwroot\SWPPP\"%>
 	function hortonQuestions(inspID) {
         var basePath = "http://www.swppp.com";
         var URL = "/admin/maintain/hortonQuestions.asp?inspecID=" + inspID;
+        var params = "";
+        window.open(URL, "", params);
+    }
+
+	 function forestarQuestions(inspID) {
+        var basePath = "http://www.swppp.com";
+        var URL = "/admin/maintain/forestarQuestions.asp?inspecID=" + inspID;
         var params = "";
         window.open(URL, "", params);
     }
@@ -649,6 +660,30 @@ baseDir = "D:\Inetpub\wwwroot\SWPPP\"%>
 		}
 	 }
 
+	 function forestar_checkbox(state) {
+		//display confirm dialog
+      var chbx_id = document.getElementById("forestar-checkbox");
+		if (state) {
+			var box= confirm("Are you sure you want activate Forestar questions from this report?");
+			if (box==true) {
+				//change state and submit form
+				chbx_id.checked = true;
+				document.getElementById("theForm").submit();
+			} else {
+				chbx_id.checked = false;
+			}
+		} else {
+			var box= confirm("Are you sure you want to remove Forestar questions for this report?");
+			if (box==true) {
+				//change state and submit form
+				chbx_id.checked = false;
+				document.getElementById("theForm").submit();
+			} else {
+				chbx_id.checked = true;
+			}
+		}
+	 }
+
 	 function checkbox(id, state) {
 		//display confirm dialog
       var chbx_id = id;
@@ -793,6 +828,36 @@ If Session("validAdmin") Then
 	   <% End If %>
 	<% Else %>
 		<input id="horton-checkbox" type="checkbox" name="horton" onChange="horton_checkbox(1)" />
+	<% End If %>
+	</td></tr>
+
+	<tr><td align="right" bgcolor="#eeeeee"><b>apply Forestar questions:</b></td>
+	<td bgcolor="#999999">Yes?
+	<% If rsReport("forestar") = True Then %>
+		<input id="forestar-checkbox" type="checkbox" name="forestar" onChange="forestar_checkbox(0)" checked/> 
+		<% SQLA = "SELECT * FROM HortonAnswers WHERE inspecID = " & inspecID
+		Set RSA = connSWPPP.execute(SQLA)
+    	If RSA.EOF Then %>
+			<input type="button" value="view questions" style="background-color: #f44336;" onClick="forestarQuestions('<%= inspecID%>')">
+		<% Else %>
+			<input type="button" value="view questions" onClick="forestarQuestions('<%= inspecID%>')">
+		<% End If %>
+		SSCR Sign
+		<select name="ldscr">
+			<% 'show listbox of available approvers 
+			rightsSELECT = "SELECT DISTINCT u.userID, firstName, lastName" & _
+				" FROM Users as u, ProjectsUsers as pu" & _
+				" WHERE u.userID = pu.userID AND pu.projectID = " & rsReport("projectID") & _
+				" AND pu.rights='ldscr' ORDER BY lastName"
+			Set connRights = connSWPPP.execute(rightsSELECT) %>
+			<option value="0">None</option>
+			<% Do While Not connRights.EOF %>
+				<option value="<%= connRights("userID") %>" <% If rsReport("ldscr")=connRights("userID") Then %>selected<% End If %>><%= Trim(connRights("firstName")) & "&nbsp;" & Trim(connRights("lastName")) %></option>
+			<%	connRights.moveNext
+			Loop %>
+		</select>
+	<% Else %>
+		<input id="forestar-checkbox" type="checkbox" name="forestar" onChange="forestar_checkbox(1)" />
 	<% End If %>
 	</td></tr>
 </table>
@@ -1051,7 +1116,7 @@ End If %>
 	</tr>
 <% 	END IF %>
 
-<%	IF rsReport("horton") = True THEN %>
+<%	IF rsReport("horton") = True or rsReport("forestar") = True THEN %>
 	<tr>
 		<td colspan="9">
 		<table>
@@ -1256,7 +1321,7 @@ Set rsCoord = Nothing %>
 	<td><input type="button" onclick="displayCommonItemSelect(this)" name="coord:item:<%=m%>" value="common item" /></td></tr>
 	<tr><td>OSC <input type="checkbox" name="coord:osc:<%= m %>" /> </td>
 	<td>LD <input type="checkbox" name="coord:LD:<%= m %>" /></td></tr>
-	<%	IF rsReport("horton") = True THEN %>
+	<%	IF rsReport("horton") = True or rsReport("forestar") = True THEN %>
 	<tr>
 		<td colspan="9">
 		<table>

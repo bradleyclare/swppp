@@ -17,18 +17,31 @@ coID = Request("coID")
 %><!-- #include file="../admin/connSWPPP.asp" --><%
 
 If Request.Form.Count > 0 Then
-    if Request.Form("delete_comments") = "delete comments" then
+    if Request.Form("edit_comments") = "update information" then
         for n = 0 to 999 step 1
             'Response.Write("comment:coID:" & CStr(n)&":"& Request("comment:coID:" & CStr(n)) &"<br/>")
             if Trim(Request("comment:commentID:" & CStr(n))) = "" then
                 exit for
             end if
             'Response.Write(CStr(n) & " d-" & Request("comment:delete:"& CStr(n)) & " id-" & Request("comment::coID:"& CStr(n)) & "</br>")
+            commentID = Request("comment:commentID:" & CStr(n))
             if Request("comment:delete:"& CStr(n)) = "on" then
-                commentID = Request("comment:commentID:" & CStr(n))
                 sqldelete = "DELETE FROM CoordinatesComments WHERE commentID=" & commentID
                 'response.Write(sqldelete)
                 connSWPPP.execute(sqldelete)
+            Else 'update info
+                itemDate = Request("comment:date:"& CStr(n))
+                comment = Trim(Request("comment:comment:"& CStr(n)))
+                updateSQLUPDATE = "UPDATE CoordinatesComments SET" & _
+                    " date='" & itemDate & "'"
+                If comment <> "" Then
+                    updateSQLUPDATE = updateSQLUPDATE & _
+                        ", comment='" & comment & "'"
+                End If
+                updateSQLUPDATE = updateSQLUPDATE & _
+                    " WHERE commentID=" & commentID
+                response.Write(updateSQLUPDATE)
+                connSWPPP.Execute(updateSQLUPDATE)
             End If
         next
     End If	
@@ -60,7 +73,8 @@ If LD = True Then
 End If
 If OSC = True Then
     correctiveMods = "(OSC) " & correctiveMods
-End If %>
+End If 
+%>
 
 <html>
 <head>
@@ -71,6 +85,11 @@ End If %>
 <link href="../css/jquery-ui.theme.min.css" rel="stylesheet" type="text/css"/>
 <script src="../js/jquery.js" type="text/javascript"></script>
 <script src="../js/jquery-ui.min.js" type="text/javascript"></script>
+<script type="text/javascript">
+  $( function() {
+    $( ".datepicker" ).datepicker();
+  } );
+</script>
 <style>
     .head{ color: #808080; }
 </style>
@@ -92,9 +111,6 @@ End If %>
 	<h3>ACTION ITEM: <span class="head"><%= correctiveMods %></span></h3>
 
     </center>
-    <% If Session("validAdmin") Then %>
-        <input type="submit" name="delete_comments" value="delete comments" /></br></br>
-    <% End If %>
     <table cellpadding="2" cellspacing="0" border="0" width="100%">
         <tr>
             <% If Session("validAdmin") Then %>
@@ -116,7 +132,7 @@ End If %>
 
             If comment = "This item was marked complete" Then
                 comment = "This item was closed."
-            Elseif commnet = "This item was marked NLN" Then
+            Elseif comment = "This item was marked NLN" Then
                 comment = "This item was marked NLN."
             Elseif comment = "This item was marked done" Then
                 comment = "This item was marked done."
@@ -134,9 +150,21 @@ End If %>
             <% If Session("validAdmin") Then %>
                 <td><input type="checkbox" name="comment:delete:<%= n %>" /></td>
             <% End If %>
-            <td><%=commentDate %></td>
+            <% If Session("validAdmin") or Session("validErosion") Then %>
+                <td align="left"><input class="datepicker" type="text" name="comment:date:<%= n %>" value="<%= commentDate %>"/></td>
+            <% Else %>
+                <td><%=commentDate %></td>
+            <% End If%>
             <td><%=firstName %><nbsp /><%=lastName %></td>
-            <td><%=comment %></td>
+            <% If Session("validAdmin") or Session("validErosion") Then 
+                If comment = "This item was marked done." or comment = "This item was marked NLN." or comment = "This item was closed." Then %>
+                    <td><%=comment %></td>    
+                <% Else %>
+                    <td><textarea rows="3" cols="40" name="comment:comment:<%= n %>"><%=comment %></textarea></td>
+                <% End If %>
+            <% Else %>
+                <td><%=comment %></td>
+            <% End If %>
             </tr>
             
             <% n = n + 1 
@@ -144,6 +172,10 @@ End If %>
          LOOP 'loop inpection reports
     End If %>
     </table>
+    <% If Session("validAdmin") or Session("validErosion") Then %>
+        </br>
+        <div class="center"><input type="submit" name="edit_comments" value="update information" /></div>
+    <% End If %>
     <br /><br />
     </form>
 </body>

@@ -30,7 +30,7 @@ inspecSQLSELECT = "SELECT inspecDate, Inspections.projectID, Inspections.project
 "projectZip, projectCounty, onsiteContact, officePhone, emergencyPhone, compName, " &_
 "compAddr, compAddr2, compCity, compState, compZip, compPhone, compContact, contactPhone, contactFax, " &_
 "contactEmail, reportType, inches, bmpsInPlace, sediment, " &_
-"narrative, firstName, lastName, signature, qualifications, includeItems, compliance, totalItems, completedItems, horton, hortonSignV, hortonSignLD, vscr, ldscr" &_
+"narrative, firstName, lastName, signature, qualifications, includeItems, compliance, totalItems, completedItems, horton, hortonSignV, hortonSignLD, vscr, ldscr, forestar" &_
 " FROM Inspections, Projects, Users" &_
 " WHERE inspecID = " & inspecID &_
 " AND Inspections.projectID = Projects.projectID" &_
@@ -112,15 +112,22 @@ If rsInspec("hortonSignLD") And rsInspec("ldscr") <> 0 Then
 	   strBody=strBody &"<td align='right'><b>LDSCR:</b></td><td>" & Trim(connRights("firstName")) & " " & Trim(connRights("lastName")) & ": " & Trim(connRights("phone")) & "</td>"
 	End If
 End If
+If rsInspec("forestar") And rsInspec("ldscr") <> 0 Then
+	rightsSELECT = "SELECT userID, firstName, lastName, phone FROM Users WHERE userID=" & rsInspec("ldscr")
+	Set connRights = connSWPPP.execute(rightsSELECT)
+   If Not connRights.EOF Then
+	   strBody=strBody &"<td align='right'><b>SSCR:</b></td><td>" & Trim(connRights("firstName")) & " " & Trim(connRights("lastName")) & ": " & Trim(connRights("phone")) & "</td>"
+	End If
+End If
 strBody=strBody &"</tr>"
 strBody=strBody &"</table>"
 signature = Trim(rsInspec("signature"))
 coordSQLSELECT = "SELECT * FROM Coordinates WHERE inspecID=" & inspecID & " ORDER BY orderby"	
 'Response.Write(coordSQLSELECT)
 Set rsCoord = connSWPPP.execute(coordSQLSELECT)
-inspecDate = Trim(rsInspec("inspecDate"))
-If rsInspec("projectState") = "OK" Then 
-      MsgDateStart = "11/07/2017"
+inspecDate = Cdate(Trim(rsInspec("inspecDate")))
+If rsInspec("projectState") = "OK" Then
+      MsgDateStart = #11/07/2017#
       If DateDiff("d", inspecDate, MsgDateStart) < 1 Then
          strBody=strBody &"<div style='font-size: 8px'><p><center><i>A qualified inspector familiar with the OPDES Permit OKR10 and the SWPPP should inspect all areas of the site that have been cleared," &_
          " graded, or excavated and that have not yet completed stabilization; all stormwater controls (including pollution prevention measures) installed at the site; material," &_
@@ -150,17 +157,21 @@ Else
       " areas used for storage of materials that are exposed to precipitation, structural controls (all erosion and sediment controls), discharge locations, locations where vehicles" &_
       " enter and exit the site, off-site material storage areas, overburden and stockpiles of dirt, borrow areas, equipment staging areas, vehicle repair areas, and fueling areas.</i></center></p></div>"
 End If
-'print dr horton questions if desired
-If rsInspec("horton") Then
+'print dr horton or forestar questions if desired
+If rsInspec("horton") or rsInspec("forestar") Then
 	'get questions
-	QuestionDateStart = #12/10/2020#
-	QuestionDateStart2 = #2/5/2021#
-   If DateDiff("d", QuestionDateStart, inspecDate) < 1 Then
-		SQLQ = "SELECT * FROM HortonQuestions WHERE orderby < 27 ORDER BY orderby"
-	ElseIf DateDiff("d", QuestionDateStart2, inspecDate) < 1 Then
-		SQLQ = "SELECT * FROM HortonQuestions WHERE orderby > 30 AND orderby < 57 ORDER BY orderby"
-	Else
-		SQLQ = "SELECT * FROM HortonQuestions WHERE orderby > 60 AND orderby < 87 ORDER BY orderby"
+	If rsInspec("horton") Then
+		QuestionDateStart = #12/10/2020#
+		QuestionDateStart2 = #2/5/2021#
+		If DateDiff("d", QuestionDateStart, inspecDate) < 1 Then
+			SQLQ = "SELECT * FROM HortonQuestions WHERE orderby < 27 ORDER BY orderby"
+		ElseIf DateDiff("d", QuestionDateStart2, inspecDate) < 1 Then
+			SQLQ = "SELECT * FROM HortonQuestions WHERE orderby > 30 AND orderby < 57 ORDER BY orderby"
+		Else
+			SQLQ = "SELECT * FROM HortonQuestions WHERE orderby > 60 AND orderby < 87 ORDER BY orderby"
+		End If
+	Else 'forestar
+		SQLQ = "SELECT * FROM HortonQuestions WHERE orderby > 90 AND orderby < 101 ORDER BY orderby"
 	End If
 	Set RSQ = connSWPPP.Execute(SQLQ)
 	strBody=strBody &"<hr noshade size='1' align='center' >"
@@ -251,7 +262,11 @@ Else
 	If rsCoord.EOF Then
 		strBody=strBody &"<tr><td colspan='2' align='center'><i>There is no coordinate data entered at this time.</i></td></tr>"
 	Else
-		applyScoring = False 'rsInspec("includeItems")
+	   If rsInspec("forestar") Then
+			applyScoring = rsInspec("includeItems")
+		Else
+			applyScoring = false
+		End IF
 		currentDate = date()
 		Do While Not rsCoord.EOF
 			coID = rsCoord("coID")
@@ -294,7 +309,6 @@ Else
 		   flume = rsCoord("flume")
 			OSC = rsCoord("osc")
 			scoring_class = "black"
-			'Response.Write("ID: " & coID & ", Coord: " & coordinates & ", LocName: " & locationName & ", address: " & address & ", Mods: " & correctiveMods & "<br/>") 
 			IF applyScoring THEN
 				IF assignDate = "" THEN
 					age = 0
@@ -305,13 +319,14 @@ Else
 					scoring_class = "red"
 				END IF
 			END IF
-            If LD = True Then
-                correctiveMods = "(LD) " & correctiveMods
-                scoring_class = "ld"
-            End If
-				If OSC = True Then
-                correctiveMods = "(OSC) " & correctiveMods
-            End If
+			'Response.Write("ID: " & coID & ", Repeat: " & repeat & ", Age: " & age & ", Coord: " & coordinates & ", LocName: " & locationName & ", address: " & address & ", Mods: " & correctiveMods & "<br/>") 
+			If LD = True Then
+					correctiveMods = "(LD) " & correctiveMods
+					scoring_class = "ld"
+			End If
+			If OSC = True Then
+					correctiveMods = "(OSC) " & correctiveMods
+			End If
 			If pond = True Then
                 correctiveMods = "(pond) " & correctiveMods
             End If
@@ -384,25 +399,25 @@ Else
             If NLN = True Then
                 'do nothing
             ElseIf infoOnly = True and (useAddress=False and coordinates="") or (useAddress=True and locationName="" and address="") Then
-			    strBody=strBody &"<tr valign='top'><td width='20%' align='right'><b>note:</b></td><td width='80%' align='left' class = '"& scoring_class &"'>"&  correctiveMods &"</td></tr>"
+			   	strBody=strBody &"<tr valign='top'><td width='20%' align='right'><b>note:</b></td><td width='80%' align='left' class = '"& scoring_class &"'>"&  correctiveMods &"</td></tr>"
             Else
-                IF useAddress THEN
-				    strBody=strBody &"<tr valign='top'><td width='20%' align='right'><b>location:</b></td>	<td width='80%' align='left' class = '"& scoring_class &"'>"&  locationName &"<br></td></tr>"
-				    strBody=strBody &"<tr valign='top'><td width='20%' align='right'><b>address:</b></td>	<td width='80%' align='left' class = '"& scoring_class &"'>"&  address &"<br></td></tr>"
-			    ELSE
-				    strBody=strBody &"<tr valign='top'><td width='20%' align='right'><b>location:</b></td>	<td width='80%' align='left' class = '"& scoring_class &"'>"&  coordinates &"<br></td></tr>"
-			    END IF
-			    IF TRIM(rsCoord("existingBMP"))<>"-1" THEN
-				    strBody=strBody &"<tr valign='top'><td width='20%' align='right'><b>existing BMP:</b></td><td width='80%' align='left' class = '"& scoring_class &"'>"&  existingBMP &"<br></td></tr>"
-			    END IF
-				 item_title = "action needed"
-				 If infoOnly = True Then
-					 item_title = "note"
-				 End If
-			    strBody=strBody &"<tr valign='top'><td width='20%' align='right'><b>"& item_title &":</b></td><td width='80%' align='left' class = '"& scoring_class &"'>"&  correctiveMods &"</td></tr>"
-			    IF applyScoring and repeat THEN
-				    strBody=strBody &"<tr valign='top'><td width='20%' align='right'><b>item age:</b></td><td width='80%' align='left' class = '"& scoring_class &"'>"&  age &"<br></td></tr>"
-			    END IF
+               IF useAddress THEN
+				    	strBody=strBody &"<tr valign='top'><td width='20%' align='right'><b>location:</b></td>	<td width='80%' align='left' class = '"& scoring_class &"'>"&  locationName &"<br></td></tr>"
+				    	strBody=strBody &"<tr valign='top'><td width='20%' align='right'><b>address:</b></td>	<td width='80%' align='left' class = '"& scoring_class &"'>"&  address &"<br></td></tr>"
+			    	ELSE
+				   	strBody=strBody &"<tr valign='top'><td width='20%' align='right'><b>location:</b></td>	<td width='80%' align='left' class = '"& scoring_class &"'>"&  coordinates &"<br></td></tr>"
+			    	END IF
+			    	IF TRIM(rsCoord("existingBMP"))<>"-1" THEN
+				   	strBody=strBody &"<tr valign='top'><td width='20%' align='right'><b>existing BMP:</b></td><td width='80%' align='left' class = '"& scoring_class &"'>"&  existingBMP &"<br></td></tr>"
+			    	END IF
+					item_title = "action needed"
+					If infoOnly = True Then
+						item_title = "note"
+					End If
+			   	strBody=strBody &"<tr valign='top'><td width='20%' align='right'><b>"& item_title &":</b></td><td width='80%' align='left' class = '"& scoring_class &"'>"&  correctiveMods &"</td></tr>"
+					IF applyScoring and repeat THEN
+				    	strBody=strBody &"<tr valign='top'><td width='20%' align='right'><b>item age:</b></td><td width='80%' align='left' class = '"& scoring_class &"'>"&  age &" days<br></td></tr>"
+			    	END IF
             End If
 			strBody=strBody &"<tr><td colspan='2'><hr noshade size='1' align='center' ></td></tr>" & vbCrLf	
         rsCoord.MoveNext
@@ -448,7 +463,7 @@ If Not rsImages.EOF Then
 	Loop
 End If
 END IF
-If rsInspec("horton") Then
+If rsInspec("horton") or rsInspec("forestar") Then
 	projectID = rsInspec("projectID")
 	projectName = Trim(rsInspec("projectName"))
 	projectPhase = Trim(rsInspec("projectPhase"))

@@ -77,7 +77,7 @@ IF Request.Form.Count > 0 THEN %>
                             " AND includeItems = 1" &_
                             " AND released = 1" &_
                             " AND openItemAlert = 1 " &_
-                            " AND horton = 1 " &_
+                            " AND horton = 1" &_
                             " AND (completedItems < totalItems" &_
                             " OR hortonSignV = 1 OR hortonSignLD = 1)"
                         'Response.Write(SQL1)
@@ -90,13 +90,37 @@ IF Request.Form.Count > 0 THEN %>
                     Loop 'connProjUsers
                     connProjUsers.MoveFirst
 
+                    show_forestar = False
+                    Do While Not connProjUsers.EOF
+                        SQL1 = "SELECT inspecID, inspecDate, reportType, projectID, projectName, projectPhase, released, includeItems, " &_
+                            " compliance, totalItems, completedItems, systemic, forestar, ldscr" & _
+                            " FROM Inspections" & _
+                            " WHERE projectID = " & connProjUsers("projectID") &_
+                            " AND includeItems = 1" &_
+                            " AND released = 1" &_
+                            " AND openItemAlert = 1 " &_
+                            " AND forestar = 1 " &_
+                            " AND (completedItems < totalItems)"
+                        'Response.Write(SQL1)
+                        Set RS1 = connSWPPP.Execute(SQL1)
+                        If not RS1.EOF Then
+                            show_forestar = True
+                            Exit Do
+                        End If
+                        connProjUsers.MoveNext
+                    Loop 'connProjUsers
+                    connProjUsers.MoveFirst
+
                     If debug_msg=True Then
-                        Response.Write("Horton Status " & show_horton & "<br/>")
+                        Response.Write("<br/>Horton Status " & show_horton & "<br/>")
+                        Response.Write("Forestar Status " & show_forestar & "<br/>")
                     End If 
 
                     strBody=strBody & "<table>"
                     If show_horton Then
                         strBody=strBody & "<tr><th>project name</th><th>group name</th><th>over 1 day</th><th>over 5 days</th><th class='red'>over 7 days</th><th class='red'>over 10 days</th><th class='red'>over 14 days</th><th class='red'>repeats</th><th>done</th><th>notes</th><th>alert</th><th>VSCR to sign off</th><th>LDSCR to sign off</th></tr>"
+                    ElseIf show_forestar Then
+                        strBody=strBody & "<tr><th>project name</th><th>group name</th><th>over 1 day</th><th>over 5 days</th><th class='red'>over 7 days</th><th class='red'>over 10 days</th><th class='red'>over 14 days</th><th class='red'>repeats</th><th>done</th><th>notes</th><th>alert</th><th>SSCR to sign off</th></tr>"
                     Else
                         strBody=strBody & "<tr><th>project name</th><th>group name</th><th>over 1 day</th><th>over 5 days</th><th class='red'>over 7 days</th><th class='red'>over 10 days</th><th class='red'>over 14 days</th><th class='red'>repeats</th><th>notes</th><th>alert</th></tr>"
                     End If
@@ -115,7 +139,7 @@ IF Request.Form.Count > 0 THEN %>
                         endDate=DateAdd("m",1,startDate)
                         endDate=DateAdd("d",-1,endDate)
                         SQL0 = "SELECT inspecID, inspecDate, reportType," & _
-                            " projectID, projectName, projectPhase, released, includeItems, compliance, totalItems, completedItems, systemic, horton, hortonSignV, hortonSignLD, vscr, ldscr" & _
+                            " projectID, projectName, projectPhase, released, includeItems, compliance, totalItems, completedItems, systemic, horton, forestar, hortonSignV, hortonSignLD, vscr, ldscr" & _
                             " FROM Inspections" & _
                             " WHERE projectID = " & projID &_
                             " AND includeItems = 1" &_
@@ -171,6 +195,7 @@ IF Request.Form.Count > 0 THEN %>
                                 hortonSignLD = RS0("hortonSignLD")
                                 vscr = RS0("vscr")
                                 ldscr = RS0("ldscr")
+                                forestar = RS0("forestar")
                                 reportAge = datediff("d",inspecDate,currentDate) 
                                 If debug_msg=True Then
                                     If completedItems < totalItems Then
@@ -216,6 +241,32 @@ IF Request.Form.Count > 0 THEN %>
                                         End If
                                         If hortonSignLD and not ldscr_approved Then
                                             Response.Write("HORTON LDSCR: hortonSignLD: " & hortonSignLD & ", approved: " & ldscr_approved & ", date: " & ldscr_approved_date & "<br/>")
+                                        End If
+                                    End If
+                                End If
+
+                                If forestar Then
+                                    'look for approvals for this report
+                                    SQLA="SELECT * FROM HortonApprovals WHERE inspecID="& inspecID
+                                    SET RSA=connSWPPP.execute(SQLA)
+                                    ldscr_approved = False
+                                    ldscr_approved_date = Null
+                                    Do While Not RSA.EOF
+                                        if RSA("LD") Then
+                                            ldscr_approved = True
+                                            ldscr_approved_date = RSA("date")
+                                        End If
+                                        RSA.MoveNext
+                                    Loop
+                                    If Not ldscr_approved Then
+                                        ldscr_needs_approval = True
+                                        If reportAge > maxAgeLDSCR Then
+                                            maxAgeLDSCR = reportAge
+                                        End If
+                                    End If
+                                    If debug_msg=True Then
+                                        If not ldscr_approved Then
+                                            Response.Write("FORESTAR SSCR: approved: " & ldscr_approved & ", date: " & ldscr_approved_date & "<br/>")
                                         End If
                                     End If
                                 End If
@@ -390,7 +441,7 @@ IF Request.Form.Count > 0 THEN %>
                                 End If 
                             End If
                             strBody=strBody & "</td><td>"
-                            If show_horton Then
+                            If show_horton or show_forestar Then
                                 If doneCnt > 0 Then
                                     send_email = True
                                     strBody=strBody & doneCnt 
@@ -432,6 +483,17 @@ IF Request.Form.Count > 0 THEN %>
                                     strBody=strBody & " "
                                 End If
                             End If
+                            If show_forestar Then
+                                link = "http://swppp.com/views/inspections.asp?projID=" & projID & "&projName="& projName &"&projPhase=" & projPhase
+                                strBody=strBody & "</td><td>"
+                                If Not ldscr_needs_approval Then
+                                    strBody=strBody & " "
+                                ElseIf maxAgeLDSCR > 2 Then
+                                    strBody=strBody & "<a href='"& link &"' target='_blank'>" & maxAgeLDSCR & " days over</a>" 
+                                Else
+                                    strBody=strBody & "<a href='"& link &"' target='_blank'>sign off</a>" 
+                                End If
+                            End If
                             strBody=strBody & "</td></tr>"
                             If debug_msg=True Then
                             Response.Write("coordCnt1: " & coordCnt1 & ", coordCnt5: " & coordCnt5 & ", coordCnt7: " & coordCnt7 & ", coordCnt10: " & coordCnt10 & ", coordCnt14: " & coordCnt14 & ", repeatCnt: " & repeatCnt &", iterCnt: " & iterCnt &", sendEmail: " & send_email & "<br/>")   
@@ -462,6 +524,7 @@ IF Request.Form.Count > 0 THEN %>
 
                         '--------this line of code is for testing the smtp server---------------------
                         Mailer.AddBCC "dwims@swppp.com", contentSubject
+                        Mailer.AddBCC "jwright@swppp.com", contentSubject
                         'Mailer.AddBCC "brad.leishman@gmail.com", contentSubject
                         '--------this line of code is for testing the smtp server---------------------
                     
@@ -469,7 +532,7 @@ IF Request.Form.Count > 0 THEN %>
                         On Error Resume Next
                         Mailer.Send
                         If Err <> 0 Then %>
-                            <div class="red">Mail send failure.- </div><%= Err.Description %> <br />
+                            <div class="red"><%=connUsers("email")%>: Mail send failure.- </div><%= Err.Description %><br />
                         <% Else %>
                             Email Sent <br />
                         <% End If

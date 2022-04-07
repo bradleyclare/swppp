@@ -36,7 +36,7 @@ SET RSH=connSWPPP.execute(SQLH)
 hortonFlag=False
 completePast="completed"
 completeAction="complete"
-completeDate = "complete"
+completeDate = "completion"
 if NOT(RSH.EOF) THEN 
     hortonFlag=True 
     completePast="closed"
@@ -49,9 +49,15 @@ SET RSH=connSWPPP.execute(SQLH)
 forestarFlag=False
 if NOT(RSH.EOF) THEN 
     forestarFlag=True 
-    completePast="completed"
-    completeAction="complete"
-    completeDate="completion"
+    if Session("validErosion") Then
+        completePast="completed"
+        completeAction="complete"
+        completeDate = "completion"
+    else
+        completePast="closed"
+        completeAction="close"
+        completeDate = "completion"
+    end if
 END IF
 
 If Request.Form.Count > 0 Then
@@ -87,15 +93,36 @@ If Request.Form.Count > 0 Then
                     'add comment to keep track of the status change of the item
                     userID  = Session("userID")
                     comment = "This item was marked done"
+                    If forestarFlag Then
+                        udate = Request("coord:date:"& CStr(n))
+                    else
+                        udate = currentDate 
+                    End If
                     'Response.Write(coID & " - " & userID & " - " & currentDate & " - " & comment)
                     SQL3="INSERT INTO CoordinatesComments (coID, comment, userID, date, inspecID, projectID)" &_
-                    " VALUES ( "& coID & ", '" & comment & "', " & userID & ", '"& currentDate & "', "& inspecID & ", "& projectID & ")"    
+                    " VALUES ( "& coID & ", '" & comment & "', " & userID & ", '"& udate & "', "& inspecID & ", "& projectID & ")"    
                     'response.Write(SQL3)
                     Set RS3=connSWPPP.execute(SQL3)
                 Else
+                    'for a forestar project if it hasn't been assigned a completion date use the calendar to create a completion date then use the current date to close the item
+                    doneStatus = Request("coord:done:"& CStr(n))
+                    If forestarFlag and doneStatus<>"done" Then
+                        userID  = Session("userID")
+                        comment = "This item was marked done"
+                        udate = Request("coord:date:"& CStr(n))
+                        'Response.Write(coID & " - " & userID & " - " & currentDate & " - " & comment)
+                        SQL3="INSERT INTO CoordinatesComments (coID, comment, userID, date, inspecID, projectID)" &_
+                        " VALUES ( "& coID & ", '" & comment & "', " & userID & ", '"& udate & "', "& inspecID & ", "& projectID & ")"    
+                        'response.Write(SQL3)
+                        Set RS3=connSWPPP.execute(SQL3)
+                        udate = currentDate 'set it to current date for remaining updates below
+                    Else
+                        udate = Request("coord:date:"& CStr(n))
+                    End If
+
                     'update status to closed
                     SQLc = "UPDATE Coordinates "& _
-                    "SET status=1, completeDate='" & Request("coord:date:"& CStr(n))& "' " & _ 
+                    "SET status=1, completeDate='" & udate & "' " & _ 
                     "WHERE coID = " & coID & ";"
                     'Response.Write(SQLc)
                     connSWPPP.execute(SQLc)
@@ -126,15 +153,16 @@ If Request.Form.Count > 0 Then
                     comment = "This item was marked complete"
                     'Response.Write(coID & " - " & userID & " - " & currentDate & " - " & comment)
                     SQL3="INSERT INTO CoordinatesComments (coID, comment, userID, date, inspecID, projectID)" &_
-                    " VALUES ( "& coID & ", '" & comment & "', " & userID & ", '"& currentDate & "', "& inspecID & ", "& projectID & ")"    
+                    " VALUES ( "& coID & ", '" & comment & "', " & userID & ", '"& udate & "', "& inspecID & ", "& projectID & ")"    
                     'response.Write(SQL3)
                     Set RS3=connSWPPP.execute(SQL3)
                 End If
 		    End If
             If Request("coord:NLN:"& CStr(n)) = "on" Then
                 coID = Request("coord:coID:"& CStr(n))
+                udate = Request("coord:date:"& CStr(n))
                 SQLc = "UPDATE Coordinates "& _
-			    "SET NLN=1, completeDate='" & Request("coord:date:"& CStr(n))& "' " & _ 
+			    "SET NLN=1, completeDate='" & cdate & "' " & _ 
 			    "WHERE coID = " & coID & ";"
 			    'Response.Write(SQLc)
 			    connSWPPP.execute(SQLc)
@@ -166,7 +194,7 @@ If Request.Form.Count > 0 Then
                 comment = "This item was marked NLN"
                 'Response.Write(coID & " - " & userID & " - " & currentDate & " - " & comment)
                 SQL3="INSERT INTO CoordinatesComments (coID, comment, userID, date, inspecID, projectID)" &_
-				" VALUES ( "& coID & ", '" & comment & "', " & userID & ", '"& currentDate & "', "& inspecID & ", "& projectID & ")"  
+				" VALUES ( "& coID & ", '" & comment & "', " & userID & ", '"& udate & "', "& inspecID & ", "& projectID & ")"  
                 'response.Write(SQL3)
                 Set RS3=connSWPPP.execute(SQL3)
             End If 
@@ -445,6 +473,7 @@ Set RS0 = connSWPPP.Execute(SQL0)
                             LOOP 
                         End If %>
                     <% End If %>
+                    <input type="hidden" name="coord:done:<%= n %>" value="<%= done %>" />
                     <% If projectValidUser=False Then %>
                         <td align="left"><input type="checkbox" name="coord:complete:<%= n %>" disabled="disabled" /></td>
                     <% ElseIf (hortonFlag or forestarFlag) and Session("validErosion") and completer <> "" Then %>
@@ -453,7 +482,11 @@ Set RS0 = connSWPPP.Execute(SQL0)
                         <td align="left"><input type="checkbox" name="coord:complete:<%= n %>" /></td>
                     <% End If %>
                     <% If projectValidUser and (hortonFlag or forestarFlag) Then %>
-                        <td><%=done%></br><%=completer%></br><%=completeDate%></td>
+                        <% If Session("validAdmin") or Session("validDirector") Then %>
+                            <td><a href="viewOpenItemComments.asp?coID=<%=coID%>" target="_blank"><%=done%></br><%=completer%></br><%=completeDate%></a></td>
+                        <% Else %>
+                            <td><%=done%></br><%=completer%></br><%=completeDate%></td>
+                        <% End If %>
                     <% End If %>
                     <% If Session("validAdmin") or Session("validDirector") Then %>
 	                    <td align="left"><input type="checkbox" name="coord:NLN:<%= n %>" /></td>
@@ -466,7 +499,9 @@ Set RS0 = connSWPPP.Execute(SQL0)
 			        <td align="left"><%= coID %></td>
 			        <% If projectValidUser=False Then %>
                         <td align="left"><input type="text" name="coord:date:<%= n %>" value="<%= currentDate %>" readonly /></td>
-                    <% ElseIf (hortonFlag or forestarFlag) and Not Session("validAdmin") Then %>
+                    <% ElseIf hortonFlag and Not Session("validAdmin") Then %>
+                        <td align="left"><input type="text" name="coord:date:<%= n %>" value="<%= currentDate %>" readonly /></td>
+                    <% ElseIf forestarFlag and done="done" Then %>
                         <td align="left"><input type="text" name="coord:date:<%= n %>" value="<%= currentDate %>" readonly /></td>
                     <% Else %>
                         <td align="left"><input class="datepicker" type="text" name="coord:date:<%= n %>" value="<%= currentDate %>"/></td>
@@ -484,9 +519,10 @@ Set RS0 = connSWPPP.Execute(SQL0)
 	                <td><input type="button" name="coord:note:<%= n %>" value="A" onclick="displayCommentWindow(this)"/></td>
 	                <% If rsComm.EOF Then %>
                         <td></td>
-                    <% ElseIf forestarFlag and rsComm("comment") = "This item was marked done" Then %>
-                        <td><button type="button"><a href="viewOpenItemComments.asp?coID=<%=coID%>" target="_blank">V</a></button></td>
-                    <% ElseIf rsComm("comment") = "This item was marked done" Then %>
+                    <% ElseIf rsComm("comment") = "This item was marked done" or _
+                        rsComm("comment") = "This item was marked NLN" or _
+                        rsComm("comment") = "This item was marked complete" or _
+                        rsComm("comment") = "This item was marked incomplete" Then %>
 	                    <td></td>
 	                <% Else %>
 	                    <td><button type="button"><a href="viewOpenItemComments.asp?coID=<%=coID%>" target="_blank">V</a></button></td>

@@ -40,7 +40,7 @@ If Request.Form.Count > 0 Then
                 End If
                 updateSQLUPDATE = updateSQLUPDATE & _
                     " WHERE commentID=" & commentID
-                response.Write(updateSQLUPDATE)
+                'response.Write(updateSQLUPDATE)
                 connSWPPP.Execute(updateSQLUPDATE)
             End If
         next
@@ -150,13 +150,13 @@ End If
             <% If Session("validAdmin") Then %>
                 <td><input type="checkbox" name="comment:delete:<%= n %>" /></td>
             <% End If %>
-            <% If Session("validAdmin") or Session("validErosion") Then %>
+            <% If Session("validAdmin") Then %>
                 <td align="left"><input class="datepicker" type="text" name="comment:date:<%= n %>" value="<%= commentDate %>"/></td>
             <% Else %>
                 <td><%=commentDate %></td>
             <% End If%>
             <td><%=firstName %><nbsp /><%=lastName %></td>
-            <% If Session("validAdmin") or Session("validErosion") Then 
+            <% If Session("validAdmin") Then 
                 If comment = "This item was marked done." or comment = "This item was marked NLN." or comment = "This item was closed." Then %>
                     <td><%=comment %></td>    
                 <% Else %>
@@ -172,7 +172,7 @@ End If
          LOOP 'loop inpection reports
     End If %>
     </table>
-    <% If Session("validAdmin") or Session("validErosion") Then %>
+    <% If Session("validAdmin") Then %>
         </br>
         <div class="center"><input type="submit" name="edit_comments" value="update information" /></div>
     <% End If %>

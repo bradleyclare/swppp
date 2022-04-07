@@ -298,6 +298,7 @@ Else
 			toilet = rsCoord("toilet")
 			trash = rsCoord("trash")
 			dewater = rsCoord("dewater")
+			dis = rsCoord("discharge")
 			dust = rsCoord("dust")
         	riprap = rsCoord("riprap")
         	outfall = rsCoord("outfall")
@@ -368,6 +369,9 @@ Else
             End If
 			If dewater = True Then
 				correctiveMods = "(dewatering) " & correctiveMods
+			End If
+			If dis = True Then
+				correctiveMods = "(discharge) " & correctiveMods
 			End If
 			If dust = True Then
 				correctiveMods = "(dust control) " & correctiveMods

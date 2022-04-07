@@ -84,33 +84,33 @@ If Request.Form.Count > 0 Then
 		", contactFax = '" & strQuoteReplace(Request("contactFax")) & "'" & _
 		", contactEmail = '" & strQuoteReplace(Request("contactEmail")) & "'" & _
 		", includeItems = " & includeItems & _
-      ", openItemAlert = " & openItemAlert & _
+        ", openItemAlert = " & openItemAlert & _
 		", compliance = " & compliance & _
-      ", systemic = " & systemic & _
-      ", systemicNote = '" & strQuoteReplace(Request("systemicNote")) & "'" & _
-	   ", horton = " & hortonQuestions & _
+        ", systemic = " & systemic & _
+        ", systemicNote = '" & strQuoteReplace(Request("systemicNote")) & "'" & _
+		", horton = " & hortonQuestions & _
 		", hortonSignV = " & hortonSignV & _
 		", hortonSignLD = " & hortonSignLD & _
 		", vscr = " & vscr & _
 		", ldscr = " & ldscr & _
 		", forestar = " & forestarQuestions & _
 		" WHERE inspecID = " & inspecID
-      'response.Write(inspectSQLUPDATE)
-	   connSWPPP.Execute(inspectSQLUPDATE)
+        'response.Write(inspectSQLUPDATE)
+	    connSWPPP.Execute(inspectSQLUPDATE)
     
 		totalItems = 0
 		completedItems = 0
-      inspecDate = strQuoteReplace(Request("inspecDate"))
+        inspecDate = strQuoteReplace(Request("inspecDate"))
 		If inspecDate = "1/1/1900" Then
 		   Response.Write("Fixing bad date. Line 102.\n")
 			inspecDate = date()
 		End If
 		for n = 1 to 999 step 1
-'Response.Write("coord:coID:" & CStr(n)&":"& Request("coord:coID:" & CStr(n)) &"<br/>")
+            'Response.Write("coord:coID:" & CStr(n)&":"& Request("coord:coID:" & CStr(n)) &"<br/>")
 		    if Trim(Request("coord:coID:" & CStr(n))) = "" then
 		        exit for
 		    end if
-'-- dbo.spAEDCoordinate @_iCOID int, @_DelFlag smallint, @_inspecID int, @_iCoordinates char(50), @_icorrectiveMods char(255), @_iOrderBy int
+            '-- dbo.spAEDCoordinate @_iCOID int, @_DelFlag smallint, @_inspecID int, @_iCoordinates char(50), @_icorrectiveMods char(255), @_iOrderBy int
             DelCoord = 0
             if Request("coord:del:"& CStr(n)) = "on" then 
 				DelCoord = 1 
@@ -144,65 +144,67 @@ If Request.Form.Count > 0 Then
                     completedItems = completedItems - 1
                 End If
                 infoOnly = 1 
-         End If
-         LD = 0
-         if Request("coord:LD:"& CStr(n)) = "on" then LD = 1 End If
-         NLN = 0
-         if Request("coord:NLN:"& CStr(n)) = "on" then NLN = 1 End If
+        	End If
+        	LD = 0
+        	if Request("coord:LD:"& CStr(n)) = "on" then LD = 1 End If
+        	NLN = 0
+        	if Request("coord:NLN:"& CStr(n)) = "on" then NLN = 1 End If
 			pond = 0
-         if Request("coord:pond:"& CStr(n)) = "on" then pond = 1 End If
+        	if Request("coord:pond:"& CStr(n)) = "on" then pond = 1 End If
 			sedloss = 0
-         if Request("coord:sedloss:"& CStr(n)) = "on" then sedloss = 1 End If
+        	if Request("coord:sedloss:"& CStr(n)) = "on" then sedloss = 1 End If
 			sedlossw = 0
-         if Request("coord:sedlossw:"& CStr(n)) = "on" then sedlossw = 1 End If
+        	if Request("coord:sedlossw:"& CStr(n)) = "on" then sedlossw = 1 End If
 			ce = 0
-         if Request("coord:ce:"& CStr(n)) = "on" then ce = 1 End If
+        	if Request("coord:ce:"& CStr(n)) = "on" then ce = 1 End If
 			street = 0
-         if Request("coord:street:"& CStr(n)) = "on" then street = 1 End If
+        	if Request("coord:street:"& CStr(n)) = "on" then street = 1 End If
 			sfeb = 0
-         if Request("coord:sfeb:"& CStr(n)) = "on" then sfeb = 1 End If
+        	if Request("coord:sfeb:"& CStr(n)) = "on" then sfeb = 1 End If
 			rockdam = 0
-         if Request("coord:rockdam:"& CStr(n)) = "on" then rockdam = 1 End If
+        	if Request("coord:rockdam:"& CStr(n)) = "on" then rockdam = 1 End If
 			ip = 0
-         if Request("coord:ip:"& CStr(n)) = "on" then ip = 1 End If
+        	if Request("coord:ip:"& CStr(n)) = "on" then ip = 1 End If
 			wo = 0
-         if Request("coord:wo:"& CStr(n)) = "on" then wo = 1 End If
+        	if Request("coord:wo:"& CStr(n)) = "on" then wo = 1 End If
 			veg = 0
-         if Request("coord:veg:"& CStr(n)) = "on" then veg = 1 End If
+        	if Request("coord:veg:"& CStr(n)) = "on" then veg = 1 End If
 			stock = 0
-         if Request("coord:stock:"& CStr(n)) = "on" then stock = 1 End If
+        	if Request("coord:stock:"& CStr(n)) = "on" then stock = 1 End If
 			toilet = 0
-         if Request("coord:toilet:"& CStr(n)) = "on" then toilet = 1 End If
+        	if Request("coord:toilet:"& CStr(n)) = "on" then toilet = 1 End If
 			trash = 0
-         if Request("coord:trash:"& CStr(n)) = "on" then trash = 1 End If
+        	if Request("coord:trash:"& CStr(n)) = "on" then trash = 1 End If
 			dewater = 0
-         if Request("coord:dewater:"& CStr(n)) = "on" then dewater = 1 End If
+        	if Request("coord:dewater:"& CStr(n)) = "on" then dewater = 1 End If
+			discharge = 0
+        	if Request("coord:discharge:"& CStr(n)) = "on" then discharge = 1 End If
 			dust = 0
-         if Request("coord:dust:"& CStr(n)) = "on" then dust = 1 End If
+        	if Request("coord:dust:"& CStr(n)) = "on" then dust = 1 End If
 			riprap = 0
-         if Request("coord:riprap:"& CStr(n)) = "on" then riprap = 1 End If
+        	if Request("coord:riprap:"& CStr(n)) = "on" then riprap = 1 End If
 			outfall = 0
-         if Request("coord:outfall:"& CStr(n)) = "on" then outfall = 1 End If
+        	if Request("coord:outfall:"& CStr(n)) = "on" then outfall = 1 End If
 			intop = 0
-         if Request("coord:intop:"& CStr(n)) = "on" then intop = 1 End If
+        	if Request("coord:intop:"& CStr(n)) = "on" then intop = 1 End If
 			swalk = 0
-         if Request("coord:swalk:"& CStr(n)) = "on" then swalk = 1 End If
+        	if Request("coord:swalk:"& CStr(n)) = "on" then swalk = 1 End If
 			mormix = 0
-         if Request("coord:mormix:"& CStr(n)) = "on" then mormix = 1 End If
+        	if Request("coord:mormix:"& CStr(n)) = "on" then mormix = 1 End If
 			ada = 0
-         if Request("coord:ada:"& CStr(n)) = "on" then ada = 1 End If
+        	if Request("coord:ada:"& CStr(n)) = "on" then ada = 1 End If
 			dway = 0
-         if Request("coord:dway:"& CStr(n)) = "on" then dway = 1 End If
+        	if Request("coord:dway:"& CStr(n)) = "on" then dway = 1 End If
 			flume = 0
-         if Request("coord:flume:"& CStr(n)) = "on" then flume = 1 End If
+        	if Request("coord:flume:"& CStr(n)) = "on" then flume = 1 End If
 			osc = 0
 			if Request("coord:osc:"& CStr(n)) = "on" then osc = 1 End If
 			AssignDate = inspecDate
-         if Repeat = 1 Then
-		    	AssignDate = Request("coord:assignDate:"& CStr(n))
+        	if Repeat = 1 Then
+			   	AssignDate = Request("coord:assignDate:"& CStr(n))
 			End If
 			OrderBy = 0
-         if IsNumeric(Request("coord:orderby:"& CStr(n))) then OrderBy = Request("coord:orderby:"& CStr(n)) End If
+        	if IsNumeric(Request("coord:orderby:"& CStr(n))) then OrderBy = Request("coord:orderby:"& CStr(n)) End If
 			'SQLc = SQLc &"/*<br/>*/Exec spAEDCoordinate "& Request("coord:coID:"& CStr(n)) &", "& DelCoord &", "& inspecID &", '"& Replace(Request("coord:coord:"& CStr(n)),"--","�") &"', '"& Replace(Request("coord:mods:"& CStr(n)),"--","�") &"', "& OrderBy &";"
 			SQLc = SQLc &"/*<br/>*/Exec spAEDCoordinate "& _ 
 			Request("coord:coID:"& CStr(n)) &", "& _ 
@@ -218,11 +220,11 @@ If Request.Form.Count > 0 Then
 			useAddress &", '" & _ 
 			address &"', '" & _
 			locationName &"', " & _
-         infoOnly &", " & _
-         LD &", " & _
-         NLN &", " & _
-         parentID &", " & _
-         pond &", " & _
+        	infoOnly &", " & _
+        	LD &", " & _
+        	NLN &", " & _
+        	parentID &", " & _
+        	pond &", " & _
 			sedloss &", " & _
 			sedlossw &", " & _
 			ce &", " & _
@@ -245,9 +247,10 @@ If Request.Form.Count > 0 Then
 			ada &", " & _
 			dway &", " & _
 			flume &", " & _
-			osc &";"
-		next	
-    'Response.Write(SQLc)
+			osc &", " & _ 
+			discharge &";"
+		next
+		'Response.Write(SQLc & "</br>")	
         if Len(SQLc) > 0 then connSWPPP.execute(SQLc) end if
 'Response.End	
 
@@ -1032,6 +1035,7 @@ End If %>
 		dway = rsCoord("dway")
 		flume = rsCoord("flume")
 		osc = rsCoord("osc")
+		discharge = rsCoord("discharge")
         if isNull(parentID) or parentID = "" then 'initialize the parentID if never set
             parentID = coID
         end if
@@ -1127,6 +1131,7 @@ End If %>
 			<input type="checkbox" name="coord:ada:<%=n %>" />
 		<% End If %>
 		</td>
+		<% If rsReport("horton") = True Then %>
 		<td> ce
 		<% If ce = True Then %>
 			<input type="checkbox" name="coord:ce:<%=n %>" checked />
@@ -1134,11 +1139,19 @@ End If %>
 			<input type="checkbox" name="coord:ce:<%=n %>" />
 		<% End If %>
 		</td>
+		<% End If %>
 		<td> dewater
 		<% If dewater = True Then %>
 			<input type="checkbox" name="coord:dewater:<%=n %>" checked />
 		<% Else %>
 			<input type="checkbox" name="coord:dewater:<%=n %>" />
+		<% End If %>
+		</td>
+		<td> dis
+		<% If discharge = True Then %>
+			<input type="checkbox" name="coord:discharge:<%=n %>" checked />
+		<% Else %>
+			<input type="checkbox" name="coord:discharge:<%=n %>" />
 		<% End If %>
 		</td>
 		<td> dust
@@ -1148,6 +1161,7 @@ End If %>
 			<input type="checkbox" name="coord:dust:<%=n %>" />
 		<% End If %>
 		</td>
+		<% If rsReport("horton") = True Then %>
 		<td> dway
 		<% If dway = True Then %>
 			<input type="checkbox" name="coord:dway:<%=n %>" checked />
@@ -1155,6 +1169,7 @@ End If %>
 			<input type="checkbox" name="coord:dway:<%=n %>" />
 		<% End If %>
 		</td>
+		<% End If %>
 		<td> eb/ft/sf
 		<% If sfeb = True Then %>
 			<input type="checkbox" name="coord:sfeb:<%=n %>" checked />
@@ -1162,6 +1177,7 @@ End If %>
 			<input type="checkbox" name="coord:sfeb:<%=n %>" />
 		<% End If %>
 		</td>
+		<% If rsReport("horton") = True Then %>
 		<td> flume
 		<% If flume = True Then %>
 			<input type="checkbox" name="coord:flume:<%=n %>" checked />
@@ -1169,6 +1185,7 @@ End If %>
 			<input type="checkbox" name="coord:flume:<%=n %>" />
 		<% End If %>
 		</td>
+		<% End If %>
 		<td> intop
 		<% If intop = True Then %>
 			<input type="checkbox" name="coord:intop:<%=n %>" checked />
@@ -1190,6 +1207,7 @@ End If %>
 			<input type="checkbox" name="coord:mormix:<%=n %>" />
 		<% End If %>
 		</td>
+		<% If rsReport("horton") = True Then %>
 		<td> outfall
 		<% If outfall = True Then %>
 			<input type="checkbox" name="coord:outfall:<%=n %>" checked />
@@ -1197,6 +1215,7 @@ End If %>
 			<input type="checkbox" name="coord:outfall:<%=n %>" />
 		<% End If %>
 		</td>
+		<% End If %>
 		<td> pond
 		<% If pond = True Then %>
 			<input type="checkbox" name="coord:pond:<%=n %>" checked />
@@ -1204,6 +1223,7 @@ End If %>
 			<input type="checkbox" name="coord:pond:<%=n %>" />
 		<% End If %>
 		</td>
+		<% If rsReport("horton") = True Then %>
 		<td> riprap
 		<% If riprap = True Then %>
 			<input type="checkbox" name="coord:riprap:<%=n %>" checked />
@@ -1211,6 +1231,7 @@ End If %>
 			<input type="checkbox" name="coord:riprap:<%=n %>" />
 		<% End If %>
 		</td>
+		<% End If %>
 		<td> rockdam
 		<% If rockdam = True Then %>
 			<input type="checkbox" name="coord:rockdam:<%=n %>" checked />
@@ -1232,6 +1253,7 @@ End If %>
 			<input type="checkbox" name="coord:sedlossw:<%=n %>" />
 		<% End If %>
 		</td>
+		<% If rsReport("horton") = True Then %>
 		<td> stock
 		<% If stock = True Then %>
 			<input type="checkbox" name="coord:stock:<%=n %>" checked />
@@ -1239,6 +1261,7 @@ End If %>
 			<input type="checkbox" name="coord:stock:<%=n %>" />
 		<% End If %>
 		</td>
+		<% End If %>
 		<td> street
 		<% If street = True Then %>
 			<input type="checkbox" name="coord:street:<%=n %>" checked />
@@ -1326,22 +1349,35 @@ Set rsCoord = Nothing %>
 		<td colspan="9">
 		<table>
 		<td> ada <input type="checkbox" name="coord:ada:<%=m %>" /></td>
+		<% If rsReport("horton") = True Then %>
 		<td> ce <input type="checkbox" name="coord:ce:<%=m %>" /></td>
+		<% End If %>
 		<td> dewater <input type="checkbox" name="coord:dewater:<%=m %>" /></td>
+		<td> dis <input type="checkbox" name="coord:dis:<%=m %>" /></td>
 		<td> dust <input type="checkbox" name="coord:dust:<%=m %>" /></td>
+		<% If rsReport("horton") = True Then %>
 		<td> dway <input type="checkbox" name="coord:dway:<%=m %>" /></td>
+		<% End If %>
 		<td> eb/ft/sf <input type="checkbox" name="coord:sfeb:<%=m %>" /></td>
+		<% If rsReport("horton") = True Then %>
 		<td> flume <input type="checkbox" name="coord:flume:<%=m %>" /></td>
+		<% End If %>
 		<td> intop <input type="checkbox" name="coord:intop:<%=m %>" /></td>
 		<td> ip <input type="checkbox" name="coord:ip:<%=m %>" /></td>
 		<td> mormix <input type="checkbox" name="coord:mormix:<%=m %>" /></td>
+		<% If rsReport("horton") = True Then %>
 		<td> outfall <input type="checkbox" name="coord:outfall:<%=m %>" /></td>
+		<% End If %>
 		<td> pond <input type="checkbox" name="coord:pond:<%=m %>" /></td>
+		<% If rsReport("horton") = True Then %>
 		<td> riprap <input type="checkbox" name="coord:riprap:<%=m %>" /></td>
+		<% End If %>
 		<td> rockdam <input type="checkbox" name="coord:rockdam:<%=m %>" /></td>
 		<td> sedloss <input type="checkbox" name="coord:sedloss:<%=m %>" /></td>
 		<td> sedlossw <input type="checkbox" name="coord:sedlossw:<%=m %>" /></td>
+		<% If rsReport("horton") = True Then %>
 		<td> stock <input type="checkbox" name="coord:stock:<%=m %>" /></td>
+		<% End If %>
 		<td> street <input type="checkbox" name="coord:street:<%=m %>" /></td>
 		<td> swalk <input type="checkbox" name="coord:swalk:<%=m %>" /></td>
 		<td> toilet <input type="checkbox" name="coord:toilet:<%=m %>" /></td>

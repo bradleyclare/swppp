@@ -40,7 +40,7 @@ SQL0= SQL0 &" INSERT INTO Inspections (inspecDate, projectname, projectphase, pr
     " INSERT INTO OptionalImages SELECT oi.oImageName, oi.oImageDesc, oi.oImageFileName, oi.oitID, inspecID= t.newInspecID" &_
 	" , oi.oOrder FROM OptionalImages oi inner join #tmp t on oi.inspecID = t.inspectID ;" &_
 	" INSERT INTO Coordinates SELECT inspecID= t.newInspecID, c.coordinates, c.existingBMP, c.correctiveMods, c.orderby, c.assignDate, c.completeDate, status=0, repeat=0, c.useAddress, c.address, c.locationName, c.infoOnly, c.LD, c.NLN, c.parentID," &_
-	" c.pond, c.sedloss, c.sedlossw, c.ce, c.street, c.sfeb, c.rockdam, c.ip, c.wo, c.veg, c.stock, c.toilet, c.trash, c.dewater, c.dust, c.riprap, c.outfall, c.intop, c.swalk, c.mormix, c.ada, c.dway, c.flume, c.osc" &_
+	" c.pond, c.sedloss, c.sedlossw, c.ce, c.street, c.sfeb, c.rockdam, c.ip, c.wo, c.veg, c.stock, c.toilet, c.trash, c.dewater, c.discharge, c.dust, c.riprap, c.outfall, c.intop, c.swalk, c.mormix, c.ada, c.dway, c.flume, c.osc" &_
 	" FROM Coordinates c inner join #tmp t on c.inspecID = t.inspectID;"
 'Response.Write(SQL0)
 'response.End

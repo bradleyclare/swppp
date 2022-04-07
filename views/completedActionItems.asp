@@ -27,54 +27,56 @@ If Request.Form.Count > 0 Then
    if Request.Form("print_btn") = "print report" then
       Response.Redirect("completedItemPrint.asp?pID=" & projectID & "&startDate=" & startDate & "&endDate=" & endDate)
    End If
-	for n = 0 to 999 step 1
-		'Response.Write("coord:coID:" & CStr(n)&":"& Request("coord:coID:" & CStr(n)) &"<br/>")
-		if Trim(Request("coord:coID:" & CStr(n))) = "" then
-			exit for
-		end if
-        'Response.Write(Cstr(n) & " s-" & Request("coord:complete:"& CStr(n)) & " n-" & Request("coord:nln:"& CStr(n)) & " ")
-        if Request("coord:complete:"& CStr(n)) <> "on" and Request("coord:nln:"& CStr(n)) <> "on" then 
-            'Response.Write(" Neither On ")
-			coID = Request("coord:coID:"& CStr(n))
-            SQLc = "UPDATE Coordinates "& _
-			"SET status=0, NLN=0" & _ 
-			"WHERE coID = " & coID & ";"
-			'Response.Write(SQLc)
-			connSWPPP.execute(SQLc)
-            
-            'update completed item count
-            inspecID = Request("coord:inspecID:"& CStr(n))
-			SQL1 = "SELECT completedItems, totalItems from Inspections WHERE inspecID = " & inspecID
-            Set RS1 = connSWPPP.Execute(SQL1)
-            if not RS1.EOF Then
-                compItems = RS1("completedItems")
-                totItems = RS1("totalItems")
-                newItems = compItems - 1
-                If newItems < 0 Then
-                    completedItems = 0
-                Else
-                    completedItems = newItems
-                End If
-            Else
-                completedItems = 0
-            End If
-            
-            inspectSQLUPDATE2 = "UPDATE Inspections SET" & _
-			" completedItems = " & completedItems & _
-			" WHERE inspecID = " & inspecID
-		    'response.Write(inspectSQLUPDATE2)
-		    connSWPPP.Execute(inspectSQLUPDATE2)
+   If Session("validAdmin") or Session("validDirector") Then
+        for n = 0 to 999 step 1
+                'Response.Write("coord:coID:" & CStr(n)&":"& Request("coord:coID:" & CStr(n)) &"<br/>")
+                if Trim(Request("coord:coID:" & CStr(n))) = "" then
+                    exit for
+                end if
+                'Response.Write(Cstr(n) & " s-" & Request("coord:complete:"& CStr(n)) & " n-" & Request("coord:nln:"& CStr(n)) & " ")
+                if Request("coord:complete:"& CStr(n)) <> "on" and Request("coord:nln:"& CStr(n)) <> "on" then 
+                    'Response.Write(" Neither On ")
+                    coID = Request("coord:coID:"& CStr(n))
+                    SQLc = "UPDATE Coordinates "& _
+                    "SET status=0, NLN=0" & _ 
+                    "WHERE coID = " & coID & ";"
+                    'Response.Write(SQLc)
+                    connSWPPP.execute(SQLc)
+                    
+                    'update completed item count
+                    inspecID = Request("coord:inspecID:"& CStr(n))
+                    SQL1 = "SELECT completedItems, totalItems from Inspections WHERE inspecID = " & inspecID
+                    Set RS1 = connSWPPP.Execute(SQL1)
+                    if not RS1.EOF Then
+                        compItems = RS1("completedItems")
+                        totItems = RS1("totalItems")
+                        newItems = compItems - 1
+                        If newItems < 0 Then
+                            completedItems = 0
+                        Else
+                            completedItems = newItems
+                        End If
+                    Else
+                        completedItems = 0
+                    End If
+                    
+                    inspectSQLUPDATE2 = "UPDATE Inspections SET" & _
+                    " completedItems = " & completedItems & _
+                    " WHERE inspecID = " & inspecID
+                    'response.Write(inspectSQLUPDATE2)
+                    connSWPPP.Execute(inspectSQLUPDATE2)
 
-            'add comment to keep track of the status change of the item
-            userID  = Session("userID")
-            comment = "This item was marked incomplete"
-            'Response.Write(coID & " - " & userID & " - " & currentDate & " - " & comment)
-            SQL3="INSERT INTO CoordinatesComments (coID, comment, userID, date, inspecID, projectID)" &_
-            " VALUES ( "& coID & ", '" & comment & "', " & userID & ", '"& currentDate & "', "& inspecID & ", "& projectID & ")"   
-            'response.Write(SQL3)
-            Set RS3=connSWPPP.execute(SQL3)
-      End If
-	next	
+                    'add comment to keep track of the status change of the item
+                    userID  = Session("userID")
+                    comment = "This item was marked incomplete"
+                    'Response.Write(coID & " - " & userID & " - " & currentDate & " - " & comment)
+                    SQL3="INSERT INTO CoordinatesComments (coID, comment, userID, date, inspecID, projectID)" &_
+                    " VALUES ( "& coID & ", '" & comment & "', " & userID & ", '"& currentDate & "', "& inspecID & ", "& projectID & ")"   
+                    'response.Write(SQL3)
+                    Set RS3=connSWPPP.execute(SQL3)
+            End If
+            next
+    End If 	
 Else
    endDate=CDATE(Date)
    startDate=DateAdd("m",-1,endDate)
@@ -102,9 +104,9 @@ SET RSH=connSWPPP.execute(SQLH)
 forestarFlag=False
 if NOT(RSH.EOF) THEN 
     forestarFlag=True 
-    completePast="completed"
-    completeAction="complete"
-    completeDate="completion"
+    completePast="closed"
+    completeAction="close"
+    completeDate="close"
 END IF
 %>
 
@@ -181,13 +183,15 @@ End Date (MM/DD/YYYY): <input name="endDate" type="text" value="<%=endDate%>" si
 
 <table cellpadding="2" cellspacing="0" border="0" width="100%">
 	<tr>
+        <th width="5%" align="left">ID</th>
         <% If Session("validAdmin") or Session("validDirector") Then %>
             <th width="5%" align="left"><%=completePast%></th>
             <th width="2.5%" align="left">NLN</th>
-            <th width="2.5%" align="left">view done</th>
         <% End If %>
-        <th width="5%" align="left">ID</th>
-        <th width="10%" align="left"><%=completeDate%> date</th>  
+        <% If forestarFlag or Session("validAdmin") or Session("validDirector") or Session("validErosion") Then %>
+            <th width="5%" align="left">completion date</th>
+        <% End If %>
+        <th width="5%" align="left"><%=completeDate%> date</th>  
         <th width="5%" align="left">report date</th>
         <th width="15%" align="left">location</th>
         <th align="left">action item</th>
@@ -262,7 +266,11 @@ Else
                         Elseif rsComm("comment") = "This item was marked NLN" Then
                             show_note = false
                         Elseif rsComm("comment") = "This item was marked done" Then
+                            doneer = rsComm("firstName") & " " & rsComm("lastName")
+                            doneDate = rsComm("date")
                             show_done = true
+                        Elseif rsComm("comment") = "This item was marked incomplete" Then
+                            'do nothing
                         Else
                             show_note = true
                         End If
@@ -283,19 +291,29 @@ Else
                     nln_str = ""
                     If NLN = True Then
                         nln_str = "checked"
-                    End If
-                    If Session("validAdmin") or Session("validDirector") Then %> 
+                    End If %>
+                    <td align="left"><%= coID %></td>
+                    <% If Session("validAdmin") or Session("validDirector") Then %> 
                         <td align="left"><input type="checkbox" name="coord:complete:<%= n %>" <%=status_str %> /></td>
                         <td align="left"><input type="checkbox" name="coord:nln:<%= n %>" <%=nln_str %> /></td>
+                    <% End If %>
+		            <% If forestarFlag or Session("validAdmin") or Session("validDirector") Then %> 
                         <% If show_done Then %>
-                            <td><button type="button"><a href="viewOpenItemComments.asp?coID=<%=coID%>" target="_blank">V</a></button></td>
+                            <% If Session("validAdmin") or Session("validDirector") then %>
+		                        <td align="left"><a href="viewOpenItemComments.asp?coID=<%=coID%>" target="_blank"><%= doneDate %>: <%= doneer %></a></td>
+		                    <% Else %>
+                                <td align="left"><%= doneDate %>: <%= doneer %></td>
+                            <% End If %>
                         <% Else %>
                             <td></td>
                         <% End If %>
                     <% End If %>
-		            <td align="left"><%= coID %></td>
-		            <td align="left"><%= completeDate %>: <%= completer %></td>
-		            <td><%= inspecDate %></td>
+                    <% If Session("validAdmin") or Session("validDirector") then %>
+		                <td align="left"><a href="viewOpenItemComments.asp?coID=<%=coID%>" target="_blank"><%= completeDate %>: <%= completer %></a></td>
+		            <% Else %>
+                        <td align="left"><%= completeDate %>: <%= completer %></td>
+                    <% End If %>
+                    <td><%= inspecDate %></td>
                     <td>
 		            <% if (useAddress) = False Then %>
 			            <%=coordinates%>
@@ -323,9 +341,7 @@ Else
 End If%>
 </table>
 <center>
-<% If Session("validAdmin") Then  %>
-    <input type="submit" value="submit"/><br/><br/>
-<% End If %>
+<input type="submit" value="submit"/><br/><br/>
 <% If num_reports > 0 Then
     SQL3="SELECT oImageFileName FROM OptionalImages WHERE oitID=12 AND inspecID="& siteMapInspecID
     SET RS3=connSWPPP.execute(SQL3)

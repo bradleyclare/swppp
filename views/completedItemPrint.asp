@@ -22,15 +22,27 @@ SQL2="SELECT projectName, projectPhase FROM Projects WHERE projectID="& projectI
 'response.Write(SQL2)
 SET RS2=connSWPPP.execute(SQL2) 
 
-SQLH="SELECT inspecID FROM Inspections WHERE horton=1 OR forestar=1 AND projectID="& projectID
+SQLH="SELECT inspecID FROM Inspections WHERE horton=1 AND projectID="& projectID
 SET RSH=connSWPPP.execute(SQLH)
 hortonFlag=False
 completePast="completed"
 completeAction="complete"
+completeDate = "complete"
 if NOT(RSH.EOF) THEN 
     hortonFlag=True 
     completePast="closed"
     completeAction="close"
+    completeDate="close"
+END IF
+
+SQLH="SELECT inspecID FROM Inspections WHERE forestar=1 AND projectID="& projectID
+SET RSH=connSWPPP.execute(SQLH)
+forestarFlag=False
+if NOT(RSH.EOF) THEN 
+    forestarFlag=True 
+    completePast="closed"
+    completeAction="close"
+    completeDate="close"
 END IF
 %>
 
@@ -69,18 +81,22 @@ Set rsInspectInfo = connSWPPP.Execute(inspectInfoSQLSELECT)
             <th width="5%" align="left"><%=completePast%></th>
             <th width="2.5%" align="left">NLN</th>
         <% End If %>
-        <th width="5%" align="left">ID</th>
-        <th width="10%" align="left"><%=completeAction%> date</th>  
+        <% If forestarFlag or Session("validAdmin") or Session("validDirector") or Session("validErosion") Then %>
+            <th width="5%" align="left">completion date</th>
+        <% End If %>
+        <th width="5%" align="left"><%=completeDate%> date</th>  
         <th width="5%" align="left">report date</th>
         <th width="15%" align="left">location</th>
         <th align="left">action item</th>
     </tr>
-<% If rsInspectInfo.EOF Then
-	Response.Write("<tr><td colspan='4' align='center'><i style='font-size: 15px'>There are no inspection reports found.</i></td></tr>")
+<% num_reports = 0
+If rsInspectInfo.EOF Then
+    Response.Write("<tr><td colspan='4' align='center'><i style='font-size: 15px'>There are no inspection reports found.</i></td></tr>")
 Else
     n = 0
     siteMapInspecID = 0
-	Do While Not rsInspectInfo.EOF   
+	Do While Not rsInspectInfo.EOF
+        num_reports = num_reports + 1   
         inspecID = rsInspectInfo("inspecID")
         inspecDate = Trim(rsInspectInfo("inspecDate"))
         includeItems = rsInspectInfo("includeItems")
@@ -90,91 +106,114 @@ Else
             Set rsCoord = connSWPPP.execute(coordSQLSELECT)
             currentDate = date()
             start_n = n
-	         Do While Not rsCoord.EOF	
-               If n = 0 Then
-                  siteMapInspecID = inspecID
-               End If
+	        Do While Not rsCoord.EOF	
+                If n = 0 Then
+                    siteMapInspecID = inspecID
+                End If
 	            coID = rsCoord("coID")
-		         correctiveMods = Trim(rsCoord("correctiveMods"))
-		         coordinates = Trim(rsCoord("coordinates"))
-		         assignDate = rsCoord("assignDate")
-		         completeDate = rsCoord("completeDate")
-		         if assignDate = "" Then
-			         age = "?"
-		         Else
-			         age = datediff("d",assignDate,completeDate) 
-		         End If
-		         status = rsCoord("status")
-		         repeat = rsCoord("repeat")
-		         useAddress = rsCoord("useAddress")
-		         address = TRIM(rsCoord("address"))
-		         locationName = TRIM(rsCoord("locationName"))
-               infoOnly = rsCoord("infoOnly")
-               LD = rsCoord("LD")
-               OSC = rsCoord("osc")
-               If LD = True Then
-                  correctiveMods = "(LD) " & correctiveMods
-               End If 
-               If OSC = True Then
-                  correctiveMods = "(OSC) " & correctiveMods
-               End If 
-               NLN = rsCoord("NLN")
-               If NLN = True Then
-                  correctiveMods = "(NLN) " & correctiveMods
-               End If 
-               commSQLSELECT = "SELECT c.comment, c.userID, c.date, u.firstName, u.lastName" &_
-	               " FROM CoordinatesComments as c, Users as u WHERE c.userID = u.userID" &_
-                  " AND coID=" & coID	
-               'Response.Write(commSQLSELECT)
-               Set rsComm = connSWPPP.execute(commSQLSELECT)
-               completer = ""
-               show_note = false
-               If rsComm.EOF Then
-                  show_note = false
-               Else
-                  'find the completion note
-                  Do While Not rsComm.EOF
-                     If rsComm("comment") = "This item was marked complete" or rsComm("comment") = "This item was marked NLN" Then
-                        completer = rsComm("firstName") & " " & rsComm("lastName")
-                        completeDate = rsComm("date")
-                     Else
-                        show_note = true
-                     End If
-                     rsComm.MoveNext
-                  LOOP 
-               End If
-		         If infoOnly = True Then
-                  do_nothing = 1 
-               Elseif status = true or NLN = true Then %>
-		           <tr>
-                 <input type="hidden" name="coord:coID:<%= n %>" value="<%= coID %>" />
-                 <input type="hidden" name="coord:inspecID:<%= n %>" value="<%= inspecID %>" />
-                 <% status_str = ""
-                 If status = True Then
-                   status_str = "checked"
-                 End If
-                 nln_str = ""
-                 If NLN = True Then
-                    nln_str = "checked"
-                 End If
-                 If Session("validAdmin") Then %> 
-                    <td align="left"><input type="checkbox" name="coord:complete:<%= n %>" <%=status_str %> /></td>
-                    <td align="left"><input type="checkbox" name="coord:nln:<%= n %>" <%=nln_str %> /></td>
-                 <% End If %>
-		           <td align="left"><%= coID %></td>
-		           <td align="left"><%= completeDate %>: <%= completer %></td>
-		           <td><%= inspecDate %></td>
-                   <td>
-		           <% if (useAddress) = False Then %>
-			           <%=coordinates%>
-		           <% Else %>
-			           <%=locationName%> (<%=address%>)
-		           <% End If %>
-		           </td>
-		           <td><%= correctiveMods %></td>
-		           </tr>
-		           <% n = n + 1
-              End If
+		        correctiveMods = Trim(rsCoord("correctiveMods"))
+		        coordinates = Trim(rsCoord("coordinates"))
+		        assignDate = rsCoord("assignDate")
+		        completeDate = rsCoord("completeDate")
+		        if assignDate = "" Then
+			        age = "?"
+		        Else
+			        age = datediff("d",assignDate,completeDate) 
+		        End If
+		        status = rsCoord("status")
+		        repeat = rsCoord("repeat")
+		        useAddress = rsCoord("useAddress")
+		        address = TRIM(rsCoord("address"))
+		        locationName = TRIM(rsCoord("locationName"))
+                infoOnly = rsCoord("infoOnly")
+                LD = rsCoord("LD")
+                NLN = rsCoord("NLN")
+                OSC = rsCoord("osc")
+                If LD = True Then
+                    correctiveMods = "(LD) " & correctiveMods
+                End If
+                If OSC = True Then
+                    correctiveMods = "(OSC) " & correctiveMods
+                End If 
+                If NLN = True Then
+                    correctiveMods = "(NLN) " & correctiveMods
+                End If 
+                commSQLSELECT = "SELECT c.comment, c.userID, c.date, u.firstName, u.lastName" &_
+	                " FROM CoordinatesComments as c, Users as u WHERE c.userID = u.userID" &_
+                    " AND coID=" & coID	
+                'Response.Write(commSQLSELECT)
+                Set rsComm = connSWPPP.execute(commSQLSELECT)
+                completer = ""
+                show_note = false
+                show_done = false
+                If rsComm.EOF Then
+                    show_note = false
+                    show_done = false
+                Else
+                    'find the completion note
+                    Do While Not rsComm.EOF
+                        If rsComm("comment") = "This item was marked complete" Then
+                            completer = rsComm("firstName") & " " & rsComm("lastName")
+                            completeDate = rsComm("date")
+                        Elseif rsComm("comment") = "This item was marked NLN" Then
+                            show_note = false
+                        Elseif rsComm("comment") = "This item was marked done" Then
+                            doneer = rsComm("firstName") & " " & rsComm("lastName")
+                            doneDate = rsComm("date")
+                            show_done = true
+                        Else
+                            show_note = true
+                        End If
+                        rsComm.MoveNext
+                    LOOP 
+                End If
+                'Response.Write("ID: " & coID & ", Coord: " & coordinates & ", LocName: " & locationName & ", address: " & address & ", NLN: " & NLN &", Mods: " & correctiveMods & "<br/>") 
+		        If infoOnly = True Then
+                    do_nothing = 1 
+                Elseif status = true or NLN = true Then %>
+		            <tr>
+                    <input type="hidden" name="coord:coID:<%= n %>" value="<%= coID %>" />
+                    <input type="hidden" name="coord:inspecID:<%= n %>" value="<%= inspecID %>" />
+                    <% status_str = ""
+                    If status = True Then
+                        status_str = "checked"
+                    End If
+                    nln_str = ""
+                    If NLN = True Then
+                        nln_str = "checked"
+                    End If %>
+                    <% If Session("validAdmin") or Session("validDirector") Then %> 
+                        <td align="left"><input type="checkbox" name="coord:complete:<%= n %>" <%=status_str %> /></td>
+                        <td align="left"><input type="checkbox" name="coord:nln:<%= n %>" <%=nln_str %> /></td>
+                    <% End If %>
+		            <% If forestarFlag or Session("validAdmin") or Session("validDirector") Then %> 
+                        <% If show_done Then %>
+                            <% If Session("validAdmin") or Session("validDirector") then %>
+		                        <td align="left"><a href="viewOpenItemComments.asp?coID=<%=coID%>" target="_blank"><%= doneDate %>: <%= doneer %></a></td>
+		                    <% Else %>
+                                <td align="left"><%= doneDate %>: <%= doneer %></td>
+                            <% End If %>
+                        <% Else %>
+                            <td></td>
+                        <% End If %>
+                    <% End If %>
+                    <% If Session("validAdmin") or Session("validDirector") then %>
+		                <td align="left"><a href="viewOpenItemComments.asp?coID=<%=coID%>" target="_blank"><%= completeDate %>: <%= completer %></a></td>
+		            <% Else %>
+                        <td align="left"><%= completeDate %>: <%= completer %></td>
+                    <% End If %>
+                    <td><%= inspecDate %></td>
+                    <td>
+		            <% if (useAddress) = False Then %>
+			            <%=coordinates%>
+		            <% Else %>
+			            <%=locationName%> (<%=address%>)
+		            <% End If %>
+		            </td>
+		            <td><%= correctiveMods %></td>
+		            </tr>
+		            <% n = n + 1
+                End If
 		        rsCoord.MoveNext
             LOOP 'loop coordinates 
             If start_n <> n Then %>
@@ -186,15 +225,15 @@ Else
 End If%>
 </table>
 <center>
-<% If Session("validAdmin") Then  %>
-    <input type="submit" value="Submit"/><br/><br/>
-<% End If %>
-<% SQL3="SELECT oImageFileName FROM OptionalImages WHERE oitID=12 AND inspecID="& siteMapInspecID
-SET RS3=connSWPPP.execute(SQL3)
-IF NOT(RS3.EOF) THEN 
-    sitemap_link = "http://www.swpppinspections.com/images/sitemap/"& TRIM(RS3("oImageFileName"))%>
-	<a href='<%=sitemap_link%>'>link for Site Map</a>
-<% End If %>
+<input type="submit" value="submit"/><br/><br/>
+<% If num_reports > 0 Then
+    SQL3="SELECT oImageFileName FROM OptionalImages WHERE oitID=12 AND inspecID="& siteMapInspecID
+    SET RS3=connSWPPP.execute(SQL3)
+    IF NOT(RS3.EOF) THEN 
+        sitemap_link = "http://www.swpppinspections.com/images/sitemap/"& TRIM(RS3("oImageFileName"))%>
+	    <a href='<%=sitemap_link%>'>link for site map</a>
+    <% End If 
+End If %>
 </center>
 <br><br>
 </body>

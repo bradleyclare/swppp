@@ -14,6 +14,7 @@ END IF
 
 'get answer data if available
 answerSQLSELECT = "SELECT * FROM HortonAnswers WHERE inspecID = " & inspecID
+'Response.Write(answerSQLSELECT)
 Set RSA = connSWPPP.execute(answerSQLSELECT)
 
 'get questions
@@ -35,37 +36,7 @@ End If
 
 numQuestions = 10
 If Request.Form.Count > 0 Then
-    If Request.Form("na_btn") = "set to n/a" Then
-        'insert or update answers to database
-        If RSA.EOF Then
-            answerSQL = "INSERT INTO HortonAnswers (inspecID, " 
-            For i = 1 To numQuestions
-                answerSQL = answerSQL & "Q" & i
-                If i < numQuestions Then
-                    answerSQL = answerSQL & ", "
-                End If
-            Next
-            answerSQL = answerSQL & ") VALUES (" & inspecID & ", "
-            For i = 1 To numQuestions
-                answerSQL = answerSQL & "'na'"
-                If i < numQuestions Then
-                    answerSQL = answerSQL & ", "
-                End If
-            Next
-            answerSQL = answerSQL & ")"
-        Else
-            answerSQL = "UPDATE HortonAnswers SET "
-            For i = 1 To numQuestions
-                answerSQL = answerSQL & "Q" & i & " = 'na'"
-                If i < numQuestions Then
-                    answerSQL = answerSQL & ", "
-                End If
-            Next
-            answerSQL = answerSQL & " WHERE inspecID = " & inspecID
-        End If
-        'response.Write(answerSQL)
-        connSWPPP.Execute(answerSQL)
-    ElseIf Request.Form("default_btn") = "set to defaults" Then
+    If Request.Form("default_btn") = "set to defaults" Then
         answerSQL = "UPDATE HortonAnswers SET "
         cnt = 0
         Do While Not RS0.EOF
@@ -93,7 +64,7 @@ If Request.Form.Count > 0 Then
                 'Response.Write("inspecID:" & ID & "</br>")
                 If found_current Then
                     prevInspecID = ID
-                    Response.Write("prevInspecID:" & ID & "</br>")
+                    'Response.Write("prevInspecID:" & ID & "</br>")
                     Exit Do
                 End If
                 If Trim(ID) = Trim(inspecID) Then
@@ -108,7 +79,6 @@ If Request.Form.Count > 0 Then
                 answerSQLSELECT = "SELECT * FROM HortonAnswers WHERE inspecID = " & prevInspecID
                 'Response.Write(answerSQLSELECT)
                 Set RSPA = connSWPPP.execute(answerSQLSELECT)
-                numQuestions = 26
                 If Not RSPA.EOF Then
                     If RSA.EOF Then                    
                         answerSQL = "INSERT INTO HortonAnswers (inspecID, " 
@@ -130,8 +100,6 @@ If Request.Form.Count > 0 Then
                             End If
                         Next
                         answerSQL = answerSQL & ")"
-                        'Response.Write(answerSQL)
-                        connSWPPP.Execute(answerSQL)
                     Else
                         answerSQL = "UPDATE HortonAnswers SET "
                         cnt = 0
@@ -145,9 +113,9 @@ If Request.Form.Count > 0 Then
                             Next
                         End If 'RSPA
                         answerSQL = answerSQL & " WHERE inspecID = " & inspecID
-                        'Response.Write(answerSQL)
-                        connSWPPP.Execute(answerSQL)
                     End If
+                    'Response.Write(answerSQL)
+                    connSWPPP.Execute(answerSQL)
                 End If
 
                 locationSQLSELECT = "SELECT * FROM HortonLocations WHERE inspecID = " & prevInspecID
@@ -187,6 +155,8 @@ If Request.Form.Count > 0 Then
                 End If
             Next
             answerSQL = answerSQL & ")"
+            'Response.Write(answerSQL & "</br>")
+            connSWPPP.Execute(answerSQL)
         Else
             'reset all variables to defaults
             answerSQL = "UPDATE HortonAnswers SET "
@@ -196,7 +166,11 @@ If Request.Form.Count > 0 Then
                 default_val = Trim(RS0("default_answer"))
                 current_val = TRIM(Request("A:" & cnt))
                 If current_val <> "na" Then
-                    answerSQL = answerSQL & "Q" & cnt & " = '" & default_val & "'"
+                    If default_val = "na" Then
+                        answerSQL = answerSQL & "Q" & cnt & " = 'yes'" 'if na is the default option but it isn't being used set it to yes
+                    Else
+                        answerSQL = answerSQL & "Q" & cnt & " = '" & default_val & "'"
+                    End IF
                 Else
                     answerSQL = answerSQL & "Q" & cnt & " = '" & current_val & "'"
                 End If
@@ -206,7 +180,7 @@ If Request.Form.Count > 0 Then
                 RS0.MoveNext
             Loop 'RSO
             answerSQL = answerSQL & " WHERE inspecID = " & inspecID
-            'Response.Write(answerSQL)
+            'Response.Write(answerSQL & "</br>")
             connSWPPP.Execute(answerSQL)
             
             'load current items in report and look for categories
@@ -235,6 +209,7 @@ If Request.Form.Count > 0 Then
                 toilet = rsCoord("toilet")
                 trash = rsCoord("trash")
                 dewater = rsCoord("dewater")
+                dis = rsCoord("discharge")
                 dust = rsCoord("dust")
                 riprap = rsCoord("riprap")
                 outfall = rsCoord("outfall")
@@ -250,46 +225,53 @@ If Request.Form.Count > 0 Then
                 if ada or street or swalk then
                     bmp_issue_found = true
                     answerSQL = "UPDATE HortonAnswers SET Q2 = 'yes' WHERE inspecID = " & inspecID  
+                    'Response.Write(answerSQL & "</br>")
                     connSWPPP.Execute(answerSQL)
                 end if
                 if sfeb or rockdam or riprap then
                     bmp_issue_found = true
                     answerSQL = "UPDATE HortonAnswers SET Q3 = 'no' WHERE inspecID = " & inspecID  
+                    'Response.Write(answerSQL & "</br>")
                     connSWPPP.Execute(answerSQL)
                 end if
                 if ip or intop then
                     bmp_issue_found = true
                     answerSQL = "UPDATE HortonAnswers SET Q4 = 'no' WHERE inspecID = " & inspecID 
+                    'Response.Write(answerSQL & "</br>")
                     connSWPPP.Execute(answerSQL)
                 end if
                 if mormix or toilet or trash then
                     bmp_issue_found = true
                     answerSQL = "UPDATE HortonAnswers SET Q5 = 'no' WHERE inspecID = " & inspecID 
+                    'Response.Write(answerSQL & "</br>")
                     connSWPPP.Execute(answerSQL)
                 end if
                 if dewater or dust or wo then
                     bmp_issue_found = true
                     answerSQL = "UPDATE HortonAnswers SET Q6 = 'no' WHERE inspecID = " & inspecID 
+                    'Response.Write(answerSQL & "</br>")
                     connSWPPP.Execute(answerSQL)
                 end if
                 if pond then
                     bmp_issue_found = true
                     answerSQL = "UPDATE HortonAnswers SET Q7 = 'no' WHERE inspecID = " & inspecID 
-                    connSWPPP.Execute(answerSQL)
-                else
-                    answerSQL = "UPDATE HortonAnswers SET Q7 = 'yes' WHERE inspecID = " & inspecID 
+                    'Response.Write(answerSQL & "</br>")
                     connSWPPP.Execute(answerSQL)
                 end if
                 if veg then
                     bmp_issue_found = true
                     answerSQL = "UPDATE HortonAnswers SET Q8 = 'no' WHERE inspecID = " & inspecID 
-                    connSWPPP.Execute(answerSQL)
-                else
-                    answerSQL = "UPDATE HortonAnswers SET Q8 = 'yes' WHERE inspecID = " & inspecID 
+                    'Response.Write(answerSQL & "</br>")
                     connSWPPP.Execute(answerSQL)
                 end if
                 if ada or sedloss or selossw or street or swalk then
                     answerSQL = "UPDATE HortonAnswers SET Q9 = 'yes' WHERE inspecID = " & inspecID 
+                    'Response.Write(answerSQL & "</br>")
+                    connSWPPP.Execute(answerSQL)
+                end if
+                if dis then
+                    answerSQL = "UPDATE HortonAnswers SET Q10 = 'yes' WHERE inspecID = " & inspecID 
+                    'Response.Write(answerSQL & "</br>")
                     connSWPPP.Execute(answerSQL)
                 end if
                 rsCoord.MoveNext
@@ -325,46 +307,6 @@ If Request.Form.Count > 0 Then
         End If
         'response.Write(answerSQL)
         connSWPPP.Execute(answerSQL)
-
-        'find and update location answers
-        maxNumLocations = 20
-        finalAnswer = "yes"
-        For i = 1 To maxNumLocations
-            'response.Write("pond:"& i &"</br>")
-            if Trim(Request("pondLocA:" & CStr(i))) = "" then
-		        exit for
-		    end if
-            if Trim(Request("pondLocA:" & CStr(i))) = "no" then
-                finalAnswer = "no"
-            end if
-            answerSQL = "UPDATE HortonLocations SET answer = '"& TRIM(Request("pondLocA:" & CStr(i))) &"' WHERE inspecID = "& inspecID &" AND locationID = "&  TRIM(Request("pondLocID:" & CStr(i)))
-            'response.Write(answerSQL)
-            connSWPPP.Execute(answerSQL)
-        Next
-        If i > 1 Then 'update the overall answer if any locations were defined
-            answerSQL = "UPDATE HortonAnswers SET Q12 = '"& finalAnswer &"' WHERE inspecID ="& inspecID
-            'response.Write(answerSQL)
-            connSWPPP.Execute(answerSQL)
-        End If
-
-        finalAnswer = "yes"
-        For i = 1 To maxNumLocations
-            'response.Write("outfall:"& i &"</br>")
-            if Trim(Request("outfallLocA:" & CStr(i))) = "" then
-		        exit for
-		    end if
-            if Trim(Request("outfallLocA:" & CStr(i))) = "no" then
-                finalAnswer = "no"
-            end if
-            answerSQL = "UPDATE HortonLocations SET answer = '"& TRIM(Request("outfallLocA:" & CStr(i))) &"' WHERE inspecID = "& inspecID &" AND locationID = "&  TRIM(Request("outfallLocID:" & CStr(i)))
-            'response.Write(answerSQL)
-            connSWPPP.Execute(answerSQL)
-        Next
-        If i > 1 Then 'update the overall answer if any locations were defined
-            answerSQL = "UPDATE HortonAnswers SET Q13 = '"& finalAnswer &"' WHERE inspecID ="& inspecID
-            'response.Write(answerSQL)
-            connSWPPP.Execute(answerSQL)
-        End If
     End If
 End If
 
@@ -372,14 +314,7 @@ End If
 answerSQLSELECT = "SELECT * FROM HortonAnswers WHERE inspecID = " & inspecID
 'response.Write(answerSQLSELECT)
 Set RSA = connSWPPP.execute(answerSQLSELECT)
-
-pondSQL="SELECT * FROM HortonLocations WHERE inspecID="& inspecID &" AND isOutfall=0"
-'response.Write(pondSQL)
-Set RSpond=connSWPPP.execute(pondSQL)
-
-outfallSQL="SELECT * FROM HortonLocations WHERE inspecID="& inspecID &" AND isOutfall=1"
-'response.Write(outfallSQL)
-Set RSoutfall=connSWPPP.execute(outfallSQL)
+'If RSA.EOF Then Response.Write("<p>no answers found</p>") End If
 %>
 
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
@@ -421,7 +356,7 @@ Set RSoutfall=connSWPPP.execute(outfallSQL)
             selected_val = default_val
         Else
             selected_val = Trim(RSA("Q" & cnt))
-            'response.write(cnt & " - " & default_val & " " )
+            'response.write(cnt & " - s:" & selected_val & " - d:" & default_val & " - ina:" & include_na & "</br>" )
         End If %>
         
         <% green = "#6cd97e"
@@ -432,14 +367,20 @@ Set RSoutfall=connSWPPP.execute(outfallSQL)
 
         <% show_dropdown = 1
         If show_dropdown Then 
-            If selected_val = "na" & include_na = False Then 
+            If selected_val = "na" and include_na = False Then 
                 selected_val = default_val
             End If 
             If default_val = "na" Then
                 default_val = "yes"
             End If 
             %>
-            <select name="A:<%=cnt%>" <% If default_val = selected_val or selected_val = "na" Then %> style="background-color:<%=green%>;" <% Else %> style="background-color:<%=red%>;"<% End If %>>
+            <select name="A:<%=cnt%>" 
+            <% If default_val = selected_val or selected_val = "na" Then %> 
+                style="background-color:<%=green%>;" 
+            <% Else %> 
+                style="background-color:<%=red%>;"
+            <% End If %>
+            >
             <option value="yes" <% If selected_val = "yes" Then %> selected <% End If %>>yes</option>
             <option value="no" <% If selected_val = "no" Then %> selected <% End If %>>no</option>
             <% if (include_na) = True Then %>
@@ -459,7 +400,6 @@ Set RSoutfall=connSWPPP.execute(outfallSQL)
     RS0.Close
     SET RS0=nothing %>
     <tr><td>
-    <input name="na_btn" type="submit" style="font-size: 15px;" value="set to n/a"/>
     <input name="default_btn" type="submit" style="font-size: 15px;" value="set to defaults"/>
     <input name="previous_btn" type="submit" style="font-size: 15px;" value="set to previous report"/>
     </td>

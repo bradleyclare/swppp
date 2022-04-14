@@ -53,7 +53,13 @@ if Trim(rsInspec("officePhone")) <> "" Then
 	strBody=strBody &"<tr><td align='right'><b>On-Site Contact:</b></td><td colspan='3'>"&  Trim(rsInspec("officePhone")) &"</td></tr>"
 End If
 if Trim(rsInspec("emergencyPhone")) <> "" Then
-	strBody=strBody &"<tr><td align='right'><b>On-Site Contact:</b></td><td colspan='3'>"&  Trim(rsInspec("emergencyPhone")) &"</td></tr>"
+	strBody=strBody &"<tr><td align='right'><b>"
+	If rsInspec("forestar") Then
+		strBody=strBody &"TPDES Permit #:"
+	Else
+		strBody=strBody &"On-Site Contact"
+	End If
+	strBody=strBody &"</b></td><td colspan='3'>"&  Trim(rsInspec("emergencyPhone")) &"</td></tr>"
 End If
 strBody=strBody &"<tr><td align='right'><b>Company:</b></td><td>"&  Trim(rsInspec("compName")) &"</td><td align='right'><b>Contact:</b></td><td>"&  Trim(rsInspec("compContact")) &"</td></tr>"
 strBody=strBody &"<tr><td align='right' valign='top'><b>Address:</b></td><td>"&  Trim(rsInspec("compAddr"))
@@ -291,102 +297,102 @@ Else
 			swalk = rsCoord("swalk")
 			mormix = rsCoord("mormix")
 			ada = rsCoord("ada")
-		   dway = rsCoord("dway")
-		   flume = rsCoord("flume")
+		    dway = rsCoord("dway")
+		    flume = rsCoord("flume")
 			OSC = rsCoord("osc")
 			scoring_class = "black"
-			IF applyScoring THEN
+			IF applyScoring and repeat THEN
 				IF assignDate = "" THEN
 					age = 0
 				ELSE
 					age = datediff("d",assignDate,currentDate) 
 				END IF
-				Response.Write("Age:" & age & " - " & currentDate & "</br>")
+				'Response.Write("Age:" & age & " - " & currentDate & "</br>")
 				IF age > 7 THEN
 					scoring_class = "red"
 				END IF
 			END IF
-			Response.Write("Scoring Class:" & scoring_class & "</br>")
+			'Response.Write("Scoring Class:" & scoring_class & "</br>")
 			'Response.Write("ID: " & coID & ", Repeat: " & repeat & ", Age: " & age & ", Coord: " & coordinates & ", LocName: " & locationName & ", address: " & address & ", Mods: " & correctiveMods & "<br/>") 
 			If LD = True Then
-            correctiveMods = "(LD) " & correctiveMods
-            scoring_class = "ld"
-         End If
+               correctiveMods = "(LD) " & correctiveMods
+               scoring_class = "ld"
+            End If
 			If OSC = True Then
-            correctiveMods = "(OSC) " & correctiveMods
-         End If
-			If pond = True Then
-                correctiveMods = "(pond) " & correctiveMods
+               correctiveMods = "(OSC) " & correctiveMods
             End If
-			If sedloss = True Then
-                correctiveMods = "(sediment loss) " & correctiveMods
-            End If
-			If sedlossw = True Then
-                correctiveMods = "(sediment loss to waters) " & correctiveMods
-            End If
-			If ce = True Then
-                correctiveMods = "(construction entrance) " & correctiveMods
-            End If
-			If street = True Then
-                correctiveMods = "(street cleaning) " & correctiveMods
-            End If
-			If sfeb = True Then
-                correctiveMods = "(perimeter controls) " & correctiveMods
-            End If
-			If rockdam = True Then
-	        	correctiveMods = "(rock dam) " & correctiveMods
-            End If
-			If ip = True Then
-                correctiveMods = "(inlet protection) " & correctiveMods
-            End If
-			If wo = True Then
-                correctiveMods = "(washout) " & correctiveMods
-            End If
-			If veg = True Then
-                correctiveMods = "(vegetation) " & correctiveMods
-            End If
-			If stock = True Then
-                correctiveMods = "(stockpile) " & correctiveMods
-            End If
-			If toilet = True Then
-                correctiveMods = "(toilet) " & correctiveMods
-            End If
-			If trash = True Then
-                correctiveMods = "(trash/waste/material) " & correctiveMods
-            End If
-			If dewater = True Then
-				correctiveMods = "(dewatering) " & correctiveMods
-			End If
-			If dis = True Then
-				correctiveMods = "(discharge) " & correctiveMods
-			End If
-			If dust = True Then
-				correctiveMods = "(dust control) " & correctiveMods
-			End If
-			If riprap = True Then
-	        	correctiveMods = "(riprap) " & correctiveMods
-	      End If
-	      If outfall = True Then
-	        	correctiveMods = "(outfall) " & correctiveMods
-	      End If
-			If intop = True Then
-        		correctiveMods = "(inlet top) " & correctiveMods
-         End If
-         If swalk = True Then
-        		correctiveMods = "(sidewalk) " & correctiveMods
-         End If
-         If mormix = True Then
-        		correctiveMods = "(mortar mix) " & correctiveMods
-         End If
-			If ada = True Then
-				correctiveMods = "(ADA ramp) " & correctiveMods
-			End If
-			If dway = True Then
-				correctiveMods = "(driveway) " & correctiveMods
-			End If
-			If flume = True Then
-				correctiveMods = "(flume) " & correctiveMods
-			End If
+			'If pond = True Then
+            '    correctiveMods = "(pond) " & correctiveMods
+            'End If
+			'If sedloss = True Then
+            '    correctiveMods = "(sediment loss) " & correctiveMods
+            'End If
+			'If sedlossw = True Then
+            '    correctiveMods = "(sediment loss to waters) " & correctiveMods
+            'End If
+			'If ce = True Then
+            '    correctiveMods = "(construction entrance) " & correctiveMods
+            'End If
+			'If street = True Then
+            '    correctiveMods = "(street cleaning) " & correctiveMods
+            'End If
+			'If sfeb = True Then
+            '    correctiveMods = "(perimeter controls) " & correctiveMods
+            'End If
+			'If rockdam = True Then
+	        '	correctiveMods = "(rock dam) " & correctiveMods
+            'End If
+			'If ip = True Then
+            '    correctiveMods = "(inlet protection) " & correctiveMods
+            'End If
+			'If wo = True Then
+            '    correctiveMods = "(washout) " & correctiveMods
+            'End If
+			'If veg = True Then
+            '    correctiveMods = "(vegetation) " & correctiveMods
+            'End If
+			'If stock = True Then
+            '    correctiveMods = "(stockpile) " & correctiveMods
+            'End If
+			'If toilet = True Then
+            '    correctiveMods = "(toilet) " & correctiveMods
+            'End If
+			'If trash = True Then
+            '    correctiveMods = "(trash/waste/material) " & correctiveMods
+            'End If
+			'If dewater = True Then
+			'	correctiveMods = "(dewatering) " & correctiveMods
+			'End If
+			'If dis = True Then
+			'	correctiveMods = "(discharge) " & correctiveMods
+			'End If
+			'If dust = True Then
+			'	correctiveMods = "(dust control) " & correctiveMods
+			'End If
+			'If riprap = True Then
+	        '	correctiveMods = "(riprap) " & correctiveMods
+	        'End If
+	        'If outfall = True Then
+	        '	correctiveMods = "(outfall) " & correctiveMods
+	        'End If
+			'If intop = True Then
+        	'	correctiveMods = "(inlet top) " & correctiveMods
+            'End If
+            'If swalk = True Then
+        	'	correctiveMods = "(sidewalk) " & correctiveMods
+            'End If
+            'If mormix = True Then
+        	'	correctiveMods = "(mortar mix) " & correctiveMods
+            'End If
+			'If ada = True Then
+			'	correctiveMods = "(ADA ramp) " & correctiveMods
+			'End If
+			'If dway = True Then
+			'	correctiveMods = "(driveway) " & correctiveMods
+			'End If
+			'If flume = True Then
+			'	correctiveMods = "(flume) " & correctiveMods
+			'End If
             If NLN = True Then
                 'do nothing
             ElseIf infoOnly = True and (useAddress=False and coordinates="") or (useAddress=True and locationName="" and address="") Then

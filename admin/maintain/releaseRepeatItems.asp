@@ -133,78 +133,78 @@ IF Request.Form.Count > 0 THEN %>
                     If OSC = True Then
                        correctiveMods = "(OSC) " & correctiveMods
                     End If
-					If pond = True Then
-		                correctiveMods = "(pond) " & correctiveMods
-		            End If
-					If sedloss = True Then
-                		correctiveMods = "(sediment loss) " & correctiveMods
-		            End If
-					If sedlossw = True Then
-                		correctiveMods = "(sediment loss to waters) " & correctiveMods
-		            End If
-					If ce = True Then
-                		correctiveMods = "(construction entrance) " & correctiveMods
-		            End If
-					If street = True Then
-                		correctiveMods = "(street cleaning) " & correctiveMods
-		            End If
-					If sfeb = True Then
-                		correctiveMods = "(perimeter controls) " & correctiveMods
-		            End If
-	          	    If rockdam = True Then
-        	            correctiveMods = "(rock dam) " & correctiveMods
-		            End If
-					If ip = True Then
-                		correctiveMods = "(inlet protection) " & correctiveMods
-		            End If
-					If wo = True Then
-                		correctiveMods = "(washout) " & correctiveMods
-		            End If
-					If veg = True Then
-                		correctiveMods = "(vegetation) " & correctiveMods
-		            End If
-					If stock = True Then
-                		correctiveMods = "(stockpile) " & correctiveMods
-		            End If
-					If toilet = True Then
-		                correctiveMods = "(toilet) " & correctiveMods
-		            End If
-		            If trash = True Then
-                		correctiveMods = "(trash/waste/material) " & correctiveMods
-		            End If
-                    If dewater = True Then
-                        correctiveMods = "(dewatering) " & correctiveMods
-                    End If
-                    If dis = True Then
-        	            correctiveMods = "(discharge) " & correctiveMods
-			        End If
-                    If dust = True Then
-        	            correctiveMods = "(dust control) " & correctiveMods
-			        End If
-			         If riprap = True Then
-			        	correctiveMods = "(riprap) " & correctiveMods
-			        End If
-			        If outfall = True Then
-			        	correctiveMods = "(outfall) " & correctiveMods
-                    End If
-                    If intop = True Then
-                        correctiveMods = "(inlet top) " & correctiveMods
-                    End If
-                    If swalk = True Then
-                        correctiveMods = "(sidewalk) " & correctiveMods
-                    End If
-                    If mormix = True Then
-                        correctiveMods = "(mortar mix) " & correctiveMods
-                    End If
-                    If ada = True Then
-                        correctiveMods = "(ADA ramp) " & correctiveMods
-                    End If
-                    If dway = True Then
-                        correctiveMods = "(driveway) " & correctiveMods
-                    End If
-                    If flume = True Then
-                        correctiveMods = "(flume) " & correctiveMods
-                    End If
+					'If pond = True Then
+		            '    correctiveMods = "(pond) " & correctiveMods
+		            'End If
+					'If sedloss = True Then
+                	'	correctiveMods = "(sediment loss) " & correctiveMods
+		            'End If
+					'If sedlossw = True Then
+                	'	correctiveMods = "(sediment loss to waters) " & correctiveMods
+		            'End If
+					'If ce = True Then
+                	'	correctiveMods = "(construction entrance) " & correctiveMods
+		            'End If
+					'If street = True Then
+                	'	correctiveMods = "(street cleaning) " & correctiveMods
+		            'End If
+					'If sfeb = True Then
+                	'	correctiveMods = "(perimeter controls) " & correctiveMods
+		            'End If
+	          	    'If rockdam = True Then
+        	        '    correctiveMods = "(rock dam) " & correctiveMods
+		            'End If
+					'If ip = True Then
+                	'	correctiveMods = "(inlet protection) " & correctiveMods
+		            'End If
+					'If wo = True Then
+                	'	correctiveMods = "(washout) " & correctiveMods
+		            'End If
+					'If veg = True Then
+                	'	correctiveMods = "(vegetation) " & correctiveMods
+		            'End If
+					'If stock = True Then
+                	'	correctiveMods = "(stockpile) " & correctiveMods
+		            'End If
+					'If toilet = True Then
+		            '    correctiveMods = "(toilet) " & correctiveMods
+		            'End If
+		            'If trash = True Then
+                	'	correctiveMods = "(trash/waste/material) " & correctiveMods
+		            'End If
+                    'If dewater = True Then
+                    '    correctiveMods = "(dewatering) " & correctiveMods
+                    'End If
+                    'If dis = True Then
+        	        '    correctiveMods = "(discharge) " & correctiveMods
+			        'End If
+                    'If dust = True Then
+        	        '    correctiveMods = "(dust control) " & correctiveMods
+			        'End If
+			        ' If riprap = True Then
+			        '	correctiveMods = "(riprap) " & correctiveMods
+			        'End If
+			        'If outfall = True Then
+			        '	correctiveMods = "(outfall) " & correctiveMods
+                    'End If
+                    'If intop = True Then
+                    '    correctiveMods = "(inlet top) " & correctiveMods
+                    'End If
+                    'If swalk = True Then
+                    '    correctiveMods = "(sidewalk) " & correctiveMods
+                    'End If
+                    'If mormix = True Then
+                    '    correctiveMods = "(mortar mix) " & correctiveMods
+                    'End If
+                    'If ada = True Then
+                    '    correctiveMods = "(ADA ramp) " & correctiveMods
+                    'End If
+                    'If dway = True Then
+                    '    correctiveMods = "(driveway) " & correctiveMods
+                    'End If
+                    'If flume = True Then
+                    '    correctiveMods = "(flume) " & correctiveMods
+                    'End If
 				    If infoOnly = True or NLN = True Then
                        do_nothing = 1 
                     Elseif  repeat and age > 0 THEN

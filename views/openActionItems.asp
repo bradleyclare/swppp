@@ -1,5 +1,5 @@
 <%@ Language="VBScript" %><%
-
+Response.Buffer = False
 If _
 	Not Session("validAdmin") And _
 	Not Session("validDirector") And _
@@ -13,6 +13,7 @@ Then
 End If
 
 projectID = Trim(Request("pID"))
+allItems = Request("allItems")
 locdir = Trim(Request("loc"))
 
 %><!-- #include file="../admin/connSWPPP.asp" --><%
@@ -162,7 +163,7 @@ If Request.Form.Count > 0 Then
                 coID = Request("coord:coID:"& CStr(n))
                 udate = Request("coord:date:"& CStr(n))
                 SQLc = "UPDATE Coordinates "& _
-			    "SET NLN=1, completeDate='" & cdate & "' " & _ 
+			    "SET NLN=1, completeDate='" & udate & "' " & _ 
 			    "WHERE coID = " & coID & ";"
 			    'Response.Write(SQLc)
 			    connSWPPP.execute(SQLc)
@@ -267,6 +268,32 @@ tr.highlighted {
      }
   }
 
+  function nln_all_items(obj) {
+    for (i=0; i<999; i++){
+        var name = "coord:NLN:" + i.toString();
+        var s = document.getElementsByName(name);
+        if (s.length > 0){
+            s[0].value = 'on';
+            s[0].checked = true;
+        } else {
+            break;
+        }
+    }
+  }
+
+  function unnln_all_items(obj){
+     for (i=0; i<999; i++){
+        var name = "coord:NLN:" + i.toString();
+        var s = document.getElementsByName(name);
+        if (s.length > 0){
+            s[0].value = 'off';
+            s[0].checked = false;
+        } else {
+            break;
+        }
+     }
+  }
+
   function displayCommentWindow(obj) {
         var parts = obj.name.split(":");
         var num = parts[2];
@@ -302,6 +329,12 @@ tr.highlighted {
 </head>
 
 <%
+currentDate = date()
+if allItems Then
+    startDate=DateAdd("yyyy",-20,currentDate)
+Else
+    startDate=DateAdd("yyyy",-1,currentDate)
+End If
 SQL0 = "SELECT inspecID, inspecDate, reportType, projectID, projectName, projectPhase, released, " & _
     " includeItems, compliance, totalItems, completedItems, horton" & _
     " FROM Inspections" & _
@@ -309,7 +342,9 @@ SQL0 = "SELECT inspecID, inspecDate, reportType, projectID, projectName, project
     " AND includeItems = 1" &_ 
     " AND released = 1" &_
     " AND compliance = 0" &_
-    " AND openItemAlert = 1" 
+    " AND openItemAlert = 1" &_
+    " AND completedItems < totalItems" &_
+    " AND inspecDate BETWEEN '"& startDate &"' AND '"& currentDate &"'" 
 'Response.Write(SQL0)
 Set RS0 = connSWPPP.Execute(SQL0)
 %>
@@ -329,15 +364,22 @@ Set RS0 = connSWPPP.Execute(SQL0)
     <font size="+1"><b>open items for<br/> (<%=projectID %>) <%= RS2("projectName") %>&nbsp;<%= RS2("projectPhase")%></b></font>
     <br /><br />
     <table><tr>
-    <td><input type="button" value="check all Items" onclick="check_all_items(this)" /></td>
-    <% If projectValidUser and hortonFlag=False and forestarFlag=False Then %>
-        <td><input type="button" value="un-check all Items" onclick="uncheck_all_items(this)" /></td>
+    <td><input type="button" value="check all items" onclick="check_all_items(this)" /></td>
+    <% If Session("validAdmin") or (projectValidUser and hortonFlag=False and forestarFlag=False) Then %>
+        <td><input type="button" value="un-check all items" onclick="uncheck_all_items(this)" /></td>
         <td><input type="text" name="commonDate" class="datepicker" value="<%= currentDate %>" /></td>
         <td><input type="button" value="apply date to all" onclick="apply_date_to_all(this)" /></td>
+    <% End If%>
+    <% If Session("validAdmin") Then %>
+        <td><input type="button" value="NLN all items" onclick="nln_all_items(this)" /></td>
+        <td><input type="button" value="un-NLN all items" onclick="unnln_all_items(this)" /></td>
     <% End If %>
     </tr></table>
     <br/>
     <a href="completedActionItems.asp?pID=<%=projectID%>&inspecID=<%=inspecID%>">see <%=completePast%> items</a>
+    <% If Session("validAdmin") Then %>
+    </br><a href="openActionItems.asp?pID=<%=projectID%>&allItems=1">see all open items</a>
+    <% End If %>
     <br/><br/>
     </center>
     <table cellpadding="2" cellspacing="0" border="0" width="100%">
@@ -345,7 +387,7 @@ Set RS0 = connSWPPP.Execute(SQL0)
             <% If projectValidUser and (hortonFlag or forestarFlag) Then %>
                 <th width="5%" align="left">item status</th>
             <% End If %>
-            <% If Session("validAdmin") or Session("validDirector") Then %>
+            <% If Session("validAdmin") Then %>
                 <th width="5%" align="left">NLN</th>
             <% End If %>
             <th width="5%" align="left">repeat</th>
@@ -482,13 +524,13 @@ Set RS0 = connSWPPP.Execute(SQL0)
                         <td align="left"><input type="checkbox" name="coord:complete:<%= n %>" /></td>
                     <% End If %>
                     <% If projectValidUser and (hortonFlag or forestarFlag) Then %>
-                        <% If Session("validAdmin") or Session("validDirector") Then %>
+                        <% If Session("validAdmin") Then %>
                             <td><a href="viewOpenItemComments.asp?coID=<%=coID%>" target="_blank"><%=done%></br><%=completer%></br><%=completeDate%></a></td>
                         <% Else %>
                             <td><%=done%></br><%=completer%></br><%=completeDate%></td>
                         <% End If %>
                     <% End If %>
-                    <% If Session("validAdmin") or Session("validDirector") Then %>
+                    <% If Session("validAdmin") Then %>
 	                    <td align="left"><input type="checkbox" name="coord:NLN:<%= n %>" /></td>
 	                <% End If %>
 	                <td align="left">

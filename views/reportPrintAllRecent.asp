@@ -90,7 +90,13 @@ IF IsNull(qualifications) THEN qualifications="" END IF %>
 	<tr><td align="right"><b>On-Site Contact:</b></td><td colspan="3"><% = Trim(RS2("officePhone")) %></td></tr><%
 	End If 
 	If Len(Trim(RS2("emergencyPhone"))) > 0 then %>
-	<tr><td align="right"><b>On-Site Contact:</b></td><td colspan="3"><% = Trim(RS2("emergencyPhone")) %></td></tr><%
+	<tr><td align="right"><b>
+		<% If RS2("forestar") = True Then %>
+		TPDES Permit #:
+		<% Else %>
+		On-Site Contact
+		<% End If %>
+		</b></td><td colspan="3"><% = Trim(RS2("emergencyPhone")) %></td></tr><%
 	End If %>
 	<tr><td align="right"><b>Company:</b></td><td><% = Trim(RS2("compName")) %></td><td align="right"><b>Contact:</b></td><td><% = Trim(RS2("compContact")) %></td></tr>
 	<tr><td align="right" valign="top"><b>Address:</b></td><td><% = Trim(RS2("compAddr")) %> <% If Trim(RS2("compAddr2")) <> "" Then Response.Write("<br>" & Trim(RS2("compAddr2"))) End If %></td><td align="right"><b>Phone:</b></td><td><% = Trim(RS2("contactPhone")) %></td></tr>
@@ -280,7 +286,7 @@ Else
 	    Response.Write("<tr><td colspan='2' align='center'><i>There is no " & _
 		    "coordinate data entered at this time.</i></td></tr>")
     Else
-	    applyScoring = False
+	    applyScoring = True
 	    'if RS2("includeItems")=True & Session("seeScoring")=True Then applyScoring = True End If
 	    currentDate = date()
 	    Do While Not rsCoord.EOF
@@ -393,19 +399,19 @@ Else
 			End If
 			If riprap = True Then
 	        	correctiveMods = "(riprap) " & correctiveMods
-	      End If
-	      If outfall = True Then
+	        End If
+	        If outfall = True Then
 	        	correctiveMods = "(outfall) " & correctiveMods
-	      End If
+	        End If
 			If intop = True Then
         		correctiveMods = "(inlet top) " & correctiveMods
-         End If
-         If swalk = True Then
+            End If
+            If swalk = True Then
         		correctiveMods = "(sidewalk) " & correctiveMods
-         End If
-         If mormix = True Then
+            End If
+            If mormix = True Then
         		correctiveMods = "(mortar mix) " & correctiveMods
-         End If
+            End If
 			If ada = True Then
 				correctiveMods = "(ADA ramp) " & correctiveMods
 			End If

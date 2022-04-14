@@ -30,7 +30,7 @@ inspecSQLSELECT = "SELECT inspecDate, Inspections.projectName, Inspections.proje
 	"projectZip, projectCounty, onsiteContact, officePhone, emergencyPhone, compName, " &_
 	"compAddr, compAddr2, compCity, compState, compZip, compPhone, compContact, contactPhone, " &_
 	"contactFax, contactEmail, reportType, inches, bmpsInPlace, " &_
-	"sediment, narrative, firstName, lastName, signature, qualifications" &_
+	"sediment, narrative, firstName, lastName, signature, qualifications, includeItems, compliance, totalItems, completedItems, horton, hortonSignV, hortonSignLD, vscr, ldscr, forestar" &_
 	" FROM Inspections, Projects, Users" &_
 	" WHERE inspecID = " & inspecID &_
 	" AND Inspections.projectID = Projects.projectID" &_
@@ -62,7 +62,13 @@ if Trim(rsInspec("officePhone")) <> "" Then
     strBody=strBody &"<tr><td align='right'><b>On-Site Contact:</b></td><td colspan='3'>"&  Trim(rsInspec("officePhone")) &"</td></tr>"
 End If
 if Trim(rsInspec("emergencyPhone")) <> "" Then
-    strBody=strBody &"<tr><td align='right'><b>On-Site Contact:</b></td><td colspan='3'>"&  Trim(rsInspec("emergencyPhone")) &"</td></tr>"
+    strBody=strBody &"<tr><td align='right'><b>"
+	If rsInspec("forestar") Then
+		strBody=strBody &"TPDES Permit #:"
+	Else
+		strBody=strBody &"On-Site Contact"
+	End If
+	strBody=strBody &"</b></td><td colspan='3'>"&  Trim(rsInspec("emergencyPhone")) &"</td></tr>"
 End If
 strBody=strBody &"<tr><td align='right'><b>Company:</b></td><td>"&  Trim(rsInspec("compName")) &"</td><td align='right'><b>Contact:</b></td><td>"&  Trim(rsInspec("compContact")) &"</td></tr>"
 strBody=strBody &"<tr><td align='right' valign='top'><b>Address:</b></td><td>"&  Trim(rsInspec("compAddr"))

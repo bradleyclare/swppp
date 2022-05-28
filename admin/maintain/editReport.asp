@@ -277,7 +277,7 @@ End If
 		", projectZip, projectCounty, onsiteContact, officePhone, emergencyPhone, i.projectID, compName, released" & _
 		", compAddr, compAddr2, compCity, compState, compZip, compPhone, compContact, contactPhone, contactFax" & _
 		", contactEmail, reportType, inches, bmpsInPlace, sediment, userID, includeItems, compliance, totalItems" & _
-		", completedItems, openItemAlert, systemic, systemicNote, horton, hortonSignV, hortonSignLD, vscr, ldscr" & _
+		", completedItems, i.openItemAlert, systemic, systemicNote, horton, hortonSignV, hortonSignLD, vscr, ldscr" & _
 		", forestar, p.collectionName" & _
 		" FROM Inspections as i, Projects as p" & _
 		" WHERE i.projectID = p.projectID AND inspecID = " & inspecID
@@ -1223,7 +1223,6 @@ End If %>
 			<input type="checkbox" name="coord:pond:<%=n %>" />
 		<% End If %>
 		</td>
-		<% If rsReport("horton") = True Then %>
 		<td> riprap
 		<% If riprap = True Then %>
 			<input type="checkbox" name="coord:riprap:<%=n %>" checked />
@@ -1231,7 +1230,6 @@ End If %>
 			<input type="checkbox" name="coord:riprap:<%=n %>" />
 		<% End If %>
 		</td>
-		<% End If %>
 		<td> rockdam
 		<% If rockdam = True Then %>
 			<input type="checkbox" name="coord:rockdam:<%=n %>" checked />
@@ -1246,6 +1244,7 @@ End If %>
 			<input type="checkbox" name="coord:sedloss:<%=n %>" />
 		<% End If %>
 		</td>
+		<% If rsReport("horton") = True Then %>
 		<td> sedlossw
 		<% If sedlossw = True Then %>
 			<input type="checkbox" name="coord:sedlossw:<%=n %>" checked />
@@ -1253,7 +1252,6 @@ End If %>
 			<input type="checkbox" name="coord:sedlossw:<%=n %>" />
 		<% End If %>
 		</td>
-		<% If rsReport("horton") = True Then %>
 		<td> stock
 		<% If stock = True Then %>
 			<input type="checkbox" name="coord:stock:<%=n %>" checked />
@@ -1369,13 +1367,11 @@ Set rsCoord = Nothing %>
 		<td> outfall <input type="checkbox" name="coord:outfall:<%=m %>" /></td>
 		<% End If %>
 		<td> pond <input type="checkbox" name="coord:pond:<%=m %>" /></td>
-		<% If rsReport("horton") = True Then %>
 		<td> riprap <input type="checkbox" name="coord:riprap:<%=m %>" /></td>
-		<% End If %>
 		<td> rockdam <input type="checkbox" name="coord:rockdam:<%=m %>" /></td>
 		<td> sedloss <input type="checkbox" name="coord:sedloss:<%=m %>" /></td>
-		<td> sedlossw <input type="checkbox" name="coord:sedlossw:<%=m %>" /></td>
 		<% If rsReport("horton") = True Then %>
+		<td> sedlossw <input type="checkbox" name="coord:sedlossw:<%=m %>" /></td>
 		<td> stock <input type="checkbox" name="coord:stock:<%=m %>" /></td>
 		<% End If %>
 		<td> street <input type="checkbox" name="coord:street:<%=m %>" /></td>

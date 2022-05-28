@@ -20,36 +20,44 @@ SET RS0=connSWPPP.execute(SQL0) %>
 <hr />
     <% cnt=0
 	currentDate = Date()
+	Response.Write("<table><tr><th>Project Name</th><th>Last Inspec Date</th><th>Days Since Last Report</th><th>Status</th></tr>")
 	DO WHILE NOT RS0.EOF 
 	    'find most recent inspect report for this projectName
-		IF RS0("phaseNum")=1 THEN
-			projID = RS0("projectID")
+		projID = RS0("projectID")
+		projName = RS0("projectName")
+		projPhase = RS0("projectPhase")
+		activeFlag = RS0("active")
+		IF activeFlag=true THEN
 			SQL1="SELECT TOP 1 * FROM Inspections WHERE projectID="& projID &" ORDER BY inspecDate DESC"
 			SET RS1=connSWPPP.execute(SQL1)
 			IF RS1.EOF THEN
-				SQL2="UPDATE Projects SET phaseNum=0 WHERE projectID="& projID 
+				SQL2="UPDATE Projects SET active=0 WHERE projectID="& projID 
 				SET RS2=connSWPPP.execute(SQL2)
-				Response.Write(RS0("projectName") & " " & RS0("projectPhase") & " : No Report --- UPDATED <br/>")
+				Response.Write("<tr><td>" & projName & " " & projPhase & "</td><td>No Report</td><td>n/a</td><td>Set Inactive</td></tr>")
 			END IF
 			DO WHILE NOT RS1.EOF
-				diff = DateDiff("m",RS1("inspecDate"),currentDate)
-				IF diff > 3 THEN
-					SQL2="UPDATE Projects SET phaseNum=0 WHERE projectID="& projID 
+				diff = DateDiff("d",RS1("inspecDate"),currentDate)
+				IF diff > 90 THEN
+					SQL2="UPDATE Projects SET active=0 WHERE projectID="& projID 
 					SET RS2=connSWPPP.execute(SQL2)
-					Response.Write(RS0("projectName") & " " & RS0("projectPhase") & " : " & RS1("inspecDate") & " : " & diff & " --- UPDATED <br/>")
+					Response.Write("<tr><td>" & projName & " " & projPhase & "</td><td>" & RS1("inspecDate") & "</td><td>" & diff & "</td><td>Set Inactive</td></tr>")
 				ELSE
-					Response.Write(RS0("projectName") & " " & RS0("projectPhase") & " : " & RS1("inspecDate") & " : " & diff & "<br/>")
+					Response.Write("<tr><td>" & projName & " " & projPhase & "</td><td>" & RS1("inspecDate") & "</td><td>" & diff & "</td><td>Active</td></tr>")
 				END IF
 				RS1.moveNext
-			LOOP 
+			LOOP
+			RS1.Close
+			Set RS1 = Nothing 
+		Else
+			'uncomment these lines to reset the active database
+			'SQL2="UPDATE Projects SET active=1 WHERE projectID="& projID 
+			'SET RS2=connSWPPP.execute(SQL2)
 		END IF
 		RS0.moveNext    
 	LOOP 
-	Response.Write("DONE<br><br>")
+	Response.Write("</table>")
 	RS0.Close
 	Set RS0 = Nothing
-	RS1.Close
-	Set RS1 = Nothing
 	connSWPPP.Close
 	Set connSWPPP = Nothing %>
 	</form>

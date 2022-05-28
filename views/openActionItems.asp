@@ -377,9 +377,7 @@ Set RS0 = connSWPPP.Execute(SQL0)
     </tr></table>
     <br/>
     <a href="completedActionItems.asp?pID=<%=projectID%>&inspecID=<%=inspecID%>">see <%=completePast%> items</a>
-    <% If Session("validAdmin") Then %>
     </br><a href="openActionItems.asp?pID=<%=projectID%>&allItems=1">see all open items</a>
-    <% End If %>
     <br/><br/>
     </center>
     <table cellpadding="2" cellspacing="0" border="0" width="100%">

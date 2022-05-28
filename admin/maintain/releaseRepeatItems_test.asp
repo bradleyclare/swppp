@@ -34,9 +34,9 @@ inspecDate = rsInspec("inspecDate")
 
 strBody=strBody &"<head><style>"
 strBody=strBody &".red{color: #F52006;}"
-strBody=strBody &".green{color: green;}"
 strBody=strBody &".black{color: black;}"
-strBody=strBody &".ld{font-weight: bold;}"
+strBody=strBody &".bold{font-weight: bold;}"
+strBody=strBody &".ldred{font-weight: bold; color: red;}"
 strBody=strBody &"</style></head>"
 strBody=strBody &"<body bgcolor='#ffffff' marginwidth='30' leftmargin='30' marginheight='15' topmargin='15'>"
 strBody=strBody &"<center><img src='http://www.swpppinspections.com/images/color_logo_report.jpg' width='300'><br><br>"
@@ -44,7 +44,7 @@ strBody=strBody &"<font size='+1'><b>Repeat Item Report</b></font><br/>"
 strBody=strBody &"<font size='+1'><b>" & projectName & " " & projectPhase & "</b></font><br/>"
 strBody=strBody &"<font size='+1'><b>" & inspecDate & "</center><br/>"
 
-coordSQLSELECT = "SELECT * FROM Coordinates WHERE inspecID=" & inspecID & " ORDER BY orderby"	
+coordSQLSELECT = "SELECT * FROM Coordinates WHERE repeat=1 AND inspecID=" & inspecID & " ORDER BY orderby"	
 'Response.Write(coordSQLSELECT)
 Set rsCoord = connSWPPP.execute(coordSQLSELECT)
 
@@ -54,7 +54,7 @@ strBody=strBody &"<tr><td colspan='2'><hr noshade size='1' align='center' width=
 If rsCoord.EOF Then
     strBody=strBody &"<h5>No Items Found</h5>"
 Else
-    applyScoring = rsInspec("includeItems")
+	applyScoring = True 'rsInspec("includeItems")
     currentDate = date()
     send_email = False
     Do While Not rsCoord.EOF
@@ -65,7 +65,6 @@ Else
         assignDate = rsCoord("assignDate") 
         completeDate = rsCoord("completeDate")
         status = rsCoord("status")
-        repeat = rsCoord("repeat")
         useAddress = rsCoord("useAddress")
         address = TRIM(rsCoord("address"))
         locationName = TRIM(rsCoord("locationName"))
@@ -86,7 +85,6 @@ Else
         toilet = rsCoord("toilet")
         trash = rsCoord("trash")
         dewater = rsCoord("dewater")
-        dis = rsCoord("discharge")
         dust = rsCoord("dust")
         riprap = rsCoord("riprap")
         outfall = rsCoord("outfall")
@@ -97,109 +95,35 @@ Else
         dway = rsCoord("dway")
         flume = rsCoord("flume")
         OSC = rsCoord("osc")
-        scoring_class = "black"
+        dis = rsCoord("discharge")
+		scoring_class = "red"
+		'Response.Write("ID: " & coID & ", Coord: " & coordinates & ", LocName: " & locationName & ", address: " & address & ", Mods: " & correctiveMods & "<br/>") 
         If applyScoring Then
             If assignDate = "" Then
                 age = 0
             Else
                 age = datediff("d",assignDate,currentDate) 
             End If
-        If age > 6 Then
-            scoring_class = "red"
-        End If
         If LD = True Then
             correctiveMods = "(LD) " & correctiveMods
-           scoring_class = "ld"
+            scoring_class = "ldred"
         End If
         If OSC = True Then
             correctiveMods = "(OSC) " & correctiveMods
         End If
-        'If pond = True Then
-        '    correctiveMods = "(pond) " & correctiveMods
-        'End If
-        'If sedloss = True Then
-        '	correctiveMods = "(sediment loss) " & correctiveMods
-        'End If
-        'If sedlossw = True Then
-        '	correctiveMods = "(sediment loss to waters) " & correctiveMods
-        'End If
-        'If ce = True Then
-        '	correctiveMods = "(construction entrance) " & correctiveMods
-        'End If
-        'If street = True Then
-        '	correctiveMods = "(street cleaning) " & correctiveMods
-        'End If
-        'If sfeb = True Then
-        '	correctiveMods = "(perimeter controls) " & correctiveMods
-        'End If
-        'If rockdam = True Then
-        '	correctiveMods = "(rock dam) " & correctiveMods
-        'End If
-        'If ip = True Then
-        '	correctiveMods = "(inlet protection) " & correctiveMods
-        'End If
-        'If wo = True Then
-        '	correctiveMods = "(washout) " & correctiveMods
-        'End If
-        'If veg = True Then
-        '	correctiveMods = "(vegetation) " & correctiveMods
-        'End If
-        'If stock = True Then
-        '	correctiveMods = "(stockpile) " & correctiveMods
-        'End If
-        'If toilet = True Then
-        '    correctiveMods = "(toilet) " & correctiveMods
-        'End If
-        'If trash = True Then
-        '	correctiveMods = "(trash/waste/material) " & correctiveMods
-        'End If
-        'If dewater = True Then
-        '	correctiveMods = "(dewatering) " & correctiveMods
-        'End If
-        'If dis = True Then
-        '	correctiveMods = "(discharge) " & correctiveMods
-        'End If
-        'If dust = True Then
-        '	correctiveMods = "(dust control) " & correctiveMods
-        'End If
-        'If riprap = True Then
-        '	correctiveMods = "(riprap) " & correctiveMods
-        'End If
-        'If outfall = True Then
-        '	correctiveMods = "(outfall) " & correctiveMods
-        'End If
-        'If intop = True Then
-        '	correctiveMods = "(inlet top) " & correctiveMods
-        'End If
-        'If swalk = True Then
-        '	correctiveMods = "(sidewalk) " & correctiveMods
-        'End If
-        'If mormix = True Then
-        '	correctiveMods = "(mortar mix) " & correctiveMods
-        'End If
-        'If ada = True Then
-        '	correctiveMods = "(ADA ramp) " & correctiveMods
-        'End If
-        'If dway = True Then
-        '	correctiveMods = "(driveway) " & correctiveMods
-        'End If
-        'If flume = True Then
-        '	correctiveMods = "(flume) " & correctiveMods
-        'End If
         If infoOnly = True or NLN = True Then
             do_nothing = 1 
-        Elseif  repeat and age > 0 THEN
+        Elseif age > 0 THEN
             send_email = True
-            scoring_class = "red"
             If useAddress Then
-                    strBody=strBody &"<tr valign='top'><td width='20%' align='right'><b>location:</b></td>	<td width='80%' align='left' class='red'>"&  locationName &"<br></td></tr>"
-                    strBody=strBody &"<tr valign='top'><td width='20%' align='right'><b>address:</b></td>	<td width='80%' align='left' class='red'>"&  address &"<br></td></tr>"
+            		strBody=strBody &"<tr valign='top'><td width='20%' align='right'><b>location:</b></td>	<td width='80%' align='left' class='"& scoring_class &"'>"&  locationName &"<br></td></tr>"
+                    strBody=strBody &"<tr valign='top'><td width='20%' align='right'><b>address:</b></td>	<td width='80%' align='left' class='"& scoring_class &"'>"&  address &"<br></td></tr>"
                 Else
-                    strBody=strBody &"<tr valign='top'><td width='20%' align='right'><b>location:</b></td>	<td width='80%' align='left' class='red'>"&  coordinates &"<br></td></tr>"
+                	strBody=strBody &"<tr valign='top'><td width='20%' align='right'><b>location:</b></td>	<td width='80%' align='left' class='"& scoring_class &"'>"&  coordinates &"<br></td></tr>"
                 End If
-                strBody=strBody &"<tr valign='top'><td width='20%' align='right'><b>action needed:</b></td><td width='80%' align='left' class='red'>"&  correctiveMods &"</td></tr>"
+                strBody=strBody &"<tr valign='top'><td width='20%' align='right'><b>action needed:</b></td><td width='80%' align='left' class='"& scoring_class &"'>"&  correctiveMods &"</td></tr>"
                 If applyScoring Then
-                    strBody=strBody &"<tr valign='top'><td width='20%' align='right'><b>item age:</b></td><td width='80%' align='left' class='red'>"&  age &" days<br></td></tr>"
+                	strBody=strBody &"<tr valign='top'><td width='20%' align='right'><b>item age:</b></td><td width='80%' align='left' class='"& scoring_class &"'>"&  age &" days<br></td></tr>"
                 End If
                 strBody=strBody &"<tr><td colspan='2'><hr noshade size='1' align='center' width='90%'></td></tr>"  & vbCrLf
             End If
@@ -218,10 +142,8 @@ strBody=strBody &"<br>Website: <a href='http://www.swppp.com'>www.swppp.com</a><
 
 rsCoord.Close
 Set rsCoord = Nothing
-
 rsInspec.Close
 Set rsInspec = Nothing
-
 RS3.Close
 SET RS3=nothing
 
@@ -233,8 +155,7 @@ SQL1="SELECT DISTINCT (LTRIM(RTRIM(u.firstName)) +' '+ LTRIM(RTRIM(u.lastName)))
     " FROM ProjectsUsers pu JOIN Users u on pu.userID=u.userID" &_
     " JOIN Inspections i ON pu.projectID=i.projectID" &_
     " WHERE i.inspecID="& inspecID &" AND pu.projectID="& projectID
-Set RS1 = Server.CreateObject("ADODB.Recordset")
-RS1.Open SQL1, connSWPPP
+Set RS1 = connSWPPP.Execute(inspecSQLSELECT)
 
 '--------------------- process mailing -------------------------------------------
 contentSubject= "Inspection Report for "& TRIM(RS1("projectName")) &" "& TRIM(RS1("projectPhase")) &" on "& TRIM(RS1("inspecDate"))

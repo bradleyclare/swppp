@@ -52,7 +52,8 @@ IF IsNull(qualifications) THEN qualifications="" END IF
 strBody=strBody &"<head><style>"
 strBody=strBody &".red{color: #F52006;}"
 strBody=strBody &".black{color: black;}"
-strBody=strBody &".ld{font-weight: bold;}"
+strBody=strBody &".bold{font-weight: bold;}"
+strBody=strBody &".ldred{font-weight: bold; color: red;}"
 strBody=strBody &"</style></head>"
 strBody=strBody &"<body bgcolor='#ffffff' marginwidth='30' leftmargin='30' marginheight='15' topmargin='15'>"
 strBody=strBody &"<center><img src='http://www.swpppinspections.com/images/color_logo_report.jpg' width='300'><br><br>"
@@ -198,7 +199,11 @@ If rsInspec("horton") or rsInspec("forestar") Then
 				size = "90%"
 				weight = "bold"
 				answer = Trim(RSA("Q"&cnt))
-				If answer = Trim(RSQ("default_answer")) or answer = "na" Then
+				default_val = Trim(RSQ("default_answer"))
+				If default_val = "na" Then
+                	default_val = "yes"
+            	End If 
+				If answer = default_val or answer = "na" Then
 					size = "70%"
 					weight = "normal"
 				End If
@@ -304,7 +309,6 @@ Else
 			toilet = rsCoord("toilet")
 			trash = rsCoord("trash")
 			dewater = rsCoord("dewater")
-			dis = rsCoord("discharge")
 			dust = rsCoord("dust")
         	riprap = rsCoord("riprap")
         	outfall = rsCoord("outfall")
@@ -315,6 +319,7 @@ Else
 		    dway = rsCoord("dway")
 		    flume = rsCoord("flume")
 			OSC = rsCoord("osc")
+			dis = rsCoord("discharge")
 			scoring_class = "black"
 			IF applyScoring and repeat THEN
 				IF assignDate = "" THEN
@@ -322,18 +327,28 @@ Else
 				ELSE
 					age = datediff("d",assignDate,currentDate) 
 				END IF
-				IF age > 7 THEN
-					scoring_class = "red"
+				'Response.Write("Age:" & age & " - " & currentDate & "</br>")
+				IF age >= 7 THEN
+					If rsInspec("forestar") Then
+						scoring_class = "red"
+					Else
+						scoring_class = "bold"
+					End If
 				END IF
 			END IF
+			'Response.Write("Scoring Class:" & scoring_class & "</br>")
 			'Response.Write("ID: " & coID & ", Repeat: " & repeat & ", Age: " & age & ", Coord: " & coordinates & ", LocName: " & locationName & ", address: " & address & ", Mods: " & correctiveMods & "<br/>") 
 			If LD = True Then
-					correctiveMods = "(LD) " & correctiveMods
-					scoring_class = "ld"
-			End If
+               correctiveMods = "(LD) " & correctiveMods
+			   If rsInspec("forestar") and repeat Then
+			   	  scoring_class = "ldred"
+			   Else
+                  scoring_class = "bold"
+			   End If
+            End If
 			If OSC = True Then
-					correctiveMods = "(OSC) " & correctiveMods
-			End If
+               correctiveMods = "(OSC) " & correctiveMods
+            End If
 			'If pond = True Then
             '    correctiveMods = "(pond) " & correctiveMods
             'End If

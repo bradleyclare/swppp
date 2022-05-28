@@ -24,11 +24,17 @@ IF Request.Form.Count > 0 THEN %>
     <table>
         <%
         testing = false
+        all_projects = false
         FOR EACH Item IN Request.Form 'loop through each user
             If Item = "testing" Then
                 If Request(Item) = "on" then 
                     testing = true 
-                     %> TESTING ONLY MODE - NO EMAIL WILL BE SENT <% 
+                     %> TESTING ONLY MODE - NO EMAIL WILL BE SENT <br/> <% 
+                End If
+            ElseIf Item = "all_projects" Then
+                If Request(Item) = "on" then 
+                    all_projects = true 
+                     %> ALL PROJECTS MODE <br/> <% 
                 End If
             ElseIf Item <> "userGroup" Then
                 send_email = False
@@ -64,6 +70,7 @@ IF Request.Form.Count > 0 THEN %>
                         " inner join Projects as p" &_
                         " on pu.projectID=p.projectID" &_
                         " WHERE pu.userID = " & userID &_
+                        " AND p.projOpenItemAlert = 1" &_
                         " ORDER BY p.collectionName, p.projectName, p.projectPhase"
                     'Response.Write(SQLSELECT & "<br>")
                     Set connProjUsers = connSWPPP.Execute(SQLSELECT)
@@ -117,7 +124,9 @@ IF Request.Form.Count > 0 THEN %>
                     End If 
 
                     strBody=strBody & "<table>"
-                    If show_horton Then
+                    If show_horton and show_forestar Then
+                        strBody=strBody & "<tr><th>project name</th><th>group name</th><th>over 1 day</th><th>over 5 days</th><th class='red'>over 7 days</th><th class='red'>over 10 days</th><th class='red'>over 14 days</th><th class='red'>repeats</th><th>done</th><th>notes</th><th>alert</th><th>VSCR to sign off</th><th>LDSCR to sign off</th><th>SSCR to sign off</th></tr>"
+                    ElseIf show_horton Then
                         strBody=strBody & "<tr><th>project name</th><th>group name</th><th>over 1 day</th><th>over 5 days</th><th class='red'>over 7 days</th><th class='red'>over 10 days</th><th class='red'>over 14 days</th><th class='red'>repeats</th><th>done</th><th>notes</th><th>alert</th><th>VSCR to sign off</th><th>LDSCR to sign off</th></tr>"
                     ElseIf show_forestar Then
                         strBody=strBody & "<tr><th>project name</th><th>group name</th><th>over 1 day</th><th>over 5 days</th><th class='red'>over 7 days</th><th class='red'>over 10 days</th><th class='red'>over 14 days</th><th class='red'>repeats</th><th>done</th><th>notes</th><th>alert</th><th>SSCR to sign off</th></tr>"
@@ -135,18 +144,18 @@ IF Request.Form.Count > 0 THEN %>
                         groupName = ""
                         groupNameRaw = connProjUsers("collectionName")
                         'Response.Write(groupNameRaw)
-                        startDate=CDATE(Month(Date) &"/1/"& Year(Date)) 
-                        endDate=DateAdd("m",1,startDate)
-                        endDate=DateAdd("d",-1,endDate)
+                        startDate=DateAdd("yyyy",-3,currentDate)
                         SQL0 = "SELECT inspecID, inspecDate, reportType," & _
                             " projectID, projectName, projectPhase, released, includeItems, compliance, totalItems, completedItems, systemic, horton, forestar, hortonSignV, hortonSignLD, vscr, ldscr" & _
                             " FROM Inspections" & _
                             " WHERE projectID = " & projID &_
                             " AND includeItems = 1" &_
                             " AND released = 1" &_
-                            " AND openItemAlert = 1 " &_
+                            " AND openItemAlert = 1" &_
+                            " AND inspecDate BETWEEN '"& startDate &"' AND '"& currentDate &"'" &_
                             " AND (completedItems < totalItems" &_
                             " OR hortonSignV = 1 OR hortonSignLD = 1)"
+
                         'Response.Write(SQL0)
                         Set RS0 = connSWPPP.Execute(SQL0)
 
@@ -172,14 +181,19 @@ IF Request.Form.Count > 0 THEN %>
                         maxAgeVSCR = 0
                         ldscr_needs_approval = False
                         maxAgeLDSCR = 0
+                        empty_project = false
                                         
                         If RS0.EOF Then
+                            empty_project = true
                             If debug_msg=True Then
-                                Response.Write("No Open Items Found<br/>")
+                                Response.Write("No Inspection Reports with Open Items Found.<br/>")
                             End If 
-                    Else
-                        inspecCnt = 0
-                        Do While Not RS0.EOF
+                        Else
+                            If debug_msg=True Then
+                                Response.Write("<h2>Processing Project: "& Trim(RS0("projectName")) & " " & Trim(RS0("projectPhase")) & "</h3>")
+                            End If 
+                            inspecCnt = 0
+                            Do While Not RS0.EOF
                                 inspecCnt = inspecCnt + 1
                                 projName = Trim(RS0("projectName"))
                                 projPhase = Trim(RS0("projectPhase"))
@@ -199,9 +213,9 @@ IF Request.Form.Count > 0 THEN %>
                                 reportAge = datediff("d",inspecDate,currentDate) 
                                 If debug_msg=True Then
                                     If completedItems < totalItems Then
-                                        Response.Write("<h3>ProjID: " & projID & " : "  & projName & " : " & projPhase & " : " & inspecDate & ", total: " & totalItems & ", completed: " & completedItems &"</h3>")
+                                        Response.Write("<h3>ProjID: " & projID & " : "  & projName & " : " & projPhase & " : " & " : " & horton & " : " & " : " & forestar & " : " & inspecDate & " V: " & hortonSignV & " LD: " & hortonSignLD & ", total: " & totalItems & ", completed: " & completedItems &"</h3>")
                                     Else
-                                        Response.Write("<h3>ProjID: " & projID & " : "  & projName & " : " & projPhase & " : " & inspecDate & " - No Open Items</h3>")
+                                        'Response.Write("<h3>ProjID: " & projID & " : "  & projName & " : " & projPhase & " : " & " : " & horton & " : " & " : " & forestar & " : " & inspecDate & " V: " & hortonSignV & " LD: " & hortonSignLD & ", total: " & totalItems & ", completed: " & completedItems &" - No Open Items</h3>")
                                     End If
                                 End If
 
@@ -272,114 +286,114 @@ IF Request.Form.Count > 0 THEN %>
                                 End If
 
                                 if completedItems < totalItems then
-                                'open items on report tally up the open item dates 
-                                coordSQLSELECT = "SELECT coID, assignDate, status, repeat, NLN, LD FROM Coordinates" &_
-                                    " WHERE inspecID=" & inspecID &_
-                                    " AND status=0" &_
-                                    " AND infoOnly=0" &_
-                                    " ORDER BY orderby"	
-                                'Response.Write(coordSQLSELECT)
-                                Set rsCoord = connSWPPP.execute(coordSQLSELECT)
+                                    'open items on report tally up the open item dates 
+                                    coordSQLSELECT = "SELECT coID, assignDate, status, repeat, NLN, LD FROM Coordinates" &_
+                                        " WHERE inspecID=" & inspecID &_
+                                        " AND status=0" &_
+                                        " AND infoOnly=0" &_
+                                        " ORDER BY orderby"	
+                                    'Response.Write(coordSQLSELECT)
+                                    Set rsCoord = connSWPPP.execute(coordSQLSELECT)
 
-                                If rsCoord.EOF Then
-                                    'do nothing
+                                    If rsCoord.EOF Then
+                                        'do nothing
                                     Else
-                                    Do While Not rsCoord.EOF
-                                        iterCnt = iterCnt + 1
-                                        coordCnt = coordCnt + 1
-                                        coID = rsCoord("coID")
-                                        assignDate = rsCoord("assignDate") 
-                                        status = rsCoord("status")
-                                        repeat = rsCoord("repeat")
-                                        NLN = rsCoord("NLN")
-                                        LD = rsCoord("LD")
-                                        If assignDate = "" Then
+                                        Do While Not rsCoord.EOF
+                                            iterCnt = iterCnt + 1
+                                            coordCnt = coordCnt + 1
+                                            coID = rsCoord("coID")
+                                            assignDate = rsCoord("assignDate") 
+                                            status = rsCoord("status")
+                                            repeat = rsCoord("repeat")
+                                            NLN = rsCoord("NLN")
+                                            LD = rsCoord("LD")
+                                            If assignDate = "" Then
                                                 age = 0
                                             Else
                                                 age = datediff("d",assignDate,currentDate) 
                                             End If
-                                        If debug_msg=True Then
-                                            Response.Write("ID: " & coID &", Age: "& age &", Status: "& status &", LD: "& LD &", Repeat: "& repeat & ", Systemic: " & RS0("systemic") &"<br/>")
-                                        End If
-                                        
-                                        If NLN = True Then
-                                            'continue
-                                        ElseIf repeat = True Then
-                                            displayProj = True
-                                            repeatCnt = repeatCnt + 1
-                                            if LD = True Then
-                                                repeatCntLD = repeatCntLD + 1
-                                            End If
-                                        Else
-                                            If age > 14 Then
-                                                    coordCnt14 = coordCnt14 + 1
-                                                    displayProj = True
-                                                    If LD = True Then
-                                                        coordCntLD14 = coordCntLD14 + 1
-                                                    End If
-                                            ElseIf age > 10 Then
-                                                    coordCnt10 = coordCnt10 + 1
-                                                    displayProj = True
-                                                    If LD = True Then
-                                                        coordCntLD10 = coordCntLD10 + 1
-                                                    End If
-                                            ElseIf age > 7 Then
-                                                    coordCnt7 = coordCnt7 + 1
-                                                    displayProj = True
-                                                    If LD = True Then
-                                                        coordCntLD7 = coordCntLD7 + 1
-                                                    End If
-                                            ElseIf age > 5 Then
-                                                    coordCnt5 = coordCnt5 + 1
-                                                    displayProj = True
-                                                    If LD = True Then
-                                                        coordCntLD5 = coordCntLD5 + 1
-                                                    End If
-                                            ElseIf age > 1 Then
-                                                    coordCnt1 = coordCnt1 + 1
-                                                    displayProj = True
-                                                    If LD = True Then
-                                                        coordCntLD1 = coordCntLD1 + 1
-                                                    End If
-                                            End If
-                                        End If 'end repeat
-
-                                        'check for comments
-                                        commSQLSELECT = "SELECT comment, userID, date" &_
-                                                " FROM CoordinatesComments WHERE coID=" & coID	
-                                        Set rsComm = connSWPPP.execute(commSQLSELECT)       
-                                        marked_done = False
-                                        marked_complete = False
-                                        Do While not rsComm.EOF
-                                            comment = rsComm("comment")   
-                                            if InStr(comment,"This item was marked") <> 1 Then
-                                                displayComments = True
-                                            End If
-                                            If comment = "This item was marked done" Then
-                                                marked_done = True
-                                            End If
-                                            If comment = "This item was marked complete" Then
-                                                marked_complete = True
-                                            End If
-                                            rsComm.MoveNext
-                                        LOOP
-                                        If marked_done and not marked_complete Then
                                             If debug_msg=True Then
-                                                Response.Write("Item marked done but not complete.</br>")
+                                                Response.Write("ID: " & coID &", Age: "& age &", Status: "& status &", LD: "& LD &", Repeat: "& repeat & ", Systemic: " & RS0("systemic") &"<br/>")
                                             End If
-                                            doneCnt = doneCnt + 1
-                                        End If
-                                        
-                                        if RS0("systemic") then
-                                            displaySystemic = True
-                                        Else
-                                            displaySystemic = False
-                                        end if
-                                        rsCoord.MoveNext
-                                    LOOP
-                                    rsCoord.Close
-                                    SET rsCoord=nothing
-                                End If
+                                            
+                                            If NLN = True Then
+                                                'continue
+                                            ElseIf repeat = True Then
+                                                displayProj = True
+                                                repeatCnt = repeatCnt + 1
+                                                if LD = True Then
+                                                    repeatCntLD = repeatCntLD + 1
+                                                End If
+                                            Else
+                                                If age >= 14 Then
+                                                        coordCnt14 = coordCnt14 + 1
+                                                        displayProj = True
+                                                        If LD = True Then
+                                                            coordCntLD14 = coordCntLD14 + 1
+                                                        End If
+                                                ElseIf age >= 10 Then
+                                                        coordCnt10 = coordCnt10 + 1
+                                                        displayProj = True
+                                                        If LD = True Then
+                                                            coordCntLD10 = coordCntLD10 + 1
+                                                        End If
+                                                ElseIf age >= 7 Then
+                                                        coordCnt7 = coordCnt7 + 1
+                                                        displayProj = True
+                                                        If LD = True Then
+                                                            coordCntLD7 = coordCntLD7 + 1
+                                                        End If
+                                                ElseIf age >= 5 Then
+                                                        coordCnt5 = coordCnt5 + 1
+                                                        displayProj = True
+                                                        If LD = True Then
+                                                            coordCntLD5 = coordCntLD5 + 1
+                                                        End If
+                                                ElseIf age > 1 Then
+                                                        coordCnt1 = coordCnt1 + 1
+                                                        displayProj = True
+                                                        If LD = True Then
+                                                            coordCntLD1 = coordCntLD1 + 1
+                                                        End If
+                                                End If
+                                            End If 'end repeat
+
+                                            'check for comments
+                                            commSQLSELECT = "SELECT comment, userID, date" &_
+                                                    " FROM CoordinatesComments WHERE coID=" & coID	
+                                            Set rsComm = connSWPPP.execute(commSQLSELECT)       
+                                            marked_done = False
+                                            marked_complete = False
+                                            Do While not rsComm.EOF
+                                                comment = rsComm("comment")   
+                                                if InStr(comment,"This item was marked") <> 1 Then
+                                                    displayComments = True
+                                                End If
+                                                If comment = "This item was marked done" Then
+                                                    marked_done = True
+                                                End If
+                                                If comment = "This item was marked complete" Then
+                                                    marked_complete = True
+                                                End If
+                                                rsComm.MoveNext
+                                            LOOP
+                                            If marked_done and not marked_complete Then
+                                                If debug_msg=True Then
+                                                    Response.Write("Item marked done but not complete.</br>")
+                                                End If
+                                                doneCnt = doneCnt + 1
+                                            End If
+                                            
+                                            if RS0("systemic") then
+                                                displaySystemic = True
+                                            Else
+                                                displaySystemic = False
+                                            end if
+                                            rsCoord.MoveNext
+                                        LOOP
+                                        rsCoord.Close
+                                        SET rsCoord=nothing
+                                    End If
                                 End If
                                 RS0.MoveNext
                             Loop 'RSO
@@ -390,7 +404,7 @@ IF Request.Form.Count > 0 THEN %>
                         If debug_msg=True Then
                             Response.Write("inspecCnt: " & inspecCnt & ", coordCnt: " & coordCnt & ", displayProj: " & displayProj & "<br/>")
                         End If 
-                        If (inspecCnt > 0 and coordCnt > 0 and displayProj = True) or vscr_needs_approval or ldscr_needs_approval Then
+                        If not empty_project and ((inspecCnt > 0 and coordCnt > 0 and displayProj = True) or vscr_needs_approval or ldscr_needs_approval or all_projects) Then
                             reportLink = "http://swppp.com/views/openActionItems.asp?pID=" & projID
                             strBody=strBody & VBCrLf & "<tr><td><a href='" & reportLink & "' target='_blank'>" & projName &" "& projPhase &"</td><td>"& groupName &"</td><td>"
                             If coordCnt1 > 0 Then
@@ -452,26 +466,46 @@ IF Request.Form.Count > 0 THEN %>
                                 strBody=strBody & "<a href='http://swppp.com/views/viewComments.asp?pID=" & projID &"'> N </a>"
                             End If
                             
-                            strBody=strBody & "</td><td>"
+                            strBody=strBody & "</td><td class='a'>"
                             if displaySystemic Then
                                 strBody=strBody & "<a href='http://swppp.com/views/viewSystemicNote.asp?pID=" & projID &"'> A </a>"
                             End If
                             If show_horton Then
-                                link = "http://swppp.com/views/inspections.asp?projID=" & projID & "&projName="& projName &"&projPhase=" & projPhase
-                                strBody=strBody & "</td><td>"
-                                if hortonSignV Then
-                                    If Not vscr_needs_approval Then
-                                        strBody=strBody & " "
-                                    ElseIf maxAgeVSCR > 2 Then
-                                        strBody=strBody & "<a href='"& link &"' target='_blank'>" & maxAgeVSCR & " days over</a>" 
+                                If horton Then
+                                    link = "http://swppp.com/views/inspections.asp?projID=" & projID & "&projName="& projName &"&projPhase=" & projPhase
+                                    strBody=strBody & "</td><td class='v1'>"
+                                    if hortonSignV Then
+                                        If Not vscr_needs_approval Then
+                                            strBody=strBody & " "
+                                        ElseIf maxAgeVSCR > 2 Then
+                                            strBody=strBody & "<a href='"& link &"' target='_blank'>" & maxAgeVSCR & " days over</a>" 
+                                        Else
+                                            strBody=strBody & "<a href='"& link &"' target='_blank'>sign off</a>" 
+                                        End If
                                     Else
-                                        strBody=strBody & "<a href='"& link &"' target='_blank'>sign off</a>" 
+                                        strBody=strBody & " "
+                                    End If    
+                                    strBody=strBody & "</td><td class='v2'>"
+                                    if hortonSignLD Then
+                                        If Not ldscr_needs_approval Then
+                                            strBody=strBody & " "
+                                        ElseIf maxAgeLDSCR > 2 Then
+                                            strBody=strBody & "<a href='"& link &"' target='_blank'>" & maxAgeLDSCR & " days over</a>" 
+                                        Else
+                                            strBody=strBody & "<a href='"& link &"' target='_blank'>sign off</a>" 
+                                        End If
+                                    Else
+                                        strBody=strBody & " "
                                     End If
                                 Else
-                                    strBody=strBody & " "
-                                End If    
-                                strBody=strBody & "</td><td>"
-                                if hortonSignLD Then
+                                    strBody=strBody & "</td><td class='v3'>"
+                                    strBody=strBody & "</td><td class='v4'>"
+                                End If
+                            End If
+                            If show_forestar Then
+                                If forestar Then
+                                    link = "http://swppp.com/views/inspections.asp?projID=" & projID & "&projName="& projName &"&projPhase=" & projPhase
+                                    strBody=strBody & "</td><td class='f1'>"
                                     If Not ldscr_needs_approval Then
                                         strBody=strBody & " "
                                     ElseIf maxAgeLDSCR > 2 Then
@@ -480,18 +514,7 @@ IF Request.Form.Count > 0 THEN %>
                                         strBody=strBody & "<a href='"& link &"' target='_blank'>sign off</a>" 
                                     End If
                                 Else
-                                    strBody=strBody & " "
-                                End If
-                            End If
-                            If show_forestar Then
-                                link = "http://swppp.com/views/inspections.asp?projID=" & projID & "&projName="& projName &"&projPhase=" & projPhase
-                                strBody=strBody & "</td><td>"
-                                If Not ldscr_needs_approval Then
-                                    strBody=strBody & " "
-                                ElseIf maxAgeLDSCR > 2 Then
-                                    strBody=strBody & "<a href='"& link &"' target='_blank'>" & maxAgeLDSCR & " days over</a>" 
-                                Else
-                                    strBody=strBody & "<a href='"& link &"' target='_blank'>sign off</a>" 
+                                    strBody=strBody & "</td><td class='f2'>"
                                 End If
                             End If
                             strBody=strBody & "</td></tr>"
@@ -585,7 +608,7 @@ ELSE
             <FORM action="<%= Request.ServerVariables("SCRIPT_NAME") %>" method="post">
             <div align="center">
                 select the users below to send open item alerts via email<br />
-                <input type="submit" value="Send Emails"><input type="checkbox" name="testing"/>test mode (do not send email)<br /><br />
+                <input type="submit" value="Send Emails"><input type="checkbox" name="all_projects"/>include all projects <input type="checkbox" name="testing"/>test mode (do not send email)<br /><br />
                 select user group
                 <select name="userGroup" onchange="selectUsers(this)">
                     <option value="0 - No Group">0 - No Group</option>

@@ -251,7 +251,7 @@ SQL1 = "SELECT p.*, u.userID, u.firstName, u.lastName, u.rights as rights1, pu.r
 	" FROM Projects as p JOIN ProjectsUsers as pu ON p.projectID=pu.projectID LEFT JOIN Users as u" &_
 	" ON pu.userID=u.userID"
 	IF Session("validDirector") AND NOT(session("validAdmin")) THEN		
-		SQL1=SQL1 & " WHERE p.projectID IN (SELECT projectID FROM ProjectsUsers WHERE userID=" & Session("userID") &" AND rights='director')"
+		SQL1=SQL1 & " WHERE p.projectID IN (SELECT projectID FROM ProjectsUsers WHERE userID=" & Session("userID") &" AND rights='director') AND active=1"
 	END IF
 SQL1=SQL1 & " ORDER BY projectName ASC, projectPhase ASC"
 SET RS1=connSWPPP.execute(SQL1)

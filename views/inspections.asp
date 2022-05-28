@@ -78,15 +78,19 @@ If Request.Form.Count > 0 Then
 End If
 
 If Session("validAdmin") Then
-	inspectInfoSQLSELECT = "SELECT DISTINCT inspecID, inspecDate, totalItems, completedItems, includeItems, compliance, released, horton, hortonSignV, hortonSignLD, vscr, ldscr, forestar, p.projectName, p.projectPhase, ImageCount = (Select Count(ImageID) From Images Where inspecID = i.inspecID)" & _
+	inspectInfoSQLSELECT = "SELECT DISTINCT inspecID, inspecDate, totalItems, completedItems, includeItems, compliance, released, horton, hortonSignV, hortonSignLD, vscr, ldscr, " & _
+	 	" forestar, p.projectName, p.projectPhase, ImageCount = (Select Count(ImageID) From Images Where inspecID = i.inspecID)" & _
 		" FROM Projects as p, Inspections as i" & _
 		" WHERE i.projectID=p.projectID" &_
+		" AND i.released=1" &_
 		" AND i.projectID="& projectID &_
 		" ORDER BY inspecDate DESC"
 Else
-	inspectInfoSQLSELECT = "SELECT DISTINCT inspecID, inspecDate, totalItems, completedItems, includeItems, compliance, released, horton, hortonSignV, hortonSignLD, vscr, ldscr, forestar, p.projectName, p.projectPhase, ImageCount = (Select Count(ImageID) From Images Where inspecID = i.inspecID)" & _
+	inspectInfoSQLSELECT = "SELECT DISTINCT inspecID, inspecDate, totalItems, completedItems, includeItems, compliance, released, horton, hortonSignV, hortonSignLD, vscr, ldscr, " & _
+		" forestar, p.projectName, p.projectPhase, ImageCount = (Select Count(ImageID) From Images Where inspecID = i.inspecID)" & _
 		" FROM Projects as p, ProjectsUsers as pu, Inspections as i" & _
 		" WHERE pu.userID = " & Session("userID") &_
+		" AND i.released=1" &_
 		" AND i.projectID=p.projectID" &_
 		" AND i.projectID="& projectID &_
       " ORDER BY inspecDate DESC"
@@ -105,8 +109,8 @@ SET RS1=connSWPPP.execute(SQL1)
 hortonFlag=False
 completePast="completed"
 if NOT(RS1.EOF) THEN 
-	hortonFlag=True 
-	completePast="closed"
+    hortonFlag=True 
+    completePast="closed"
 END IF
 
 SQL1="SELECT inspecID FROM Inspections WHERE hortonSignV=1 AND projectID="& projectID
@@ -133,10 +137,9 @@ if NOT(RS1.EOF) THEN hortonUserLD=True END IF
 SQL1="SELECT inspecID FROM Inspections WHERE forestar=1 AND projectID="& projectID
 SET RS1=connSWPPP.execute(SQL1)
 forestarFlag=False
-completePast="completed"
 if NOT(RS1.EOF) THEN 
-	forestarFlag=True 
-	completePast="closed"
+    forestarFlag=True 
+    completePast="closed"
 END IF
 %>
 

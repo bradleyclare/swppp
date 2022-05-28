@@ -27,12 +27,14 @@ SET RSH=connSWPPP.execute(SQLH)
 hortonFlag=False
 completePast="completed"
 completeAction="complete"
-completeDate = "complete"
+completeDate = "completion date"
+closeDate = "completion date"
 if NOT(RSH.EOF) THEN 
     hortonFlag=True 
     completePast="closed"
     completeAction="close"
-    completeDate="close"
+    completeDate="item status"
+    closeDate="close date"
 END IF
 
 SQLH="SELECT inspecID FROM Inspections WHERE forestar=1 AND projectID="& projectID
@@ -42,7 +44,8 @@ if NOT(RSH.EOF) THEN
     forestarFlag=True 
     completePast="closed"
     completeAction="close"
-    completeDate="close"
+    completeDate="completion date"
+    closeDate="close date"
 END IF
 %>
 
@@ -81,10 +84,10 @@ Set rsInspectInfo = connSWPPP.Execute(inspectInfoSQLSELECT)
             <th width="5%" align="left"><%=completePast%></th>
             <th width="2.5%" align="left">NLN</th>
         <% End If %>
-        <% If forestarFlag or Session("validAdmin") or Session("validDirector") or Session("validErosion") Then %>
-            <th width="5%" align="left">completion date</th>
+        <% If hortonFlag or forestarFlag Then %>
+            <th width="5%" align="left"><%=completeDate%></th>
         <% End If %>
-        <th width="5%" align="left"><%=completeDate%> date</th>  
+        <th width="5%" align="left"><%=closeDate%></th>  
         <th width="5%" align="left">report date</th>
         <th width="15%" align="left">location</th>
         <th align="left">action item</th>
@@ -161,6 +164,8 @@ Else
                             doneer = rsComm("firstName") & " " & rsComm("lastName")
                             doneDate = rsComm("date")
                             show_done = true
+                        Elseif rsComm("comment") = "This item was marked incomplete" Then
+                            'do nothing
                         Else
                             show_note = true
                         End If
@@ -186,7 +191,7 @@ Else
                         <td align="left"><input type="checkbox" name="coord:complete:<%= n %>" <%=status_str %> /></td>
                         <td align="left"><input type="checkbox" name="coord:nln:<%= n %>" <%=nln_str %> /></td>
                     <% End If %>
-		            <% If forestarFlag or Session("validAdmin") or Session("validDirector") Then %> 
+		            <% If hortonFlag or forestarFlag Then %> 
                         <% If show_done Then %>
                             <% If Session("validAdmin") or Session("validDirector") then %>
 		                        <td align="left"><a href="viewOpenItemComments.asp?coID=<%=coID%>" target="_blank"><%= doneDate %>: <%= doneer %></a></td>

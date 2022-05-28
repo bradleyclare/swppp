@@ -13,7 +13,8 @@ IF (IsNull(projectID) OR NOT(IsNumeric(projectID))) THEN Response.redirect("view
 
 If Request.Form.Count>0 THEN
 	err=0
-	phaseNum=Request("phaseNum")
+	active=Request("active")
+	projOpenItemAlert = Request("projOpenItemAlert")
 	initInspecCost=Request("initInspecCost")
 	IF NOT(IsNumeric(initInspecCost)) THEN err=err+4 END IF
 	inspecCost=Request("inspecCost")
@@ -21,8 +22,9 @@ If Request.Form.Count>0 THEN
 	invoiceMemo=Trim(Request("invoiceMemo"))
 	IF (Request("bCycle")<1 OR Request("bCycle")>4) THEN err=err+16 END IF
 	if err=0 then
-		SQL1="UPDATE Projects SET phaseNum="& phaseNum &", initInspecCost="& initInspecCost &", inspecCost="& inspecCost &", invoiceMemo = '"& invoiceMemo &"', billCycle='"& Trim(Request("bCycle")) &"', collectionName = '"&Trim(Request("groupName")) & "'"&_
+		SQL1="UPDATE Projects SET active='"& active &"', projOpenItemAlert='"& projOpenItemAlert &"', initInspecCost="& initInspecCost &", inspecCost="& inspecCost &", invoiceMemo = '"& invoiceMemo &"', billCycle='"& Trim(Request("bCycle")) &"', collectionName = '"&Trim(Request("groupName")) & "'"&_
 			" WHERE projectID="& projectID
+		'Response.Write(SQL1)
 		connSWPPP.Execute(SQL1)	
 	else
 		err=DecToBin(err)
@@ -116,7 +118,9 @@ End Function
 	<tr><th>Project Phase</th>
 		<td align=left><%= Trim(RS0("projectPhase"))%></td></tr>
 	<tr><th>Active Project</th>
-		<td align=left><INPUT maxlength="1" name="phaseNum"  value="<%= Trim(RS0("phaseNum"))%>"></td></tr>
+		<td align=left><INPUT maxlength="1" name="active"  value="<%= Trim(RS0("active"))%>"></td></tr>
+	<tr><th>Open Item Alert</th>
+		<td align=left><INPUT maxlength="1" name="projOpenItemAlert"  value="<%= Trim(RS0("projOpenItemAlert"))%>"></td></tr>
 <% 	IF LEN(err)>2 THEN
 		IF MID(err,Len(err)-2,1)="1" THEN %><tr><td colspan="2"><font color="red">*The Initial Inspection Cost must be a number*</font></td></tr><% END IF %>
 <%	END IF %>

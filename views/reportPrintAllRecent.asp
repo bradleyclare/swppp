@@ -1,11 +1,11 @@
 <%@ Language="VBScript" %>
-<%Response.Buffer = False%>
-<%
+<% Response.buffer = false
 If _
 	Not Session("validAdmin") And _
-	Not Session("validUser") And _
 	Not Session("validDirector") And _
-	Not Session("validInspector") _
+	Not Session("validInspector") And _
+	Not Session("validUser") _
+	
 Then
 	Session("adminReturnTo") = Request.ServerVariables("path_info") & _
 		"?" & Request.ServerVariables("query_string")
@@ -34,7 +34,8 @@ SET RS1 = connSWPPP.Execute(SQL1)
 <style>
 	.red{color: #F52006;}
 	.black{color: black;}
-    .ld{font-weight: bold;}
+    .bold{font-weight: bold;}
+	.ldred{font-weight: bold; color: red;}
 </style>
 </head>
 <body bgcolor="#ffffff" marginwidth="30" leftmargin="30" marginheight="15" topmargin="15" onLoad="window.print();"><% '--window.close();
@@ -214,7 +215,11 @@ If RS2("horton") or RS2("forestar") Then
 				size = "90%"
 				weight = "bold"
 				answer = Trim(RSA("Q"&cnt))
-				If answer = Trim(RSQ("default_answer")) or answer = "na" Then
+				default_val = Trim(RSQ("default_answer"))
+				If default_val = "na" Then
+                	default_val = "yes"
+            	End If 
+				If answer = default_val or answer = "na" Then
 					size = "70%"
 					weight = "normal"
 				End If
@@ -286,10 +291,13 @@ Else
 	    Response.Write("<tr><td colspan='2' align='center'><i>There is no " & _
 		    "coordinate data entered at this time.</i></td></tr>")
     Else
-	    applyScoring = True
-	    'if RS2("includeItems")=True & Session("seeScoring")=True Then applyScoring = True End If
-	    currentDate = date()
-	    Do While Not rsCoord.EOF
+		If Session("validInspector") or RS2("forestar") Then
+	    	applyScoring = True
+		Else
+			applyScoring = false
+		End IF
+		currentDate = date()
+		Do While Not rsCoord.EOF
 			coID = rsCoord("coID")
 			correctiveMods = Trim(rsCoord("correctiveMods"))
 			orderby = rsCoord("orderby")
@@ -319,7 +327,6 @@ Else
 			toilet = rsCoord("toilet")
 			trash = rsCoord("trash")
 			dewater = rsCoord("dewater")
-			dis = rsCoord("discharge")
 			dust = rsCoord("dust")
         	riprap = rsCoord("riprap")
         	outfall = rsCoord("outfall")
@@ -327,103 +334,114 @@ Else
 			swalk = rsCoord("swalk")
 			mormix = rsCoord("mormix")
 			ada = rsCoord("ada")
-			dway = rsCoord("dway")
-			flume = rsCoord("flume")
+		    dway = rsCoord("dway")
+		    flume = rsCoord("flume")
 			OSC = rsCoord("osc")
+			dis = rsCoord("discharge")
 			scoring_class = "black"
-			'Response.Write("ID: " & coID & ", Coord: " & coordinates & ", LocName: " & locationName & ", address: " & address & ", Mods: " & correctiveMods & "<br/>") 
-			IF applyScoring THEN
+			IF applyScoring and repeat THEN
 				IF assignDate = "" THEN
 					age = 0
 				ELSE
 					age = datediff("d",assignDate,currentDate) 
 				END IF
-				IF age > 7 THEN
-					scoring_class = "red"
+				'Response.Write("Age:" & age & " - " & currentDate & "</br>")
+				IF age >= 7 THEN
+					If RS2("forestar") or Session("validInspector") Then
+						scoring_class = "red"
+					Else
+						scoring_class = "black"
+					End If
 				END IF
 			END IF
-            If LD = True Then
-                correctiveMods = "(LD) " & correctiveMods
-                scoring_class = "ld"
+			'Response.Write("Scoring Class:" & scoring_class & "</br>")
+			'Response.Write("ID: " & coID & ", Repeat: " & repeat & ", Age: " & age & ", Coord: " & coordinates & ", LocName: " & locationName & ", address: " & address & ", Mods: " & correctiveMods & "<br/>") 
+			If LD = True Then
+               correctiveMods = "(LD) " & correctiveMods
+			   If (RS2("forestar") or Session("validInspector")) and repeat Then
+			   	  scoring_class = "ldred"
+			   Else
+                  scoring_class = "bold"
+			   End If
             End If
-				If OSC = True Then
-                correctiveMods = "(OSC) " & correctiveMods
+			If OSC = True Then
+               correctiveMods = "(OSC) " & correctiveMods
             End If
-			If pond = True Then
-                correctiveMods = "(pond) " & correctiveMods
-            End If
-			If sedloss = True Then
-                correctiveMods = "(sediment loss) " & correctiveMods
-            End If
-			If sedlossw = True Then
-                correctiveMods = "(sediment loss to waters) " & correctiveMods
-            End If
-			If ce = True Then
-                correctiveMods = "(construction entrance) " & correctiveMods
-            End If
-			If street = True Then
-                correctiveMods = "(street cleaning) " & correctiveMods
-            End If
-			If sfeb = True Then
-                correctiveMods = "(perimeter controls) " & correctiveMods
-            End If
-			If rockdam = True Then
-	        	correctiveMods = "(rock dam) " & correctiveMods
-            End If
-			If ip = True Then
-                correctiveMods = "(inlet protection) " & correctiveMods
-            End If
-			If wo = True Then
-                correctiveMods = "(washout) " & correctiveMods
-            End If
-			If veg = True Then
-                correctiveMods = "(vegetation) " & correctiveMods
-            End If
-			If stock = True Then
-                correctiveMods = "(stockpile) " & correctiveMods
-            End If
-			If toilet = True Then
-                correctiveMods = "(toilet) " & correctiveMods
-            End If
-			If trash = True Then
-                correctiveMods = "(trash/waste/material) " & correctiveMods
-            End If
-			If dewater = True Then
-				correctiveMods = "(dewatering) " & correctiveMods
+			If Session("validInspector") Then
+				If wo = True Then
+					correctiveMods = "(wo) " & correctiveMods
+				End If
+				If veg = True Then
+					correctiveMods = "(veg) " & correctiveMods
+				End If
+				If toilet = True Then
+					correctiveMods = "(toilet) " & correctiveMods
+				End If
+				If trash = True Then
+					correctiveMods = "(trash) " & correctiveMods
+				End If
+				If swalk = True Then
+					correctiveMods = "(swalk) " & correctiveMods
+				End If
+				If stock = True Then
+					correctiveMods = "(stock) " & correctiveMods
+				End If
+				If street = True Then
+					correctiveMods = "(street) " & correctiveMods
+				End If
+				If sedlossw = True Then
+					correctiveMods = "(sedlossw) " & correctiveMods
+				End If
+				If sedloss = True Then
+					correctiveMods = "(sedloss) " & correctiveMods
+				End If
+				If rockdam = True Then
+					correctiveMods = "(rockdam) " & correctiveMods
+				End If
+				If riprap = True Then
+					correctiveMods = "(riprap) " & correctiveMods
+				End If
+				If pond = True Then
+					correctiveMods = "(pond) " & correctiveMods
+				End If
+				If outfall = True Then
+					correctiveMods = "(outfall) " & correctiveMods
+				End If
+				If mormix = True Then
+					correctiveMods = "(mormix) " & correctiveMods
+				End If
+				If ip = True Then
+					correctiveMods = "(ip) " & correctiveMods
+				End If
+				If intop = True Then
+					correctiveMods = "(intop) " & correctiveMods
+				End If
+				If flume = True Then
+					correctiveMods = "(flume) " & correctiveMods
+				End If
+				If sfeb = True Then
+					correctiveMods = "(eb/tf/sf) " & correctiveMods
+				End If
+				If dway = True Then
+					correctiveMods = "(dway) " & correctiveMods
+				End If
+				If dust = True Then
+					correctiveMods = "(dust) " & correctiveMods
+				End If
+				If dis = True Then
+					correctiveMods = "(dis) " & correctiveMods
+				End If
+				If dewater = True Then
+					correctiveMods = "(dewater) " & correctiveMods
+				End If
+				If ce = True Then
+					correctiveMods = "(ce) " & correctiveMods
+				End If
+				If ada = True Then
+					correctiveMods = "(ada) " & correctiveMods
+				End If
 			End If
-			If dis = True Then
-				correctiveMods = "(discharge) " & correctiveMods
-			End If
-			If dust = True Then
-				correctiveMods = "(dust control) " & correctiveMods
-			End If
-			If riprap = True Then
-	        	correctiveMods = "(riprap) " & correctiveMods
-	        End If
-	        If outfall = True Then
-	        	correctiveMods = "(outfall) " & correctiveMods
-	        End If
-			If intop = True Then
-        		correctiveMods = "(inlet top) " & correctiveMods
-            End If
-            If swalk = True Then
-        		correctiveMods = "(sidewalk) " & correctiveMods
-            End If
-            If mormix = True Then
-        		correctiveMods = "(mortar mix) " & correctiveMods
-            End If
-			If ada = True Then
-				correctiveMods = "(ADA ramp) " & correctiveMods
-			End If
-			If dway = True Then
-				correctiveMods = "(driveway) " & correctiveMods
-			End If
-			If flume = True Then
-				correctiveMods = "(flume) " & correctiveMods
-			End If
-            If NLN = True Then
-                'do nothing
-            ElseIf infoOnly = True and (useAddress=False and coordinates="") or (useAddress=True and locationName="" and address="") Then %>
+            If infoOnly = True and (useAddress=False and coordinates="") or (useAddress=True and locationName="" and address="") Then %>
                 <tr valign='top'><td width='20%' align='right'><b>note:</b></td><td width='80%' align='left' class = '<%=scoring_class%>'><%=correctiveMods%></td></tr>
             <% Else
 		        IF useAddress THEN %>

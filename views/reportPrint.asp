@@ -11,8 +11,8 @@ inspecSQLSELECT = "SELECT inspecDate, Inspections.projectID, Inspections.project
 	" AND Inspections.projectID = Projects.projectID" & _
 	" AND Inspections.userID = Users.userID"
 'Response.Write(inspecSQLSELECT)
-Set rsInspec = connSWPPP.Execute(inspecSQLSELECT)
-'Response.Write("signature = " & Trim(rsInspec("signature")) & "<br>")
+Set RS2 = connSWPPP.Execute(inspecSQLSELECT)
+'Response.Write("signature = " & Trim(RS2("signature")) & "<br>")
  %>
 
 <html>
@@ -22,97 +22,98 @@ Set rsInspec = connSWPPP.Execute(inspecSQLSELECT)
 <style>
 	.red{color: #F52006;}
 	.black{color: black;}
-    .ld{font-weight: bold;}
+    .bold{font-weight: bold;}
+	.ldred{font-weight: bold; color: red;}
 </style>
 </head>
 <body bgcolor="#ffffff" marginwidth="30" leftmargin="30" marginheight="15" topmargin="15">
 <center><img src="../images/color_logo_report.jpg" width="300"><br><br>
 <font size="+1"><b>Inspection Report</b></font><hr noshade size="1" width="90%"></center>
 <table cellpadding="2" cellspacing="0" border="0" width="90%">
-	<% if rsInspec.EOF then %>
+	<% if RS2.EOF then %>
 		<h2>No Report Found.</h2>
 	<% else %>
 	<!-- date -->
 	<tr> 
 		<td align="right"><b>Date:</b></td>
-		<td colspan="3"><% = Trim(rsInspec("inspecDate")) %></td>
+		<td colspan="3"><% = Trim(RS2("inspecDate")) %></td>
 	</tr>
 	<!-- project name -->
 	<tr> 
 		<td align="right"><b>Project Name:</b></td>
-		<td colspan="3"><% = Trim(rsInspec("projectName")) %>&nbsp;<% = Trim(rsInspec("projectPhase")) %></td>
+		<td colspan="3"><% = Trim(RS2("projectName")) %>&nbsp;<% = Trim(RS2("projectPhase")) %></td>
 	</tr>
 	<!-- project location -->
 	<tr> 
 		<td align="right" valign="top"><b>Project Location:</b></td>
-		<td colspan="3" valign="top"><% = Trim(rsInspec("projectAddr")) %></td>
+		<td colspan="3" valign="top"><% = Trim(RS2("projectAddr")) %></td>
 	</tr>
 	<tr>
 		<td align="right">&nbsp;</td>
-		<td colspan="3"><% = (Trim(rsInspec("projectCity")) & ", " & rsInspec("projectState") & " " & Trim(rsInspec("projectZip"))) %></td>
+		<td colspan="3"><% = (Trim(RS2("projectCity")) & ", " & RS2("projectState") & " " & Trim(RS2("projectZip"))) %></td>
 	</tr>
 	<tr> 
 		<td align="right"><b>County:</b></td>
-		<td colspan="3"><% = Trim(rsInspec("projectCounty")) %></td>
+		<td colspan="3"><% = Trim(RS2("projectCounty")) %></td>
 	</tr>
 	<!-- On-Site Contact -->
 	<tr> 
 		<td align="right"><b>On-Site Contact:</b></td>
-		<td colspan="3"><% = Trim(rsInspec("onsiteContact")) %></td>
+		<td colspan="3"><% = Trim(RS2("onsiteContact")) %></td>
 	</tr>
 	<!-- office phone number --><% 
-	If Len(Trim(rsInspec("officePhone"))) > 0 then %>
+	If Len(Trim(RS2("officePhone"))) > 0 then %>
 	<tr> 
 		<td align="right"><b>On-Site Contact:</b></td>
-		<td colspan="3"><% = Trim(rsInspec("officePhone")) %></td>
+		<td colspan="3"><% = Trim(RS2("officePhone")) %></td>
 	</tr><%
 	End If %>
 	<!-- emergency phone number --><% 
-	If Len(Trim(rsInspec("emergencyPhone"))) > 0 then %>
+	If Len(Trim(RS2("emergencyPhone"))) > 0 then %>
 	<tr> 
 		<td align="right"><b>
-		<% If rsInspec("forestar") = True Then %>
+		<% If RS2("forestar") = True Then %>
 			TPDES Permit #:
 		<% Else %>
 			On-Site Contact
 		<% End If %>
 		</b></td>
-		<td colspan="3"><% = Trim(rsInspec("emergencyPhone")) %></td>
+		<td colspan="3"><% = Trim(RS2("emergencyPhone")) %></td>
 	</tr><%
 	End If %>
 	<!-- company, contact -->
 	<tr> 
 		<td align="right"><b>Company:</b></td>
-		<td><% = Trim(rsInspec("compName")) %></td>
+		<td><% = Trim(RS2("compName")) %></td>
 		<td align="right"><b>Main Office Contact:</b></td>
-		<td><% = Trim(rsInspec("compContact")) %></td>
+		<td><% = Trim(RS2("compContact")) %></td>
 	</tr>
 	<!-- address 1, phone -->
 	<tr> 
 		<td align="right" valign="top"><b>Address:</b></td>
-		<td><% = Trim(rsInspec("compAddr")) %> <% If Trim(rsInspec("compAddr2")) <> "" Then Response.Write("<br>" & Trim(rsInspec("compAddr2"))) End If %></td>
+		<td><% = Trim(RS2("compAddr")) %> <% If Trim(RS2("compAddr2")) <> "" Then Response.Write("<br>" & Trim(RS2("compAddr2"))) End If %></td>
 		<td align="right"><b>Phone:</b></td>
-		<td><% = Trim(rsInspec("contactPhone")) %></td>
+		<td><% = Trim(RS2("contactPhone")) %></td>
 	</tr>
 	<!-- address 2, fax -->
 	<tr> 
 		<td align="right"><b>&nbsp;</b></td>
-		<td><% = (Trim(rsInspec("compCity")) & ", " & rsInspec("compState") & " " & Trim(rsInspec("compZip"))) %></td>
+		<td><% = (Trim(RS2("compCity")) & ", " & RS2("compState") & " " & Trim(RS2("compZip"))) %></td>
 		<td align="right"><b>Fax:</b></td>
-		<td><% = Trim(rsInspec("contactFax")) %></td>
+		<td><% = Trim(RS2("contactFax")) %></td>
 	</tr>
 	<!-- main telephone -->
 	<tr> 
 		<td align="right"><b>Main Telephone Number:</b></td>
-		<td><% = Trim(rsInspec("compPhone")) %></td>
+		<td><% = Trim(RS2("compPhone")) %></td>
 		<td align="right"><b>E-Mail:</b></td>
-		<td><% = Trim(rsInspec("contactEmail")) %></td>
+		<td><% = Trim(RS2("contactEmail")) %></td>
 	</tr>
 	<!-- type of report, inches of rain -->
 	<tr> 
 		<td align="right"><b>Type of Report:</b></td>
-		<td><% = Trim(rsInspec("reportType")) %></td>
-<%  inches = rsInspec("inches")
+		<td><% = Trim(RS2("reportType")) %></td>
+<%  inches = RS2("inches")
 IF inches>-1 THEN %>
 		<td align="right"><b>Inches of Rain:</b></td>
 		<td><% If reportType <> "biWeekly" Then Response.Write(inches) Else Response.Write("N/A") %></td>
@@ -121,52 +122,51 @@ IF inches>-1 THEN %>
 	</tr>
 	<tr> 
 <%  bmpsInPlace = "No"
-If rsInspec("bmpsInPlace") = "1" Then bmpsInPlace = "Yes" End If
-IF rsInspec("bmpsInPlace")>-1 THEN %>
+If RS2("bmpsInPlace") = "1" Then bmpsInPlace = "Yes" End If
+IF RS2("bmpsInPlace")>-1 THEN %>
 		<td align="right"><b>Are BMPs in place?</b></td>
 		<td><% = bmpsInPlace %></td>
 <%  END IF
 sediment = "No"
-If rsInspec("sediment") ="1" Then sediment = "Yes" End If
-IF rsInspec("sediment")>-1 THEN %>
+If RS2("sediment") ="1" Then sediment = "Yes" End If
+IF RS2("sediment")>-1 THEN %>
 		<td align="right"><b>Sediment Loss or Pollution?</b></td>
 		<td><% = sediment %></td>
-<% END IF %>
+<% 	END IF %>
 </tr>
 <tr>
-<% If rsInspec("hortonSignV") And rsInspec("vscr") <> 0 Then
-	rightsSELECT = "SELECT userID, firstName, lastName, phone FROM Users WHERE userID=" & rsInspec("vscr")
+<% If RS2("hortonSignV") And RS2("vscr") <> 0 Then
+	rightsSELECT = "SELECT userID, firstName, lastName, phone FROM Users WHERE userID=" & RS2("vscr")
 	Set connRights = connSWPPP.execute(rightsSELECT)
-	If Not connRights.EOF Then %>
+   If Not connRights.EOF Then %>
 	   <td align="right"><b>VSCR:</b></td><td> <% =Trim(connRights("firstName")) %> <% =Trim(connRights("lastName")) %>: <% =Trim(connRights("phone")) %> </td>
 	<% End If
 End If %>
-<% If rsInspec("hortonSignLD") And rsInspec("ldscr") <> 0 Then
-	rightsSELECT = "SELECT userID, firstName, lastName, phone FROM Users WHERE userID=" & rsInspec("ldscr")
+<% If RS2("hortonSignLD") And RS2("ldscr") <> 0 Then
+	rightsSELECT = "SELECT userID, firstName, lastName, phone FROM Users WHERE userID=" & RS2("ldscr")
 	Set connRights = connSWPPP.execute(rightsSELECT)
    If Not connRights.EOF Then %>
 	   <td align="right"><b>LDSCR:</b></td><td> <% =Trim(connRights("firstName")) %> <% =Trim(connRights("lastName")) %>: <% =Trim(connRights("phone")) %> </td>
 	<% End If
 End If %>
-<% If rsInspec("forestar") And rsInspec("ldscr") <> 0 Then
-	rightsSELECT = "SELECT userID, firstName, lastName, phone FROM Users WHERE userID=" & rsInspec("ldscr")
+<% If RS2("forestar") And RS2("ldscr") <> 0 Then
+	rightsSELECT = "SELECT userID, firstName, lastName, phone FROM Users WHERE userID=" & RS2("ldscr")
 	Set connRights = connSWPPP.execute(rightsSELECT)
    If Not connRights.EOF Then %>
 	   <td align="right"><b>SSCR:</b></td><td> <% =Trim(connRights("firstName")) %> <% =Trim(connRights("lastName")) %>: <% =Trim(connRights("phone")) %> </td>
 	<% End If
 End If %>
 </tr>
-</table>
-<% signature = Trim(rsInspec("signature"))
+</table><%
 
+signature = Trim(RS2("signature"))
 coordSQLSELECT = "SELECT * FROM Coordinates WHERE inspecID=" & inspecID & " ORDER BY orderby"	
 'Response.Write(coordSQLSELECT)
 Set rsCoord = connSWPPP.execute(coordSQLSELECT)%>
-<p>
-	<center><div style="font-size: 8px"><%
-
-inspecDate = Trim(rsInspec("inspecDate"))
-If rsInspec("projectState") = "OK" Then 
+<p><center><div style="font-size: 8px">
+<% inspecDate = Trim(RS2("inspecDate"))
+If RS2("projectState") = "OK" Then 
+      inspecDate = Trim(RS2("inspecDate"))
       MsgDateStart = "11/07/2017"
       If DateDiff("d", inspecDate, MsgDateStart) < 1 Then %>
          <i>A qualified inspector familiar with the OPDES Permit OKR10 and the SWPPP should inspect all areas of the site that have been cleared,
@@ -197,12 +197,11 @@ If rsInspec("projectState") = "OK" Then
    areas used for storage of materials that are exposed to precipitation, structural controls (all erosion and sediment controls), discharge locations, locations where vehicles
    enter and exit the site, off-site material storage areas, overburden and stockpiles of dirt, borrow areas, equipment staging areas, vehicle repair areas, and fueling areas.</i>
 <% End If %>
-</div></center>
-</p> 
-<% 'print dr horton questions if desired
-If rsInspec("horton") or rsInspec("forestar") Then
+</div></center></p>
+<% 'print dr horton or forestar questions if desired
+If RS2("horton") or RS2("forestar") Then
 	'get questions
-	If rsInspec("horton") Then
+	If RS2("horton") Then
 		QuestionDateStart = #12/10/2020#
 		QuestionDateStart2 = #2/5/2021#
 		If DateDiff("d", QuestionDateStart, inspecDate) < 1 Then
@@ -213,10 +212,9 @@ If rsInspec("horton") or rsInspec("forestar") Then
 			SQLQ = "SELECT * FROM HortonQuestions WHERE orderby > 60 AND orderby < 87 ORDER BY orderby"
 		End If
 	Else
-		SQLQ = "SELECT * FROM HortonQuestions WHERE orderby > 90 AND orderby < 101 ORDER BY orderby"	
+		SQLQ = "SELECT * FROM HortonQuestions WHERE orderby > 90 AND orderby < 101 ORDER BY orderby"
 	End If
-	Set RSQ = connSWPPP.Execute(SQLQ)
-	%>
+	Set RSQ = connSWPPP.Execute(SQLQ) %>
 	<hr noshade size="1" align="center" >
 	<% If RSQ.EOF Then %>
 		<p>No Questions Found</p>
@@ -235,7 +233,11 @@ If rsInspec("horton") or rsInspec("forestar") Then
 				size = "90%"
 				weight = "bold"
 				answer = Trim(RSA("Q"&cnt))
-				If answer = Trim(RSQ("default_answer")) or answer = "na" Then
+				default_val = Trim(RSQ("default_answer"))
+				If default_val = "na" Then
+                	default_val = "yes"
+            	End If 
+				If answer = default_val or answer = "na" Then
 					size = "70%"
 					weight = "normal"
 				End If
@@ -299,17 +301,21 @@ If rsInspec("horton") or rsInspec("forestar") Then
     SET RSQ=nothing
 End If %>
 <table border="0" cellpadding="3" width="100%" cellspacing="0">
-<% If rsInspec("compliance") Then
+<%
+If RS2("compliance") Then
 	Response.Write("<tr><td colspan='2' align='center'><h2>SITE IS IN COMPLIANCE WITH THE SWPPP</h2></td></tr>")
 Else 
     If rsCoord.EOF Then
 	    Response.Write("<tr><td colspan='2' align='center'><i>There is no " & _
 		    "coordinate data entered at this time.</i></td></tr>")
     Else
-        applyScoring = False
-	    'if rsInspec("includeItems")=True & Session("seeScoring")=True Then applyScoring = True End If
-	    currentDate = date()
-	    Do While Not rsCoord.EOF
+		If RS2("forestar") Then
+	    	applyScoring = True
+		Else
+			applyScoring = false
+		End IF
+		currentDate = date()
+		Do While Not rsCoord.EOF
 			coID = rsCoord("coID")
 			correctiveMods = Trim(rsCoord("correctiveMods"))
 			orderby = rsCoord("orderby")
@@ -339,7 +345,6 @@ Else
 			toilet = rsCoord("toilet")
 			trash = rsCoord("trash")
 			dewater = rsCoord("dewater")
-			dis = rsCoord("discharge")
 			dust = rsCoord("dust")
         	riprap = rsCoord("riprap")
         	outfall = rsCoord("outfall")
@@ -350,100 +355,111 @@ Else
 		    dway = rsCoord("dway")
 		    flume = rsCoord("flume")
 			OSC = rsCoord("osc")
+			dis = rsCoord("discharge")
 			scoring_class = "black"
-			'Response.Write("ID: " & coID & ", Coord: " & coordinates & ", LocName: " & locationName & ", address: " & address & ", NLN: " & NLN &", Mods: " & correctiveMods & "<br/>") 
-			IF applyScoring THEN
+			IF applyScoring and repeat THEN
 				IF assignDate = "" THEN
 					age = 0
 				ELSE
 					age = datediff("d",assignDate,currentDate) 
 				END IF
-				IF age > 7 THEN
-					scoring_class = "red"
+				'Response.Write("Age:" & age & " - " & currentDate & "</br>")
+				IF age >= 7 THEN
+					If RS2("forestar") Then
+						scoring_class = "red"
+					Else
+						scoring_class = "bold"
+					End If
 				END IF
 			END IF
-            If LD = True Then
-                correctiveMods = "(LD) " & correctiveMods
-                scoring_class = "ld"
+			'Response.Write("Scoring Class:" & scoring_class & "</br>")
+			'Response.Write("ID: " & coID & ", Repeat: " & repeat & ", Age: " & age & ", Coord: " & coordinates & ", LocName: " & locationName & ", address: " & address & ", Mods: " & correctiveMods & "<br/>") 
+			If LD = True Then
+               correctiveMods = "(LD) " & correctiveMods
+			   If RS2("forestar") and repeat Then
+			   	  scoring_class = "ldred"
+			   Else
+                  scoring_class = "bold"
+			   End If
             End If
-				If OSC = True Then
-                correctiveMods = "(OSC) " & correctiveMods
+			If OSC = True Then
+               correctiveMods = "(OSC) " & correctiveMods
             End If
-			'If pond = True Then
-            '    correctiveMods = "(pond) " & correctiveMods
-            'End If
-			'If sedloss = True Then
-            '    correctiveMods = "(sediment loss) " & correctiveMods
-            'End If
-			'If sedlossw = True Then
-            '    correctiveMods = "(sediment loss to waters) " & correctiveMods
-            'End If
-			'If ce = True Then
-            '    correctiveMods = "(construction entrance) " & correctiveMods
-            'End If
-			'If street = True Then
-            '    correctiveMods = "(street cleaning) " & correctiveMods
-            'End If
-			'If sfeb = True Then
-            '    correctiveMods = "(perimeter controls) " & correctiveMods
-            'End If
-			'If rockdam = True Then
-	        '	correctiveMods = "(rock dam) " & correctiveMods
-            'End If
-			'If ip = True Then
-            '    correctiveMods = "(inlet protection) " & correctiveMods
-            'End If
-			'If wo = True Then
-            '    correctiveMods = "(washout) " & correctiveMods
-            'End If
-			'If veg = True Then
-            '    correctiveMods = "(vegetation) " & correctiveMods
-            'End If
-			'If stock = True Then
-            '    correctiveMods = "(stockpile) " & correctiveMods
-            'End If
-			'If toilet = True Then
-            '    correctiveMods = "(toilet) " & correctiveMods
-            'End If
-			'If trash = True Then
-            '    correctiveMods = "(trash/waste/material) " & correctiveMods
-            'End If
-			'If dewater = True Then
-			'	correctiveMods = "(dewatering) " & correctiveMods
-			'End If
-			'If dis = True Then
-			'	correctiveMods = "(discharge) " & correctiveMods
-			'End If
-			'If dust = True Then
-			'	correctiveMods = "(dust control) " & correctiveMods
-			'End If
-			'If riprap = True Then
-	        '	correctiveMods = "(riprap) " & correctiveMods
-	        'End If
-	        'If outfall = True Then
-	        '	correctiveMods = "(outfall) " & correctiveMods
-	        'End If
-			'If intop = True Then
-        	'	correctiveMods = "(inlet top) " & correctiveMods
-            'End If
-            'If swalk = True Then
-        	'	correctiveMods = "(sidewalk) " & correctiveMods
-            'End If
-            'If mormix = True Then
-        	'	correctiveMods = "(mortar mix) " & correctiveMods
-            'End If
-			'If ada = True Then
-			'	correctiveMods = "(ADA ramp) " & correctiveMods
-			'End If
-			'If dway = True Then
-			'	correctiveMods = "(driveway) " & correctiveMods
-			'End If
-			'If flume = True Then
-			'	correctiveMods = "(flume) " & correctiveMods
-			'End If
-            If NLN = True Then
-                'do nothing
-            ElseIf infoOnly = True and (useAddress=False and coordinates="") or (useAddress=True and locationName="" and address="") Then %>
+			If  0 Then 'Session("validInspector") Then
+				If wo = True Then
+					correctiveMods = "(wo) " & correctiveMods
+				End If
+				If veg = True Then
+					correctiveMods = "(veg) " & correctiveMods
+				End If
+				If toilet = True Then
+					correctiveMods = "(toilet) " & correctiveMods
+				End If
+				If trash = True Then
+					correctiveMods = "(trash) " & correctiveMods
+				End If
+				If swalk = True Then
+					correctiveMods = "(swalk) " & correctiveMods
+				End If
+				If stock = True Then
+					correctiveMods = "(stock) " & correctiveMods
+				End If
+				If street = True Then
+					correctiveMods = "(street) " & correctiveMods
+				End If
+				If sedlossw = True Then
+					correctiveMods = "(sedlossw) " & correctiveMods
+				End If
+				If sedloss = True Then
+					correctiveMods = "(sedloss) " & correctiveMods
+				End If
+				If rockdam = True Then
+					correctiveMods = "(rockdam) " & correctiveMods
+				End If
+				If riprap = True Then
+					correctiveMods = "(riprap) " & correctiveMods
+				End If
+				If pond = True Then
+					correctiveMods = "(pond) " & correctiveMods
+				End If
+				If outfall = True Then
+					correctiveMods = "(outfall) " & correctiveMods
+				End If
+				If mormix = True Then
+					correctiveMods = "(mormix) " & correctiveMods
+				End If
+				If ip = True Then
+					correctiveMods = "(ip) " & correctiveMods
+				End If
+				If intop = True Then
+					correctiveMods = "(intop) " & correctiveMods
+				End If
+				If flume = True Then
+					correctiveMods = "(flume) " & correctiveMods
+				End If
+				If sfeb = True Then
+					correctiveMods = "(eb/tf/sf) " & correctiveMods
+				End If
+				If dway = True Then
+					correctiveMods = "(dway) " & correctiveMods
+				End If
+				If dust = True Then
+					correctiveMods = "(dust) " & correctiveMods
+				End If
+				If dis = True Then
+					correctiveMods = "(dis) " & correctiveMods
+				End If
+				If dewater = True Then
+					correctiveMods = "(dewater) " & correctiveMods
+				End If
+				If ce = True Then
+					correctiveMods = "(ce) " & correctiveMods
+				End If
+				If ada = True Then
+					correctiveMods = "(ada) " & correctiveMods
+				End If
+			End If
+            If infoOnly = True and (useAddress=False and coordinates="") or (useAddress=True and locationName="" and address="") Then %>
                 <tr valign='top'><td width='20%' align='right'><b>note:</b></td><td width='80%' align='left' class = '<%=scoring_class%>'><%=correctiveMods%></td></tr>
             <% Else
 		        IF useAddress THEN %>
@@ -454,7 +470,7 @@ Else
 		        <% END IF
 		        IF TRIM(rsCoord("existingBMP"))<>"-1" THEN %>
 			        <tr valign='top'><td width='20%' align='right'><b>existing BMP:</b></td><td width='80%' align='left' class = '<%=scoring_class%>'><%=existingBMP%><br></td></tr>
-		        <% END IF 
+		        <% END IF  
 				  item_title = "action needed"
 				  If infoOnly = True Then
 						item_title = "note"
@@ -468,13 +484,14 @@ Else
 		    <% rsCoord.MoveNext
 	    Loop
     End If ' END No Results Found
-End If 'END compliance
-%>
+End If ' END Compliance
+rsCoord.Close
+Set rsCoord = Nothing %>
 </table>
-<%	printName = Trim(rsInspec("firstName")) & " " & Trim(rsInspec("lastName"))
-qualifications= TRIM(rsInspec("qualifications"))
+<%	printName = Trim(RS2("firstName")) & " " & Trim(RS2("lastName"))
+qualifications= TRIM(RS2("qualifications"))
 IF IsNull(qualifications) THEN qualifications="" END IF
-If rsInspec("projectState") = "OK" Then %>
+If RS2("projectState") = "OK" Then %>
 	<p><div style="font-size: 10px">
 	You must initiate stabilization measures immediately whenever earth-disturbing 
 	activities have permanently or temporarily ceased on any portion of the site and 
@@ -511,11 +528,9 @@ If rsInspec("projectState") = "OK" Then %>
 	</tr>
 </table>
 <% 
-rsCoord.Close
-Set rsCoord = Nothing
 
-rsInspec.Close 
-Set rsInspec = Nothing
+RS2.Close 
+Set RS2 = Nothing
 
 connSWPPP.Close
 Set connSWPPP = Nothing

@@ -37,7 +37,8 @@ IF IsNull(qualifications) THEN qualifications="" END IF
 strBody=strBody &"<head><style>"
 strBody=strBody &".red{color: #F52006;}"
 strBody=strBody &".black{color: black;}"
-strBody=strBody &".ld{font-weight: bold;}"
+strBody=strBody &".bold{font-weight: bold;}"
+strBody=strBody &".ldred{font-weight: bold; color: red;}"
 strBody=strBody &"</style></head>"
 strBody=strBody &"<body bgcolor='#ffffff' marginwidth='30' leftmargin='30' marginheight='15' topmargin='15'>"
 strBody=strBody &"<center><img src='http://www.swpppinspections.com/images/color_logo_report.jpg' width='300'><br><br>"
@@ -54,9 +55,9 @@ if Trim(rsInspec("officePhone")) <> "" Then
 End If
 if Trim(rsInspec("emergencyPhone")) <> "" Then
 	strBody=strBody &"<tr><td align='right'><b>"
-	If rsInspec("forestar") Then
+	If rsInspec("forestar") Then		
 		strBody=strBody &"TPDES Permit #:"
-	Else
+	Else 
 		strBody=strBody &"On-Site Contact"
 	End If
 	strBody=strBody &"</b></td><td colspan='3'>"&  Trim(rsInspec("emergencyPhone")) &"</td></tr>"
@@ -183,7 +184,11 @@ If rsInspec("horton") or rsInspec("forestar") Then
 				size = "90%"
 				weight = "bold"
 				answer = Trim(RSA("Q"&cnt))
-				If answer = Trim(RSQ("default_answer")) or answer = "na" Then
+				default_val = Trim(RSQ("default_answer"))
+				If default_val = "na" Then
+                	default_val = "yes"
+            	End If 
+				If answer = default_val or answer = "na" Then
 					size = "70%"
 					weight = "normal"
 				End If
@@ -253,7 +258,7 @@ Else
 	If rsCoord.EOF Then
 		strBody=strBody &"<tr><td colspan='2' align='center'><i>There is no coordinate data entered at this time.</i></td></tr>"
 	Else
-		If rsInspec("forestar") Then
+	   If rsInspec("forestar") Then
 			applyScoring = rsInspec("includeItems")
 		Else
 			applyScoring = false
@@ -289,7 +294,6 @@ Else
 			toilet = rsCoord("toilet")
 			trash = rsCoord("trash")
 			dewater = rsCoord("dewater")
-			dis = rsCoord("discharge")
 			dust = rsCoord("dust")
         	riprap = rsCoord("riprap")
         	outfall = rsCoord("outfall")
@@ -300,6 +304,7 @@ Else
 		    dway = rsCoord("dway")
 		    flume = rsCoord("flume")
 			OSC = rsCoord("osc")
+			dis = rsCoord("discharge")
 			scoring_class = "black"
 			IF applyScoring and repeat THEN
 				IF assignDate = "" THEN
@@ -308,15 +313,23 @@ Else
 					age = datediff("d",assignDate,currentDate) 
 				END IF
 				'Response.Write("Age:" & age & " - " & currentDate & "</br>")
-				IF age > 7 THEN
-					scoring_class = "red"
+				IF age >= 7 THEN
+					If rsInspec("forestar") Then
+						scoring_class = "red"
+					Else
+						scoring_class = "bold"
+					End If
 				END IF
 			END IF
 			'Response.Write("Scoring Class:" & scoring_class & "</br>")
 			'Response.Write("ID: " & coID & ", Repeat: " & repeat & ", Age: " & age & ", Coord: " & coordinates & ", LocName: " & locationName & ", address: " & address & ", Mods: " & correctiveMods & "<br/>") 
 			If LD = True Then
                correctiveMods = "(LD) " & correctiveMods
-               scoring_class = "ld"
+			   If rsInspec("forestar") and repeat Then
+			   	  scoring_class = "ldred"
+			   Else
+                  scoring_class = "bold"
+			   End If
             End If
 			If OSC = True Then
                correctiveMods = "(OSC) " & correctiveMods

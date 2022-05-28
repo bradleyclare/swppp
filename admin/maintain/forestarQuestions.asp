@@ -209,26 +209,26 @@ If Request.Form.Count > 0 Then
                 toilet = rsCoord("toilet")
                 trash = rsCoord("trash")
                 dewater = rsCoord("dewater")
-                dis = rsCoord("discharge")
                 dust = rsCoord("dust")
                 riprap = rsCoord("riprap")
                 outfall = rsCoord("outfall")
                 intop = rsCoord("intop")
-		        swalk = rsCoord("swalk")
-		        mormix = rsCoord("mormix")
+                swalk = rsCoord("swalk")
+                mormix = rsCoord("mormix")
                 ada = rsCoord("ada")
-		        dway = rsCoord("dway")
-		        flume = rsCoord("flume")
+                dway = rsCoord("dway")
+                flume = rsCoord("flume")
+                dis = rsCoord("discharge")
                 if repeat then
                     repeat_item_found = True
                 end if
-                if ada or street or swalk then
+                if street then
                     bmp_issue_found = true
                     answerSQL = "UPDATE HortonAnswers SET Q2 = 'yes' WHERE inspecID = " & inspecID  
                     'Response.Write(answerSQL & "</br>")
                     connSWPPP.Execute(answerSQL)
                 end if
-                if sfeb or rockdam or riprap then
+                if sfeb or rockdam then
                     bmp_issue_found = true
                     answerSQL = "UPDATE HortonAnswers SET Q3 = 'no' WHERE inspecID = " & inspecID  
                     'Response.Write(answerSQL & "</br>")
@@ -264,7 +264,7 @@ If Request.Form.Count > 0 Then
                     'Response.Write(answerSQL & "</br>")
                     connSWPPP.Execute(answerSQL)
                 end if
-                if ada or sedloss or selossw or street or swalk then
+                if ada or sedloss or street or swalk or riprap then
                     answerSQL = "UPDATE HortonAnswers SET Q9 = 'yes' WHERE inspecID = " & inspecID 
                     'Response.Write(answerSQL & "</br>")
                     connSWPPP.Execute(answerSQL)

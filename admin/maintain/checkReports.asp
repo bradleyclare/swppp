@@ -5,7 +5,7 @@ currentDate = date()
 endDate = currentDate
 startDate=DateAdd("d",-30,currentDate)
 %><!-- #include file="../connSWPPP.asp" --><%
-SQL0="SELECT * FROM Projects WHERE phaseNum=1 ORDER BY projectName ASC"
+SQL0="SELECT * FROM Projects WHERE active=1 ORDER BY projectName ASC"
 SET RS0=connSWPPP.execute(SQL0)
 
 %>

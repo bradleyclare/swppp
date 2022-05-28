@@ -12,7 +12,7 @@ end if
 
 recordOrd = Request("orderBy")
 SELECT CASE recordOrd
-	CASE 1 		orderBy=" Order by phaseNum asc, projectName asc, projectPhase asc"
+	CASE 1 		orderBy=" Order by active asc, projectName asc, projectPhase asc"
 	CASE 2		orderBy=" Order by initInspecCost asc, projectName asc, projectPhase asc"
 	CASE 3		orderBy=" Order by inspecCost asc, projectName asc, projectPhase asc"
 	CASE 4		orderBy=" Order by billCycle asc, projectName asc, projectPhase asc"
@@ -47,22 +47,35 @@ recCount = 0 %>
 		Response.Write("<tr><td colspan='5' align='center'><b><i>There " & _
 			"are currently no Projects.</i></b></td></tr>")
 	Else
-		altColors="#ffffff"		
+		activeColor="#ffffff"
+		inactiveColor="#e5e6e8"	
 		Do While Not RS1.EOF
-			recCount = recCount + 1 %>
-	<tr align="center" bgcolor="<%= altColors %>"> 
-		<td align=right><%= recCount %></td>
-		<td align=left><a href="editProjectInfo.asp?id=<%= RS1("projectID") %>">
-			<%= Trim(RS1("projectName")) %>&nbsp;<%= Trim(RS1("projectPhase"))%></a></td>
-      <td><a href="editUsersByProject.asp?pID=<%= RS1("projectID") %>">rights</a></td>
-		<td align=center><%= TRIM(RS1("phaseNum"))%></td>
-		<td align=center><%= TRIM(RS1("initInspecCost"))%></td>
-		<td align=center><%= TRIM(RS1("inspecCost"))%></td>
-		<td align=center><%= TRIM(RS1("billCycle"))%></td>
-        <td align=center><%= TRIM(RS1("collectionName"))%></td>
-     </tr>
-<%			If altColors = "#e5e6e8" Then altColors = "#ffffff" Else altColors = "#e5e6e8" End If
-			RS1.MoveNext
+			recCount = recCount + 1 
+			projID = RS1("projectID")
+			projName = Trim(RS1("projectName")) & " " & Trim(RS1("projectPhase"))
+			active = Trim(RS1("active"))
+			initInspecCost = TRIM(RS1("initInspecCost"))
+			inspecCost = TRIM(RS1("inspecCost"))
+			billCycle = TRIM(RS1("billCycle"))
+			collectionName = TRIM(RS1("collectionName"))
+			If active Then
+				color = activeColor
+			Else
+				color = inactiveColor
+			End If
+			%>
+			<tr align="center" bgcolor="<%= color %>"> 
+				<td align=right><%= recCount %></td>
+				<td align=left><a href="editProjectInfo.asp?id=<%= projID %>">
+				<%= projName %></a></td>
+				<td><a href="editUsersByProject.asp?pID=<%= projID %>">rights</a></td>
+				<td align=center><%= active %></td>
+				<td align=center><%= initInspecCost %></td>
+				<td align=center><%= inspecCost %></td>
+				<td align=center><%= billCycle %></td>
+				<td align=center><%= collectionName %></td>
+     		</tr>
+			<% RS1.MoveNext
 		Loop
 	End If ' END No Results Found
 RS1.Close

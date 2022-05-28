@@ -96,7 +96,7 @@ DO WHILE Not connUsers.EOF
 
 	SQL1 = "SELECT p.*, u.userID, u.firstName, u.lastName, u.rights as rights1, pu.rights as rights2" &_
 		" FROM Projects as p LEFT JOIN ProjectsUsers as pu ON p.projectID=pu.projectID LEFT JOIN Users as u" &_
-		" ON pu.userID=u.userID WHERE p.phaseNum=1 AND u.userID="& userID &" ORDER BY projectName ASC, projectPhase ASC"
+		" ON pu.userID=u.userID WHERE p.active=1 AND u.userID="& userID &" ORDER BY projectName ASC, projectPhase ASC"
 		'Response.Write(SQL1)
 	SET RS1=connSWPPP.execute(SQL1)
 	

@@ -92,11 +92,13 @@ hortonFlag=False
 completePast="completed"
 completeAction="complete"
 completeDate = "completion date"
+closeDate = "completion date"
 if NOT(RSH.EOF) THEN 
     hortonFlag=True 
     completePast="closed"
     completeAction="close"
     completeDate="item status"
+    closeDate="close date"
 END IF
 
 SQLH="SELECT inspecID FROM Inspections WHERE forestar=1 AND projectID="& projectID
@@ -106,7 +108,8 @@ if NOT(RSH.EOF) THEN
     forestarFlag=True 
     completePast="closed"
     completeAction="close"
-    completeDate="close date"
+    completeDate="completion date"
+    closeDate="close date"
 END IF
 %>
 
@@ -189,9 +192,9 @@ End Date (MM/DD/YYYY): <input name="endDate" type="text" value="<%=endDate%>" si
             <th width="2.5%" align="left">NLN</th>
         <% End If %>
         <% If hortonFlag or forestarFlag Then %>
-            <th width="5%" align="left">completion date</th>
+            <th width="5%" align="left"><%=completeDate%></th>
         <% End If %>
-        <th width="5%" align="left"><%=completeDate%></th>  
+        <th width="5%" align="left"><%=closeDate%></th>  
         <th width="5%" align="left">report date</th>
         <th width="15%" align="left">location</th>
         <th align="left">action item</th>

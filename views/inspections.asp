@@ -97,8 +97,13 @@ Else
 End If
 'Response.Write(inspectInfoSQLSELECT & "<br>")
 Set rsInspectInfo = connSWPPP.Execute(inspectInfoSQLSELECT)
-projectName= Trim(rsInspectInfo("projectName"))
-projectPhase= Trim(rsInspectInfo("projectPhase"))
+if NOT(rsInspectInfo.EOF) THEN 
+	projectName= Trim(rsInspectInfo("projectName"))
+	projectPhase= Trim(rsInspectInfo("projectPhase"))
+Else
+	projectName = "Unknown"
+	projectPhase = ""
+End If
 'SQL0="SELECT * FROM ProjectsUsers WHERE "& Session("userID") &" IN (SELECT userID FROM ProjectsUsers WHERE rights in ('action','erosion') AND projectID="& projectID &")"
 'SET RS0=connSWPPP.execute(SQL0)
 'Response.Write(SQL0 &"<BR>")
@@ -195,11 +200,11 @@ If forestarFlag Then
 
 <% includeItemsFlag = False
 firstInspecID = 0
-rsInspectInfo.MoveFirst()
 If rsInspectInfo.EOF Then
 	Response.Write("<b><i>Sorry no current " & _
 		"data entered at this time.</i></b>")
 Else
+	rsInspectInfo.MoveFirst()
 	inspecID = 0
 	Do While Not rsInspectInfo.EOF
 	   'Response.Write(inspecID & "<br/>") 
@@ -325,9 +330,13 @@ Else
 					<td align="center">
 					<% If forestarStatus Then %>
 						x
-					<% Else %>
-						<input type="checkbox" name="approval_LD:<%=inspecID%>"></input>
-					<% End If %>
+					<% Else 
+						If completedItems >= totalItems Then %>
+							<input type="checkbox" name="approval_LD:<%=inspecID%>"></input>
+						<% Else %>
+							open items
+						<%End If
+					End If %>
 					</td>
 				<% End If %>
 				<td align="center"><%=forestarApprovalUser%></td>

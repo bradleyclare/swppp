@@ -16,14 +16,18 @@ End If
 
 if Session("validAdmin") Then
    'select the companies for which this user is a valid Director
-   SQLSELECT = "SELECT projectID" & _
-		   " FROM ProjectsUsers"
+   SQLSELECT = "SELECT DISTINCT p.projectID" & _
+		   " FROM Projects as p JOIN ProjectsUsers as pu" &_
+		   " ON p.projectId=pu.projectID" &_
+		   " WHERE p.active=1"
    Set connComp = connSWPPP.Execute(SQLSELECT)
 Else
    'select the companies for which this user is a valid Director
-   SQLSELECT = "SELECT projectID" & _
-		   " FROM ProjectsUsers" &_
-		   " WHERE userID=" & Session("userID") &_
+   SQLSELECT = "SELECT DISTINCT p.projectID" & _
+		   " FROM Projects as p JOIN ProjectsUsers as pu" &_
+		   " ON p.projectId=pu.projectID" &_
+		   " WHERE p.active=1" &_
+		   " AND pu.userID=" & Session("userID") &_
 		   " AND rights='director'"
    Set connComp = connSWPPP.Execute(SQLSELECT)
 End If
@@ -40,12 +44,14 @@ Do while not connComp.eof
 	connComp.movenext
 Loop
 
+response.write("proj_list: " + proj_list)
+
 ' select users who have rights to those companies
-SQLSELECT = "SELECT DISTINCT u.userID, firstName, lastName, pu.rights" &_
+SQLSELECT = "SELECT DISTINCT u.userID, u.firstName, u.lastName, u.active, pu.rights" &_
 	" FROM Users as u JOIN ProjectsUsers as pu" &_
 	" ON u.userID=pu.userID JOIN Projects as p" &_
 	" ON pu.projectId=p.projectID" &_
-	" WHERE u.userID = pu.userID AND pu.rights IN ('director', 'user')"  &_
+	" WHERE u.userID = pu.userID AND u.active=1" &_ 
 	" AND lastName LIKE '" & group &"%'" &_
 	" AND u.rights!='admin' AND p.projectID IN (" & proj_list & ") ORDER BY lastName"
 
@@ -118,7 +124,7 @@ Set connComp = Nothing
 			      onclick="tbody<%=cnt%>.style.display='none'; btnShow<%=cnt%>.style.display=''; btnHide<%=cnt%>.style.display='none';"></BUTTON>
          <% SQL1 = "SELECT p.*, u.userID, u.firstName, u.lastName, u.rights as rights1, pu.rights as rights2" &_
 	            " FROM Projects as p LEFT JOIN ProjectsUsers as pu ON p.projectID=pu.projectID LEFT JOIN Users as u" &_
-	            " ON pu.userID=u.userID WHERE u.userID=" & userID & " AND pu.rights IN ('director', 'user')"  &_
+	            " ON pu.userID=u.userID WHERE u.userID=" & userID &_
 	            " AND u.rights!='admin' AND p.projectID IN (" & proj_list & ") ORDER BY projectName ASC, projectPhase ASC"
          'Response.Write(SQL1)
          SET RS1=connSWPPP.execute(SQL1) %>

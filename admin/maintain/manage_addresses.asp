@@ -30,7 +30,7 @@ If Request.Form.Count > 0 Then
     End If
 	If request("save") = "Save Records to Database" Then	
 		totalItems = 0
-		for n = 0 to 999 step 1
+		for n = 0 to 9999 step 1
 			if Trim(Request("coord:" & CStr(n))) = "" then
 		        exit for
 		    end if

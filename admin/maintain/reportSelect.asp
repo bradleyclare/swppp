@@ -20,15 +20,37 @@ If recordOrd = "" Then recordOrd = "inspecDate" End If
 <%
 currentDate = date()
 endDate = currentDate
-startDate=DateAdd("d",-90,currentDate)
-SQL0=" SELECT i.inspecID, i.inspecDate, i.projectName, i.projectPhase, p.projectID "&_
-        " FROM Inspections i inner join Projects p on i.projectid = p.projectid WHERE i.inspecDate Between '"& startDate &"' AND '"& endDate &"'" '&_
-		'"   inner join (Select projectID, MAX(inspecDate) inspecDate From Inspections Group By projectID) as i2 " &_
-        '"       on i.projectID = i2.projectID and i.inspecDate = i2.inspecDate and DateDiff(mm, i.inspecDate, GetDate()) < 3"
+startDate=DateAdd("d",-65,currentDate)
 
-IF session("validInspector") AND NOT(Session("validAdmin")) THEN SQL0 = SQL0 & " AND i.userID='" & Session("userID") &"'"
-SQL0 = SQL0 &" ORDER BY i.projectName asc, i.projectPhase"	
-Response.Write("SQL0=" & SQL0)
+'select the companies for which this user is a valid inspector
+SQLSELECT = "SELECT DISTINCT p.projectID" & _
+		" FROM Projects as p JOIN ProjectsUsers as pu" &_
+		" ON p.projectId=pu.projectID" &_
+		" WHERE p.active=1" &_
+		" AND pu.userID=" & Session("userID") &_
+		" AND rights='inspector'"
+Set connComp = connSWPPP.Execute(SQLSELECT)
+
+'build project list for which we care
+proj_list = ""
+Do while not connComp.eof
+	if not subsequent then 'first time
+		proj_list = proj_list & connComp("projectID")
+		subsequent=true
+	else
+		proj_list = proj_list & ", " & connComp("projectID")
+	end if
+	connComp.movenext
+Loop
+connComp.Close
+Set connComp = Nothing
+
+SQL0=" SELECT i.inspecID, i.inspecDate, i.projectName, i.projectPhase, p.projectID "&_
+        " FROM Inspections i inner join Projects p on i.projectid = p.projectid WHERE i.inspecDate Between '"& startDate &"' AND '"& endDate &"'"
+
+IF session("validInspector") AND NOT(Session("validAdmin")) THEN SQL0 = SQL0 & " AND p.projectID IN (" & proj_list & ")"
+SQL0 = SQL0 &" ORDER BY i.projectName asc, i.projectPhase, i.inspecDate desc"	
+'Response.Write("SQL0=" & SQL0)
 SET rsReports2=connSWPPP.Execute(SQL0)
 %>
 
@@ -56,6 +78,7 @@ SET rsReports2=connSWPPP.Execute(SQL0)
 				projectName = Trim(rsReports2("projectName"))
 				projectPhase = Trim(rsReports2("projectPhase"))
 				projectID = rsReports2("projectID")
+				'Response.Write(projectID & " : " & projectName & " : " & projectPhase & " : " & inspecDate & "</br>")
 				If projectID <> prevProjID Then 
 					prevProjID = projectID %>
 					<tr nowrap><td align="center" bgcolor="<% = altColors %>"><% = inspecDate %></td>

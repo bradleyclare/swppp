@@ -105,12 +105,25 @@ If rsInspec("hortonSignLD") And rsInspec("ldscr") <> 0 Then
 	End If
 End If
 If rsInspec("forestar") And rsInspec("ldscr") <> 0 Then
-	rightsSELECT = "SELECT userID, firstName, lastName, phone FROM Users WHERE userID=" & rsInspec("ldscr")
+	SQLA="SELECT * FROM HortonApprovals WHERE LD=1 and inspecID="& inspecID
+	SET RSA=connSWPPP.execute(SQLA)
+	forestar_SSCR_approved = false
+	If not RSA.EOF Then 
+		forestar_SSCR_approved = True
+	End If
+	RSA.Close 
+	Set RSA = Nothing
+	rightsSELECT = "SELECT userID, firstName, lastName, phone, signature FROM Users WHERE userID=" & rsInspec("ldscr")
 	Set connRights = connSWPPP.execute(rightsSELECT)
-   If Not connRights.EOF Then
-	   strBody=strBody &"<td align='right'><b>SSCR:</b></td><td>" & Trim(connRights("firstName")) & " " & Trim(connRights("lastName")) & ": " & Trim(connRights("phone")) & "</td>"
+	forestar_SSCR_name = ""
+	forestar_SSCR_signature = ""
+    If Not connRights.EOF Then
+		forestar_SSCR_name = Trim(connRights("firstName")) & " " &  Trim(connRights("lastName")) 
+		forestar_SSCR_signature = Trim(connRights("signature"))
+	   	strBody=strBody &"<td align='right'><b>SSCR:</b></td><td>" & Trim(connRights("firstName")) & " " & Trim(connRights("lastName")) & ": " & Trim(connRights("phone")) & "</td>"
 	End If
 End If
+
 strBody=strBody &"</tr>"
 strBody=strBody &"</table>"
 signature = Trim(rsInspec("signature"))
@@ -210,9 +223,12 @@ If rsInspec("horton") or rsInspec("forestar") Then
 						size = "90%"
 						weight = "bold"
 						answer = Trim(RSpond("answer"))
-						If answer = "yes" Then
+						If answer = "yes" or answer = "na" Then
 							size = "70%"
 							weight = "normal"
+						End If
+						If answer = "na" Then
+							answer = "n/a"
 						End If
 						strBody=strBody &"<tr bgcolor="& altColors &"><td style='font-size:"& size &"; font-weight:"& weight &"'> - "& locationName &"</td>" & _ 
 							"<td style='font-size:"& size &"; font-weight:"& weight &"'>"& answer &"</td></tr>"
@@ -231,9 +247,12 @@ If rsInspec("horton") or rsInspec("forestar") Then
 						size = "90%"
 						weight = "bold"
 						answer = Trim(RSoutfall("answer"))
-						If answer = "yes" Then
+						If answer = "yes" or answer = "na" Then
 							size = "70%"
 							weight = "normal"
+						End If
+						If answer = "na" Then
+							answer = "n/a"
 						End If
 						strBody=strBody &"<tr bgcolor="& altColors &"><td style='font-size:"& size &"; font-weight:"& weight &"'> - "& locationName &"</td>" & _ 
 							"<td style='font-size:"& size &"; font-weight:"& weight &"'>"& answer &"</td></tr>"
@@ -444,6 +463,14 @@ strBody=strBody &"<p><small>I certify under penalty of law that this document an
 strBody=strBody &"<tr><td width='3%' align='left'><b>Name:</b></td><td width='3%' align='left'><b>Print:</b></td><td width='4%' align='left'><b>Inspector:</b></td></tr>"
 strBody=strBody &"<tr><td width='3%'><img src='http://www.swpppinspections.com/images/signatures/"&  signature &"'></td><td width='3%' align='left' valign='top'>"&  printName &"</td><td width='4%' align='left' valign='top'>SWPPP INSPECTIONS, INC.</td></tr></table>"
 strBody=strBody &"<br><br>"
+
+If  rsInspec("forestar") and forestar_SSCR_approved Then
+	strBody=strBody &"<p><small>I certify under penalty of law that this document and all attachments were prepared under my direction or supervision in accordance with a system designed to assure that qualified	personnel properly gathered and evaluated the information submitted. Based on my inquiry of the person or persons who manage the system, or those persons directly responsible for gathering the information, the information is, to the best of my knowledge and belief, true, accurate, and complete. I am aware that there are significant penalties for submitting false information, including the possibility of fine and imprisonment for knowing violations.</small><p><table border='0' cellpadding='2' width='100%' cellspacing='0'>"
+	strBody=strBody &"<tr><td width='3%' align='left'><b>Name:</b></td><td width='3%' align='left'><b>Site Stormwater Compliance Representative (SSCR):</b></td></tr>"
+	strBody=strBody &"<tr><td width='3%'><img src='http://www.swpppinspections.com/images/signatures/"&  forestar_SSCR_signature &"'></td><td width='3%' align='left' valign='top'>"&  forestar_SSCR_name &"</td></tr></table>"
+	strBody=strBody &"<br><br>"
+End If
+
 SQL3="SELECT oImageFileName FROM OptionalImages WHERE oitID=12 AND inspecID="& inspecID
 SET RS3=connSWPPP.execute(SQL3)
 IF NOT(RS3.EOF) THEN

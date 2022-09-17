@@ -127,10 +127,22 @@ End If %>
 	<% End If
 End If %>
 <% If RS2("forestar") And RS2("ldscr") <> 0 Then
-	rightsSELECT = "SELECT userID, firstName, lastName, phone FROM Users WHERE userID=" & RS2("ldscr")
+	SQLA="SELECT * FROM HortonApprovals WHERE LD=1 and inspecID="& inspecID
+	SET RSA=connSWPPP.execute(SQLA)
+	forestar_SSCR_approved = false
+	If not RSA.EOF Then 
+		forestar_SSCR_approved = True
+	End If
+	RSA.Close 
+	Set RSA = Nothing
+	rightsSELECT = "SELECT userID, firstName, lastName, phone, signature FROM Users WHERE userID=" & RS2("ldscr")
 	Set connRights = connSWPPP.execute(rightsSELECT)
-   If Not connRights.EOF Then %>
-	   <td align="right"><b>SSCR:</b></td><td> <% =Trim(connRights("firstName")) %> <% =Trim(connRights("lastName")) %>: <% =Trim(connRights("phone")) %> </td>
+    forestar_SSCR_name = ""
+	forestar_SSCR_signature = ""
+	If Not connRights.EOF Then 
+		forestar_SSCR_name = Trim(connRights("firstName")) & " " &  Trim(connRights("lastName")) 
+		forestar_SSCR_signature = Trim(connRights("signature")) %>
+	   <td align="right"><b>SSCR:</b></td><td> <% =forestar_SSCR_name %>: <% =Trim(connRights("phone")) %> </td>
 	<% End If
 End If %>
 </tr>
@@ -236,9 +248,12 @@ If RS2("horton") or RS2("forestar") Then
 						size = "90%"
 						weight = "bold"
 						answer = Trim(RSpond("answer"))
-						If answer = "yes" Then
+						If answer = "yes" or answer = "na" Then
 							size = "70%"
 							weight = "normal"
+						End If 
+						If answer = "na" Then
+							answer = "n/a"
 						End If %>
 						<tr bgcolor=<%=altColors%>><td style="font-size:<%=size%>; font-weight:<% =weight %>">&nbsp-&nbsp<% = locationName%></td> 
 						<td style="font-size:<%=size%>; font-weight:<%=weight%>"><%=answer%></td></tr>
@@ -257,9 +272,12 @@ If RS2("horton") or RS2("forestar") Then
 						size = "90%"
 						weight = "bold"
 						answer = Trim(RSoutfall("answer"))
-						If answer = "yes" Then
+						If answer = "yes" or answer = "na" Then
 							size = "70%"
 							weight = "normal"
+						End If
+						If answer = "na" Then
+							answer = "n/a"
 						End If %>
 						<tr bgcolor=<%=altColors%>><td style="font-size:<%=size%>; font-weight:<% =weight %>">&nbsp-&nbsp<% = locationName%></td> 
 						<td style="font-size:<%=size%>; font-weight:<%=weight%>"><%=answer%></td></tr>
@@ -503,7 +521,31 @@ I certify under penalty of law that this document and all attachments
 <table border="0" cellpadding="3" width="100%" cellspacing="0">
 	<tr><td width="3%" align="left"><b>Name:</b></td><td width="3%" align="left"><b>Print:</b></td><td width="4%" align="left"><b>Inspector:</b></td></tr>
 	<tr><td width="3%"><img src="../images/signatures/<% = signature %>"></td><td width="3%" align="left" valign="top"><% = printName %></td><td width="4%" align="left" valign="top">SWPPP INSPECTIONS, INC.</td></tr>
-</table><br><br></DIV><%
+</table>
+
+<%	If RS2("forestar") and forestar_SSCR_approved Then  %>
+	<p><div style="font-size: 7px">
+	I certify under penalty of law that this document and all attachments were prepared under 
+	my direction or supervision in accordance with a system designed to assure that qualified 
+	personnel properly gathered and evaluated the information submitted. Based on my inquiry 
+	of the person or persons who manage the system, or those persons directly responsible for 
+	gathering the information, the information is, to the best of my knowledge and belief, true, 
+	accurate, and complete. I am aware that there are significant penalties for submitting false 
+	information, including the possibility of fine and imprisonment for knowing violations.
+	</div><p> 
+	<table border="0" cellpadding="2" width="100%" cellspacing="0">
+		<tr> 
+			<td width="3%" align="left"><b>Name:</b></td>
+			<td width="3%" align="left"><b>Site Stormwater Compliance Representative (SSCR):</b></td>
+		</tr>
+		<tr> 
+			<td width="3%"><img src="../images/signatures/<% = forestar_SSCR_signature %>"></td>
+			<td width="3%" align="left" valign="top"><% = forestar_SSCR_name %></td>
+		</tr>
+	</table>
+<% End If %>
+
+<br><br></DIV><%
 	RS1.MoveNext 
 	cnt=1
 LOOP

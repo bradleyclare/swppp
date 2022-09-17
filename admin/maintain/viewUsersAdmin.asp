@@ -13,6 +13,11 @@ recordOrd = Request("orderBy")
 If recordOrd = "" Then
 	recordOrd = "lastName"
 End If
+If recordOrd = "lastName" Then
+	recordOrd = "lastName, firstName"
+ElseIf recordOrd = "firstName" Then
+	recordOrd = "firstName, lastName"
+End If
 
 %> <!-- #include file="../connSWPPP.asp" --> <%
 SQLSELECT = "SELECT userID, firstName, lastName, rights" &_

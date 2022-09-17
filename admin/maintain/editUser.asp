@@ -29,43 +29,54 @@ If Request.Form.Count > 0 Then
     if Request("repeatItemAlerts") = "on" then repeatItemAlerts = 1 Else repeatItemAlerts = 0 End If
     userGroupString = Request("userGroup")
     userGroupArray = Split(userGroupString,"-")
-	SQLUPDATE =	"UPDATE Users SET" & _
-		" firstName = '" & titleCase(Request("firstName")) & "'" & _
-		", lastName = '" & titleCase(Request("lastName")) & "'" & _
-		", email = '" & Request("email") & "'" & _
-		", phone = '" & Request("phone") & "'" & _
-		", pswrd = '" & Request("pswrd") & "'" & _
-		", signature = '" & Request("signature") & "'" & _
-		", noImages = '" & Request("noImages") & "'" & _
-        ", seeScoring = '" & seeScoring & "'" & _
-        ", openItemAlerts = '" & openItemAlerts & "'" & _
-        ", repeatItemAlerts = '" & repeatItemAlerts & "'" & _
-		", qualifications = '" & trimmedQualifications & "'" 
-' -----------------------------------------------------------------
-		If Len(userGroupString) > 0 Then
-         SQLUPDATE = SQLUPDATE & ", userGroupID = " & CInt(Trim(userGroupArray(0)))
-      End If
-' --------------------------- Admin User --------------------------
-		If Request("admin")="on" then 
-			SQLUPDATE = SQLUPDATE & ", rights= 'admin'"
-			highestRights="admin"
-		ELSE
-			SQLUPDATE = SQLUPDATE & ", rights= 'user'"
+	If Session("validAdmin") then 'only admin may set rights for other admin, directors and inspectors
+		SQLUPDATE =	"UPDATE Users SET" & _
+			" firstName = '" & titleCase(Request("firstName")) & "'" & _
+			", lastName = '" & titleCase(Request("lastName")) & "'" & _
+			", email = '" & Request("email") & "'" & _
+			", phone = '" & Request("phone") & "'" & _
+			", pswrd = '" & Request("pswrd") & "'" & _
+			", signature = '" & Request("signature") & "'" & _
+			", noImages = '" & Request("noImages") & "'" & _
+			", seeScoring = '" & seeScoring & "'" & _
+			", openItemAlerts = '" & openItemAlerts & "'" & _
+			", repeatItemAlerts = '" & repeatItemAlerts & "'" & _
+			", qualifications = '" & trimmedQualifications & "'" 
+	' -----------------------------------------------------------------
+			If Len(userGroupString) > 0 Then
+			SQLUPDATE = SQLUPDATE & ", userGroupID = " & CInt(Trim(userGroupArray(0)))
 		End If
-' -----------------------------------------------------------------
-   SQLUPDATE = SQLUPDATE & " WHERE userID = " & userID
-	'Response.Write(SQLUPDATE)
-    connSWPPP.Execute(SQLUPDATE)
-	
+	' --------------------------- Admin User --------------------------
+			If Request("admin")="on" then 
+				SQLUPDATE = SQLUPDATE & ", rights= 'admin'"
+				highestRights="admin"
+			ELSE
+				SQLUPDATE = SQLUPDATE & ", rights= 'user'"
+			End If
+		' -----------------------------------------------------------------
+		SQLUPDATE = SQLUPDATE & " WHERE userID = " & userID
+		'Response.Write(SQLUPDATE)
+		connSWPPP.Execute(SQLUPDATE)
+	Else
+		SQLUPDATE =	"UPDATE Users SET" & _
+			" firstName = '" & titleCase(Request("firstName")) & "'" & _
+			", lastName = '" & titleCase(Request("lastName")) & "'" & _
+			", phone = '" & Request("phone") & "'"
+		' -----------------------------------------------------------------
+		SQLUPDATE = SQLUPDATE & " WHERE userID = " & userID
+		'Response.Write(SQLUPDATE)
+		connSWPPP.Execute(SQLUPDATE)
+	End If
+
 	SQLDELETE = "DELETE FROM ProjectsUsers WHERE userID=" & userID
 	IF Session("validDirector") THEN 
 		SQLDELETE=SQLDELETE & " AND projectID IN (SELECT projectID FROM ProjectsUsers" &_
-		" WHERE userID=" & listUserID &")"
+				" WHERE userID=" & listUserID &")"
 	END IF
-
 	connSWPPP.execute(SQLDELETE)
+
 '-----	rightsValue="00000000000" '-- user,action,erosion,email,CC,BCC,vscr,ldscr,inspector,director,admin -----------------
-		If Request("admin")="on" then rightsValue= "00000000001" else rightsValue="00000000000" End If
+	If Request("admin")="on" then rightsValue= "00000000001" else rightsValue="00000000000" End If
 'response.write(rights & "<br/>")
 ' ----------------------- Inspector, Director, User, Email in Projects User  -------- 
 		For Each Item in Request.Form
@@ -340,13 +351,6 @@ Set gifDirectory = Nothing %>
             <% connGroups.MoveNext 
         LOOP %>
      </select></td></tr>
-<% ELSE %>
-	<INPUT type="hidden" name="email" value="<%= email %>">
-	<INPUT type="hidden" name="pswrd" value="<%= pswrd %>">
-	<INPUT type="hidden" name="signature" value="<%= signature %>">
-	<INPUT type="hidden" name="noImages" value="<%= noImages %>">
-	<INPUT type="hidden" name="qualifications" value="<%= REPLACE(qualifications,"#@#","'") %>">
-	<INPUT type="hidden" name="userGroup" value="<%=userGroupID%> - whatever">
 <% END IF %>
     <tr><td><input type="submit" value="Update User"></td></tr>
 </table>

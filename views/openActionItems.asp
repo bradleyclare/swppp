@@ -407,7 +407,7 @@ Set RS0 = connSWPPP.Execute(SQL0)
     dbgBody = ""
     If RS0.EOF Then
 		dbgBody=dbgBody & "No Open Items Found<br/>"
-	    Response.Write("<tr><td colspan='10' align='center'><i style='font-size: 15px'>There are no inspection reports found.</i></td></tr>")
+	    'Response.Write("<tr><td colspan='10' align='center'><i style='font-size: 15px'>There are no inspection reports found.</i></td></tr>")
     Else
        n = 0
        inspecCnt = 0
@@ -501,9 +501,11 @@ Set RS0 = connSWPPP.Execute(SQL0)
                         done = ""
                         completer = ""
                         completeDate = ""
+                        commCnt = 0
                         If not rsComm2.EOF Then
                             'find the completion note
                             Do While Not rsComm2.EOF
+                                commCnt = commCnt + 1
                                 If rsComm2("comment") = "This item was marked done" Then
                                     done = "done"
                                     completer = rsComm2("firstName") & " " & rsComm2("lastName")
@@ -559,7 +561,7 @@ Set RS0 = connSWPPP.Execute(SQL0)
 	                <td><input type="button" name="coord:note:<%= n %>" value="A" onclick="displayCommentWindow(this)"/></td>
 	                <% If rsComm.EOF Then %>
                         <td></td>
-                    <% ElseIf rsComm("comment") = "This item was marked done" or _
+                    <% ElseIf commCnt = 1 and rsComm("comment") = "This item was marked done" or _
                         rsComm("comment") = "This item was marked NLN" or _
                         rsComm("comment") = "This item was marked complete" or _
                         rsComm("comment") = "This item was marked incomplete" Then %>
@@ -583,7 +585,7 @@ Set RS0 = connSWPPP.Execute(SQL0)
     </table>
     <center>
     <% If coordCnt = 0 Then %>
-        <h3>There are no open items at this time</h3>
+        <h3>There are no open items at this time.</h3>
     <% End If %>
     <input type="submit" value="submit" /><br /><br />
     <% If siteMapInspecID > 0 Then

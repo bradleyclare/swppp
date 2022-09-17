@@ -145,16 +145,15 @@ IF Request.Form.Count > 0 THEN %>
                         groupNameRaw = connProjUsers("collectionName")
                         'Response.Write(groupNameRaw)
                         startDate=DateAdd("yyyy",-3,currentDate)
+
                         SQL0 = "SELECT inspecID, inspecDate, reportType," & _
                             " projectID, projectName, projectPhase, released, includeItems, compliance, totalItems, completedItems, systemic, horton, forestar, hortonSignV, hortonSignLD, vscr, ldscr" & _
                             " FROM Inspections" & _
-                            " WHERE projectID = " & projID &_
+                            " WHERE (projectID = " & projID &_
                             " AND includeItems = 1" &_
                             " AND released = 1" &_
                             " AND openItemAlert = 1" &_
-                            " AND inspecDate BETWEEN '"& startDate &"' AND '"& currentDate &"'" &_
-                            " AND (completedItems < totalItems" &_
-                            " OR hortonSignV = 1 OR hortonSignLD = 1)"
+                            " AND inspecDate BETWEEN '"& startDate &"' AND '"& currentDate &"')"
 
                         'Response.Write(SQL0)
                         Set RS0 = connSWPPP.Execute(SQL0)
@@ -182,17 +181,18 @@ IF Request.Form.Count > 0 THEN %>
                         ldscr_needs_approval = False
                         maxAgeLDSCR = 0
                         empty_project = false
-                                        
+  
                         If RS0.EOF Then
                             empty_project = true
                             If debug_msg=True Then
-                                Response.Write("No Inspection Reports with Open Items Found.<br/>")
+                                Response.Write("<h2>No Inspection Reports with Open Items Found.</h2>")
                             End If 
                         Else
                             If debug_msg=True Then
                                 Response.Write("<h2>Processing Project: "& Trim(RS0("projectName")) & " " & Trim(RS0("projectPhase")) & "</h3>")
                             End If 
                             inspecCnt = 0
+                            'Loop through each inspection report to check for open items or if it is ready to be signed or not
                             Do While Not RS0.EOF
                                 inspecCnt = inspecCnt + 1
                                 projName = Trim(RS0("projectName"))
@@ -213,9 +213,9 @@ IF Request.Form.Count > 0 THEN %>
                                 reportAge = datediff("d",inspecDate,currentDate) 
                                 If debug_msg=True Then
                                     If completedItems < totalItems Then
-                                        Response.Write("<h3>ProjID: " & projID & " : "  & projName & " : " & projPhase & " : " & " : " & horton & " : " & " : " & forestar & " : " & inspecDate & " V: " & hortonSignV & " LD: " & hortonSignLD & ", total: " & totalItems & ", completed: " & completedItems &"</h3>")
+                                        Response.Write("<h3>horton=" & horton & " : forestar=" & forestar & " : date=" & inspecDate & " : V=" & hortonSignV & " : LD=" & hortonSignLD & " : total=" & totalItems & " : completed=" & completedItems &"</h3>")
                                     Else
-                                        'Response.Write("<h3>ProjID: " & projID & " : "  & projName & " : " & projPhase & " : " & " : " & horton & " : " & " : " & forestar & " : " & inspecDate & " V: " & hortonSignV & " LD: " & hortonSignLD & ", total: " & totalItems & ", completed: " & completedItems &" - No Open Items</h3>")
+                                        'Response.Write("<h3>horton & " : " & " : " & forestar & " : " & inspecDate & " V: " & hortonSignV & " LD: " & hortonSignLD & ", total: " & totalItems & ", completed: " & completedItems &" - No Open Items</h3>")
                                     End If
                                 End If
 
@@ -259,7 +259,7 @@ IF Request.Form.Count > 0 THEN %>
                                     End If
                                 End If
 
-                                If forestar Then
+                                If completedItems >= totalItems and forestar Then
                                     'look for approvals for this report
                                     SQLA="SELECT * FROM HortonApprovals WHERE inspecID="& inspecID
                                     SET RSA=connSWPPP.execute(SQLA)
@@ -311,9 +311,6 @@ IF Request.Form.Count > 0 THEN %>
                                                 age = 0
                                             Else
                                                 age = datediff("d",assignDate,currentDate) 
-                                            End If
-                                            If debug_msg=True Then
-                                                Response.Write("ID: " & coID &", Age: "& age &", Status: "& status &", LD: "& LD &", Repeat: "& repeat & ", Systemic: " & RS0("systemic") &"<br/>")
                                             End If
                                             
                                             If NLN = True Then
@@ -378,10 +375,11 @@ IF Request.Form.Count > 0 THEN %>
                                                 rsComm.MoveNext
                                             LOOP
                                             If marked_done and not marked_complete Then
-                                                If debug_msg=True Then
-                                                    Response.Write("Item marked done but not complete.</br>")
-                                                End If
                                                 doneCnt = doneCnt + 1
+                                            End If
+
+                                            If debug_msg=True Then
+                                                Response.Write("ID=" & coID &", Age="& age &", Status="& status &", LD="& LD &", Repeat="& repeat & ", Systemic=" & RS0("systemic") &", marked_done=" & marked_done & ", marked_complete=" & marked_complete & "<br/>")
                                             End If
                                             
                                             if RS0("systemic") then
@@ -506,12 +504,10 @@ IF Request.Form.Count > 0 THEN %>
                                 If forestar Then
                                     link = "http://swppp.com/views/inspections.asp?projID=" & projID & "&projName="& projName &"&projPhase=" & projPhase
                                     strBody=strBody & "</td><td class='f1'>"
-                                    If Not ldscr_needs_approval Then
-                                        strBody=strBody & " "
-                                    ElseIf maxAgeLDSCR > 2 Then
-                                        strBody=strBody & "<a href='"& link &"' target='_blank'>" & maxAgeLDSCR & " days over</a>" 
+                                    If ldscr_needs_approval Then
+                                        strBody=strBody & "<a href='"& link &"' target='_blank'>sign off</a>"
                                     Else
-                                        strBody=strBody & "<a href='"& link &"' target='_blank'>sign off</a>" 
+                                        strBody=strBody & " " 
                                     End If
                                 Else
                                     strBody=strBody & "</td><td class='f2'>"
@@ -624,7 +620,7 @@ ELSE
             </div>
             <% if userGroupID > 0 Then
                 SQL0 = "SELECT DISTINCT userID, firstName, lastName, userGroupID FROM Users" & _
-                    " WHERE userGroupID = '" & userGroupID & "'" & _
+                    " WHERE active=1 AND openItemAlerts = 1 AND seeScoring = 1 AND userGroupID = '" & userGroupID & "'" & _
                     " ORDER BY lastName"
                 'Response.Write(SQL0)
                 Set RS0 = connSWPPP.Execute(SQL0) 

@@ -12,6 +12,12 @@ projectID=Request("id")
 IF (IsNull(projectID) OR NOT(IsNumeric(projectID))) THEN Response.redirect("viewProjects.asp") END IF
 
 If Request.Form.Count>0 THEN
+	if Request.Form("submit_delete") = "delete" then
+		Response.Redirect("deleteProject.asp?id=" +  projectID)
+	End If
+	if Request.Form("submit_rights") = "rights" then
+		Response.Redirect("editUsersByProject.asp?pID=" + projectID)
+	End If
 	err=0
 	active=Request("active")
 	projOpenItemAlert = Request("projOpenItemAlert")
@@ -156,8 +162,9 @@ End Function
 	</td></tr>
 	<tr><td></td></tr>
 </table>
-<button onClick="window.location.href='deleteProject.asp?id=<%= projectID %>'">Delete Project</button>
-<input type="submit" value="Update Project Information">
+<input name="submit_delete" type="submit" value="delete"/>
+<input name="submit_rights" type="submit" value="rights"/>
+<input type="submit" value="update">
 </form>
 </body>
 </html><%

@@ -35,7 +35,7 @@ If Request.Form.Count > 0 Then
     connSWPPP.Execute(SQLINSERT)
 End If
 
-SQLSELECT = "SELECT userGroupID, userGroupName FROM UserGroups ORDER BY userGroupID"
+SQLSELECT = "SELECT userGroupID, userGroupName FROM UserGroups ORDER BY userGroupName"
 'Response.Write(SQLSELECT & "<br>")
 Set connGroups = connSWPPP.Execute(SQLSELECT)
 recCount = 0
@@ -80,8 +80,8 @@ recCount = 0
         </td>
         <td width="40%" valign="top">
             <% SQL0 = "SELECT DISTINCT userID, firstName, lastName, userGroupID FROM Users" & _
-                    " WHERE userGroupID = '" & userGroupID & "'" & _
-                    " ORDER BY lastName"
+                    " WHERE active=1 and userGroupID = '" & userGroupID & "'" & _
+                    " ORDER BY firstName"
             'Response.Write(SQL0)
             Set RS0 = connSWPPP.Execute(SQL0) 
             

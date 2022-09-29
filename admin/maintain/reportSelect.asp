@@ -22,7 +22,7 @@ currentDate = date()
 endDate = currentDate
 startDate=DateAdd("d",-65,currentDate)
 
-'select the companies for which this user is a valid inspector
+'select the projects for which this user is a valid inspector
 SQLSELECT = "SELECT DISTINCT p.projectID" & _
 		" FROM Projects as p JOIN ProjectsUsers as pu" &_
 		" ON p.projectId=pu.projectID" &_

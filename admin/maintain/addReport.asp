@@ -27,7 +27,7 @@ SQL0= SQL0 &" INSERT INTO Inspections (inspecDate, projectname, projectphase, pr
 	" sentRepeatItemReport, openItemAlert, groupName, systemic, systemicNote, horton, hortonSignV, hortonSignLD, vscr, ldscr, forestar)  " &_
     " SELECT inspecDate='"& Date() &"', p.projectName, p.projectPhase, projectAddr, projectCity, projectState,  " &_
 	" projectZip, projectCounty, onsiteContact, officePhone, emergencyPhone, companyID,  " &_
-	" reportType = case when i.reportType = 'Initial' Then 'Weekly' Else i.reportType end, inches=-1, bmpsInPlace=-1, sediment=-1, userID,  " &_
+	" reportType = case when i.reportType = 'Initial' Then 'Weekly' Else i.reportType end, inches=-1, bmpsInPlace=-1, sediment=-1," & Session("userID") & "," &_
 	" compAddr, compAddr2, compCity, compState, compZip, compPhone, compContact, contactPhone, contactFax, contactEmail, p.projectID, compName, narrative, released=0, " &_
 	" includeItems=1, compliance, totalItems, completedItems=0, sentRepeatItemReport=0, openItemAlert, groupName, systemic, systemicNote, horton, hortonSignV, hortonSignLD, vscr, ldscr," &_
 	" forestar" &_

@@ -27,7 +27,7 @@ End If
 'Response.Write(startDate & " - " & endDate)
 commSQLSELECT = "SELECT * FROM CoordinatesComments" &_
     " WHERE date BETWEEN '"& startDate &"' AND '"& endDate &"'" &_
-    " ORDER BY date DESC, coID"
+    " ORDER BY date DESC, commentID DESC"
 'Response.Write(commSQLSELECT)
 Set rsComm = connSWPPP.execute(commSQLSELECT) %>
 

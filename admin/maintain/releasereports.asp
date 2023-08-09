@@ -168,14 +168,24 @@ If rsInspec("projectState") = "OK" Then
          " stormwater discharge, including color, odor, floating, settled, or suspended solids, foam, oil sheen, and other obvious indicators of stormwater pollutants; and document whether" &_
          " your stormwater controls are operating effectively, and describe any such controls that are clearly not operating as intended or are in need of maintenance.</i></center></p></div>"
    Else
-         strBody=strBody &"<div style='font-size: 8px'><p><center><i>Inspectors familiar with the OPDES Permit OKR10 and the SWPPP should inspect disturbed areas of the site that have not been finally stabilized, areas used for storage" &_
-         " of materials that are exposed to precipitation, structural controls (all erosion and sediment controls), discharge locations, locations where vehicles enter and exit" &_
-         " the site, off-site material storage areas, overburden and stockpiles of dirt, borrow areas, equipment staging areas, vehicle repair areas, and fueling areas.</i></center></p></div>"
+         strBody=strBody &"<div style='font-size: 8px'><p><center><i>Inspectors familiar with the OPDES Permit OKR10 and the SWPPP should inspect disturbed areas of the site that have not " &_
+		 " been finally stabilized, areas used for storage of materials that are exposed to precipitation, structural controls (all erosion and sediment controls), discharge locations, " &_
+		 " locations where vehicles enter and exit the site, off-site material storage areas, overburden and stockpiles of dirt, borrow areas, equipment staging areas, vehicle repair areas, " &_
+		 " and fueling areas.</i></center></p></div>"
    End If
 Else
-	strBody=strBody &"<div style='font-size: 8px'><p><center><i>Inspectors familiar with the TPDES Permit TXR150000 and the SWPPP should inspect disturbed areas of the site that have not been finally stabilized," &_
-      " areas used for storage of materials that are exposed to precipitation, structural controls (all erosion and sediment controls), discharge locations, locations where vehicles" &_
-      " enter and exit the site, off-site material storage areas, overburden and stockpiles of dirt, borrow areas, equipment staging areas, vehicle repair areas, and fueling areas.</i></center></p></div>"
+	MsgDateStart = #03/04/2023#
+	If DateDiff("d", inspecDate, MsgDateStart) < 1 Then
+		strBody=strBody &"<div style='font-size: 8px'><p><center><i>Inspectors knowledgeable of TXR150000 and the SWPPP must inspect disturbed areas, stabilization measures, construction " &_
+		 " support activities, material storage areas, equipment staging areas, vehicle repair/fueling areas, locations where vehicles enter/exit the site, stockpiles of dirt, stormwater " &_
+		 " and structural controls, the discharge of pollutants, areas where stormwater flows, discharge points, and off-site areas. Report the locations where erosion and discharges of " &_
+		 " sediment or other pollutants from the site have occurred. Report locations of BMPs that need to be maintained, failed, proved inadequate, and where additional BMPs are needed." &_
+		 " </i></center></p></div>"
+	Else
+		strBody=strBody &"<div style='font-size: 8px'><p><center><i>Inspectors familiar with the TPDES Permit TXR150000 and the SWPPP should inspect disturbed areas of the site that have not been finally stabilized," &_
+		 " areas used for storage of materials that are exposed to precipitation, structural controls (all erosion and sediment controls), discharge locations, locations where vehicles" &_
+		 " enter and exit the site, off-site material storage areas, overburden and stockpiles of dirt, borrow areas, equipment staging areas, vehicle repair areas, and fueling areas.</i></center></p></div>"
+	End If
 End If
 'print dr horton or forestar questions if desired
 If rsInspec("horton") or rsInspec("forestar") Then

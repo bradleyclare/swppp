@@ -15,7 +15,7 @@ If Session("validAdmin") Then
 	projInfoSQLSELECT = "SELECT DISTINCT p.projectID, p.projectName, p.projectPhase, Case when pu.rights is null then 0 else 1 end as rights " & _
 		" FROM Inspections as i inner join Projects p on i.projectid = p.projectid" & _
 		"   left join ProjectsUsers pu on p.projectID = pu.projectID and pu.userID = " & Session("userID") &" and pu.rights='email'" & _
-		" ORDER BY p.projectName"
+		" WHERE p.active=1 ORDER BY p.projectName"
 Else
 	projInfoSQLSELECT = "SELECT DISTINCT p.projectID, p.projectName, p.projectPhase, Case when pu.rights is null then 0 else 1 end as rights " & _
 		" FROM Inspections i inner join Projects p on i.projectid = p.projectid" & _

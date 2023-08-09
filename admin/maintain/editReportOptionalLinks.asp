@@ -196,7 +196,7 @@ LOOP %>
 		<tr><td colspan="6">&nbsp;</td></tr>
 		<tr><td colspan=3 align="center"><input type="submit" name="submit" value="Return to Report w/o Saving" /></td>
 		<td colspan=3 align="center"><input name="submit" type="submit" value="Save Updates and Return to Report"/></td></tr>
-</table>s
+</table>
 
 <%
 connSWPPP.Close 

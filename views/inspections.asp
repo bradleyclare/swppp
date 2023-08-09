@@ -385,8 +385,11 @@ End If %>
 </ul>
 <% If Not Session("validErosion") Then %>
 <h5>project documents</h5>
+<h5>(Contact swppp.com for the most recent site map.)</h5>
 <% End If %>
 <ul>
+   <li><a href="../images/dewatering_report.pdf" target="_blank">dewatering report form</a></li>
+   <li><a href="../images/txr150000_for_2023.pdf" target="_blank">TXR150000 2023</a></li>
    <% SQL2="SELECT * FROM OptionalImagesTypes WHERE oitSortByVal>=-1 ORDER BY oitSortByVal asc"
    SET RS2=connSWPPP.execute(SQL2)
    DO WHILE NOT RS2.EOF

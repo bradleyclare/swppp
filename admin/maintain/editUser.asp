@@ -75,8 +75,8 @@ If Request.Form.Count > 0 Then
 	END IF
 	connSWPPP.execute(SQLDELETE)
 
-'-----	rightsValue="00000000000" '-- user,action,erosion,email,CC,BCC,vscr,ldscr,inspector,director,admin -----------------
-	If Request("admin")="on" then rightsValue= "00000000001" else rightsValue="00000000000" End If
+'-----	rightsValue="000000000000" '-- user,action,email,CC,BCC,on-site,erosion,vscr,ldscr,inspector,director,admin -----------------
+	If Request("admin")="on" then rightsValue= "000000000001" else rightsValue="000000000000" End If
 'response.write(rights & "<br/>")
 ' ----------------------- Inspector, Director, User, Email in Projects User  -------- 
 		For Each Item in Request.Form
@@ -97,18 +97,21 @@ If Request.Form.Count > 0 Then
 				    Case "bcc"
 					    rights="bcc"
 					    rightsValue= MID(rightsValue,1,4) &"1"& MID(rightsValue,6)
-				    Case "ero"
+				    Case "sit"
+					 	rights="onsite"
+						rightsValue=MID(rightsValue,1,5) &"1"& MID(rightsValue,7)
+					Case "ero"
 					    rights="erosion"
-					    rightsValue= MID(rightsValue,1,5) &"1"& MID(rightsValue,7)
-					 Case "vsc"
+					    rightsValue= MID(rightsValue,1,6) &"1"& MID(rightsValue,8)
+					Case "vsc"
 					    rights="vscr"
-					    rightsValue=MID(rightsValue,1,6) &"1"& MID(rightsValue,8)
-					 Case "lds"
-					    rights="ldscr"
 					    rightsValue=MID(rightsValue,1,7) &"1"& MID(rightsValue,9)
-					 Case "ins"
-					    rights="inspector"
+					Case "lds"
+					    rights="ldscr"
 					    rightsValue=MID(rightsValue,1,8) &"1"& MID(rightsValue,10)
+					Case "ins"
+					    rights="inspector"
+					    rightsValue=MID(rightsValue,1,9) &"1"& MID(rightsValue,11)
 					 
     '					SQLa="SELECT projectName FROM Projects WHERE projectID="& Request(Item)
     '					SET RSa=connSWPPP.execute(SQLa)
@@ -139,7 +142,7 @@ If Request.Form.Count > 0 Then
 					    SQL0=SQL0 &" EXEC sp_UpdateCommissions "& userID &", '"& projName &"', "& phase1 &", "& phase2 &", "& phase3 &", "& phase4 &", "& phase5
 				    Case "dir"
 					    rights="director"
-					    rightsValue=MID(rightsValue,1,9) &"1"& MID(rightsValue,11)
+					    rightsValue=MID(rightsValue,1,10) &"1"& MID(rightsValue,12)
 			    End Select
 			    If rights<>"" then
                     exeCmd = "sp_InsertPU "& userID &", "& Request(Item) &", '"& rights &"'"
@@ -151,7 +154,7 @@ If Request.Form.Count > 0 Then
 		Next
 		'response.write("Rights Value:" & rightsValue & "<br/>")
 		highestRights="user"
-		FOR n = 1 to 11 step 1
+		FOR n = 1 to 12 step 1
 			IF (MID(rightsValue,n,1)="1") THEN 
 				SELECT CASE n
 					CASE 1	highestRights="user"
@@ -159,12 +162,13 @@ If Request.Form.Count > 0 Then
 					CASE 3	highestRights="email"
 					CASE 4   highestRights="email"
 					CASE 5   highestRights="email"
-					CASE 6   highestRights="erosion"
-					CASE 7   highestRights="vscr"
-					CASE 8   highestRights="ldscr"
-					CASE 9	highestRights="inspector"
-					CASE 10	highestRights="director"
-					CASE 11	highestRights="admin"
+					CASE 6   highestRights="onsite"
+					CASE 7   highestRights="erosion"
+					CASE 8   highestRights="vscr"
+					CASE 9   highestRights="ldscr"
+					CASE 10	highestRights="inspector"
+					CASE 11	highestRights="director"
+					CASE 12	highestRights="admin"
 					CASE ELSE highestRights=highestRights
 				END SELECT
 			END IF
@@ -383,7 +387,8 @@ Set gifDirectory = Nothing %>
             <th>bcc</th>
 <%  end if 'Session("validAdmin">) %>			
 <% 	If (Session("validDirector") OR Session("validAdmin")) then '- directors can create action managers %>		
-			<th>erosion</>
+			<th>on-site</th>
+			<th>erosion</th>
 			<th>VSCR</th>
 			<th>LDSCR</th>
 <%	End If
@@ -411,6 +416,7 @@ userChecked=False
 insChecked=False
 dirChecked=False
 actChecked=False
+siteChecked=False
 eroChecked=False
 vscrChecked=False
 ldscrChecked=False
@@ -432,9 +438,10 @@ DO WHILE NOT RS1.EOF
 			CASE "bcc"		    recBCCChecked=True
 			CASE "inspector"	insChecked=True
 			CASE "action"		actChecked=True
+			CASE "onsite"       siteChecked=True
 			CASE "erosion"		eroChecked=True
-			CASE "vscr"       vscrChecked=True
-			CASE "ldscr"      ldscrChecked=True
+			CASE "vscr"         vscrChecked=True
+			CASE "ldscr"        ldscrChecked=True
 			CASE "director"	
 				dirName= RS1("firstName") &" "& RS1("lastName") 
 				dirChecked=True
@@ -466,7 +473,10 @@ DO WHILE NOT RS1.EOF
 			onClick="if (!(document.forms[0].use<%=compCount%>.checked) && !(document.forms[0].admin.checked)) { (document.forms[0].emr<%=compCount%>.checked=false); }"></td>
 <%  End If
  	If (Session("validDirector") OR Session("validAdmin")) then '- directors can create action managers %>		
-<!--- ----------------------------------------- Erosion ----------------------------------------- --->
+<!--- ----------------------------------------- On-Site ----------------------------------------- --->
+		<td align=center><input type="checkbox" name="sit<%= compCount %>" value="<%= dispProjID %>"
+			<% If siteChecked then %>checked<% End If %>></td>
+<!--- ----------------------------------------- Erosion ----------------------------------------- --->			
 		<td align=center><input type="checkbox" name="ero<%= compCount %>" value="<%= dispProjID %>"
 			<% If eroChecked then %>checked<% End If %>></td>
 <!--- ----------------------------------------- VSCR -------------------------------------- --->
@@ -492,6 +502,7 @@ DO WHILE NOT RS1.EOF
 			userChecked=False
 			insChecked=False
 			actChecked=False
+			siteChecked=False
 			eroChecked=False
 			vscrChecked=False
 			ldscrChecked=False

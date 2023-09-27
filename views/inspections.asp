@@ -216,10 +216,10 @@ Else
          includeItems = rsInspectInfo("includeItems")
 			totalItems     = rsInspectInfo("totalItems")
 			completedItems = rsInspectInfo("completedItems")
-			hortonFlag = rsInspectInfo("horton")
-			hortonSignV = rsInspectInfo("hortonSignV")
-			hortonSignLD = rsInspectInfo("hortonSignLD")
-			forestarFlag = rsInspectInfo("forestar")
+			'hortonFlag = rsInspectInfo("horton")
+			hortonSignVreport = rsInspectInfo("hortonSignV")
+			hortonSignLDreport = rsInspectInfo("hortonSignLD")
+			'forestarFlag = rsInspectInfo("forestar")
 			'Response.Write("inspecID: " & inspecID & ", vscr: " & hortonSignV & ", ldscr: " & hortonSignLD & "<br/>")
 			If includeItems Then
             includeItemsFlag = True
@@ -268,8 +268,10 @@ Else
 						<td align="center">
 						<% If hortonStatus Then %>
 							x
-						<% Else %>
+						<% Else 
+							If hortonSignVreport Then %>
 							<input type="checkbox" name="approval_V:<%=inspecID%>"></input>
+							<% End If%>
 						<% End If %>
 						</td>
 					<% End If %>
@@ -298,8 +300,10 @@ Else
 						<td align="center">
 						<% If hortonStatus Then %>
 							x
-						<% Else %>
+						<% Else 
+							If hortonSignLDreport Then %>
 							<input type="checkbox" name="approval_LD:<%=inspecID%>"></input>
+							<% End If %>
 						<% End If %>
 						</td>
 					<% End If %>

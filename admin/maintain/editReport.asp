@@ -1451,13 +1451,13 @@ Set rsAddress = Nothing %>
 			<%	RS1.MoveNext
 		LOOP %>	
 		</select></td>
-		
+
 		</tr><tr><td align="right" bgcolor="#eeeeee"><b>On-Site Contact:</b></td>
-			<td bgcolor="#999999"><input type="text" name="onsiteContact" size="50" value="<% = Trim(rsReport("onsiteContact")) %>"></td>
+			<td bgcolor="#999999"><input type="text" name="onsiteContact" size="50" value="<%=Trim(rsReport("onsiteContact"))%>"></td>
 		</tr>
 		<!-- office # -->
 		<tr><td align="right" bgcolor="#eeeeee"><b>On-Site Contact:</b></td>
-			<td bgcolor="#999999"><input name="officePhone" type="text" size="50" value="<% = Trim(rsReport("officePhone")) %>"></td>
+			<td bgcolor="#999999"><input name="officePhone" type="text" size="50" value="<%=Trim(rsReport("officePhone"))%>"></td>
 		</tr>
 		<!-- emergency # -->
 		<tr><td align="right" bgcolor="#eeeeee"> <b>
@@ -1467,7 +1467,7 @@ Set rsAddress = Nothing %>
 		On-Site Contact
 		<% End If %>
 		</b></td>
-			<td bgcolor="#999999"><input name="emergencyPhone" type="text" size="50" value="<% = Trim(rsReport("emergencyPhone")) %>"></td>
+			<td bgcolor="#999999"><input name="emergencyPhone" type="text" size="50" value="<%=Trim(rsReport("emergencyPhone"))%>"></td>
 		</tr><tr><td bgcolor="#eeeeee"><img src="../../images/dot.gif" width="5" height="5"></td>
 			<td bgcolor="#999999"><img src="../../images/dot.gif" width="5" height="5"></td>
 		</tr>

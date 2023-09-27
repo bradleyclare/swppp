@@ -47,7 +47,7 @@ If Request.Form.Count > 0 Then
     End If	
 End If
 
-commSQLSELECT = "SELECT * FROM CoordinatesComments WHERE coID=" & coID	& " ORDER BY date DESC, commentID DESC"
+commSQLSELECT = "SELECT * FROM CoordinatesComments WHERE coID=" & coID	& " ORDER BY date DESC"
 Set rsComm = connSWPPP.execute(commSQLSELECT) 
 
 coordSQLSELECT = "SELECT * FROM Coordinates WHERE coID=" & coID

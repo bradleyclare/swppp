@@ -103,6 +103,52 @@ if rsInspec_old("horton") or rsInspec_old("forestar") then
 	End If
 end if
 
+'overwrite contact info with on-site contact selections
+contactSELECT = "SELECT DISTINCT u.userID, firstName, lastName, phone, email" & _
+			" FROM Users as u, ProjectsUsers as pu" & _
+			" WHERE u.userID = pu.userID AND pu.projectID = " & projectID & _
+			" AND pu.rights='onsite' ORDER BY lastName"
+'Response.Write(contactSELECT)
+Set contactRights = connSWPPP.execute(contactSELECT) 
+Dim contactInfo(10)
+ccnt = 0
+DO WHILE NOT contactRights.EOF
+	if StrComp(Trim(contactRights("phone")),"") = 0 then
+		contactInfo(ccnt) = Trim(contactRights("firstName")) & " " & Trim(contactRights("lastName")) 
+	else
+		contactInfo(ccnt) = Trim(contactRights("firstName")) & " " & Trim(contactRights("lastName")) & ": " & Trim(contactRights("phone")) 
+	end if
+	ccnt = ccnt + 1
+	'Response.Write(contactInfo(ccnt))
+	contactRights.MoveNext
+LOOP
+
+if ccnt > 0 then
+	contact1 = contactInfo(0)
+else
+	contact1 = Trim(rsInspec("onsiteContact"))
+end if 
+
+if ccnt > 1 then
+	contact2 = contactInfo(1)
+else
+	contact2 = Trim(rsInspec("officePhone"))
+end if 
+
+if ccnt > 2 and rsInspec("forestar") <> True then
+	contact3 = contactInfo(2)
+else
+	contact3 = Trim(rsInspec("emergencyPhone"))
+end if 
+
+inspectSQLUPDATE = "UPDATE Inspections SET" & _
+	" onsiteContact = '" & contact1 & "'" & _
+	", officePhone = '" & contact2 & "'" & _
+	", emergencyPhone = '" & contact3 & "'" & _
+	" WHERE inspecID = " & newInspecID
+'response.Write(inspectSQLUPDATE)
+connSWPPP.Execute(inspectSQLUPDATE)
+
 'for the near term always set question 3/33 to yes
 'updateSQL = "UPDATE HortonAnswers SET Q3='yes' where inspecID=" & newInspecID
 'connSWPPP.Execute(answerSQL)
